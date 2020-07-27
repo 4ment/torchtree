@@ -7,4 +7,4 @@ python:
 install:
   - pip install .[test]
 script:
-  - pytest
+  - pytest -m "not beagle"
