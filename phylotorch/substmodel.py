@@ -3,10 +3,12 @@ from abc import abstractmethod
 import numpy as np
 import torch
 
+from phylotorch.model import Model
 
-class SubstitutionModel(object):
+
+class SubstitutionModel(Model):
     def __init__(self, frequencies):
-        self.frequencies = frequencies
+        self.frequencies_key, self.frequencies = frequencies
 
     @abstractmethod
     def p_t(self, branch_lengths):
@@ -23,7 +25,7 @@ class SubstitutionModel(object):
 
 class JC69(SubstitutionModel):
     def __init__(self):
-        SubstitutionModel.__init__(self, torch.tensor(np.array([0.25] * 4)))
+        SubstitutionModel.__init__(self, ('frequencies', torch.tensor(np.array([0.25] * 4))))
 
     def p_t(self, branch_lengths):
         """Calculate transition probability matrices
@@ -44,6 +46,9 @@ class JC69(SubstitutionModel):
                                       [1. / 3, -1., 1. / 3, 1. / 3],
                                       [1. / 3, 1. / 3, -1., 1. / 3],
                                       [1. / 3, 1. / 3, 1. / 3, -1.]]))
+
+    def update(self, value):
+        pass
 
 
 class SymmetricSubstitutionModel(SubstitutionModel):
@@ -68,7 +73,16 @@ class SymmetricSubstitutionModel(SubstitutionModel):
 class GTR(SymmetricSubstitutionModel):
     def __init__(self, rates, frequencies):
         SymmetricSubstitutionModel.__init__(self, frequencies)
-        self.rates = rates
+        self.rates_key, self.rates = rates
+
+    def update(self, value):
+        if isinstance(value, dict):
+            if self.rates_key in value:
+                self.rates = value[self.rates_key]
+            if self.frequencies_key in value:
+                self.frequencies = value[self.frequencies_key]
+        else:
+            self.rates, self.frequencies = value
 
     def q(self):
         rates = self.rates
@@ -98,7 +112,16 @@ class GTR(SymmetricSubstitutionModel):
 class HKY(SymmetricSubstitutionModel):
     def __init__(self, kappa, frequencies):
         SymmetricSubstitutionModel.__init__(self, frequencies)
-        self.kappa = kappa
+        self.kappa_key, self.kappa = kappa
+
+    def update(self, value):
+        if isinstance(value, dict):
+            if self.kappa_key in value:
+                self.kappa = value[self.kappa_key]
+            if self.frequencies_key in value:
+                self.frequencies = value[self.frequencies_key]
+        else:
+            self.kappa, self.frequencies = value
 
     def p_t(self, branch_lengths):
         d = torch.unsqueeze(branch_lengths, -1)

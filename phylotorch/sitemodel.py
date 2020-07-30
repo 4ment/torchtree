@@ -3,8 +3,13 @@ from abc import abstractmethod
 import torch
 from torch.distributions import LogNormal
 
+from phylotorch.model import Model
 
-class SiteModel(object):
+
+class SiteModel(Model):
+    @abstractmethod
+    def update(self, value):
+        pass
 
     @abstractmethod
     def rates(self):
@@ -19,6 +24,9 @@ class ConstantSiteModel(SiteModel):
 
     def __init__(self):
         SiteModel.__init__(self)
+
+    def update(self, value):
+        pass
 
     def rates(self):
         return torch.tensor([1.0], dtype=torch.float64)
@@ -42,6 +50,13 @@ class WeibullSiteModel(SiteModel):
         rates = torch.pow(-torch.log(1.0 - self.quantile), 1.0 / value)
         self._rates = rates / (rates.sum() * self.probs)
 
+    def update(self, value):
+        if isinstance(value, dict):
+            if self.shape_key in value:
+                self.update_rates(value[self.shape_key])
+        else:
+            self.update_rates(value)
+
     def rates(self):
         return self._rates
 
@@ -63,6 +78,13 @@ class LogNormalSiteModel(SiteModel):
     def update_rates(self, value):
         rates = LogNormal(-value * value / 2., value).icdf(self.quantile)
         self._rates = rates / (rates.sum() * self.probs), self.probs
+
+    def update(self, value):
+        if isinstance(value, dict):
+            if self.scale_key in value:
+                self.update_rates(value[self.scale_key])
+        else:
+            self.update_rates(value)
 
     def rates(self):
         return self._rates

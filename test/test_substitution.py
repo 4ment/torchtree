@@ -20,7 +20,7 @@ from phylotorch.substmodel import JC69, HKY, GTR
 def test_GTR():
     rates = torch.tensor(np.array([0.060602, 0.402732, 0.028230, 0.047910, 0.407249, 0.053277]))
     pi = torch.tensor(np.array([0.479367, 0.172572, 0.140933, 0.207128]))
-    subst_model = GTR(rates, pi)
+    subst_model = GTR(('rates', rates), ('pi', pi))
     P = subst_model.p_t(torch.tensor(np.array([[0.1]])))
     P_expected = np.array(
         [[0.93717830, 0.009506685, 0.047505899, 0.005809115],
@@ -34,7 +34,7 @@ def test_HKY():
     # r=c(1,3,1,1,3,1)
     kappa = torch.tensor(np.array([3.]))
     pi = torch.tensor(np.array([0.479367, 0.172572, 0.140933, 0.207128]))
-    subst_model = HKY(kappa, pi)
+    subst_model = HKY(('kappa', kappa), ('pi', pi))
     P = subst_model.p_t(torch.tensor(np.array([[0.1]])))
     P_expected = np.array([
         [0.93211187, 0.01511617, 0.03462891, 0.01814305],
