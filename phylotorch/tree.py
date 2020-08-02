@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-import torch.jit
+from torch.distributions.transforms import Transform
 
 
 class BranchLengthTransform(object):
@@ -10,6 +10,34 @@ class BranchLengthTransform(object):
 
     def __call__(self, node_heights):
         return heights_to_branch_lengths(node_heights, self.bounds, self.indexing)
+
+
+class NodeHeightTransform(Transform):
+    r"""
+        Transform from ratios to node heights.
+    """
+    bijective = True
+    sign = +1
+
+    def __init__(self, bounds, indexing, cache_size=0):
+        super(NodeHeightTransform, self).__init__(cache_size=cache_size)
+        self.bounds = bounds
+        self.indexing = indexing
+        self.taxa_count = int((bounds.shape[0] + 1) / 2)
+        self.indices_sorted = indexing[np.argsort(indexing[:, 1])].transpose()[0, self.taxa_count:] - self.taxa_count
+
+    def _call(self, x):
+        return transform_ratios(torch.cat(x), self.bounds, self.indexing)
+
+    def _inverse(self, y):
+        raise NotImplementedError
+
+    def log_abs_det_jacobian(self, x, y):
+        # return torch.log(
+        # y[self.indices_sorted[0, self.taxa_count:] - self.taxa_count] - self.bounds[
+        #                                                                 self.taxa_count:-1]).sum()
+        return torch.log(
+            y[self.indices_sorted] - self.bounds[self.taxa_count:-1]).sum()
 
 
 def heights_to_branch_lengths(node_heights, bounds, indexing):
