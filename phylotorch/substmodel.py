@@ -123,7 +123,7 @@ class HKY(SymmetricSubstitutionModel):
         else:
             self.kappa, self.frequencies = value
 
-    def p_t(self, branch_lengths):
+    def p_t2(self, branch_lengths):
         d = torch.unsqueeze(branch_lengths, -1)
         pi = self.frequencies
         R = pi[0] + pi[2]
@@ -155,7 +155,7 @@ class HKY(SymmetricSubstitutionModel):
                           pi[0] * (1. - exp1),
                           pi[1] * (1. + (R / Y) * exp1) - (pi[1] / Y) * exp21,
                           pi[2] * (1. - exp1),
-                          pi[3] * (1. + (R / Y) * exp1) + (pi[1] / Y) * exp21)).reshape(
+                          pi[3] * (1. + (R / Y) * exp1) + (pi[1] / Y) * exp21), -1).reshape(
             d.shape[0], d.shape[1], 4, 4)
 
     def q(self):

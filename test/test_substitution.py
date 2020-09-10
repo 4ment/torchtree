@@ -35,15 +35,22 @@ def test_HKY():
     kappa = torch.tensor(np.array([3.]))
     pi = torch.tensor(np.array([0.479367, 0.172572, 0.140933, 0.207128]))
     subst_model = HKY(('kappa', kappa), ('pi', pi))
-    P = subst_model.p_t(torch.tensor(np.array([[0.1]])))
-    P_expected = np.array([
+    P = subst_model.p_t(torch.tensor(np.array([[0.1], [0.001]])))
+    P_expected = np.array([[
         [0.93211187, 0.01511617, 0.03462891, 0.01814305],
         [0.04198939, 0.89405292, 0.01234480, 0.05161289],
         [0.11778615, 0.01511617, 0.84895463, 0.01814305],
-        [0.04198939, 0.04300210, 0.01234480, 0.90266370]])
+        [0.04198939, 0.04300210, 0.01234480, 0.90266370]],
+        [
+        [0.9992649548, 0.0001581235, 0.0003871353, 0.0001897863],
+        [0.0004392323, 0.9988625812, 0.0001291335, 0.0005690531],
+        [0.0013167952, 0.0001581235, 0.9983352949, 0.0001897863],
+        [0.0004392323, 0.0004741156, 0.0001291335, 0.9989575186]]])
+    print(P.squeeze())
+    print(P_expected)
     np.testing.assert_allclose(P.squeeze(), P_expected, rtol=1e-06)
 
-    P = super(HKY, subst_model).p_t(torch.tensor(np.array([[0.1]])))
+    P = super(HKY, subst_model).p_t(torch.tensor(np.array([[0.1], [0.001]])))
     np.testing.assert_allclose(P.squeeze(), P_expected, rtol=1e-06)
 
 

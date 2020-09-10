@@ -77,7 +77,7 @@ class LogNormalSiteModel(SiteModel):
 
     def update_rates(self, value):
         rates = LogNormal(-value * value / 2., value).icdf(self.quantile)
-        self._rates = rates / (rates.sum() * self.probs), self.probs
+        self._rates = rates / (rates.sum() * self.probs)
 
     def update(self, value):
         if isinstance(value, dict):
