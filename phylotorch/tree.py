@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch.distributions.transforms import Transform
+from .model import Model
 
 
 class BranchLengthTransform(object):
@@ -27,7 +28,7 @@ class NodeHeightTransform(Transform):
         self.indices_sorted = indexing[np.argsort(indexing[:, 1])].transpose()[0, self.taxa_count:] - self.taxa_count
 
     def _call(self, x):
-        return transform_ratios(torch.cat(x), self.bounds, self.indexing)
+        return transform_ratios(x, self.bounds, self.indexing)
 
     def _inverse(self, y):
         raise NotImplementedError
@@ -149,3 +150,22 @@ def random_tree_from_heights(sampling, heights):
         nodes[idx1] = new_node
         del nodes[idx2]
     return nodes[0]
+
+
+class TreeModel(Model):
+    def __init__(self, branches, postorder, preorder=None, bounds=None):
+        self.branches_key, self.branches = branches
+        self.postorder = postorder
+        self.preorder = preorder
+        self.bounds = bounds
+
+    def branch_lengths(self):
+        return self.branches if self.bounds is not None else torch.cat(
+            (self.branches, torch.zeros(1, dtype=self.branches.dtype)))
+
+    def update(self, value):
+        if isinstance(value, dict):
+            if self.branches_key in value:
+                self.branches = value[self.branches_key]
+        else:
+            self.branches = value

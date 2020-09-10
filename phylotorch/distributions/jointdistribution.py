@@ -23,10 +23,11 @@ class JointDistribution(torch.distributions.Distribution):
                 self.add_transform(name, fn)
         for name, dist in distributions.items():
             self.add_distribution(name, dist)
+        self._joint_log_prob = 0
 
     @property
     def parameters(self):
-        return self._parameters
+        return list(self._parameters.values())
 
     @property
     def transforms(self):
@@ -65,14 +66,14 @@ class JointDistribution(torch.distributions.Distribution):
                 params.append(self.transformed_params[p])
         transform_evaluated = self._transforms[name](*params)
         if callable(transform_evaluated):
-            self.transformed_params[name] = transform_evaluated(params)
-            # if hasattr(transform_evaluated, 'log_abs_det_jacobian'):
-            #     log_prob += self.transforms[name].log_abs_det_jacobian()
+            self.transformed_params[name] = transform_evaluated(*params)
+            if hasattr(transform_evaluated, 'log_abs_det_jacobian'):
+                self._joint_log_prob += transform_evaluated.log_abs_det_jacobian(*params, self.transformed_params[name]).sum()
         else:
             self.transformed_params[name] = transform_evaluated
 
-    def log_prob(self, value, jacobian=True):
-        log_prob = 0.0
+    def log_prob(self, value):
+        self._joint_log_prob = 0.0
         self.transformed_params = {}
         for name, dist in self.distributions.items():
             if callable(dist):
@@ -92,21 +93,19 @@ class JointDistribution(torch.distributions.Distribution):
                         params.append(self.transformed_params[p])
 
                 if name in value:
-                    log_prob += dist(*params).log_prob(value[name]).sum()
+                    self._joint_log_prob += dist(*params).log_prob(value[name]).sum()
                 else:
                     if name not in self.transformed_params:
                         self.apply_transform(name, value)
-                    log_prob += dist(*params).log_prob(self.transformed_params[name]).sum()
+                    self._joint_log_prob += dist(*params).log_prob(self.transformed_params[name]).sum()
             else:
-                log_prob += dist.log_prob(value[name]).sum()
-
-        if jacobian:
-            for name in self._transforms.keys():
-                print(name, self._transforms[name])
-                if hasattr(self._transforms[name], 'log_abs_det_jacobian'):
-                    # log_prob += self.transformed_params[name][1]
-                    log_prob += self.transforms[name].log_abs_det_jacobian()
-        return log_prob
+                if name in value:
+                    self._joint_log_prob += dist.log_prob(value[name]).sum()
+                else:
+                    if name not in self.transformed_params:
+                        self.apply_transform(name, value)
+                    self._joint_log_prob += dist.log_prob(self.transformed_params[name]).sum()
+        return self._joint_log_prob
 
     def __str__(self):
         model_string = ''
