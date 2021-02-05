@@ -3,11 +3,11 @@ import pytest
 import torch
 
 import phylotorch.beagle.treelikelihood as beagle
-import phylotorch.treelikelihood as likelihood
+import phylotorch.evolution.treelikelihood as likelihood
 from phylotorch.io import read_tree_and_alignment
-from phylotorch.sitepattern import get_dna_leaves_partials_compressed
-from phylotorch.substmodel import JC69
-from phylotorch.tree import transform_ratios, heights_to_branch_lengths
+from phylotorch.evolution.sitepattern import get_dna_leaves_partials_compressed
+from phylotorch.evolution.substmodel import JC69
+from phylotorch.evolution.tree import transform_ratios, heights_to_branch_lengths
 
 try:
     import libsbn
@@ -161,3 +161,37 @@ def test_calculate_pytorch(tiny_newick_file, tiny_fasta_file, jc69_model):
     mats = jc69_model.p_t(branch_lengths_tensor)
     log_p = likelihood.calculate_treelikelihood(partials_tensor, weights_tensor, indices, mats, jc69_model.frequencies)
     assert -83.329016 == pytest.approx(log_p.item(), 0.0001)
+
+
+def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
+    site_pattern = {
+        'id': 'sp',
+        'type': 'phylotorch.evolution.sitepattern.SitePattern',
+        'file': tiny_fasta_file,
+        'datatype': 'nucleotide'
+    }
+    subst_model = {
+        'id': 'm',
+        'type': 'phylotorch.evolution.substmodel.JC69'
+    }
+    site_model = {
+        'id': 'sm',
+        'type': 'phylotorch.evolution.sitemodel.ConstantSiteModel'
+    }
+    tree_model = {
+        'id': 'tree',
+        'type': 'phylotorch.evolution.tree.UnRootedTreeModel',
+        'file': tiny_newick_file,
+        'branch_lengths': {'id': 'branches'}
+    }
+    tree_likelihood = {
+        'id': 'like',
+        'type': 'phylotorch.treelikelihood.TreeLikelihoodModel',
+        'tree': tree_model,
+        'sitemodel': site_model,
+        'sitepattern': site_pattern,
+        'substitutionmodel': subst_model
+    }
+
+    like = likelihood.TreeLikelihoodModel.from_json(tree_likelihood, {})
+    assert -83.329016 == pytest.approx(like().item(), 0.0001)

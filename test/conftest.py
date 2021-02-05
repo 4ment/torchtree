@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from phylotorch.substmodel import JC69
+from phylotorch.evolution.substmodel import JC69
 
 data_dir = 'data'
 
@@ -29,4 +29,4 @@ def flu_a_fasta_file():
 
 @pytest.fixture
 def jc69_model():
-    return JC69()
+    return JC69('jc')

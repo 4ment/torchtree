@@ -1,6 +1,39 @@
+import numpy as np
 import torch
 from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
+
+from ..core.model import CallableModel
+from ..core.utils import process_object
+
+
+class ConstantCoalescentModel(CallableModel):
+
+    def __init__(self, id_, theta, tree):
+        self.theta = theta
+        self.tree = tree
+        self.add_parameter(theta)
+        super(ConstantCoalescentModel, self).__init__(id_)
+
+    def update(self, value):
+        pass
+
+    def handle_model_changed(self, model, obj, index):
+        pass
+
+    def handle_parameter_changed(self, variable, index, event):
+        self.fire_model_changed(variable, index, event)
+
+    def __call__(self):
+        coalescent = ConstantCoalescent(self.tree.sampling_times, self.theta.tensor)
+        return coalescent.log_prob(self.tree.node_heights)
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        tree = process_object(data['tree'], dic)
+        theta = process_object(data['theta'], dic)
+        return cls(id_, theta, tree)
 
 
 class ConstantCoalescent(Distribution):
@@ -31,7 +64,7 @@ class ConstantCoalescent(Distribution):
         return torch.sum(-lchoose2 * durations / self.theta) - (self.taxon_count[-1] - 1) * torch.log(self.theta)
 
     def rsample(self, sample_shape=torch.Size()):
-        lineage_count = torch.arange(self.taxon_count[-1], 1, -1, dtype=torch.float64)
+        lineage_count = torch.arange(self.taxon_count[-1], 1, -1, dtype=self.theta.dtype)
         return torch.distributions.Exponential(lineage_count * (lineage_count - 1) / (2.0 * self.theta)).rsample(
             sample_shape)
 
@@ -60,6 +93,12 @@ class PiecewiseConstantCoalescent(ConstantCoalescent):
         return -torch.sum(lchoose2 * durations / self.theta[thetas_indices]) - torch.log(thetas_masked).sum()
 
 
+class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
+    def __call__(self, *args, **kwargs):
+        pwc = PiecewiseConstantCoalescent(self.tree.sampling_times, self.theta.tensor)
+        return pwc.log_prob(self.tree.node_heights)
+
+
 class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
     def __init__(self, sampling_times, thetas, grid, validate_args=None):
         super(PiecewiseConstantCoalescentGrid, self).__init__(sampling_times, thetas, validate_args)
@@ -67,9 +106,10 @@ class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
 
     def log_prob(self, node_heights):
         heights = torch.cat([self.sampling_times, node_heights, self.grid], -1)
-        node_mask = torch.cat([torch.full(self.taxon_count, 1),  # sampling event
-                               torch.full(self.taxon_count[:-1] + (self.taxon_count[-1] - 1,), -1),  # coalescent event
-                               torch.full((self.grid.shape[0],), 0)],  # no event
+        node_mask = torch.cat([torch.full(self.taxon_count, 1, dtype=torch.int),  # sampling event
+                               torch.full(self.taxon_count[:-1] + (self.taxon_count[-1] - 1,), -1, dtype=torch.int),
+                               # coalescent event
+                               torch.full((self.grid.shape[0],), 0, dtype=torch.int)],  # no event
                               dim=-1)
 
         indices = torch.argsort(heights, descending=False)
@@ -84,3 +124,22 @@ class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
                                      torch.tensor([0], dtype=torch.long)).cumsum(0)
         thetas_masked = torch.masked_select(self.theta[thetas_indices], node_mask_sorted == -1)
         return -torch.sum(lchoose2 * durations / self.theta[thetas_indices[:-1]]) - torch.log(thetas_masked).sum()
+
+
+class PiecewiseConstantCoalescentGridModel(ConstantCoalescentModel):
+    def __init__(self, id_, theta, tree, grid):
+        self.grid = grid
+        super(PiecewiseConstantCoalescentGridModel, self).__init__(id_, theta, tree)
+
+    def __call__(self, *args, **kwargs):
+        pwc = PiecewiseConstantCoalescentGrid(self.tree.sampling_times, self.theta.tensor, self.grid)
+        return pwc.log_prob(self.tree.node_heights)
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        tree = process_object(data['tree'], dic)
+        theta = process_object(data['theta'], dic)
+        cutoff = data['cutoff']  # float
+        grid = torch.tensor(np.linspace(0, cutoff, num=theta.shape[0])[1:])
+        return cls(id_, theta, tree, grid)

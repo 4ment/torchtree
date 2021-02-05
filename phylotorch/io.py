@@ -3,7 +3,7 @@ import sys
 import dendropy
 from dendropy import Tree, DnaCharacterMatrix
 
-from .tree import setup_indexes, setup_dates
+from .evolution.tree import setup_indexes, setup_dates
 
 
 def read_tree_and_alignment(tree, alignment, dated=True, heterochornous=True):

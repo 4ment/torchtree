@@ -1,5 +1,41 @@
 import numpy as np
 import torch
+from dendropy import DnaCharacterMatrix
+
+from ..core.model import Model
+from ..core.serializable import JSONSerializable
+
+
+class SitePattern(Model, JSONSerializable):
+
+    def __init__(self, id_, partials, weights):
+        self.partials = partials
+        self.weights = weights
+        super(SitePattern, self).__init__(id_)
+
+    def update(self, value):
+        pass
+
+    def handle_model_changed(self, model, obj, index):
+        pass
+
+    def handle_parameter_changed(self, variable, index, event):
+        pass
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        data_type = data['datatype']
+        if 'file' in data:
+            seqs_args = dict(schema='nexus', preserve_underscores=True)
+            with open(data['file']) as fp:
+                if next(fp).startswith('>'):
+                    seqs_args = dict(schema='fasta')
+            if data_type == 'nucleotide':
+                alignment = DnaCharacterMatrix.get(path=data['file'], **seqs_args)
+        alignment.taxon_namespace.sort()
+        partials, weights = get_dna_leaves_partials_compressed(alignment)
+        return cls(id_, partials, weights)
 
 
 def get_dna_leaves_partials_compressed(alignment):

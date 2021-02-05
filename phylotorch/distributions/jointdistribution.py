@@ -3,6 +3,39 @@ from inspect import signature
 
 import torch.distributions
 
+from ..core.model import CallableModel
+from ..core.utils import process_object
+
+
+class JointDistributionModel(CallableModel):
+
+    def __init__(self, id_, distributions):
+        self.distributions = distributions
+        super(JointDistributionModel, self).__init__(id_)
+
+    def __call__(self, *args, **kwargs):
+        log_p = []
+        for distr in self.distributions:
+            log_p.append(distr().sum())
+        return torch.stack(log_p).sum()
+
+    def update(self, value):
+        pass
+
+    def handle_model_changed(self, model, obj, index):
+        pass
+
+    def handle_parameter_changed(self, variable, index, event):
+        pass
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        distributions = []
+        for d in data['distributions']:
+            distributions.append(process_object(d, dic))
+        return cls(id_, distributions)
+
 
 class JointDistribution(torch.distributions.Distribution):
 
@@ -135,12 +168,3 @@ class JointDistribution(torch.distributions.Distribution):
                 model_string += str(dist)
             model_string += '\n'
         return model_string
-
-
-class InvertLikelihood(object):
-    def __init__(self, like, *args):
-        self.like = like
-        self.args = args
-
-    def log_prob(self, ignore):
-        return self.like.log_prob(*self.args)
