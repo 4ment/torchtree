@@ -1,5 +1,3 @@
-import libsbn
-import libsbn.beagle_flags as beagle_flags
 import numpy as np
 import pytest
 import torch
@@ -10,6 +8,12 @@ from phylotorch.io import read_tree_and_alignment
 from phylotorch.sitepattern import get_dna_leaves_partials_compressed
 from phylotorch.substmodel import JC69
 from phylotorch.tree import transform_ratios, heights_to_branch_lengths
+
+try:
+    import libsbn
+    import libsbn.beagle_flags as beagle_flags
+except ImportError:
+    pass
 
 
 @pytest.mark.beagle
@@ -126,7 +130,7 @@ def test_compare_libsbn_pytorch_jacobian_gradient(flu_a_tree_file, flu_a_fasta_f
 
     log_det_jacobian = torch.log(node_heights[indices_for_jac] - bounds[taxa_count:-1]).sum()
 
-    subst_model = JC69()
+    subst_model = JC69('jc')
     branch_lengths_tensor = heights_to_branch_lengths(node_heights, bounds, pre_indexing)
     mats = subst_model.p_t(branch_lengths_tensor * clock_rate)
     log_p = likelihood.calculate_treelikelihood(partials_tensor, weights_tensor, post_indexing, mats,
