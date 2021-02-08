@@ -168,7 +168,8 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
         'id': 'sp',
         'type': 'phylotorch.evolution.sitepattern.SitePattern',
         'file': tiny_fasta_file,
-        'datatype': 'nucleotide'
+        'datatype': 'nucleotide',
+        'taxa': 'taxa'
     }
     subst_model = {
         'id': 'm',
@@ -182,7 +183,23 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
         'id': 'tree',
         'type': 'phylotorch.evolution.tree.UnRootedTreeModel',
         'file': tiny_newick_file,
-        'branch_lengths': {'id': 'branches'}
+        'branch_lengths': {'id': 'branches'},
+        'taxa': {
+            'id': 'taxa',
+            'type': 'phylotorch.evolution.taxa.Taxa',
+            'taxa': [
+                {"id": "A_Belgium_2_1981", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1981}},
+                {"id": "A_ChristHospital_231_1982", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1982}},
+                {"id": "A_Philippines_2_1982", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1982}},
+                {"id": "A_Baylor1B_1983", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1983}},
+                {"id": "A_Oita_3_1983", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1983}},
+                {"id": "A_Texas_12764_1983", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1983}},
+                {"id": "A_Alaska_8_1984", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1984}},
+                {"id": "A_Caen_1_1984", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1984}},
+                {"id": "A_Texas_17988_1984", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1984}},
+                {"id": "A_Colorado_2_1987", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 1987}}
+            ]
+        }
     }
     tree_likelihood = {
         'id': 'like',

@@ -2,7 +2,7 @@ import abc
 
 import numpy as np
 import torch
-from dendropy import Tree
+from dendropy import Tree, TaxonNamespace
 from torch.distributions.transforms import Transform
 
 from ..core.model import Model, Parameter
@@ -149,6 +149,28 @@ def setup_dates(tree, heterochronous=False):
     return oldest
 
 
+def initialize_dates_from_taxa(tree, taxa):
+    dates = [taxon['date'] for taxon in taxa]
+    max_date = max(dates)
+
+    # parse dates
+    if max_date != 0.0:
+        # time starts at 0
+        if min(dates) == 0.0:
+            for node in tree.leaf_node_iter():
+                node.date = taxa[str(node.taxon)]['date']
+                node.original_date = node.date
+        # time is a year
+        else:
+            for node in tree.leaf_node_iter():
+                node.date = max_date - taxa[str(node.taxon)]['date']
+                node.original_date = taxa[str(node.taxon)]['date']
+    else:
+        for node in tree.postorder_node_iter():
+            node.date = 0.0
+            node.original_date = 0.0
+
+
 class Node:
     def __init__(self, name, height=0.0):
         self.name = name
@@ -216,12 +238,12 @@ class TreeModel(Model):
 
 
 class AbstractTreeModel(Model):
-    def __init__(self, id, tree):
+    def __init__(self, id_, tree):
         self.tree = tree
         self.postorder = []
         self.preorder = []
         self.update_traversals()
-        super(AbstractTreeModel, self).__init__(id)
+        super(AbstractTreeModel, self).__init__(id_)
 
     def update_traversals(self):
         # postorder for peeling
@@ -267,16 +289,17 @@ class UnRootedTreeModel(AbstractTreeModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
+        taxa = process_object(data['taxa'], dic)
+        taxon_namespace = TaxonNamespace([taxon.id for taxon in taxa])
         if 'newick' in data:
             tree = Tree.get(data=data['newick'], schema='newick', preserve_underscores=True,
-                            rooting='force-rooted')
+                            rooting='force-rooted', taxon_namespace=taxon_namespace)
         elif 'file' in data:
             tree = Tree.get(path=data['file'], schema='newick', preserve_underscores=True,
-                            rooting='force-rooted')
+                            rooting='force-rooted', taxon_namespace=taxon_namespace)
         else:
-            exit(3)
+            raise ValueError('Tree requires a file or newick element to be specified')
         tree.resolve_polytomies(update_bipartitions=True)
-        tree.taxon_namespace.sort()
         setup_indexes(tree)
 
         taxa_count = len(tree.taxon_namespace)
@@ -333,19 +356,19 @@ class TimeTreeModel(AbstractTreeModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
+        taxa = process_object(data['taxa'], dic)
+        taxon_namespace = TaxonNamespace([taxon.id for taxon in taxa], label=taxa.id)
         if 'newick' in data:
             tree = Tree.get(data=data['newick'], schema='newick', preserve_underscores=True,
-                            rooting='force-rooted')
+                            rooting='force-rooted', taxon_namespace=taxon_namespace)
         elif 'file' in data:
             tree = Tree.get(path=data['file'], schema='newick', preserve_underscores=True,
-                            rooting='force-rooted')
+                            rooting='force-rooted', taxon_namespace=taxon_namespace)
         else:
-            exit(3)
+            raise ValueError('Tree requires a file or newick element to be specified')
         tree.resolve_polytomies(update_bipartitions=True)
-        tree.taxon_namespace.sort()
         setup_indexes(tree)
-        # if 'dates' in data:
-        setup_dates(tree)
+        initialize_dates_from_taxa(tree, taxa)
 
         if isinstance(data['node_heights'], str):
             taxa_count = len(tree.taxon_namespace)

@@ -1,12 +1,12 @@
 import numpy as np
 import torch
-from dendropy import DnaCharacterMatrix
+from dendropy import DnaCharacterMatrix, TaxonNamespace
 
 from ..core.model import Model
-from ..core.serializable import JSONSerializable
+from ..core.utils import process_object
 
 
-class SitePattern(Model, JSONSerializable):
+class SitePattern(Model):
 
     def __init__(self, id_, partials, weights):
         self.partials = partials
@@ -26,14 +26,24 @@ class SitePattern(Model, JSONSerializable):
     def from_json(cls, data, dic):
         id_ = data['id']
         data_type = data['datatype']
+        taxa = process_object(data['taxa'], dic)
+        taxon_namespace = TaxonNamespace([taxon.id for taxon in taxa])
+
         if 'file' in data:
             seqs_args = dict(schema='nexus', preserve_underscores=True)
             with open(data['file']) as fp:
                 if next(fp).startswith('>'):
                     seqs_args = dict(schema='fasta')
+            seqs_args['taxon_namespace'] = taxon_namespace
             if data_type == 'nucleotide':
                 alignment = DnaCharacterMatrix.get(path=data['file'], **seqs_args)
-        alignment.taxon_namespace.sort()
+        elif 'alignment' in data:
+            sequences = {}
+            for sequence in data['alignment']['sequences']:
+                sequences[sequence['taxon']] = sequence['sequence']
+            alignment = DnaCharacterMatrix.from_dict(sequences, taxon_namespace=taxon_namespace)
+        else:
+            raise ValueError('SitePattern requires a file or alignment element to be specified')
         partials, weights = get_dna_leaves_partials_compressed(alignment)
         return cls(id_, partials, weights)
 

@@ -91,7 +91,6 @@ def validate(data, rules):
             # check type
             type = None
             for rule_type in rules[datum_key]['type'].split('|'):
-                print(rule_type)
                 if rules[datum_key].get('list', False):
                     all_ok = all(isinstance(x, types.get(rule_type)) for x in data[datum_key])
                     if all_ok:

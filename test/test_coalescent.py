@@ -51,7 +51,17 @@ def tree_model_node_heights_transformed(node_heights_transformed):
         'id': 'tree',
         'type': 'phylotorch.evolution.tree.TimeTreeModel',
         'newick': '(((A,B),C),D);',
-        'node_heights': node_heights_transformed
+        'node_heights': node_heights_transformed,
+        'taxa': {
+            'id': 'taxa',
+            'type': 'phylotorch.evolution.taxa.Taxa',
+            'taxa': [
+                {"id": "A", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 0.0}},
+                {"id": "B", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 0.0}},
+                {"id": "C", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 0.0}},
+                {"id": "D", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 0.0}}
+            ]
+        }
     }
     return tree_model
 
