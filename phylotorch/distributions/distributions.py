@@ -60,6 +60,9 @@ class Distribution(CallableModel):
 
         signature_params = list(inspect.signature(klass.__init__).parameters)
         params = OrderedDict()
+        if 'parameters' not in data:
+            return cls(id_, klass, x, {})
+
         data_dist = data['parameters']
         for arg in signature_params[1:]:
             if arg in data_dist:

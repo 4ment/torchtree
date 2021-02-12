@@ -22,7 +22,7 @@ class ConstantCoalescentModel(CallableModel):
         pass
 
     def handle_parameter_changed(self, variable, index, event):
-        self.fire_model_changed(variable, index, event)
+        self.fire_model_changed()
 
     def __call__(self):
         coalescent = ConstantCoalescent(self.tree.sampling_times, self.theta.tensor)

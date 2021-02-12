@@ -19,6 +19,14 @@ class JointDistributionModel(CallableModel):
             log_p.append(distr().sum())
         return torch.stack(log_p).sum()
 
+    def rsample(self):
+        for distr in self.distributions:
+            distr.rsample()
+
+    def sample(self):
+        for distr in self.distributions:
+            distr.sample()
+
     def update(self, value):
         pass
 

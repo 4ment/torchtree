@@ -9,6 +9,12 @@ class Taxon(Identifiable, collections.UserDict):
         Identifiable.__init__(self, id_)
         collections.UserDict.__init__(self, attributes)
 
+    def __str__(self):
+        return self.id
+
+    def __repr__(self):
+        return f"Taxon(id={self.id}, attributes={self.data})"
+
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']

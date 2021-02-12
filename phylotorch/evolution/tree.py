@@ -158,17 +158,28 @@ def initialize_dates_from_taxa(tree, taxa):
         # time starts at 0
         if min(dates) == 0.0:
             for node in tree.leaf_node_iter():
-                node.date = taxa[str(node.taxon)]['date']
+                node.date = taxa[node.index]['date']
                 node.original_date = node.date
         # time is a year
         else:
             for node in tree.leaf_node_iter():
-                node.date = max_date - taxa[str(node.taxon)]['date']
-                node.original_date = taxa[str(node.taxon)]['date']
+                node.date = max_date - taxa[node.index]['date']
+                node.original_date = taxa[node.index]['date']
     else:
-        for node in tree.postorder_node_iter():
+        for node in tree.leaf_node_iter():
             node.date = 0.0
             node.original_date = 0.0
+
+
+def heights_from_branch_lengths(tree):
+    heights = np.empty(len(tree.taxon_namespace))
+    for node in tree.postorder_node_iter():
+        if node.is_leaf():
+            heights[node.index] = node.date
+        else:
+            child = next(node.child_node_iter)
+            heights[node.index] = heights[child.index] + float(child.edge_length)
+    return heights
 
 
 class Node:
@@ -237,9 +248,25 @@ class TreeModel(Model):
             self.branches = value
 
 
+def parse_tree(taxa, data):
+    taxon_namespace = TaxonNamespace([taxon.id for taxon in taxa])
+    if 'newick' in data:
+        tree = Tree.get(data=data['newick'], schema='newick', preserve_underscores=True,
+                        rooting='force-rooted', taxon_namespace=taxon_namespace)
+    elif 'file' in data:
+        tree = Tree.get(path=data['file'], schema='newick', preserve_underscores=True,
+                        rooting='force-rooted', taxon_namespace=taxon_namespace)
+    else:
+        raise ValueError('Tree model requires a file or newick element to be specified')
+    tree.resolve_polytomies(update_bipartitions=True)
+    setup_indexes(tree)
+    return tree
+
+
 class AbstractTreeModel(Model):
     def __init__(self, id_, tree):
         self.tree = tree
+        self.taxa_count = len(tree.taxon_namespace)
         self.postorder = []
         self.preorder = []
         self.update_traversals()
@@ -267,10 +294,10 @@ class AbstractTreeModel(Model):
 
 
 class UnRootedTreeModel(AbstractTreeModel):
-    def __init__(self, id, tree, branch_lengths):
+    def __init__(self, id_, tree, branch_lengths):
         self._branch_lengths = branch_lengths
         self.add_parameter(branch_lengths)
-        super(UnRootedTreeModel, self).__init__(id, tree)
+        super(UnRootedTreeModel, self).__init__(id_, tree)
 
     def branch_lengths(self):
         return self._branch_lengths.tensor  # if self.bounds is not None else torch.cat(
@@ -290,17 +317,7 @@ class UnRootedTreeModel(AbstractTreeModel):
     def from_json(cls, data, dic):
         id_ = data['id']
         taxa = process_object(data['taxa'], dic)
-        taxon_namespace = TaxonNamespace([taxon.id for taxon in taxa])
-        if 'newick' in data:
-            tree = Tree.get(data=data['newick'], schema='newick', preserve_underscores=True,
-                            rooting='force-rooted', taxon_namespace=taxon_namespace)
-        elif 'file' in data:
-            tree = Tree.get(path=data['file'], schema='newick', preserve_underscores=True,
-                            rooting='force-rooted', taxon_namespace=taxon_namespace)
-        else:
-            raise ValueError('Tree requires a file or newick element to be specified')
-        tree.resolve_polytomies(update_bipartitions=True)
-        setup_indexes(tree)
+        tree = parse_tree(taxa, data)
 
         taxa_count = len(tree.taxon_namespace)
         if isinstance(data['branch_lengths'], dict) and 'tensor' not in data['branch_lengths']:
@@ -357,24 +374,13 @@ class TimeTreeModel(AbstractTreeModel):
     def from_json(cls, data, dic):
         id_ = data['id']
         taxa = process_object(data['taxa'], dic)
-        taxon_namespace = TaxonNamespace([taxon.id for taxon in taxa], label=taxa.id)
-        if 'newick' in data:
-            tree = Tree.get(data=data['newick'], schema='newick', preserve_underscores=True,
-                            rooting='force-rooted', taxon_namespace=taxon_namespace)
-        elif 'file' in data:
-            tree = Tree.get(path=data['file'], schema='newick', preserve_underscores=True,
-                            rooting='force-rooted', taxon_namespace=taxon_namespace)
-        else:
-            raise ValueError('Tree requires a file or newick element to be specified')
-        tree.resolve_polytomies(update_bipartitions=True)
-        setup_indexes(tree)
+        tree = parse_tree(taxa, data)
         initialize_dates_from_taxa(tree, taxa)
 
-        if isinstance(data['node_heights'], str):
-            taxa_count = len(tree.taxon_namespace)
-            node_heights_id = data['node_heights']
-            # TODO: not good for heterochronous
-            node_heights = Parameter(node_heights_id, torch.tensor(np.repeat(0.1, taxa_count - 1)))
+        if isinstance(data['node_heights'], dict) and len(data['node_heights']) == 1:
+            node_heights_id = data['node_heights']['id']
+            heights_np = heights_from_branch_lengths(tree)
+            node_heights = Parameter(node_heights_id, torch.tensor(heights_np))
             dic[node_heights] = node_heights
             tree_model = cls(id_, tree, node_heights)
         else:
