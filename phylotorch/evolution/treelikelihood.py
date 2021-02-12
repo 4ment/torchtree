@@ -128,7 +128,7 @@ class TreeLikelihoodModel(CallableModel):
                                                                                                            1) * rates,
                 -1)
         else:
-            clock_rates = self.clock_model.rates().reshape(-1, 1)
+            clock_rates = self.clock_model.rates.reshape(-1, 1)
             bls = torch.unsqueeze(clock_rates * self.tree_model.branch_lengths().reshape(-1, 1) * rates, -1)
         mats = self.subst_model.p_t(bls)
 

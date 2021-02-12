@@ -1,7 +1,9 @@
-import json
-import torch
-import signal
 import importlib
+import json
+import signal
+import numbers
+
+import torch
 
 
 class TensorEncoder(json.JSONEncoder):
@@ -26,6 +28,10 @@ def get_class(full_name):
     return klass
 
 
+class JSONParseError(Exception):
+    ...
+
+
 def process_objects(data, dic):
     if isinstance(data, list):
         return [process_object(obj, dic) for obj in data]
@@ -35,17 +41,20 @@ def process_objects(data, dic):
 
 def process_object(data, dic):
     if isinstance(data, str):
-        obj = dic[data]
+        if data in dic:
+            obj = dic[data]
+        else:
+            raise JSONParseError('Object with ID `{}\' not found'.format(data))
     elif isinstance(data, dict):
         id_ = data['id']
         if id_ in dic:
-            raise ValueError('Object with ID `{}\' already exists'.format(id_))
+            raise JSONParseError('Object with ID `{}\' already exists'.format(id_))
         klass = get_class(data['type'])
         obj = klass.from_json(data, dic)
         dic[id_] = obj
     else:
         id_ = data['id']
-        raise ValueError('Object with ID `{}\' is not valid (should be str or object)'.format(id_))
+        raise JSONParseError('Object with ID `{}\' is not valid (should be str or object)'.format(id_))
     return obj
 
 
@@ -56,6 +65,7 @@ class SignalHandler():
 
     def exit(self, signum, frame):
         self.stop = True
+
 
 def validate(data, rules):
     data_keys_set = set(data.keys())
@@ -80,8 +90,8 @@ def validate(data, rules):
         if datum_key not in ('id', 'type') and datum_key not in rules:
             raise ValueError('Key not allowed: {}'.format(datum_key))
 
-    types = dict(zip(['string', 'bool', 'int', 'float', 'object'],
-                     [str, bool, int, float, dict]))
+    types = dict(zip(['string', 'bool', 'int', 'float', 'object', 'numbers.Number'],
+                     [str, bool, int, float, dict, numbers.Number]))
     for datum_key in data.keys():
         if datum_key not in ('id', 'type'):
             # if not isinstance(datum_key, str):

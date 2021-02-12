@@ -1,6 +1,8 @@
 import abc
 import inspect
 
+import torch
+
 from .core.runnable import Runnable
 from .core.serializable import JSONSerializable
 from .core.utils import get_class, process_objects, SignalHandler, validate
@@ -22,9 +24,10 @@ class StanConvergence(Convergence):
 
     def check(self, iterations):
         if iterations % self.every == 0:
-            elbo = self.loss(samples=self.samples)
+            with torch.no_grad():
+                elbo = self.loss(samples=self.samples)
             # TODO: implement
-            print('ELBO ', elbo)
+            print(iterations, 'ELBO', elbo)
         return True
 
     @classmethod
@@ -53,7 +56,10 @@ class Optimizer(JSONSerializable, Runnable):
                 logger.init()
 
         handler = SignalHandler()
-        for epoch in range(self.iterations):
+        if self.convergence is not None:
+            self.convergence.check(0)
+
+        for epoch in range(1, self.iterations):
             if handler.stop:
                 break
 
@@ -91,7 +97,7 @@ class Optimizer(JSONSerializable, Runnable):
             'maximize': {'type': 'bool', 'optional': True},
             'loggers': {'type': 'object', 'instanceof': 'Scheduler', 'list': True, 'optional': True},
             'scheduler': {'type': 'object', 'instanceof': 'Scheduler', 'optional': True},
-            'lr': {'type': 'float', 'constraint': {'>': 0.0}, 'optional': True},
+            'lr': {'type': 'numbers.Number', 'constraint': {'>': 0.0}, 'optional': True},
             'convergence': {'type': 'object', 'optional': True}
         }
         validate(data, rules)
@@ -155,7 +161,6 @@ class Scheduler(JSONSerializable):
         # lr_lambda = lambda epoch: 1.0 / np.sqrt(epoch + 1)
         if 'lr_lambda' in data:
             params.append(eval(data['lr_lambda']))
-        print(params)
         # for arg in signature_params[2:]:
         #     if arg in data:
         #         params.append(eval(data[arg]))
