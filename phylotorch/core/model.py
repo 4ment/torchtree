@@ -1,6 +1,7 @@
 import abc
 import collections.abc
 import inspect
+import numbers
 
 import numpy as np
 import torch
@@ -73,6 +74,15 @@ class Parameter(Identifiable):
         self.listeners = []
         super(Parameter, self).__init__(id_)
 
+    def __str__(self):
+        return f"{self._id}"
+
+    def __repr__(self):
+        return f"Parameter(id_='{self._id}', tensor=torch.{self._tensor})"
+
+    def __eq__(self, other):
+        return self.id == other.id and torch.all(torch.eq(self._tensor, other.tensor))
+
     @property
     def tensor(self):
         return self._tensor
@@ -115,10 +125,37 @@ class Parameter(Identifiable):
 
     @classmethod
     def from_json(cls, data, dic):
-        values = data['tensor']
-        if 'dimension' in data:
-            values = np.repeat(values, data['dimension'])
-        t = torch.tensor(values, dtype=torch.float64)
+        dtype = get_class(data.get('dtype', 'torch.float64'))
+
+        if 'full_like' in data:
+            input_param = process_object(data['full_like'], dic)
+            dtype = dtype if 'dtype' in data else input_param.dtype
+            values = data['tensor']
+            t = torch.full_like(input_param.tensor, values, dtype=dtype)
+        elif 'full' in data:
+            size = data['full']  # a list
+            values = data['tensor']
+            t = torch.full(size, values, dtype=dtype)
+        elif 'zeros_like' in data:
+            input_param = process_object(data['zeros_like'], dic)
+            dtype = dtype if 'dtype' in data else input_param.dtype
+            t = torch.zeros_like(input_param.tensor, dtype=dtype)
+        elif 'zeros' in data:
+            size = data['zeros']
+            t = torch.zeros(size, dtype=dtype)
+        elif 'ones_like' in data:
+            input_param = process_object(data['ones_like'], dic)
+            dtype = dtype if 'dtype' in data else input_param.dtype
+            t = torch.ones_like(input_param.tensor, dtype=dtype)
+        elif 'ones' in data:
+            size = data['ones']
+            t = torch.ones(size, dtype=dtype)
+        else:
+            values = data['tensor']
+            if 'dimension' in data:
+                values = np.repeat(values, data['dimension'] / len(values) + 1)
+                values = values[:data['dimension']]
+            t = torch.tensor(values, dtype=dtype)
         return cls(data['id'], t)
 
 
@@ -142,16 +179,34 @@ class TransformedParameter(Parameter, ParameterListener):
         self._tensor = self.transform(self.x.tensor)
 
     def __call__(self):
+        if self.need_update:
+            self.apply_transform()
+            self.need_update = False
+
         if isinstance(self.x, list):
             return self.transform.log_abs_det_jacobian(torch.cat([x.tensor for x in self.x]), self._tensor)
         else:
             return self.transform.log_abs_det_jacobian(self.x.tensor, self._tensor)
 
-    def handle_parameter_changed(self, variable, index, event):
+    @property
+    def tensor(self):
+        if self.need_update:
+            self.apply_transform()
+            self.need_update = False
+        return self._tensor
+
+    @tensor.setter
+    def tensor(self, tensor):
+        raise Exception('Cannot assign tensor to TransformedParameter')
+
+    def apply_transform(self):
         if isinstance(self.x, list):
             self._tensor = self.transform(torch.cat([x.tensor for x in self.x]))
         else:
             self._tensor = self.transform(self.x.tensor)
+
+    def handle_parameter_changed(self, variable, index, event):
+        self.need_update = True
         self.fire_parameter_changed()
 
     @classmethod
@@ -175,6 +230,9 @@ class TransformModel(Model):
     def __call__(self, x):
         return self.transform(x)
 
+    def log_abs_det_jacobian(self, x, y):
+        return self.transform.log_abs_det_jacobian(x, y)
+
     def handle_model_changed(self, model, obj, index):
         pass
 
@@ -192,6 +250,9 @@ class TransformModel(Model):
         if 'parameters' in data:
             for arg in signature_params[1:]:
                 if arg in data['parameters']:
-                    params.append(process_object(data['parameters'][arg], dic))
+                    if isinstance(data['parameters'][arg], numbers.Number):
+                        params.append(data['parameters'][arg])
+                    else:
+                        params.append(process_object(data['parameters'][arg], dic))
         transform = klass(*params)
         return cls(data['id'], transform)
