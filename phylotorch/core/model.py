@@ -107,6 +107,7 @@ class Parameter(Identifiable):
     @requires_grad.setter
     def requires_grad(self, requires_grad):
         self._tensor.requires_grad = requires_grad
+        self.fire_parameter_changed()
 
     def assign(self, parameter):
         self._tensor = parameter.tensor

@@ -70,7 +70,8 @@ class Optimizer(JSONSerializable, Runnable):
             loss.backward()
             self.optimizer.step()
 
-            map(lambda param: param.fire(), self.parameters)
+            for p in self.parameters:
+                p.fire_parameter_changed()
 
             if self.scheduler is not None:
                 self.scheduler.step()

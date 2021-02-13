@@ -29,10 +29,10 @@ class ELBO(CallableModel):
             return torch.sum(w_norm * log_w)
         else:
             elbos = []
-            for i in range(self.samples):
+            for i in range(samples):
                 self.q.rsample()
                 elbos.append(self.p() - self.q())
-        return torch.stack(elbos).sum()/self.samples
+        return torch.stack(elbos).mean()
 
     def update(self, value):
         pass
