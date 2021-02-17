@@ -219,3 +219,49 @@ class HKY(SymmetricSubstitutionModel):
         rates = process_object(data['kappa'], dic)
         frequencies = process_object(data['frequencies'], dic)
         return cls(id_, rates, frequencies)
+
+
+class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
+
+    def __init__(self, id_, mapping, rates, frequencies):
+        self._rates = rates
+        self.mapping = mapping
+        self.state_count = frequencies.shape[0]
+        self.add_parameter(rates)
+        super(GeneralSymmetricSubstitutionModel, self).__init__(id_, frequencies)
+
+    @property
+    def rates(self):
+        return self._rates.tensor
+
+    def update(self, value):
+        if isinstance(value, dict):
+            if self._rates.id in value:
+                self._rates.tensor = value[self._rates.id]
+            if self._frequencies.id in value:
+                self._frequencies.tensor = value[self._frequencies.id]
+        else:
+            self._rates, self._frequencies = value
+
+    def handle_model_changed(self, model, obj, index):
+        pass
+
+    def handle_parameter_changed(self, variable, index, event):
+        self.fire_model_changed()
+
+    def q(self):
+        indices = torch.triu_indices(self.state_count, self.state_count, 1)
+        R = torch.zeros((self.state_count, self.state_count), dtype=self.rates.dtype)
+        R[indices[0], indices[1]] = self.rates
+        R[indices[1], indices[0]] = self.rates
+        Q = R @ self.frequencies.diag()
+        Q[range(len(Q)), range(len(Q))] = -torch.sum(Q, dim=1)
+        return Q
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        rates = process_object(data['rates'], dic)
+        frequencies = process_object(data['frequencies'], dic)
+        mapping = process_object(data['mapping'], dic)
+        return cls(id_, mapping, rates, frequencies)

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import torch
 
-from phylotorch.evolution.substmodel import JC69, HKY, GTR
+from phylotorch.evolution.substmodel import JC69, HKY, GTR, GeneralSymmetricSubstitutionModel
 from phylotorch.core.model import Parameter
 
 # r=c(0.060602,0.402732,0.028230,0.047910,0.407249,0.053277)
@@ -16,6 +16,19 @@ from phylotorch.core.model import Parameter
 # Q=-Q/sum(diag(Q)*f)
 # e=eigen(Q)
 # e$vectors %*% diag(exp(e$values*0.1)) %*% solve(e$vectors)
+
+
+def test_general_symmetric():
+    rates = torch.tensor(np.array([0.060602, 0.402732, 0.028230, 0.047910, 0.407249, 0.053277]))
+    pi = torch.tensor(np.array([0.479367, 0.172572, 0.140933, 0.207128]))
+    mapping = torch.arange(6)
+    subst_model = GeneralSymmetricSubstitutionModel('gen', Parameter('mapping', mapping), Parameter('rates', rates), Parameter('pi', pi))
+    P = subst_model.p_t(torch.tensor(np.array([[0.1]])))
+
+    gtr = GTR('gtr', Parameter('rates', rates), Parameter('pi', pi))
+    P_gtr = gtr.p_t(torch.tensor(np.array([[0.1]])))
+
+    np.testing.assert_allclose(P, P_gtr, rtol=1e-06)
 
 
 def test_GTR():
