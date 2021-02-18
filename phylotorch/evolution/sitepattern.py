@@ -1,7 +1,10 @@
+from collections import Counter
+
 import numpy as np
 import torch
-from dendropy import DnaCharacterMatrix, TaxonNamespace
 
+from .alignment import Alignment
+from .datatype import NucleotideDataType
 from ..core.model import Model
 from ..core.utils import process_object
 
@@ -25,26 +28,15 @@ class SitePattern(Model):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        data_type = data['datatype']
-        taxa = process_object(data['taxa'], dic)
-        taxon_namespace = TaxonNamespace([taxon.id for taxon in taxa])
 
-        if 'file' in data:
-            seqs_args = dict(schema='nexus', preserve_underscores=True)
-            with open(data['file']) as fp:
-                if next(fp).startswith('>'):
-                    seqs_args = dict(schema='fasta')
-            seqs_args['taxon_namespace'] = taxon_namespace
-            if data_type == 'nucleotide':
-                alignment = DnaCharacterMatrix.get(path=data['file'], **seqs_args)
-        elif 'alignment' in data:
-            sequences = {}
-            for sequence in data['alignment']['sequences']:
-                sequences[sequence['taxon']] = sequence['sequence']
-            alignment = DnaCharacterMatrix.from_dict(sequences, taxon_namespace=taxon_namespace)
+        if isinstance(data['datatype'], str) and data['datatype'] == 'nucleotide':
+            data_type = NucleotideDataType()
         else:
-            raise ValueError('SitePattern requires a file or alignment element to be specified')
-        partials, weights = get_dna_leaves_partials_compressed(alignment)
+            data_type = process_object(data['datatype'], dic)
+
+        alignment = process_object(data['alignment'], dic)
+        partials, weights = compress_alignment(alignment, data_type)
+
         return cls(id_, partials, weights)
 
 
@@ -81,6 +73,36 @@ def get_dna_leaves_partials_compressed(alignment):
         tip_partials = torch.tensor(np.transpose(np.array(temp)), requires_grad=False)
 
         partials.append(tip_partials)
+
+    for i in range(len(alignment) - 1):
+        partials.append([None] * len(patterns.keys()))
+    return partials, torch.tensor(np.array(weights))
+
+
+def compress_alignment(alignment, data_type):
+    """Compress alignment using data_type
+
+    Parameters
+    ----------
+    alignment : Alignment
+    data_type : DataType
+
+    Returns
+    -------
+    tuple
+        a tuple containing partials and weights
+    """
+    taxa, sequences = zip(*alignment)
+    count_dict = Counter(list(zip(*sequences)))
+    pattern_ordering = sorted(list(count_dict.keys()))
+    patterns_list = list(zip(*pattern_ordering))
+    weights = [count_dict[pattern] for pattern in pattern_ordering]
+    patterns = dict(zip(taxa, patterns_list))
+
+    partials = []
+
+    for taxon in taxa:
+        partials.append(torch.tensor(np.transpose(np.array([data_type.partial(c) for c in patterns[taxon]]))))
 
     for i in range(len(alignment) - 1):
         partials.append([None] * len(patterns.keys()))
