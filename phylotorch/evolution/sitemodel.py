@@ -50,13 +50,65 @@ class ConstantSiteModel(SiteModel):
         return cls(data['id'])
 
 
+class InvariantSiteModel(SiteModel):
+
+    def __init__(self, id_, invariant):
+        self._invariant = invariant
+        self._rates = None
+        self._probs = None
+        self.need_update = True
+        self.add_parameter(self._invariant)
+        super(InvariantSiteModel, self).__init__(id_)
+
+    @property
+    def invariant(self):
+        return self._invariant.tensor
+
+    def update_rates_probs(self, invariant):
+        self._probs = torch.cat((invariant, 1.0 - invariant))
+        self._rates = torch.cat((torch.zeros_like(invariant), 1.0 / (1.0 - invariant)))
+
+    def update(self, value):
+        if isinstance(value, dict):
+            if self._invariant.id in value:
+                self._invariant.tensor = value[self._invariant.id]
+                self.update_rates_probs(self.invariant)
+        else:
+            self.update_rates_probs(value)
+
+    def rates(self):
+        if self.need_update:
+            self.update_rates_probs(self.invariant)
+            self.need_update = False
+        return self._rates
+
+    def probabilities(self):
+        if self.need_update:
+            self.update_rates_probs(self.invariant)
+            self.need_update = False
+        return self._probs
+
+    def handle_model_changed(self, model, obj, index):
+        pass
+
+    def handle_parameter_changed(self, variable, index, event):
+        self.need_update = True
+        self.fire_model_changed()
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        invariant = process_object(data['invariant'], dic)
+        return cls(id_, invariant)
+
+
 class WeibullSiteModel(SiteModel):
 
-    def __init__(self, id_, shape, categories=4):
+    def __init__(self, id_, shape, categories, invariant=None):
         self._shape = shape
         self.categories = categories
+        self._invariant = invariant
         self.probs = torch.full((categories,), 1.0 / categories, dtype=self.shape.dtype)
-        self.quantile = (2.0 * torch.arange(categories) + 1.0) / (2.0 * categories)
         self._rates = None
         self.need_update = True
         self.add_parameter(self._shape)
@@ -66,25 +118,46 @@ class WeibullSiteModel(SiteModel):
     def shape(self):
         return self._shape.tensor
 
-    def update_rates(self, value):
-        rates = torch.pow(-torch.log(1.0 - self.quantile), 1.0 / value)
+    @property
+    def invariant(self):
+        return self._invariant.tensor if self._invariant else None
+
+    def update_rates(self, shape, invariant):
+        if invariant:
+            cat = self.categories - 1
+            quantile = (2.0 * torch.arange(cat) + 1.0) / (2.0 * cat)
+            self.probs = torch.cat((invariant, torch.full((cat,), (1.0 - invariant) / cat)))
+            rates = torch.cat((torch.zeros_like(invariant), torch.pow(-torch.log(1.0 - quantile), 1.0 / shape)))
+        else:
+            quantile = (2.0 * torch.arange(self.categories) + 1.0) / (2.0 * self.categories)
+            rates = torch.pow(-torch.log(1.0 - quantile), 1.0 / shape)
+
         self._rates = rates / (rates * self.probs).sum()
 
     def update(self, value):
         if isinstance(value, dict):
+            update = False
             if self._shape.id in value:
+                update = True
                 self._shape.tensor = value[self._shape.id]
-                self.update_rates(self.shape)
+            if self._invariant and self._invariant.id in value:
+                update = True
+                self._invariant.tensor = value[self._invariant.id]
+            if update:
+                self.update_rates(self.shape, self.invariant)
         else:
-            self.update_rates(value)
+            self.update_rates(value, None)
 
     def rates(self):
         if self.need_update:
-            self.update_rates(self.shape)
+            self.update_rates(self.shape, self.invariant)
             self.need_update = False
         return self._rates
 
     def probabilities(self):
+        if self.need_update:
+            self.update_rates(self.shape, self.invariant)
+            self.need_update = False
         return self.probs
 
     def handle_model_changed(self, model, obj, index):
@@ -99,7 +172,10 @@ class WeibullSiteModel(SiteModel):
         id_ = data['id']
         shape = process_object(data['shape'], dic)
         categories = data['categories']
-        return cls(id_, shape, categories)
+        invariant = None
+        if 'invariant' in data:
+            invariant = process_object(data['invariant'], dic)
+        return cls(id_, shape, categories, invariant)
 
 
 class LogNormalSiteModel(SiteModel):
