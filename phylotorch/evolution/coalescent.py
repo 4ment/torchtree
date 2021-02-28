@@ -10,10 +10,10 @@ from ..core.utils import process_object
 class ConstantCoalescentModel(CallableModel):
 
     def __init__(self, id_, theta, tree):
+        super(ConstantCoalescentModel, self).__init__(id_)
         self.theta = theta
         self.tree = tree
         self.add_parameter(theta)
-        super(ConstantCoalescentModel, self).__init__(id_)
 
     def update(self, value):
         pass

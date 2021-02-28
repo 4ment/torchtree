@@ -15,10 +15,10 @@ class ClockModel(Model):
 
 class AbstractClockModel(ClockModel):
     def __init__(self, id_, rates, tree):
+        super(AbstractClockModel, self).__init__(id_)
         self._rates = rates
         self.tree = tree
         self.add_parameter(rates)
-        super(AbstractClockModel, self).__init__(id_)
 
     def update(self, value):
         if isinstance(value, dict):

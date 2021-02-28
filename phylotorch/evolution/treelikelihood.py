@@ -89,12 +89,17 @@ class TreeLikelihood(object):
 class TreeLikelihoodModel(CallableModel):
 
     def __init__(self, id_, site_pattern, tree_model, subst_model, site_model, clock_model=None):
+        super(TreeLikelihoodModel, self).__init__(id_)
         self.site_pattern = site_pattern
         self.tree_model = tree_model
         self.subst_model = subst_model
         self.site_model = site_model
         self.clock_model = clock_model
-        super(TreeLikelihoodModel, self).__init__(id_)
+        self.add_model(tree_model)
+        self.add_model(subst_model)
+        self.add_model(site_model)
+        if clock_model:
+            self.add_model(clock_model)
 
     def log_prob(self, value):
         self.site_model.update(value)

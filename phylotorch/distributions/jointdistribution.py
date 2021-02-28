@@ -12,6 +12,8 @@ class JointDistributionModel(CallableModel):
     def __init__(self, id_, distributions):
         self.distributions = distributions
         super(JointDistributionModel, self).__init__(id_)
+        for distr in self.distributions:
+            self.add_model(distr)
 
     def __call__(self, *args, **kwargs):
         log_p = []
@@ -109,7 +111,8 @@ class JointDistribution(torch.distributions.Distribution):
         if callable(transform_evaluated):
             self.transformed_params[name] = transform_evaluated(*params)
             if hasattr(transform_evaluated, 'log_abs_det_jacobian'):
-                self._joint_log_prob += transform_evaluated.log_abs_det_jacobian(*params, self.transformed_params[name]).sum()
+                self._joint_log_prob += transform_evaluated.log_abs_det_jacobian(*params,
+                                                                                 self.transformed_params[name]).sum()
         else:
             self.transformed_params[name] = transform_evaluated
 

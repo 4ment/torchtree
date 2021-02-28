@@ -10,6 +10,7 @@ from ..core.utils import get_class, process_object
 class Distribution(CallableModel):
 
     def __init__(self, id_, dist, x, args, **kwargs):
+        super(Distribution, self).__init__(id_)
         self.dist = dist
         self.x = x
         self.args = args
@@ -19,7 +20,6 @@ class Distribution(CallableModel):
             if p.id is not None:
                 self.add_parameter(p)
         self.add_parameter(self.x)
-        super(Distribution, self).__init__(id_)
 
     # def rsample(self, sample_shape=torch.Size()):
     #     return self.dist(self.args.keys(), **self.kwargs).rsample(sample_shape)

@@ -295,9 +295,9 @@ class AbstractTreeModel(Model):
 
 class UnRootedTreeModel(AbstractTreeModel):
     def __init__(self, id_, tree, branch_lengths):
+        super(UnRootedTreeModel, self).__init__(id_, tree)
         self._branch_lengths = branch_lengths
         self.add_parameter(branch_lengths)
-        super(UnRootedTreeModel, self).__init__(id_, tree)
 
     def branch_lengths(self):
         return self._branch_lengths.tensor  # if self.bounds is not None else torch.cat(
@@ -336,13 +336,13 @@ class UnRootedTreeModel(AbstractTreeModel):
 class TimeTreeModel(AbstractTreeModel):
 
     def __init__(self, id_, tree, node_heights):
+        super(TimeTreeModel, self).__init__(id_, tree)
         self._node_heights = node_heights
         self.taxa_count = len(tree.taxon_namespace)
         self.bounds = self.create_bounds(tree)
         self.sampling_times = self.bounds[:self.taxa_count]
         if node_heights is not None:
             self.add_parameter(node_heights)
-        super(TimeTreeModel, self).__init__(id_, tree)
 
     def create_bounds(self, tree):
         bounds = np.empty(2 * len(tree.taxon_namespace) - 1)

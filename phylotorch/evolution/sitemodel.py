@@ -53,12 +53,12 @@ class ConstantSiteModel(SiteModel):
 class InvariantSiteModel(SiteModel):
 
     def __init__(self, id_, invariant):
+        super(InvariantSiteModel, self).__init__(id_)
         self._invariant = invariant
         self._rates = None
         self._probs = None
         self.need_update = True
         self.add_parameter(self._invariant)
-        super(InvariantSiteModel, self).__init__(id_)
 
     @property
     def invariant(self):
@@ -105,6 +105,7 @@ class InvariantSiteModel(SiteModel):
 class WeibullSiteModel(SiteModel):
 
     def __init__(self, id_, shape, categories, invariant=None):
+        super(WeibullSiteModel, self).__init__(id_)
         self._shape = shape
         self.categories = categories
         self._invariant = invariant
@@ -112,7 +113,6 @@ class WeibullSiteModel(SiteModel):
         self._rates = None
         self.need_update = True
         self.add_parameter(self._shape)
-        super(WeibullSiteModel, self).__init__(id_)
 
     @property
     def shape(self):
@@ -181,6 +181,7 @@ class WeibullSiteModel(SiteModel):
 class LogNormalSiteModel(SiteModel):
 
     def __init__(self, id_, scale, categories=4):
+        super(LogNormalSiteModel, self).__init__(id_)
         self._scale = scale
         self.categories = categories
         self.probs = torch.full((categories,), 1.0 / categories, dtype=self.scale.dtype)
@@ -189,7 +190,6 @@ class LogNormalSiteModel(SiteModel):
         self.update_rates(self.scale)
         self.need_update = True
         self.add_parameter(self._scale)
-        super(LogNormalSiteModel, self).__init__(id_)
 
     @property
     def scale(self):

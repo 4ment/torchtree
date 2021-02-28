@@ -71,8 +71,8 @@ class JC69(SubstitutionModel):
 class SymmetricSubstitutionModel(SubstitutionModel):
 
     def __init__(self, id_, frequencies):
-        self.add_parameter(frequencies)
         super(SymmetricSubstitutionModel, self).__init__(id_, frequencies)
+        self.add_parameter(frequencies)
 
     def p_t(self, branch_lengths):
         Q_unnorm = self.q()
@@ -91,9 +91,9 @@ class SymmetricSubstitutionModel(SubstitutionModel):
 
 class GTR(SymmetricSubstitutionModel):
     def __init__(self, id_, rates, frequencies):
+        super(GTR, self).__init__(id_, frequencies)
         self._rates = rates
         self.add_parameter(rates)
-        super(GTR, self).__init__(id_, frequencies)
 
     @property
     def rates(self):
@@ -148,9 +148,9 @@ class GTR(SymmetricSubstitutionModel):
 
 class HKY(SymmetricSubstitutionModel):
     def __init__(self, id_, kappa, frequencies):
+        super(SymmetricSubstitutionModel, self).__init__(id_, frequencies)
         self._kappa = kappa
         self.add_parameter(kappa)
-        super(SymmetricSubstitutionModel, self).__init__(id_, frequencies)
 
     @property
     def kappa(self):
@@ -224,11 +224,11 @@ class HKY(SymmetricSubstitutionModel):
 class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
 
     def __init__(self, id_, mapping, rates, frequencies):
+        super(GeneralSymmetricSubstitutionModel, self).__init__(id_, frequencies)
         self._rates = rates
         self.mapping = mapping
         self.state_count = frequencies.shape[0]
         self.add_parameter(rates)
-        super(GeneralSymmetricSubstitutionModel, self).__init__(id_, frequencies)
 
     @property
     def rates(self):

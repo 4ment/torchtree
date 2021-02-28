@@ -6,8 +6,8 @@ import numbers
 import numpy as np
 import torch
 
-from ..core.utils import process_object, get_class
 from .serializable import JSONSerializable
+from ..core.utils import process_object, get_class
 
 
 class Identifiable(JSONSerializable):
@@ -39,6 +39,8 @@ class ParameterListener(abc.ABC):
 class Model(Identifiable, ModelListener, ParameterListener):
     def __init__(self, id_):
         self.listeners = []
+        self._parameters = []
+        self._models = []
         super(Model, self).__init__(id_)
 
     @abc.abstractmethod
@@ -47,12 +49,14 @@ class Model(Identifiable, ModelListener, ParameterListener):
 
     def add_model(self, model):
         model.add_model_listener(self)
+        self._models.append(model)
 
     def add_model_listener(self, listener):
         self.listeners.append(listener)
 
     def add_parameter(self, parameter):
         parameter.add_parameter_listener(self)
+        self._parameters.append(parameter)
 
     def add_parameter_listener(self, listener):
         self.listeners.append(listener)
@@ -60,6 +64,15 @@ class Model(Identifiable, ModelListener, ParameterListener):
     def fire_model_changed(self, obj=None, index=None):
         for listener in self.listeners:
             listener.handle_model_changed(self, obj, index)
+
+    def parameters(self):
+        """Returns parameters of instance Parameter"""
+        parameters = []
+        for param in self._parameters:
+            parameters.extend(param.parameters())
+        for model in self._models:
+            parameters.extend(model.parameters())
+        return parameters
 
 
 class CallableModel(Model, collections.abc.Callable):
@@ -124,6 +137,9 @@ class Parameter(Identifiable):
         for listener in self.listeners:
             listener.handle_parameter_changed(self, index, event)
 
+    def parameters(self):
+        return [self]
+
     @classmethod
     def from_json(cls, data, dic):
         dtype = get_class(data.get('dtype', 'torch.float64'))
@@ -160,9 +176,10 @@ class Parameter(Identifiable):
         return cls(data['id'], t)
 
 
-class TransformedParameter(Parameter, ParameterListener):
+class TransformedParameter(Parameter, CallableModel):
 
     def __init__(self, id_, x, transform):
+        CallableModel.__init__(self, id_)
         self.transform = transform
         self.x = x
         self.need_update = False
@@ -173,7 +190,10 @@ class TransformedParameter(Parameter, ParameterListener):
         else:
             tensor = self.transform(self.x.tensor)
             x.add_parameter_listener(self)
-        super().__init__(id_, tensor)
+        Parameter.__init__(self, id_, tensor)
+
+    def parameters(self):
+        return self.x.parameters()
 
     def update(self, value):
         self.x.update(value)
@@ -198,7 +218,7 @@ class TransformedParameter(Parameter, ParameterListener):
 
     @tensor.setter
     def tensor(self, tensor):
-        raise Exception('Cannot assign tensor to TransformedParameter')
+        raise Exception('Cannot assign tensor to TransformedParameter (ID: {})'.format(self.id))
 
     def apply_transform(self):
         if isinstance(self.x, list):
@@ -209,6 +229,9 @@ class TransformedParameter(Parameter, ParameterListener):
     def handle_parameter_changed(self, variable, index, event):
         self.need_update = True
         self.fire_parameter_changed()
+
+    def handle_model_changed(self, model, obj, index):
+        pass
 
     @classmethod
     def from_json(cls, data, dic):
