@@ -41,20 +41,28 @@ def process_objects(data, dic):
 
 def process_object(data, dic):
     if isinstance(data, str):
-        if data in dic:
+        try:
             obj = dic[data]
-        else:
+        except KeyError:
             raise JSONParseError('Object with ID `{}\' not found'.format(data))
     elif isinstance(data, dict):
         id_ = data['id']
         if id_ in dic:
             raise JSONParseError('Object with ID `{}\' already exists'.format(id_))
-        klass = get_class(data['type'])
-        obj = klass.from_json(data, dic)
+        if 'type' not in data:
+            raise JSONParseError('Object with ID `{}\' does not have a type'.format(id_))
+
+        try:
+            klass = get_class(data['type'])
+        except ModuleNotFoundError as e:
+            raise JSONParseError(str(e) + " in object with ID '" + data['id'] + "'")
+        except AttributeError as e:
+            raise JSONParseError(str(e) + " in object with ID '" + data['id'] + "'")
+
+        obj = klass.from_json_safe(data, dic)
         dic[id_] = obj
     else:
-        id_ = data['id']
-        raise JSONParseError('Object with ID `{}\' is not valid (should be str or object)'.format(id_))
+        raise JSONParseError('Object is not valid (should be str or object)')
     return obj
 
 
