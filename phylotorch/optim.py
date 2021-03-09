@@ -3,6 +3,7 @@ import inspect
 
 import torch
 
+from .core.model import Parameter
 from .core.runnable import Runnable
 from .core.serializable import JSONSerializable
 from .core.utils import get_class, process_objects, SignalHandler, validate
@@ -58,6 +59,9 @@ class Optimizer(JSONSerializable, Runnable):
         handler = SignalHandler()
         if self.convergence is not None:
             self.convergence.check(0)
+
+        for p in self.parameters:
+            p.requires_grad = True
 
         for epoch in range(1, self.iterations):
             if handler.stop:
@@ -119,8 +123,6 @@ class Optimizer(JSONSerializable, Runnable):
 
         loss = process_objects(data['loss'], dic)
         parameters = process_objects(data['parameters'], dic)
-        for p in parameters:
-            p.requires_grad = True
 
         # instanciate torch.optim.optimizer
         optim_class = get_class(data['algorithm'])

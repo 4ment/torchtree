@@ -186,14 +186,17 @@ class TransformedParameter(Parameter, CallableModel):
         if isinstance(self.x, list):
             tensor = self.transform(torch.cat([x.tensor for x in self.x]))
             for xx in self.x:
-                xx.add_parameter_listener(self)
+                self.add_parameter(xx)
         else:
             tensor = self.transform(self.x.tensor)
-            x.add_parameter_listener(self)
+            self.add_parameter(x)
         Parameter.__init__(self, id_, tensor)
 
     def parameters(self):
-        return self.x.parameters()
+        if isinstance(self.x, list):
+            return [param for params in self.x for param in params.parameters()]
+        else:
+            return self.x.parameters()
 
     def update(self, value):
         self.x.update(value)
