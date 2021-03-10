@@ -6,6 +6,7 @@ import numbers
 import numpy as np
 import torch
 
+from .classproperty_decorator import classproperty
 from .serializable import JSONSerializable
 from ..core.utils import process_object, get_class
 
@@ -37,6 +38,7 @@ class ParameterListener(abc.ABC):
 
 
 class Model(Identifiable, ModelListener, ParameterListener):
+    _tag = None
     def __init__(self, id_):
         self.listeners = []
         self._parameters = []
@@ -73,6 +75,10 @@ class Model(Identifiable, ModelListener, ParameterListener):
         for model in self._models:
             parameters.extend(model.parameters())
         return parameters
+
+    @classproperty
+    def tag(cls):
+        return cls._tag
 
 
 class CallableModel(Model, collections.abc.Callable):

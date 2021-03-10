@@ -8,6 +8,7 @@ from ..core.utils import process_object
 
 
 class SiteModel(Model):
+    _tag = 'site_model'
 
     def __init__(self, id_):
         super(SiteModel, self).__init__(id_)

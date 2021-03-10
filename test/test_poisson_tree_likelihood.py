@@ -36,12 +36,12 @@ def test_poisson_json():
     poisson_model = {
         'id': 'a',
         'type': 'phylotorch.evolution.poisson_tree_likelihood.PoissonTreeLikelihood',
-        'tree': 'tree',
+        'tree_model': 'tree',
         'edge_lengths': noisy_distances.tolist(),
-        'clockmodel': {
+        'branch_model': {
             'id': 'clock',
             'type': 'phylotorch.evolution.branch_model.StrictClockModel',
-            'tree': 'tree',
+            'tree_model': 'tree',
             'rate': {
                 'id': 'rate',
                 'type': 'phylotorch.core.model.Parameter',

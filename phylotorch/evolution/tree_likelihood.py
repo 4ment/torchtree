@@ -2,7 +2,11 @@ import numpy as np
 import torch
 import torch.distributions
 
-from .tree_model import transform_ratios
+from .branch_model import BranchModel
+from .site_model import SiteModel
+from .site_pattern import SitePattern
+from .substitution_model import SubstitutionModel
+from .tree_model import transform_ratios, TreeModel
 # from .transforms import NodeHeightAutogradFunction
 from ..core.model import CallableModel
 from ..core.utils import process_object
@@ -153,13 +157,13 @@ class TreeLikelihoodModel(CallableModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        tree_model = process_object(data['tree'], dic)
-        site_model = process_object(data['sitemodel'], dic)
-        subst_model = process_object(data['substitutionmodel'], dic)
-        site_pattern = process_object(data['sitepattern'], dic)
+        tree_model = process_object(data[TreeModel.tag], dic)
+        site_model = process_object(data[SiteModel.tag], dic)
+        subst_model = process_object(data[SubstitutionModel.tag], dic)
+        site_pattern = process_object(data[SitePattern.tag], dic)
         clock_model = None
-        if 'clockmodel' in data:
-            clock_model = process_object(data['clockmodel'], dic)
+        if BranchModel.tag in data:
+            clock_model = process_object(data[BranchModel.tag], dic)
         return cls(id_, site_pattern, tree_model, subst_model, site_model, clock_model)
 
 

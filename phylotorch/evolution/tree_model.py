@@ -172,7 +172,7 @@ def initialize_dates_from_taxa(tree, taxa):
 
 
 def heights_from_branch_lengths(tree):
-    heights = np.empty(2*len(tree.taxon_namespace)-1)
+    heights = np.empty(2 * len(tree.taxon_namespace) - 1)
     for node in tree.postorder_node_iter():
         if node.is_leaf():
             heights[node.index] = node.date
@@ -219,6 +219,8 @@ def random_tree_from_heights(sampling, heights):
 
 
 class TreeModel(Model):
+    _tag = 'tree_model'
+
     @classmethod
     def from_json(cls, data, dic):
         pass

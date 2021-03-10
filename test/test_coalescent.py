@@ -84,7 +84,7 @@ def test_constant_json(tree_model_node_heights_transformed):
             'type': 'phylotorch.core.model.Parameter',
             'tensor': [3.]
         },
-        'tree': tree_model_node_heights_transformed
+        'tree_model': tree_model_node_heights_transformed
     }
     constant = ConstantCoalescentModel.from_json(example, {})
     print(constant.tree.node_heights)
@@ -110,7 +110,7 @@ def test_skyride_json(tree_model_node_heights_transformed):
             'type': 'phylotorch.core.model.Parameter',
             'tensor': [3., 10., 4., 2., 3.]
         },
-        'tree': tree_model_node_heights_transformed
+        'tree_model': tree_model_node_heights_transformed
     }
     skyride = PiecewiseConstantCoalescentModel.from_json(example, {})
     assert -11.487491742782 == pytest.approx(skyride().item(), 0.0001)
@@ -136,7 +136,7 @@ def test_skygrid_json(tree_model_node_heights_transformed):
             'type': 'phylotorch.core.model.Parameter',
             'tensor': [3., 10., 4., 2., 3.]
         },
-        'tree': tree_model_node_heights_transformed,
+        'tree_model': tree_model_node_heights_transformed,
         'cutoff': 10
     }
     skygrid = PiecewiseConstantCoalescentGridModel.from_json(example, {})

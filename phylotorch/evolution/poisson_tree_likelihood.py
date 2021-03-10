@@ -3,6 +3,8 @@ import torch.distributions
 
 from phylotorch.core.model import CallableModel, Parameter
 from phylotorch.core.utils import process_object
+from phylotorch.evolution.branch_model import BranchModel
+from phylotorch.evolution.tree_model import TreeModel
 
 
 class PoissonTreeLikelihood(CallableModel):
@@ -31,8 +33,8 @@ class PoissonTreeLikelihood(CallableModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        tree_model = process_object(data['tree'], dic)
-        clock_model = process_object(data['clockmodel'], dic)
+        tree_model = process_object(data[TreeModel.tag], dic)
+        clock_model = process_object(data[BranchModel.tag], dic)
         if 'edge_lengths' in data:
             if isinstance(data['edge_lengths'], list):
                 edge_lengths = Parameter(None, torch.tensor(data['edge_lengths']))

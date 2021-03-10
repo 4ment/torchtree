@@ -10,6 +10,7 @@ from ..core.utils import process_object
 
 
 class SitePattern(Model):
+    _tag = 'site_pattern'
 
     def __init__(self, id_, partials, weights):
         self.partials = partials

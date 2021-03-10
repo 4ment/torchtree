@@ -1,19 +1,22 @@
 from abc import abstractmethod
 
 from phylotorch.core.utils import process_object
+from .tree_model import TreeModel
 from ..core.model import Model
 
 
-class ClockModel(Model):
+class BranchModel(Model):
+    _tag = 'branch_model'
+
     def __init__(self, id_):
-        super(ClockModel, self).__init__(id_)
+        super(BranchModel, self).__init__(id_)
 
     @abstractmethod
     def rates(self):
         pass
 
 
-class AbstractClockModel(ClockModel):
+class AbstractClockModel(BranchModel):
     def __init__(self, id_, rates, tree):
         super(AbstractClockModel, self).__init__(id_)
         self._rates = rates
@@ -37,7 +40,7 @@ class AbstractClockModel(ClockModel):
 class StrictClockModel(AbstractClockModel):
 
     def __init__(self, id_, rates, tree):
-        self.branch_count = tree.taxa_count*2 - 2
+        self.branch_count = tree.taxa_count * 2 - 2
         super(StrictClockModel, self).__init__(id_, rates, tree)
 
     @property
@@ -47,9 +50,9 @@ class StrictClockModel(AbstractClockModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        tree = process_object(data['tree'], dic)
+        tree_model = process_object(data[TreeModel.tag], dic)
         rate = process_object(data['rate'], dic)
-        return cls(id_, rate, tree)
+        return cls(id_, rate, tree_model)
 
 
 class SimpleClockModel(AbstractClockModel):
@@ -64,6 +67,6 @@ class SimpleClockModel(AbstractClockModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        tree = process_object(data['tree'], dic)
+        tree_model = process_object(data[TreeModel.tag], dic)
         rate = process_object(data['rate'], dic)
-        return cls(id_, rate, tree)
+        return cls(id_, rate, tree_model)

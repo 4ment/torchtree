@@ -3,6 +3,7 @@ import torch
 from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
 
+from .tree_model import TreeModel
 from ..core.model import CallableModel
 from ..core.utils import process_object
 
@@ -31,9 +32,9 @@ class ConstantCoalescentModel(CallableModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        tree = process_object(data['tree'], dic)
+        tree_model = process_object(data[TreeModel.tag], dic)
         theta = process_object(data['theta'], dic)
-        return cls(id_, theta, tree)
+        return cls(id_, theta, tree_model)
 
 
 class ConstantCoalescent(Distribution):
@@ -138,8 +139,8 @@ class PiecewiseConstantCoalescentGridModel(ConstantCoalescentModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        tree = process_object(data['tree'], dic)
+        tree_model = process_object(data[TreeModel.tag], dic)
         theta = process_object(data['theta'], dic)
         cutoff = data['cutoff']  # float
         grid = torch.tensor(np.linspace(0, cutoff, num=theta.shape[0])[1:])
-        return cls(id_, theta, tree, grid)
+        return cls(id_, theta, tree_model, grid)

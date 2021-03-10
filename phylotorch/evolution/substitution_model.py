@@ -8,6 +8,8 @@ from ..core.utils import process_object
 
 
 class SubstitutionModel(Model):
+    _tag = 'substitution_model'
+
     def __init__(self, id_, frequencies):
         self._frequencies = frequencies
         super(SubstitutionModel, self).__init__(id_)

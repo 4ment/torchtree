@@ -4,10 +4,10 @@ import torch
 
 import phylotorch.beagle.treelikelihood as beagle
 import phylotorch.evolution.tree_likelihood as likelihood
-from phylotorch.io import read_tree_and_alignment
 from phylotorch.evolution.site_pattern import get_dna_leaves_partials_compressed
 from phylotorch.evolution.substitution_model import JC69
 from phylotorch.evolution.tree_model import transform_ratios, heights_to_branch_lengths
+from phylotorch.io import read_tree_and_alignment
 
 try:
     import libsbn
@@ -168,7 +168,7 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
         'id': 'sp',
         'type': 'phylotorch.evolution.site_pattern.SitePattern',
         'datatype': 'nucleotide',
-        'alignment':{
+        'alignment': {
             "id": "alignment",
             "type": "phylotorch.evolution.alignment.Alignment",
             'file': tiny_fasta_file,
@@ -208,10 +208,10 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
     tree_likelihood = {
         'id': 'like',
         'type': 'phylotorch.tree_likelihood.TreeLikelihoodModel',
-        'tree': tree_model,
-        'sitemodel': site_model,
-        'sitepattern': site_pattern,
-        'substitutionmodel': subst_model
+        'tree_model': tree_model,
+        'site_model': site_model,
+        'site_pattern': site_pattern,
+        'substitution_model': subst_model
     }
 
     like = likelihood.TreeLikelihoodModel.from_json(tree_likelihood, {})
