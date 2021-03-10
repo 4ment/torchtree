@@ -3,11 +3,11 @@ import pytest
 import torch
 
 import phylotorch.beagle.treelikelihood as beagle
-import phylotorch.evolution.treelikelihood as likelihood
+import phylotorch.evolution.tree_likelihood as likelihood
 from phylotorch.io import read_tree_and_alignment
-from phylotorch.evolution.sitepattern import get_dna_leaves_partials_compressed
-from phylotorch.evolution.substmodel import JC69
-from phylotorch.evolution.tree import transform_ratios, heights_to_branch_lengths
+from phylotorch.evolution.site_pattern import get_dna_leaves_partials_compressed
+from phylotorch.evolution.substitution_model import JC69
+from phylotorch.evolution.tree_model import transform_ratios, heights_to_branch_lengths
 
 try:
     import libsbn
@@ -166,22 +166,26 @@ def test_calculate_pytorch(tiny_newick_file, tiny_fasta_file, jc69_model):
 def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
     site_pattern = {
         'id': 'sp',
-        'type': 'phylotorch.evolution.sitepattern.SitePattern',
-        'file': tiny_fasta_file,
+        'type': 'phylotorch.evolution.site_pattern.SitePattern',
         'datatype': 'nucleotide',
-        'taxa': 'taxa'
+        'alignment':{
+            "id": "alignment",
+            "type": "phylotorch.evolution.alignment.Alignment",
+            'file': tiny_fasta_file,
+            'taxa': 'taxa'
+        }
     }
     subst_model = {
         'id': 'm',
-        'type': 'phylotorch.evolution.substmodel.JC69'
+        'type': 'phylotorch.evolution.substitution_model.JC69'
     }
     site_model = {
         'id': 'sm',
-        'type': 'phylotorch.evolution.sitemodel.ConstantSiteModel'
+        'type': 'phylotorch.evolution.site_model.ConstantSiteModel'
     }
     tree_model = {
         'id': 'tree',
-        'type': 'phylotorch.evolution.tree.UnRootedTreeModel',
+        'type': 'phylotorch.evolution.tree_model.UnRootedTreeModel',
         'file': tiny_newick_file,
         'branch_lengths': {'id': 'branches'},
         'taxa': {
@@ -203,7 +207,7 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
     }
     tree_likelihood = {
         'id': 'like',
-        'type': 'phylotorch.treelikelihood.TreeLikelihoodModel',
+        'type': 'phylotorch.tree_likelihood.TreeLikelihoodModel',
         'tree': tree_model,
         'sitemodel': site_model,
         'sitepattern': site_pattern,

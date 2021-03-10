@@ -172,14 +172,14 @@ def initialize_dates_from_taxa(tree, taxa):
 
 
 def heights_from_branch_lengths(tree):
-    heights = np.empty(len(tree.taxon_namespace))
+    heights = np.empty(2*len(tree.taxon_namespace)-1)
     for node in tree.postorder_node_iter():
         if node.is_leaf():
             heights[node.index] = node.date
         else:
-            child = next(node.child_node_iter)
+            child = next(node.child_node_iter())
             heights[node.index] = heights[child.index] + float(child.edge_length)
-    return heights
+    return heights[len(tree.taxon_namespace):]
 
 
 class Node:
@@ -381,7 +381,7 @@ class TimeTreeModel(AbstractTreeModel):
             node_heights_id = data['node_heights']['id']
             heights_np = heights_from_branch_lengths(tree)
             node_heights = Parameter(node_heights_id, torch.tensor(heights_np))
-            dic[node_heights] = node_heights
+            dic[node_heights_id] = node_heights
             tree_model = cls(id_, tree, node_heights)
         else:
             tree_model = cls(id_, tree, None)

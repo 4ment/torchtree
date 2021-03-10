@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.distributions
 
-from .tree import transform_ratios
+from .tree_model import transform_ratios
 # from .transforms import NodeHeightAutogradFunction
 from ..core.model import CallableModel
 from ..core.utils import process_object

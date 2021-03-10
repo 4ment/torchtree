@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from phylotorch.evolution.substmodel import JC69
+from phylotorch.evolution.substitution_model import JC69
 
 data_dir = 'data'
 

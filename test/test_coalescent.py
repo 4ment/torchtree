@@ -25,7 +25,7 @@ def node_heights_transformed(ratios_list):
             'transform': {
                 'id': 'nodeTransform',
                 'type': 'phylotorch.core.model.TransformModel',
-                'transform': 'phylotorch.evolution.tree.GeneralNodeHeightTransform',
+                'transform': 'phylotorch.evolution.tree_model.GeneralNodeHeightTransform',
                 'parameters': {
                     'tree': 'tree'
                 }
@@ -49,7 +49,7 @@ def node_heights_transformed(ratios_list):
 def tree_model_node_heights_transformed(node_heights_transformed):
     tree_model = {
         'id': 'tree',
-        'type': 'phylotorch.evolution.tree.TimeTreeModel',
+        'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
         'newick': '(((A,B),C),D);',
         'node_heights': node_heights_transformed,
         'taxa': {

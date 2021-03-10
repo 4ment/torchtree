@@ -2,14 +2,14 @@ import pytest
 import torch
 import torch.distributions
 
-from phylotorch.evolution.poisson_treelikelihood import PoissonTreeLikelihood
-from phylotorch.evolution.tree import heights_to_branch_lengths, TimeTreeModel
+from phylotorch.evolution.poisson_tree_likelihood import PoissonTreeLikelihood
+from phylotorch.evolution.tree_model import heights_to_branch_lengths, TimeTreeModel
 
 
 def test_poisson_json():
     tree_model = {
         'id': 'tree',
-        'type': 'phylotorch.evolution.tree.TimeTreeModel',
+        'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
         'newick': '(((A,B),C),D);',
         'node_heights': {
             'id': 'node_heights',
@@ -35,12 +35,12 @@ def test_poisson_json():
 
     poisson_model = {
         'id': 'a',
-        'type': 'phylotorch.evolution.poisson_treelikelihood.PoissonTreeLikelihood',
+        'type': 'phylotorch.evolution.poisson_tree_likelihood.PoissonTreeLikelihood',
         'tree': 'tree',
         'edge_lengths': noisy_distances.tolist(),
         'clockmodel': {
             'id': 'clock',
-            'type': 'phylotorch.evolution.clockmodel.StrictClockModel',
+            'type': 'phylotorch.evolution.branch_model.StrictClockModel',
             'tree': 'tree',
             'rate': {
                 'id': 'rate',

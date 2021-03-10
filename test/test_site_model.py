@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import torch
 
-from phylotorch.evolution.sitemodel import ConstantSiteModel, WeibullSiteModel, InvariantSiteModel
+from phylotorch.evolution.site_model import ConstantSiteModel, WeibullSiteModel, InvariantSiteModel
 from phylotorch.core.model import Parameter
 
 

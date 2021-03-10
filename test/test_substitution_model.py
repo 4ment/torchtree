@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import torch
 
-from phylotorch.evolution.substmodel import JC69, HKY, GTR, GeneralSymmetricSubstitutionModel
+from phylotorch.evolution.substitution_model import JC69, HKY, GTR, GeneralSymmetricSubstitutionModel
 from phylotorch.core.model import Parameter
 
 # r=c(0.060602,0.402732,0.028230,0.047910,0.407249,0.053277)
@@ -44,7 +44,7 @@ def test_GTR():
     np.testing.assert_allclose(P.squeeze(), P_expected, rtol=1e-06)
 
     subst_model = GTR.from_json({'id': 'gtr',
-                                 'type': 'phylotorch.evolution.substmodel.GTR',
+                                 'type': 'phylotorch.evolution.substitution_model.GTR',
                                  'rates':{
                                      'id': 'rates',
                                      'type': 'phylotorch.core.model.Parameter',
@@ -84,7 +84,7 @@ def test_HKY():
     np.testing.assert_allclose(P.squeeze(), P_expected, rtol=1e-06)
 
     subst_model = HKY.from_json({'id': 'hky',
-                                 'type': 'phylotorch.evolution.substmodel.HKY',
+                                 'type': 'phylotorch.evolution.substitution_model.HKY',
                                  'kappa': {
                                      'id': 'kappa',
                                      'type': 'phylotorch.core.model.Parameter',
@@ -110,7 +110,7 @@ def test_JC69(t):
     assert ij == pytest.approx(P[0, 1].item(), 1.0e-6)
 
     subst_model = JC69.from_json({'id': 'jc',
-                                 'type': 'phylotorch.substmodel.JC69'}, {})
+                                 'type': 'phylotorch.substitution_model.JC69'}, {})
     P = torch.squeeze(subst_model.p_t(torch.tensor(np.array([t]))))
     assert ii == pytest.approx(P[0, 0].item(), 1.0e-6)
     assert ij == pytest.approx(P[0, 1].item(), 1.0e-6)
