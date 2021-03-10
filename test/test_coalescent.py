@@ -2,7 +2,9 @@ import numpy as np
 import pytest
 import torch
 
-from phylotorch.evolution.coalescent import ConstantCoalescent, PiecewiseConstantCoalescent, PiecewiseConstantCoalescentGrid, ConstantCoalescentModel, PiecewiseConstantCoalescentModel, PiecewiseConstantCoalescentGridModel
+from phylotorch.evolution.coalescent import ConstantCoalescent, PiecewiseConstantCoalescent, \
+    PiecewiseConstantCoalescentGrid, ConstantCoalescentModel, PiecewiseConstantCoalescentModel, \
+    PiecewiseConstantCoalescentGridModel
 
 
 def inverse_transform_homochronous(ratios):
@@ -17,31 +19,28 @@ def inverse_transform_homochronous(ratios):
 def ratios_list():
     return 2. / 6., 6. / 12., 12.
 
+
 @pytest.fixture
 def node_heights_transformed(ratios_list):
     node_heights = {
-            'id': 'node_heights',
-            'type': 'phylotorch.core.model.TransformedParameter',
-            'transform': {
-                'id': 'nodeTransform',
-                'type': 'phylotorch.core.model.TransformModel',
-                'transform': 'phylotorch.evolution.tree_model.GeneralNodeHeightTransform',
-                'parameters': {
-                    'tree': 'tree'
-                }
-            },
-            'x': [{
-                    'id': 'ratios',
-                    'type': 'phylotorch.core.model.Parameter',
-                    'tensor': ratios_list[:-1]
-                },
-                {
-                    'id': 'root_height',
-                    'type': 'phylotorch.core.model.Parameter',
-                    'tensor': ratios_list[-1:]
-                }
-            ]
-        }
+        'id': 'node_heights',
+        'type': 'phylotorch.core.model.TransformedParameter',
+        'transform': 'phylotorch.evolution.tree_model.GeneralNodeHeightTransform',
+        'parameters': {
+            'tree': 'tree'
+        },
+        'x': [{
+            'id': 'ratios',
+            'type': 'phylotorch.core.model.Parameter',
+            'tensor': ratios_list[:-1]
+        },
+            {
+                'id': 'root_height',
+                'type': 'phylotorch.core.model.Parameter',
+                'tensor': ratios_list[-1:]
+            }
+        ]
+    }
     return node_heights
 
 

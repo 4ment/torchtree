@@ -238,39 +238,7 @@ class TransformedParameter(Parameter, CallableModel):
 
     @classmethod
     def from_json(cls, data, dic):
-        transform = process_object(data['transform'], dic)
-        if isinstance(data['x'], list):
-            x = []
-            for xx in data['x']:
-                x.append(process_object(xx, dic))
-        else:
-            x = process_object(data['x'], dic)
-        return cls(data['id'], x, transform)
-
-
-class TransformModel(Model):
-
-    def __init__(self, id_, transform):
-        self.transform = transform
-        super(TransformModel, self).__init__(id_)
-
-    def __call__(self, x):
-        return self.transform(x)
-
-    def log_abs_det_jacobian(self, x, y):
-        return self.transform.log_abs_det_jacobian(x, y)
-
-    def handle_model_changed(self, model, obj, index):
-        pass
-
-    def handle_parameter_changed(self, variable, index, event):
-        pass
-
-    def update(self, value):
-        pass
-
-    @classmethod
-    def from_json(cls, data, dic):
+        # parse transform
         klass = get_class(data['transform'])
         signature_params = list(inspect.signature(klass.__init__).parameters)
         params = []
@@ -282,4 +250,11 @@ class TransformModel(Model):
                     else:
                         params.append(process_object(data['parameters'][arg], dic))
         transform = klass(*params)
-        return cls(data['id'], transform)
+
+        if isinstance(data['x'], list):
+            x = []
+            for xx in data['x']:
+                x.append(process_object(xx, dic))
+        else:
+            x = process_object(data['x'], dic)
+        return cls(data['id'], x, transform)

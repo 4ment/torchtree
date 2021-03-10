@@ -1,5 +1,4 @@
 import pytest
-
 import torch
 
 from phylotorch.evolution.tree_model import TimeTreeModel
@@ -13,28 +12,24 @@ def ratios_list():
 @pytest.fixture
 def node_heights_transformed(ratios_list):
     node_heights = {
-            'id': 'node_heights',
-            'type': 'phylotorch.core.model.TransformedParameter',
-            'transform': {
-                'id': 'nodeTransform',
-                'type': 'phylotorch.core.model.TransformModel',
-                'transform': 'phylotorch.evolution.tree_model.GeneralNodeHeightTransform',
-                'parameters': {
-                    'tree': 'tree'
-                }
-            },
-            'x': [{
-                    'id': 'ratios',
-                    'type': 'phylotorch.core.model.Parameter',
-                    'tensor': ratios_list[:-1]
-                },
-                {
-                    'id': 'root_height',
-                    'type': 'phylotorch.core.model.Parameter',
-                    'tensor': ratios_list[-1:]
-                }
-            ]
-        }
+        'id': 'node_heights',
+        'type': 'phylotorch.core.model.TransformedParameter',
+        'transform': 'phylotorch.evolution.tree_model.GeneralNodeHeightTransform',
+        'parameters': {
+            'tree': 'tree'
+        },
+        'x': [{
+            'id': 'ratios',
+            'type': 'phylotorch.core.model.Parameter',
+            'tensor': ratios_list[:-1]
+        },
+            {
+                'id': 'root_height',
+                'type': 'phylotorch.core.model.Parameter',
+                'tensor': ratios_list[-1:]
+            }
+        ]
+    }
     return node_heights
 
 
@@ -57,6 +52,7 @@ def tree_model_node_heights_transformed(node_heights_transformed):
         }
     }
     return tree_model
+
 
 @pytest.fixture
 def tree_model_node_heights_transformed_hetero(node_heights_transformed):
@@ -84,8 +80,6 @@ def test_GeneralNodeHeightTransform(tree_model_node_heights_transformed):
     tree = TimeTreeModel.from_json(tree_model_node_heights_transformed, dic)
     expected = torch.log(tree.node_heights[1] * tree.node_heights[2]).item()
     assert dic['node_heights']().item() == pytest.approx(expected, 0.0001)
-    assert dic['nodeTransform'].log_abs_det_jacobian(None, tree.node_heights).item() == pytest.approx(expected, 0.0001)
-    print(tree.node_heights)
 
 
 def test_GeneralNodeHeightTransform_hetero(tree_model_node_heights_transformed_hetero):
@@ -93,4 +87,3 @@ def test_GeneralNodeHeightTransform_hetero(tree_model_node_heights_transformed_h
     tree = TimeTreeModel.from_json(tree_model_node_heights_transformed_hetero, dic)
     expected = torch.log((tree.node_heights[1] - 1.0) * (tree.node_heights[2] - 4.0)).item()
     assert dic['node_heights']().item() == pytest.approx(expected, 0.0001)
-    assert dic['nodeTransform'].log_abs_det_jacobian(None, tree.node_heights).item() == pytest.approx(expected, 0.0001)
