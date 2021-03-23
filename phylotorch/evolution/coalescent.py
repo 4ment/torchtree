@@ -4,7 +4,7 @@ from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
 
 from .tree_model import TreeModel
-from ..core.model import CallableModel
+from ..core.model import CallableModel, Parameter
 from ..core.utils import process_object
 
 
@@ -39,7 +39,7 @@ class ConstantCoalescentModel(CallableModel):
 
 class ConstantCoalescent(Distribution):
     arg_constraints = {'theta': constraints.positive,
-                       'sampling_times': constraints.positive}
+                       'sampling_times': constraints.greater_than_eq(0.0)}
     support = constraints.positive
     has_rsample = True
 
@@ -133,7 +133,7 @@ class PiecewiseConstantCoalescentGridModel(ConstantCoalescentModel):
         super(PiecewiseConstantCoalescentGridModel, self).__init__(id_, theta, tree)
 
     def __call__(self, *args, **kwargs):
-        pwc = PiecewiseConstantCoalescentGrid(self.tree.sampling_times, self.theta.tensor, self.grid)
+        pwc = PiecewiseConstantCoalescentGrid(self.tree.sampling_times, self.theta.tensor, self.grid.tensor)
         return pwc.log_prob(self.tree.node_heights)
 
     @classmethod
@@ -141,6 +141,10 @@ class PiecewiseConstantCoalescentGridModel(ConstantCoalescentModel):
         id_ = data['id']
         tree_model = process_object(data[TreeModel.tag], dic)
         theta = process_object(data['theta'], dic)
-        cutoff = data['cutoff']  # float
-        grid = torch.tensor(np.linspace(0, cutoff, num=theta.shape[0])[1:])
+        if 'grid' not in data:
+            cutoff = data['cutoff']  # float
+            grid = Parameter(None, torch.tensor(np.linspace(0, cutoff, num=theta.shape[0])[1:]))
+        else:
+            grid = process_object(data['grid'], dic)
+            assert grid.shape[0] + 1 == theta.shape[0]
         return cls(id_, theta, tree_model, grid)
