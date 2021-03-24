@@ -1,7 +1,7 @@
 import importlib
 import json
-import signal
 import numbers
+import signal
 
 import torch
 
@@ -119,3 +119,15 @@ def validate(data, rules):
                     break
             if type is None:
                 raise ValueError('\'type\' is not valid: {}'.format(data[datum_key]))
+
+
+def remove_comments(obj):
+    if isinstance(obj, list):
+        for element in obj:
+            remove_comments(element)
+    elif isinstance(obj, dict):
+        for key in list(obj.keys()).copy():
+            if not key.startswith('_'):
+                remove_comments(obj[key])
+            else:
+                del obj[key]

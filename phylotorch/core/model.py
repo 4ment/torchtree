@@ -39,6 +39,7 @@ class ParameterListener(abc.ABC):
 
 class Model(Identifiable, ModelListener, ParameterListener):
     _tag = None
+
     def __init__(self, id_):
         self.listeners = []
         self._parameters = []

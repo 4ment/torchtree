@@ -3,6 +3,7 @@ import torch.distributions.constraints
 
 
 class OneOnX(torch.distributions.Distribution):
+    arg_constraints = {}
     support = torch.distributions.constraints.positive
 
     def __init__(self, validate_args=None):
