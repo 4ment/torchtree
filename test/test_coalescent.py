@@ -141,3 +141,14 @@ def test_skygrid_json(tree_model_node_heights_transformed):
     }
     skygrid = PiecewiseConstantCoalescentGridModel.from_json(example, {})
     assert -11.8751856 == pytest.approx(skygrid().item(), 0.0001)
+
+
+def test_skygrid_heterochronous():
+    sampling_times = torch.tensor(np.array([0., 1., 2., 3., 12.]))
+    thetas_log = torch.tensor(np.array([1.0, 3.0, 6.0, 8.0, 9.0]))
+    thetas = thetas_log.exp()
+    heights = torch.tensor(np.array([1.5, 4., 6., 16.]))
+    grid = torch.tensor(np.linspace(0, 10.0, num=5)[1:])
+    constant = PiecewiseConstantCoalescentGrid(sampling_times, thetas, grid)
+    log_p = constant.log_prob(heights)
+    assert -19.594893640219844 == pytest.approx(log_p.item(), 0.0001)
