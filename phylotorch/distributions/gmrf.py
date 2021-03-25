@@ -7,7 +7,7 @@ from ..evolution.tree_model import TreeModel
 
 
 class GMRF(CallableModel):
-    def __init__(self, id_, x, precision, tree_model):
+    def __init__(self, id_, x, precision, tree_model=None):
         super(GMRF, self).__init__(id_)
         self.tree_model = tree_model
         self.x = x
@@ -30,7 +30,10 @@ class GMRF(CallableModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        tree_model = process_object(data[TreeModel.tag], dic)
+        if TreeModel.tag in data:
+            tree_model = process_object(data[TreeModel.tag], dic)
+        else:
+            tree_model = None
         x = process_object(data['x'], dic)
         precision = process_object(data['precision'], dic)
         return cls(id_, x, precision, tree_model)
