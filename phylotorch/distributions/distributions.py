@@ -1,10 +1,11 @@
 import inspect
+import numbers
 from collections import OrderedDict
 
 import torch
 
 from ..core.model import CallableModel, Parameter
-from ..core.utils import get_class, process_object
+from ..core.utils import get_class, process_object, process_objects
 
 
 class Distribution(CallableModel):
@@ -19,10 +20,11 @@ class Distribution(CallableModel):
         for p in self.args.values():
             if p.id is not None:
                 self.add_parameter(p)
-        self.add_parameter(self.x)
-
-    # def rsample(self, sample_shape=torch.Size()):
-    #     return self.dist(self.args.keys(), **self.kwargs).rsample(sample_shape)
+        if isinstance(self.x, list):
+            for xx in self.x:
+                self.add_parameter(xx)
+        else:
+            self.add_parameter(self.x)
 
     def rsample(self):
         x = self.dist(*[arg.tensor for arg in self.args.values()],
@@ -35,8 +37,12 @@ class Distribution(CallableModel):
         self.x.tensor = x
 
     def log_prob(self):
-        return self.dist(*[arg.tensor for arg in self.args.values()],
-                         **self.kwargs).log_prob(self.x.tensor)
+        if isinstance(self.x, list):
+            return self.dist(*[arg.tensor for arg in self.args.values()],
+                             **self.kwargs).log_prob(torch.cat([xx.tensor for xx in self.x]))
+        else:
+            return self.dist(*[arg.tensor for arg in self.args.values()],
+                             **self.kwargs).log_prob(self.x.tensor)
 
     def update(self, value):
         for name in self.args.keys():
@@ -56,7 +62,7 @@ class Distribution(CallableModel):
     def from_json(cls, data, dic):
         id_ = data['id']
         klass = get_class(data['distribution'])
-        x = process_object(data['x'], dic)
+        x = process_objects(data['x'], dic)
 
         signature_params = list(inspect.signature(klass.__init__).parameters)
         params = OrderedDict()
@@ -68,14 +74,11 @@ class Distribution(CallableModel):
             if arg in data_dist:
                 if isinstance(data_dist[arg], str):
                     params[arg] = dic[data_dist[arg]]
-                # elif isinstance(data_dist[arg], float):
-                #     params[arg] = Parameter(None, torch.tensor([data_dist[arg]], dtype=x.dtype))
+                elif isinstance(data_dist[arg], numbers.Number):
+                    params[arg] = Parameter(None, torch.tensor(data_dist[arg], dtype=x.dtype))
                 elif isinstance(data_dist[arg], list):
                     params[arg] = Parameter(None, torch.tensor(data_dist[arg], dtype=x.dtype))
                 else:
                     params[arg] = process_object(data_dist[arg], dic)
-                # else:
-                #     id = data[arg]['id']
-                #     params[id] = as_tensor(data[arg])
 
         return cls(id_, klass, x, params)
