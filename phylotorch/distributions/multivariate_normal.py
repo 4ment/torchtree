@@ -62,19 +62,20 @@ class MultivariateNormal(CallableModel):
         loc = process_object(data['parameters']['loc'], dic)
         kwargs = {}
 
-        for parameterization in ('covariance_matrix', 'scale_tril', 'precision_matrix'):
-            if parameterization in data['parameters']:
+        for p in ('covariance_matrix', 'scale_tril', 'precision_matrix'):
+            if p in data['parameters']:
+                parameterization = p
                 kwargs[parameterization] = process_object(data['parameters'][parameterization], dic)
 
         if len(kwargs) != 1:
             raise NotImplementedError(
-                'MultivariateNormal is parameterized with either covariance_matrix, scale_tril or recision_matrix')
+                'MultivariateNormal is parameterized with either covariance_matrix, scale_tril or precision_matrix')
 
         if isinstance(x, list):
-            x_count = torch.Size((np.sum([xx.shape[0] for xx in x]),))
+            x_count = np.sum([xx.shape[0] for xx in x])
         else:
-            x_count = torch.Size((x.shape[0],))
-        assert x_count == loc.shape
+            x_count = x.shape[0]
+        assert x_count == loc.shape[0]
         assert torch.Size((x_count, x_count)) == kwargs[parameterization].shape
 
         return cls(id_, x, loc, **kwargs)

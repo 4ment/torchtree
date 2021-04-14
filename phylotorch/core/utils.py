@@ -1,6 +1,7 @@
 import importlib
 import json
 import numbers
+import re
 import signal
 
 import torch
@@ -17,6 +18,52 @@ def as_tensor(dct, dtype=torch.float64):
     if 'type' in dct and dct['type'].startswith('torch'):
         return torch.tensor(dct['values'], dtype=dtype)
     return dct
+
+
+def tensor_rand(distribution, dtype, shape):
+    """ Create a tensor with the given dtype and shape and initialize it using a distribution.
+
+    Continuous distributions: normal, log_normal, uniform.
+    Discrete distributions: random, bernoulli
+
+    :param distribution: distribution as a string (e.g. 'normal(1.0,2.0)', 'normal', 'normal()').
+    :type distribution: str
+    :param dtype: dtype of the tensor
+    :type dtype: torch.dtype
+    :param shape: shape of the tensor
+    :type shape: Sequence[int]
+    :return: tensor
+    :rtype: torch.Tensor
+
+    :example:
+    >>> _ = torch.manual_seed(0)
+    >>> t1 = tensor_rand('normal(1.0, 2.0)', torch.float64, (1,2))
+    >>> t1
+    tensor([[4.0820, 0.4131]], dtype=torch.float64)
+    >>> _ = torch.manual_seed(0)
+    >>> t2 = tensor_rand('normal(0.0, 1.0)', torch.float64, (1,2))
+    >>> _ = torch.manual_seed(0)
+    >>> t3 = tensor_rand('normal()', torch.float64, (1,2))
+    >>> t2 == t3
+    tensor([[True, True]])
+    """
+
+    temp = list(filter(None, re.split(r'[(),]', distribution)))
+    name = temp[0]
+    params = [] if len(temp) == 1 else [float(p) for p in temp[1:]]
+    if name == 'normal':
+        tensor = torch.empty(shape, dtype=dtype).normal_(*params)
+    elif name[0] == 'log_normal':
+        tensor = torch.empty(shape, dtype=dtype).log_normal_(*params)
+    elif name[0] == 'uniform':
+        tensor = torch.empty(shape, dtype=dtype).uniform_(*params)
+    elif name[0] == 'random':
+        tensor = torch.empty(shape, dtype=dtype).random_(*params)
+    elif name[0] == 'bernoulli':
+        tensor = torch.empty(shape, dtype=dtype).bernoulli_(*params)
+    else:
+        raise Exception('{} is not a valid distribution to initialize tensor. input: {}'.format(name, distribution))
+    return tensor
 
 
 def get_class(full_name):

@@ -8,7 +8,7 @@ import torch
 
 from .classproperty_decorator import classproperty
 from .serializable import JSONSerializable
-from ..core.utils import process_object, get_class
+from ..core.utils import process_object, get_class, tensor_rand
 
 
 class Identifiable(JSONSerializable):
@@ -154,12 +154,18 @@ class Parameter(Identifiable):
         if 'full_like' in data:
             input_param = process_object(data['full_like'], dic)
             dtype = dtype if 'dtype' in data else input_param.dtype
-            values = data['tensor']
-            t = torch.full_like(input_param.tensor, values, dtype=dtype)
+            if 'rand' in data:
+                t = tensor_rand(data['rand'], input_param.dtype, input_param.shape)
+            else:
+                values = data['tensor']
+                t = torch.full_like(input_param.tensor, values, dtype=dtype)
         elif 'full' in data:
             size = data['full']  # a list
-            values = data['tensor']
-            t = torch.full(size, values, dtype=dtype)
+            if 'rand' in data:
+                t = tensor_rand(data['rand'], dtype, size)
+            else:
+                values = data['tensor']
+                t = torch.full(size, values, dtype=dtype)
         elif 'zeros_like' in data:
             input_param = process_object(data['zeros_like'], dic)
             dtype = dtype if 'dtype' in data else input_param.dtype
