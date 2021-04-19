@@ -5,6 +5,7 @@ import numbers
 
 import numpy as np
 import torch
+from torch import nn
 
 from .classproperty_decorator import classproperty
 from .serializable import JSONSerializable
@@ -147,6 +148,15 @@ class Parameter(Identifiable):
     def parameters(self):
         return [self]
 
+    def clone(self):
+        """Return a clone of the Parameter. it is not cloning listeners and the clone's id is None"""
+        tclone = self.tensor.clone()
+        return Parameter(None, tclone)
+
+    def __getitem__(self, subscript):
+        """Can be a slice or index"""
+        return Parameter(None, self._tensor[subscript])
+
     @classmethod
     def from_json(cls, data, dic):
         dtype = get_class(data.get('dtype', 'torch.float64'))
@@ -186,7 +196,10 @@ class Parameter(Identifiable):
                 values = np.repeat(values, data['dimension'] / len(values) + 1)
                 values = values[:data['dimension']]
             t = torch.tensor(values, dtype=dtype)
-        return cls(data['id'], t)
+        if 'nn' in data and data['nn']:
+            return cls(data['id'], nn.Parameter(t))
+        else:
+            return cls(data['id'], t)
 
 
 class TransformedParameter(Parameter, CallableModel):
