@@ -127,7 +127,7 @@ class TreeLikelihoodModel(CallableModel):
                                                  self.tree_model.postorder, mats,
                                                  self.subst_model.frequencies, probs)
 
-    def __call__(self):
+    def _call(self):
         rates = self.site_model.rates().reshape(1, -1)
         probs = self.site_model.probabilities().reshape((-1, 1, 1))
 

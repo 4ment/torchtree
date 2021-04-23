@@ -15,7 +15,7 @@ class CTMCScale(CallableModel):
         self.tree_model = tree_model
         self.add_parameter(x)
 
-    def __call__(self, *args, **kwargs):
+    def _call(self, *args, **kwargs):
         total_tree_time = self.tree_model.branch_lengths().sum()
         log_normalization = self.shape * torch.log(total_tree_time) - self.log_gamma_one_half
         log_like = log_normalization - self.shape * self.x.tensor.log() - self.x.tensor * total_tree_time

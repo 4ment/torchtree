@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from phylotorch.bdsk import BDSKY
+from phylotorch.evolution.bdsk import BDSKY
 import pytest
 
 
@@ -21,7 +21,7 @@ def etest_BDSKY():
 
     origin = torch.tensor([0.5])
 
-    bdsky = BDSKY(R, delta, s, rho, sampling_times, times, origin)
+    bdsky = BDSKY(R, delta, s, rho, sampling_times, origin, times=times)
     log_p = bdsky.log_prob(heights)
     print(log_p)
     exit(2)
@@ -43,9 +43,8 @@ def test_1rho():
     rho = torch.tensor(np.array([0.01]))
 
     origin = torch.tensor([10.])
-    times = None
 
-    bdsky = BDSKY(R, delta, s, rho, sampling_times, times, origin)
+    bdsky = BDSKY(R, delta, s, rho, sampling_times, origin)
     log_p = bdsky.log_prob(heights)
     assert -8.520565 == pytest.approx(log_p.item(), 0.0001)
     print(log_p)
@@ -61,9 +60,8 @@ def test_1rho2times():
     rho = torch.tensor(np.array([0., 0.01]))
 
     origin = torch.tensor([10.])
-    times = None
 
-    bdsky = BDSKY(R, delta, s, rho, sampling_times, times, origin)
+    bdsky = BDSKY(R, delta, s, rho, sampling_times, origin)
     log_p = bdsky.log_prob(heights)
     assert -78.4006528776 == pytest.approx(log_p.item(), 0.0001)
     print(log_p)

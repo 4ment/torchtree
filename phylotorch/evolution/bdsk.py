@@ -1,10 +1,59 @@
 import torch
 from torch.distributions.distribution import Distribution
+from ..core.model import CallableModel
+from phylotorch.core.utils import process_object
+
+
+class BDSKModel(CallableModel):
+
+    def __init__(self, id_, tree, R, delta, s, rho, origin, times=None, survival=None):
+        self.tree = tree
+        self.R = R
+        self.delta = delta
+        self.s = s
+        self.rho = rho
+        self.origin = origin
+        self.times = times
+        self.survival = survival
+        # self.add_parameter(theta)
+        super(BDSKModel, self).__init__(id_)
+
+    def update(self, value):
+        pass
+
+    def handle_model_changed(self, model, obj, index):
+        pass
+
+    def handle_parameter_changed(self, variable, index, event):
+        self.fire_model_changed(variable, index, event)
+
+    def _call(self):
+        bdsk = BDSKY(self.R, self.delta, self.s, self.rho, self.tree.sampling_times, self.origin, self.times,
+                     self.survival)
+        return bdsk.log_prob(self.tree.node_heights)
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        tree = process_object(data['tree'], dic)
+        R = process_object(data['R'], dic)
+        delta = process_object(data['delta'], dic)
+        s = process_object(data['s'], dic)
+        rho = process_object(data['rho'], dic)
+        origin = process_object(data['origin'], dic)
+
+        optionals = {}
+        if 'times' in data:
+            optionals['times'] = process_object(data['times'], dic)
+        if 'survival' in data:
+            optionals['survival'] = process_object(data['survival'], dic)
+
+        return cls(id_, tree, R, delta, s, rho, origin, **optionals)
 
 
 class BDSKY(Distribution):
 
-    def __init__(self, R, delta, s, rho, sampling_times, times, origin, survival=False, validate_args=None):
+    def __init__(self, R, delta, s, rho, sampling_times, origin, times=None, survival=False, validate_args=None):
         """
 
         :param R: effective reproductive number

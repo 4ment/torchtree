@@ -26,14 +26,14 @@ class Distribution(CallableModel):
         else:
             self.add_parameter(self.x)
 
-    def rsample(self):
+    def rsample(self, sample_shape=torch.Size()):
         x = self.dist(*[arg.tensor for arg in self.args.values()],
-                      **self.kwargs).rsample()
+                      **self.kwargs).rsample(sample_shape)
         self.x.tensor = x
 
-    def sample(self):
+    def sample(self, sample_shape=torch.Size()):
         x = self.dist(*[arg.tensor for arg in self.args.values()],
-                      **self.kwargs).sample()
+                      **self.kwargs).sample(sample_shape)
         self.x.tensor = x
 
     def log_prob(self):
@@ -55,7 +55,7 @@ class Distribution(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    def __call__(self, *args, **kwargs):
+    def _call(self, *args, **kwargs):
         return self.log_prob()
 
     @classmethod

@@ -24,9 +24,20 @@ class MultivariateNormal(CallableModel):
         else:
             self.add_parameter(self.x)
 
-    def rsample(self):
+    def rsample(self, sample_shape=torch.Size()):
         kwargs = {self.parameterization: self.parameter.tensor}
-        x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).rsample()
+        x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).rsample(sample_shape)
+        if isinstance(self.x, (list, tuple)):
+            offset = 0
+            for xx in self.x:
+                xx.tensor = x[offset:(offset + xx.shape[0])]
+                offset += xx.shape[0]
+        else:
+            self.x.tensor = x
+
+    def sample(self, sample_shape=torch.Size()):
+        kwargs = {self.parameterization: self.parameter.tensor}
+        x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).sample(sample_shape)
         if isinstance(self.x, (list, tuple)):
             offset = 0
             for xx in self.x:
@@ -52,7 +63,7 @@ class MultivariateNormal(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    def __call__(self, *args, **kwargs):
+    def _call(self, *args, **kwargs):
         return self.log_prob()
 
     @classmethod
@@ -73,9 +84,11 @@ class MultivariateNormal(CallableModel):
 
         if isinstance(x, list):
             x_count = np.sum([xx.shape[0] for xx in x])
+            assert x_count == loc.shape[0]
+            assert torch.Size((x_count, x_count)) == kwargs[parameterization].shape
         else:
-            x_count = x.shape[0]
-        assert x_count == loc.shape[0]
-        assert torch.Size((x_count, x_count)) == kwargs[parameterization].shape
+            # event_shape must match
+            assert x.shape[-1:] == loc.shape[-1:]
+            assert x.shape[-1:] + x.shape[-1:] == kwargs[parameterization].shape[-2:]
 
         return cls(id_, x, loc, **kwargs)

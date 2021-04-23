@@ -25,7 +25,7 @@ class ConstantCoalescentModel(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
-    def __call__(self):
+    def _call(self):
         coalescent = ConstantCoalescent(self.tree.sampling_times, self.theta.tensor)
         return coalescent.log_prob(self.tree.node_heights)
 
@@ -95,7 +95,7 @@ class PiecewiseConstantCoalescent(ConstantCoalescent):
 
 
 class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
-    def __call__(self, *args, **kwargs):
+    def _call(self, *args, **kwargs):
         pwc = PiecewiseConstantCoalescent(self.tree.sampling_times, self.theta.tensor)
         return pwc.log_prob(self.tree.node_heights)
 
@@ -132,7 +132,7 @@ class PiecewiseConstantCoalescentGridModel(ConstantCoalescentModel):
         self.grid = grid
         super(PiecewiseConstantCoalescentGridModel, self).__init__(id_, theta, tree)
 
-    def __call__(self, *args, **kwargs):
+    def _call(self, *args, **kwargs):
         pwc = PiecewiseConstantCoalescentGrid(self.tree.sampling_times, self.theta.tensor, self.grid.tensor)
         return pwc.log_prob(self.tree.node_heights)
 

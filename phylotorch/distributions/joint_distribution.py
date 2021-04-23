@@ -15,7 +15,7 @@ class JointDistributionModel(CallableModel):
         for distr in self.distributions:
             self.add_model(distr)
 
-    def __call__(self, *args, **kwargs):
+    def _call(self, *args, **kwargs):
         log_p = []
         for distr in self.distributions:
             log_p.append(distr().sum())

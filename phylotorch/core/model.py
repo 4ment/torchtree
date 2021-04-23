@@ -26,6 +26,21 @@ class Identifiable(JSONSerializable):
         ...
 
 
+class Parametric(object):
+    def __init__(self):
+        self._parameters = []
+
+    def add_parameter(self, parameter):
+        self._parameters.append(parameter)
+
+    def parameters(self):
+        """Returns parameters of instance Parameter"""
+        parameters = []
+        for param in self._parameters:
+            parameters.extend(param.parameters())
+        return parameters
+
+
 class ModelListener(abc.ABC):
     @abc.abstractmethod
     def handle_model_changed(self, model, obj, index):
@@ -38,18 +53,18 @@ class ParameterListener(abc.ABC):
         ...
 
 
-class Model(Identifiable, ModelListener, ParameterListener):
+class Model(Identifiable, Parametric, ModelListener, ParameterListener):
     _tag = None
 
     def __init__(self, id_):
         self.listeners = []
-        self._parameters = []
         self._models = []
-        super(Model, self).__init__(id_)
+        Identifiable.__init__(self, id_)
+        Parametric.__init__(self)
 
     @abc.abstractmethod
     def update(self, value):
-        pass
+        ...
 
     def add_model(self, model):
         model.add_model_listener(self)
@@ -84,9 +99,17 @@ class Model(Identifiable, ModelListener, ParameterListener):
 
 
 class CallableModel(Model, collections.abc.Callable):
+    def __init__(self, id_: str) -> None:
+        Model.__init__(self, id_)
+        self.lp = None
+
     @abc.abstractmethod
-    def __call__(self, *args, **kwargs):
+    def _call(self, *args, **kwargs) -> torch.Tensor:
         pass
+
+    def __call__(self, *args, **kwargs) -> torch.Tensor:
+        self.lp = self._call(*args, **kwargs)
+        return self.lp
 
 
 class Parameter(Identifiable):
@@ -190,6 +213,9 @@ class Parameter(Identifiable):
         elif 'ones' in data:
             size = data['ones']
             t = torch.ones(size, dtype=dtype)
+        elif 'eye' in data:
+            size = data['eye']
+            t = torch.eye(size, dtype=dtype)
         else:
             values = data['tensor']
             if 'dimension' in data:
@@ -228,7 +254,7 @@ class TransformedParameter(Parameter, CallableModel):
         self.x.update(value)
         self._tensor = self.transform(self.x.tensor)
 
-    def __call__(self):
+    def _call(self):
         if self.need_update:
             self.apply_transform()
             self.need_update = False

@@ -13,7 +13,7 @@ class CUBO(CallableModel):
         self.samples = samples
         super(CUBO, self).__init__(id_)
 
-    def __call__(self):
+    def _call(self):
         p_log_prob = []
         q_log_prob = []
         for i in range(self.samples):
@@ -23,7 +23,8 @@ class CUBO(CallableModel):
         p_log_prob = torch.stack(p_log_prob)
         q_log_prob = torch.stack(q_log_prob)
         log_w = float(self.n) * (p_log_prob - q_log_prob)
-        return (torch.logsumexp(log_w, 0) - torch.log(torch.tensor(float(self.samples)))) / self.n
+        self.lp = (torch.logsumexp(log_w, 0) - torch.log(torch.tensor(float(self.samples)))) / self.n
+        return self.lp
 
     def update(self, value):
         pass

@@ -14,7 +14,7 @@ class GMRF(CallableModel):
         self.precision = precision
         self.add_parameter(self.x)
 
-    def __call__(self, *args, **kwargs):
+    def _call(self, *args, **kwargs):
         return torch.distributions.normal.Normal(0.0, torch.tensor([1.0]) / self.precision.tensor.sqrt()).log_prob(
             self.x.tensor[:-1] - self.x.tensor[1:]).sum()
 
