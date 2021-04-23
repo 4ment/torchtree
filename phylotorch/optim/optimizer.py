@@ -1,55 +1,17 @@
-import abc
 import copy
 import inspect
 import json
 import os
 from typing import Dict, Union, Tuple
 
-import torch
 from torch.optim import Optimizer as TorchOptimizer
-from torch.optim.lr_scheduler import _LRScheduler as TorchScheduler
 
-from .core.model import Parameter, Parametric, CallableModel
-from .core.parameter_encoder import ParameterEncoder
-from .core.runnable import Runnable
-from .core.serializable import JSONSerializable
-from .core.utils import get_class, process_objects, SignalHandler, JSONParseError
-from .typing import ListParameter, ListTensor
-
-
-class Convergence(JSONSerializable):
-
-    @abc.abstractmethod
-    def check(self, iteration: int, *args, **kwargs) -> bool:
-        pass
-
-
-class StanConvergence(Convergence):
-
-    def __init__(self, loss: CallableModel, every: int, samples: int, start: int = 0):
-        self.loss = loss
-        self.every = every
-        self.samples = samples
-        self.start = start
-
-    def check(self, iteration: int, *args, **kwargs) -> bool:
-        if iteration >= self.start and iteration % self.every == 0:
-            if self.samples == 0:
-                elbo = self.loss.lp
-            else:
-                with torch.no_grad():
-                    elbo = self.loss(samples=self.samples)
-            # TODO: implement
-            print(iteration, 'ELBO', elbo)
-        return True
-
-    @classmethod
-    def from_json(cls, data: Dict[str, any], dic: Dict[str, any]) -> 'StanConvergence':
-        loss = process_objects(data['loss'], dic)
-        every = data.get('every', 100)
-        samples = data.get('samples', 100)
-        start = data.get('start', 0)
-        return cls(loss, every, samples, start)
+from ..core.model import Parameter, Parametric, CallableModel
+from ..core.parameter_encoder import ParameterEncoder
+from ..core.runnable import Runnable
+from ..core.serializable import JSONSerializable
+from ..core.utils import get_class, process_objects, SignalHandler, JSONParseError
+from ..typing import ListParameter, ListTensor
 
 
 class Optimizer(JSONSerializable, Runnable):
@@ -216,31 +178,3 @@ class Optimizer(JSONSerializable, Runnable):
             optionals['convergence'] = convergence
 
         return cls(parameters, loss, optimizer, iterations, **optionals)
-
-
-class Scheduler(JSONSerializable):
-    """
-    A wrapper for :class:`~torch.optim.lr_scheduler` objects.
-
-    :param scheduler: a :class:`~torch.optim.lr_scheduler`
-    """
-
-    def __init__(self, scheduler: TorchScheduler):
-        self.scheduler = scheduler
-
-    def step(self, *args) -> None:
-        self.scheduler.step(*args)
-
-    @classmethod
-    def from_json(cls, data: Dict[str, any], dic: Dict[str, any], **kwargs) -> 'Scheduler':
-        scheduler_class = get_class(data['scheduler'])
-        signature_params = list(inspect.signature(scheduler_class.__init__).parameters)
-        optionals = {}
-        for arg in signature_params[1:]:
-            if arg in data:
-                if arg == 'lr_lambda':
-                    optionals['lr_lambda'] = eval(data['lr_lambda'])
-                else:
-                    optionals[arg] = data[arg]
-        scheduler = scheduler_class(kwargs['optimizer'], **optionals)
-        return cls(scheduler)
