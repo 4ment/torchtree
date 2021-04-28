@@ -1,3 +1,4 @@
+import abc
 import inspect
 import numbers
 from collections import OrderedDict
@@ -8,7 +9,22 @@ from ..core.model import CallableModel, Parameter
 from ..core.utils import get_class, process_object, process_objects
 
 
-class Distribution(CallableModel):
+class DistributionModel(CallableModel):
+
+    @abc.abstractmethod
+    def rsample(self, sample_shape=torch.Size()):
+        ...
+
+    @abc.abstractmethod
+    def sample(self, sample_shape=torch.Size()):
+        ...
+
+    @abc.abstractmethod
+    def log_prob(self):
+        ...
+
+
+class Distribution(DistributionModel):
 
     def __init__(self, id_, dist, x, args, **kwargs):
         super(Distribution, self).__init__(id_)

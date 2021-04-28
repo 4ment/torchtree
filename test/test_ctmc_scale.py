@@ -6,7 +6,8 @@ from phylotorch.distributions.ctmc_scale import CTMCScale
 from phylotorch.evolution.tree_model import TimeTreeModel
 
 
-def test_ctmc_scale():
+@pytest.fixture
+def tree_model_dict():
     tree_model = {
         'id': 'tree',
         'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
@@ -28,6 +29,17 @@ def test_ctmc_scale():
             ]
         }
     }
-    tree_model = TimeTreeModel.from_json(tree_model, {})
+    return tree_model
+
+
+def test_ctmc_scale(tree_model_dict):
+    tree_model = TimeTreeModel.from_json(tree_model_dict, {})
     ctmc_scale = CTMCScale(None, Parameter(None, torch.tensor([0.001])), tree_model)
     assert 4.475351922659342 == pytest.approx(ctmc_scale().item(), 0.00001)
+
+
+def test_ctmc_scale_batch(tree_model_dict):
+    tree_model_dict['node_heights']['tensor'] = [[1.5, 4., 6., 16.], [1.5, 4., 6., 16.]]
+    tree_model = TimeTreeModel.from_json(tree_model_dict, {})
+    ctmc_scale = CTMCScale(None, Parameter(None, torch.tensor([[0.001], [0.001]])), tree_model)
+    torch.allclose(torch.full((2, 1), 4.475351922659342, dtype=torch.float64), ctmc_scale())

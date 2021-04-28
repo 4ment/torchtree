@@ -1,13 +1,14 @@
 import torch
 import torch.distributions.normal
 
-from ..core.model import CallableModel
+from ..core.model import CallableModel, Parameter
 from ..core.utils import process_object
 from ..evolution.tree_model import TreeModel
+from ..typing import ID
 
 
 class GMRF(CallableModel):
-    def __init__(self, id_, x, precision, tree_model=None):
+    def __init__(self, id_: ID, x: Parameter, precision: Parameter, tree_model: TreeModel = None) -> None:
         super(GMRF, self).__init__(id_)
         self.tree_model = tree_model
         self.x = x
@@ -16,7 +17,7 @@ class GMRF(CallableModel):
 
     def _call(self, *args, **kwargs):
         return torch.distributions.normal.Normal(0.0, torch.tensor([1.0]) / self.precision.tensor.sqrt()).log_prob(
-            self.x.tensor[:-1] - self.x.tensor[1:]).sum()
+            self.x.tensor[..., :-1] - self.x.tensor[..., 1:]).sum(-1, keepdim=True)
 
     def update(self, value):
         pass

@@ -32,7 +32,8 @@ def calculate_treelikelihood_discrete(partials, weights, post_indexing, mats, fr
     for node, left, right in post_indexing:
         partials[node] = torch.matmul(mats[left], partials[left]) * torch.matmul(
             mats[right], partials[right])
-    return torch.sum(torch.log(torch.matmul(freqs, torch.sum(props * partials[post_indexing[-1][0]], 0))) * weights)
+    return torch.sum(torch.log(torch.matmul(freqs, torch.sum(props * partials[post_indexing[-1][0]], 0))) * weights, -1,
+                     keepdim=True)
 
 
 def calculate_treelikelihood_discrete_rescaled(partials, weights, post_indexing, mats, freqs, props):

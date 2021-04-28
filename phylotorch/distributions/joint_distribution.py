@@ -1,33 +1,47 @@
-from collections import OrderedDict
-from inspect import signature
+from typing import List
 
 import torch.distributions
 
-from ..core.model import CallableModel
+from .distributions import DistributionModel
 from ..core.utils import process_object
+from ..typing import ID
 
 
-class JointDistributionModel(CallableModel):
+class JointDistributionModel(DistributionModel):
+    """
+    Joint distribution of independent distributions.
 
-    def __init__(self, id_, distributions):
+    :param id_: ID of joint distribution
+    :param distributions: list of distributions of type DistributionModel or CallableModel
+    """
+    def __init__(self, id_: ID, distributions: List[DistributionModel]) -> None:
         self.distributions = distributions
         super(JointDistributionModel, self).__init__(id_)
         for distr in self.distributions:
             self.add_model(distr)
 
-    def _call(self, *args, **kwargs):
+    def log_prob(self):
         log_p = []
         for distr in self.distributions:
-            log_p.append(distr().sum())
-        return torch.stack(log_p).sum()
+            lp = distr()
+            if lp.shape == torch.Size([]):
+                log_p.append(lp.unsqueeze(0))
+            elif lp.shape[-1] != 1:
+                log_p.append(lp.sum(-1, keepdim=True))
+            else:
+                log_p.append(lp)
+        return torch.cat(log_p, -1).sum(-1, keepdim=True)
 
-    def rsample(self):
-        for distr in self.distributions:
-            distr.rsample()
+    def _call(self, *args, **kwargs):
+        return self.log_prob()
 
-    def sample(self):
+    def rsample(self, sample_shape=torch.Size()):
         for distr in self.distributions:
-            distr.sample()
+            distr.rsample(sample_shape)
+
+    def sample(self, sample_shape=torch.Size()):
+        for distr in self.distributions:
+            distr.sample(sample_shape)
 
     def update(self, value):
         pass
@@ -45,137 +59,3 @@ class JointDistributionModel(CallableModel):
         for d in data['distributions']:
             distributions.append(process_object(d, dic))
         return cls(id_, distributions)
-
-
-class JointDistribution(torch.distributions.Distribution):
-
-    def __init__(self, distributions, parameters=None, transforms=None):
-        """ Instantiate a JointDistribution
-
-        :param distributions: `collections.OrderedDict` of distributions
-        :param parameters: `dict` or `collections.OrderedDict` of parameters
-        :param transforms: `collections.OrderedDict` of transforms
-        """
-        super(JointDistribution, self).__init__()
-        self.distributions = OrderedDict()
-        self._parameters = {} if parameters is None else parameters
-        self._transforms = OrderedDict()
-        self.transformed_params = {}
-        if transforms is not None:
-            for name, fn in transforms.items():
-                self.add_transform(name, fn)
-        for name, dist in distributions.items():
-            self.add_distribution(name, dist)
-        self._joint_log_prob = 0
-
-    @property
-    def parameters(self):
-        return list(self._parameters.values())
-
-    @property
-    def transforms(self):
-        return self._transforms
-
-    def add_distribution(self, name, distribution):
-        self.distributions[name] = distribution
-
-    def add_transform(self, name, fn):
-        self._transforms[name] = fn
-
-    def rsample(self, sample_shape=torch.Size()):
-        samples = {}
-        for name, dist in self.distributions.items():
-            # it is a lambda or function
-            if callable(dist):
-                params = []
-                for p in signature(dist).parameters.keys():
-                    if p in self._parameters:
-                        params.append(self._parameters[p])
-                samples[name] = dist(*params).rsample(sample_shape)
-            # it is a distribution
-            else:
-                samples[name] = dist.rsample(sample_shape=sample_shape)
-        return samples
-
-    def apply_transform(self, name, value):
-        params = []
-        for p in signature(self._transforms[name]).parameters.keys():
-            if p in self.transformed_params:
-                params.append(self.transformed_params[p])
-            elif p in value:
-                params.append(value[p])
-            else:
-                self.apply_transform(p, value)
-                params.append(self.transformed_params[p])
-        transform_evaluated = self._transforms[name](*params)
-        if callable(transform_evaluated):
-            self.transformed_params[name] = transform_evaluated(*params)
-            if hasattr(transform_evaluated, 'log_abs_det_jacobian'):
-                self._joint_log_prob += transform_evaluated.log_abs_det_jacobian(*params,
-                                                                                 self.transformed_params[name]).sum()
-        else:
-            self.transformed_params[name] = transform_evaluated
-
-    def log_prob(self, value):
-        self._joint_log_prob = 0.0
-        self.transformed_params = {}
-        for name, dist in self.distributions.items():
-            if callable(dist):
-                params = []
-                # get arguments of lambda
-                for p in signature(dist).parameters.keys():
-                    if p in value:
-                        params.append(value[p])
-                    elif p in self._parameters:
-                        params.append(self._parameters[p])
-                    # argument is a transformed parameter and has already been parsed
-                    elif p in self.transformed_params:
-                        params.append(self.transformed_params[p])
-                    # argument is a transformed parameter and needs to be been parsed
-                    else:
-                        self.apply_transform(p, value)
-                        params.append(self.transformed_params[p])
-
-                if name in value:
-                    self._joint_log_prob += dist(*params).log_prob(value[name]).sum()
-                else:
-                    if name not in self.transformed_params:
-                        self.apply_transform(name, value)
-                    self._joint_log_prob += dist(*params).log_prob(self.transformed_params[name]).sum()
-            else:
-                if name in value:
-                    self._joint_log_prob += dist.log_prob(value[name]).sum()
-                else:
-                    if name not in self.transformed_params:
-                        self.apply_transform(name, value)
-                    self._joint_log_prob += dist.log_prob(self.transformed_params[name]).sum()
-        return self._joint_log_prob
-
-    def __str__(self):
-        model_string = ''
-        # for name, p in self._parameters.items():
-        #     model_string += name + ' ' + str(type(p)) + '\n'
-        for name, transform in self._transforms.items():
-            if len(signature(transform).parameters) != 0:
-                model_string += name + ' := ' + transform.__name__ + ' ' + ', '.join(
-                    signature(transform).parameters.keys()) + '\n'
-        model_string += '\n'
-
-        for name, dist in self.distributions.items():
-            model_string += name + ' ~ '
-            # it is a lambda or function
-            if callable(dist):
-                params = []
-                for p in signature(dist).parameters.keys():
-                    if p in self._parameters:
-                        params.append(self._parameters[p])
-                try:
-                    model_string += dist(*params).__class__.__name__
-                except:
-                    pass
-                model_string += '(' + ', '.join(signature(dist).parameters.keys()) + ')'
-            # it is a distribution
-            else:
-                model_string += str(dist)
-            model_string += '\n'
-        return model_string
