@@ -1,3 +1,4 @@
+import copy
 import importlib
 import json
 import numbers
@@ -66,7 +67,7 @@ def tensor_rand(distribution, dtype, shape):
     return tensor
 
 
-def get_class(full_name):
+def get_class(full_name: str) -> any:
     a = full_name.split('.')
     class_name = a[-1]
     module_name = '.'.join(a[:-1])
@@ -88,8 +89,15 @@ def process_objects(data, dic):
 
 def process_object(data, dic):
     if isinstance(data, str):
+        # for references such as branches.{0:3}
         try:
-            obj = dic[data]
+            if '{' in data:
+                stem, indices = data.split('{')
+                start, stop = indices.rstrip('}').split(':')
+                for i in range(int(start), int(stop)):
+                    obj = dic[stem + str(i)]
+            else:
+                obj = dic[data]
         except KeyError:
             raise JSONParseError('Object with ID `{}\' not found'.format(data))
     elif isinstance(data, dict):
@@ -109,7 +117,7 @@ def process_object(data, dic):
         obj = klass.from_json_safe(data, dic)
         dic[id_] = obj
     else:
-        raise JSONParseError('Object is not valid (should be str or object)')
+        raise JSONParseError('Object is not valid (should be str or object)\nProvided: {}'.format(data))
     return obj
 
 
@@ -178,3 +186,39 @@ def remove_comments(obj):
                 remove_comments(obj[key])
             else:
                 del obj[key]
+
+
+def replace_star_with_str(obj, value):
+    if isinstance(obj, list):
+        for element in obj:
+            replace_star_with_str(element, value)
+    elif isinstance(obj, dict):
+        for key in list(obj.keys()).copy():
+            replace_star_with_str(obj[key], value)
+            if key == 'id' and obj[key][-1] == '*':
+                obj[key] = obj[key][:-1] + value
+
+
+def expand_plates(obj, parent=None, idx=None):
+    # TODO: expand_plates won't work with nested plates
+    if isinstance(obj, list):
+        for i, element in enumerate(obj):
+            expand_plates(element, obj, i)
+    elif isinstance(obj, dict):
+        if 'type' in obj and obj['type'].endswith('Plate'):
+            if 'range' in obj:
+                r = list(map(int, obj['range'].split(':')))
+                objects = []
+                for i in range(*r):
+                    clone = copy.deepcopy(obj['object'])
+                    replace_star_with_str(clone, str(i))
+                    objects.append(clone)
+                # replace plate dict with object list in parent list
+                if idx is not None:
+                    del parent[idx]
+                    parent[idx:idx] = objects
+                else:
+                    raise JSONParseError('plate works only when part of a list')
+        else:
+            for value in obj.values():
+                expand_plates(value, obj, None)
