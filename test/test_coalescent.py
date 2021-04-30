@@ -9,9 +9,9 @@ from phylotorch.evolution.coalescent import ConstantCoalescent, PiecewiseConstan
 
 def inverse_transform_homochronous(ratios):
     heights = torch.zeros_like(ratios)
-    heights[2] = ratios[-1]
-    heights[1] = ratios[1] * heights[2].clone()
-    heights[0] = ratios[0] * heights[1].clone()
+    heights[..., 2] = ratios[..., -1]
+    heights[..., 1] = ratios[..., 1] * heights[..., 2].clone()
+    heights[..., 0] = ratios[..., 0] * heights[..., 1].clone()
     return heights
 
 
@@ -72,7 +72,18 @@ def test_constant(ratios_list):
     heights = inverse_transform_homochronous(ratios)
     constant = ConstantCoalescent(sampling_times, thetas)
     log_p = constant.log_prob(heights)
-    assert -13.295836866 == pytest.approx(log_p.item(), 0.0001)
+    assert torch.allclose(torch.tensor([-13.295836866], dtype=log_p.dtype), log_p)
+
+
+def test_constant_batch(ratios_list):
+    ratios_list = list(ratios_list) + [2.0 * v for v in ratios_list]
+    sampling_times = torch.tensor(np.array([0., 0., 0., 0.]))
+    ratios = torch.tensor(np.array(ratios_list).reshape(2, 3), requires_grad=True)
+    thetas = torch.tensor(np.array([[3.], [6.]]), requires_grad=True)
+    heights = inverse_transform_homochronous(ratios)
+    constant = ConstantCoalescent(sampling_times, thetas)
+    log_p = constant.log_prob(heights)
+    assert torch.allclose(torch.tensor([[-13.295836866], [-25.375278407684164]], dtype=log_p.dtype), log_p)
 
 
 def test_constant_json(tree_model_node_heights_transformed):
@@ -99,6 +110,16 @@ def test_skyride(ratios_list):
     constant = PiecewiseConstantCoalescent(sampling_times, thetas)
     log_p = constant.log_prob(heights)
     assert -11.487491742782 == pytest.approx(log_p.item(), 0.0001)
+
+
+def test_skyride_batch(ratios_list):
+    sampling_times = torch.tensor(np.array([0., 0., 0., 0.]))
+    ratios = torch.tensor(np.array([ratios_list] + [ratios_list]), requires_grad=True)
+    thetas = torch.tensor(np.array([[3., 10., 4.], [3., 10., 4.]]), requires_grad=True)
+    heights = inverse_transform_homochronous(ratios)
+    constant = PiecewiseConstantCoalescent(sampling_times, thetas)
+    log_p = constant.log_prob(heights)
+    assert torch.allclose(torch.tensor([[-11.487491742782], [-11.487491742782]], dtype=thetas.dtype), log_p)
 
 
 def test_skyride_json(tree_model_node_heights_transformed):
@@ -143,12 +164,26 @@ def test_skygrid_json(tree_model_node_heights_transformed):
     assert -11.8751856 == pytest.approx(skygrid().item(), 0.0001)
 
 
-def test_skygrid_heterochronous():
+@pytest.mark.parametrize("cutoff,expected", [(10.0, -19.594893640219844),
+                                             (18.0, -14.918634593243764)])
+def test_skygrid_heterochronous(cutoff, expected):
     sampling_times = torch.tensor(np.array([0., 1., 2., 3., 12.]))
     thetas_log = torch.tensor(np.array([1.0, 3.0, 6.0, 8.0, 9.0]))
     thetas = thetas_log.exp()
     heights = torch.tensor(np.array([1.5, 4., 6., 16.]))
-    grid = torch.tensor(np.linspace(0, 10.0, num=5)[1:])
+    grid = torch.linspace(0, cutoff, steps=5)[1:]
     constant = PiecewiseConstantCoalescentGrid(sampling_times, thetas, grid)
     log_p = constant.log_prob(heights)
-    assert -19.594893640219844 == pytest.approx(log_p.item(), 0.0001)
+    assert torch.allclose(torch.tensor([expected], dtype=log_p.dtype), log_p)
+
+
+def test_skygrid_heterochronous_batch():
+    sampling_times = torch.tensor(np.array([0., 1., 2., 3., 12.]))
+    thetas_log = torch.tensor(np.array([[1.0, 3.0, 6.0, 8.0, 9.0],
+                                        [1.0, 3.0, 6.0, 8.0, 9.0]]))
+    thetas = thetas_log.exp()
+    heights = torch.tensor(np.array([[1.5, 4., 6., 16.], [1.5, 4., 6., 26.]]))
+    grid = torch.linspace(0, 10.0, steps=5)[1:]
+    constant = PiecewiseConstantCoalescentGrid(sampling_times, thetas, grid)
+    log_p = constant.log_prob(heights)
+    assert torch.allclose(torch.tensor([[-19.594893640219844], [-19.596127738260712]], dtype=thetas.dtype), log_p)
