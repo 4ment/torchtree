@@ -66,8 +66,8 @@ class InvariantSiteModel(SiteModel):
         return self._invariant.tensor
 
     def update_rates_probs(self, invariant):
-        self._probs = torch.cat((invariant, 1.0 - invariant))
-        self._rates = torch.cat((torch.zeros_like(invariant), 1.0 / (1.0 - invariant)))
+        self._probs = torch.cat((invariant, 1.0 - invariant), -1)
+        self._rates = torch.cat((torch.zeros_like(invariant), 1.0 / (1.0 - invariant)), -1)
 
     def update(self, value):
         if isinstance(value, dict):
@@ -133,7 +133,7 @@ class WeibullSiteModel(SiteModel):
             quantile = (2.0 * torch.arange(self.categories) + 1.0) / (2.0 * self.categories)
             rates = torch.pow(-torch.log(1.0 - quantile), 1.0 / shape)
 
-        self._rates = rates / (rates * self.probs).sum()
+        self._rates = rates / (rates * self.probs).sum(-1, keepdim=True)
 
     def update(self, value):
         if isinstance(value, dict):

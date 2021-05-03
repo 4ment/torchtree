@@ -2,14 +2,31 @@ import numpy as np
 import pytest
 import torch
 
-from phylotorch.evolution.site_model import ConstantSiteModel, WeibullSiteModel, InvariantSiteModel
 from phylotorch.core.model import Parameter
+from phylotorch.evolution.site_model import ConstantSiteModel, WeibullSiteModel, InvariantSiteModel
 
 
 def test_constant():
     sitemodel = ConstantSiteModel('constant')
     assert sitemodel.rates()[0] == 1.0
     assert sitemodel.probabilities()[0] == 1.0
+
+
+def test_weibull_batch():
+    key = 'shape'
+    sitemodel = WeibullSiteModel('weibull', Parameter(key, torch.tensor([[1.], [0.1]])), 4)
+    rates_expected = torch.tensor([[0.1457844, 0.5131316, 1.0708310, 2.2702530],
+                                   [4.766392e-12, 1.391131e-06, 2.179165e-03, 3.997819]])
+    assert torch.allclose(sitemodel.rates(), rates_expected)
+
+
+def test_weibull_batch2():
+    key = 'shape'
+    sitemodel = WeibullSiteModel('weibull', Parameter(key, torch.tensor([[1.], [0.1], [1.]])), 4)
+    rates_expected = torch.tensor([[0.1457844, 0.5131316, 1.0708310, 2.2702530],
+                                   [4.766392e-12, 1.391131e-06, 2.179165e-03, 3.997819],
+                                   [0.1457844, 0.5131316, 1.0708310, 2.2702530]])
+    assert torch.allclose(sitemodel.rates(), rates_expected)
 
 
 def test_weibull():
@@ -42,6 +59,14 @@ def test_weibull_invariant0():
     np.testing.assert_allclose(sitemodel.rates(), rates_expected, rtol=1e-06)
 
     assert torch.sum(sitemodel.rates() * sitemodel.probabilities()).item() == pytest.approx(1.0, 1.0e-6)
+
+
+def test_invariant_batch():
+    prop_invariant = torch.tensor([[0.2], [0.3]])
+    site_model = InvariantSiteModel('pinv', Parameter('inv', prop_invariant))
+    rates = site_model.rates()
+    props = site_model.probabilities()
+    assert torch.all(rates.mul(props).sum(-1) == torch.ones(2))
 
 
 def test_invariant():
