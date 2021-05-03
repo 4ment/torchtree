@@ -28,7 +28,7 @@ class SubstitutionModel(Model):
 
     @staticmethod
     def norm(Q, frequencies):
-        return -torch.sum(torch.diagonal(Q) * frequencies)
+        return -torch.sum(torch.diagonal(Q, dim1=-2, dim2=-1) * frequencies, -1)
 
 
 class JC69(SubstitutionModel):
@@ -48,7 +48,7 @@ class JC69(SubstitutionModel):
         return torch.cat((a, b, b, b,
                           b, a, b, b,
                           b, b, a, b,
-                          b, b, b, a), -1).reshape(d.shape[0], d.shape[1], 4, 4)
+                          b, b, b, a), -1).reshape(d.shape[:-1] + (4, 4))
 
     def q(self):
         return torch.tensor(np.array([[-1., 1. / 3, 1. / 3, 1. / 3],
@@ -78,14 +78,14 @@ class SymmetricSubstitutionModel(SubstitutionModel):
 
     def p_t(self, branch_lengths):
         Q_unnorm = self.q()
-        Q = Q_unnorm / SubstitutionModel.norm(Q_unnorm, self.frequencies)
-        sqrt_pi = torch.zeros(Q.shape, dtype=torch.float64)
-        sqrt_pi_inv = torch.zeros(Q.shape, dtype=torch.float64)
-        sqrt_pi[range(sqrt_pi.shape[0]), range(sqrt_pi.shape[0])] = self.frequencies.sqrt()
-        sqrt_pi_inv[range(sqrt_pi_inv.shape[0]), range(sqrt_pi_inv.shape[0])] = 1. / self.frequencies.sqrt()
+        Q = Q_unnorm / SubstitutionModel.norm(Q_unnorm, self.frequencies).unsqueeze(-1).unsqueeze(-1)
+        sqrt_pi = self.frequencies.sqrt().diag_embed(dim1=-2, dim2=-1)
+        sqrt_pi_inv = (1. / self.frequencies.sqrt()).diag_embed(dim1=-2, dim2=-1)
         S = sqrt_pi @ Q @ sqrt_pi_inv
         e, v = self.eigen(S)
-        return sqrt_pi_inv @ v @ torch.exp(e * branch_lengths).diag_embed() @ v.inverse() @ sqrt_pi
+        return sqrt_pi_inv.unsqueeze(-3) @ v.unsqueeze(-3) @ torch.exp(
+            e.unsqueeze(-2) * branch_lengths.unsqueeze(-1)).diag_embed() @ v.inverse().unsqueeze(
+            -3) @ sqrt_pi.unsqueeze(-3)
 
     def eigen(self, Q):
         return torch.symeig(Q, eigenvectors=True)
@@ -117,28 +117,33 @@ class GTR(SymmetricSubstitutionModel):
         self.fire_model_changed()
 
     def q(self):
-        rates = self.rates
-        pi = self.frequencies
-        return torch.stack((
-            -(rates[0] * pi[1] + rates[1] * pi[2] + rates[2] * pi[3]),
-            rates[0] * pi[1],
-            rates[1] * pi[2],
-            rates[2] * pi[3],
+        if len(self.frequencies.shape) == 1:
+            pi = self.frequencies.unsqueeze(0)
+            rates = self.rates.unsqueeze(0)
+        else:
+            pi = self.frequencies.unsqueeze(-2)
+            rates = self.rates.unsqueeze(-2)
+        return torch.cat((
+            -(rates[..., 0] * pi[..., 1] + rates[..., 1] * pi[..., 2] + rates[..., 2] * pi[..., 3]),
+            rates[..., 0] * pi[..., 1],
+            rates[..., 1] * pi[..., 2],
+            rates[..., 2] * pi[..., 3],
 
-            rates[0] * pi[0],
-            -(rates[0] * pi[0] + rates[3] * pi[2] + rates[4] * pi[3]),
-            rates[3] * pi[2],
-            rates[4] * pi[3],
+            rates[..., 0] * pi[..., 0],
+            -(rates[..., 0] * pi[..., 0] + rates[..., 3] * pi[..., 2] + rates[..., 4] * pi[..., 3]),
+            rates[..., 3] * pi[..., 2],
+            rates[..., 4] * pi[..., 3],
 
-            rates[1] * pi[0],
-            rates[3] * pi[1],
-            -(rates[1] * pi[0] + rates[3] * pi[1] + rates[5] * pi[3]),
-            rates[5] * pi[3],
+            rates[..., 1] * pi[..., 0],
+            rates[..., 3] * pi[..., 1],
+            -(rates[..., 1] * pi[..., 0] + rates[..., 3] * pi[..., 1] + rates[..., 5] * pi[..., 3]),
+            rates[..., 5] * pi[..., 3],
 
-            rates[2] * pi[0],
-            rates[4] * pi[1],
-            rates[5] * pi[2],
-            -(rates[2] * pi[0] + rates[4] * pi[1] + rates[5] * pi[2])), 0).reshape((4, 4))
+            rates[..., 2] * pi[..., 0],
+            rates[..., 4] * pi[..., 1],
+            rates[..., 5] * pi[..., 2],
+            -(rates[..., 2] * pi[..., 0] + rates[..., 4] * pi[..., 1] + rates[..., 5] * pi[..., 2])), -1).reshape(
+            self.rates.shape[:-1] + (4, 4))
 
     @classmethod
     def from_json(cls, data, dic):
@@ -208,12 +213,24 @@ class HKY(SymmetricSubstitutionModel):
                           pi[3] * (1. + (R / Y) * exp1) + (pi[1] / Y) * exp21), -1).reshape(
             d.shape[0], d.shape[1], 4, 4)
 
-    def q(self):
+    def q2(self):
         pi = self.frequencies.unsqueeze(-1)
         return torch.cat((-(pi[1] + self.kappa * pi[2] + pi[3]), pi[1], self.kappa * pi[2], pi[3],
                           pi[0], -(pi[0] + pi[2] + self.kappa * pi[3]), pi[2], self.kappa * pi[3],
                           self.kappa * pi[0], pi[1], -(self.kappa * pi[0] + pi[1] + pi[3]), pi[3],
                           pi[0], self.kappa * pi[1], pi[2], -(pi[0] + self.kappa * pi[1] + pi[2])), 0).reshape((4, 4))
+
+    def q(self):
+        if len(self.frequencies.shape) == 1:
+            pi = self.frequencies.unsqueeze(0)
+        else:
+            pi = self.frequencies.unsqueeze(-2)
+        kappa = self.kappa
+        return torch.cat((-(pi[..., 1] + kappa * pi[..., 2] + pi[..., 3]), pi[..., 1], kappa * pi[..., 2], pi[..., 3],
+                          pi[..., 0], -(pi[..., 0] + pi[..., 2] + kappa * pi[..., 3]), pi[..., 2], kappa * pi[..., 3],
+                          kappa * pi[..., 0], pi[..., 1], -(kappa * pi[..., 0] + pi[..., 1] + pi[..., 3]), pi[..., 3],
+                          pi[..., 0], kappa * pi[..., 1], pi[..., 2], -(pi[..., 0] + kappa * pi[..., 1] + pi[..., 2])),
+                         -1).reshape(kappa.shape[:-1] + (4, 4))
 
     @classmethod
     def from_json(cls, data, dic):
