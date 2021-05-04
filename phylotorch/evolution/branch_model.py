@@ -45,7 +45,7 @@ class StrictClockModel(AbstractClockModel):
 
     @property
     def rates(self):
-        return self._rates.tensor.expand((self.branch_count,))
+        return self._rates.tensor.expand([-1]*(self._rates.tensor.dim()-1) + [self.branch_count])
 
     @classmethod
     def from_json(cls, data, dic):
