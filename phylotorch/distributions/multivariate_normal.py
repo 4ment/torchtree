@@ -66,6 +66,19 @@ class MultivariateNormal(CallableModel):
     def _call(self, *args, **kwargs):
         return self.log_prob()
 
+    @property
+    def batch_shape(self):
+        kwargs = {self.parameterization: self.parameter.tensor}
+        if isinstance(self.x, (list, tuple)):
+            return torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).batch_shape
+        else:
+            return torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).batch_shape
+
+    @property
+    def sample_shape(self):
+        offset = 1 if len(self.batch_shape) == 0 else len(self.batch_shape)
+        return self.x.tensor.shape[:-offset]
+
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']

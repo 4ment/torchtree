@@ -27,25 +27,33 @@ class VariationalConvergence(BaseConvergence):
     Class that does not check for convergence but output ELBO.
 
     :param loss: ELBO function
-    :param every: evaluate ELBO at every "every" iteration
-    :param samples: number of samples for ELBO calculation
-    :param start: start checking at iteration number "start"
+    :param int every: evaluate ELBO at every "every" iteration
+    :param int samples: number of samples for ELBO calculation
+    :param int start: start checking at iteration number "start (Default is 0)"
+    :param str file_name: print to file_name or print to sys.stdout if fiole_name is None
     """
 
-    def __init__(self, loss: CallableModel, every: int, samples: int, start: int = 0) -> None:
+    def __init__(self, loss: CallableModel, every: int, samples: torch.Size, start: int = 0,
+                 file_name: str = None) -> None:
         self.loss = loss
         self.every = every
         self.samples = samples
         self.start = start
+        self.file_name = file_name
+        if self.file_name is not None:
+            self.f = open(self.file_name, 'w')
+        else:
+            self.f = sys.stdout
 
     def check(self, iteration: int, *args, **kwargs) -> bool:
         if iteration >= self.start and iteration % self.every == 0:
-            if self.samples == 0:
+            if self.samples == torch.Size([0]):
                 elbo = self.loss.lp
             else:
                 with torch.no_grad():
                     elbo = self.loss(samples=self.samples)
-            print(iteration, 'ELBO', elbo)
+            self.f.write('{} ELBO {}\n'.format(iteration, elbo))
+            self.f.flush()
         return True
 
     @classmethod
@@ -53,8 +61,15 @@ class VariationalConvergence(BaseConvergence):
         loss = process_objects(data['loss'], dic)
         every = data.get('every', 100)
         samples = data.get('samples', 100)
+        if isinstance(samples, list):
+            samples = torch.Size(samples)
+        else:
+            samples = torch.Size((samples,))
         start = data.get('start', 0)
-        return cls(loss, every, samples, start)
+        optionals = {}
+        if 'file_name' in data:
+            optionals['file_name'] = data['file_name']
+        return cls(loss, every, samples, start, **optionals)
 
 
 class StanVariationalConvergence(VariationalConvergence):
@@ -62,15 +77,15 @@ class StanVariationalConvergence(VariationalConvergence):
     Class for checking SGD convergence using Stan's algorithm.
     Code adapted from https://github.com/stan-dev/stan/blob/develop/src/stan/variational/advi.hpp
 
-    :param loss: ELBO function
-    :param every: evaluate ELBO at every "every" iteration
-    :param samples: number of samples for ELBO calculation
-    :param max_iterations: maximum number of iterations
-    :param start: start checking at iteration number "start"
-    :param tol_rel_obj: relative tolerance parameter for convergence
+    :param CallableModel loss: ELBO function
+    :param int every: evaluate ELBO at every "every" iteration
+    :param int samples: number of samples for ELBO calculation
+    :param int max_iterations: maximum number of iterations
+    :param int start: start checking at iteration number "start" (Default is 0)
+    :param float tol_rel_obj: relative tolerance parameter for convergence (Default is 0.01)
     """
 
-    def __init__(self, loss: CallableModel, every: int, samples: int, max_iterations: int, start: int = 0,
+    def __init__(self, loss: CallableModel, every: int, samples: torch.Size, max_iterations: int, start: int = 0,
                  tol_rel_obj: float = 0.01):
         super(StanVariationalConvergence, self).__init__(loss, every, samples, start)
         self.tol_rel_obj = tol_rel_obj
@@ -89,7 +104,7 @@ class StanVariationalConvergence(VariationalConvergence):
         keep_going = True
         if iteration >= self.start and iteration % self.every == 0:
             elbo_prev = self.elbo
-            if self.samples == 0:
+            if self.samples == torch.Size([0]):
                 self.elbo = self.loss.lp.item()
             else:
                 with torch.no_grad():
@@ -133,6 +148,10 @@ class StanVariationalConvergence(VariationalConvergence):
         loss = process_objects(data['loss'], dic)
         every = data.get('every', 100)
         samples = data.get('samples', 100)
+        if isinstance(samples, list):
+            samples = torch.Size(samples)
+        else:
+            samples = torch.Size((samples,))
         start = data.get('start', 0)
         if 'max_iterations' in data:
             max_iterations = data['max_iterations']

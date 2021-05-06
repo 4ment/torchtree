@@ -1,12 +1,14 @@
 import torch
 
-from ..core.utils import process_object
 from ..core.model import CallableModel
+from ..core.utils import process_object
+from ..distributions.distributions import DistributionModel
+from ..typing import ID
 
 
 class ELBO(CallableModel):
 
-    def __init__(self, id_, q, p, samples, forward=False):
+    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size, forward=False):
         self.q = q
         self.p = p
         self.samples = samples
@@ -35,15 +37,15 @@ class ELBO(CallableModel):
                 w_norm = log_w_norm.exp()
                 lp = torch.sum(w_norm * log_w)
         else:
-            if isinstance(samples, torch.Size):
+            # Multi sample
+            if len(samples) == 2:
+                self.q.rsample(samples)
+                log_q = self.q()
+                log_p = self.p()
+                lp = (torch.logsumexp(log_p - log_q, -1) - torch.tensor(float(log_p.shape[-1])).log()).mean()
+            else:
                 self.q.rsample(samples)
                 lp = (self.p() - self.q()).mean()
-            else:
-                elbos = []
-                for i in range(samples):
-                    self.q.rsample()
-                    elbos.append(self.p() - self.q())
-                lp = torch.stack(elbos).mean()
         return lp
 
     def update(self, value):
@@ -60,6 +62,8 @@ class ELBO(CallableModel):
         samples = data.get('samples', 1)
         if isinstance(samples, list):
             samples = torch.Size(samples)
+        else:
+            samples = torch.Size((samples,))
 
         var_desc = data['variational']
         var = process_object(var_desc, dic)

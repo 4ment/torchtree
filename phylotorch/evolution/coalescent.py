@@ -29,6 +29,14 @@ class ConstantCoalescentModel(CallableModel):
         coalescent = ConstantCoalescent(self.tree.sampling_times, self.theta.tensor)
         return coalescent.log_prob(self.tree.node_heights)
 
+    @property
+    def batch_shape(self):
+        return self.theta.tensor.shape[-1:]
+
+    @property
+    def sample_shape(self):
+        return self.theta.tensor.shape[:-len(self.batch_shape)]
+
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']

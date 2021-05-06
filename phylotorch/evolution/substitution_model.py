@@ -83,9 +83,10 @@ class SymmetricSubstitutionModel(SubstitutionModel):
         sqrt_pi_inv = (1. / self.frequencies.sqrt()).diag_embed(dim1=-2, dim2=-1)
         S = sqrt_pi @ Q @ sqrt_pi_inv
         e, v = self.eigen(S)
-        return sqrt_pi_inv.unsqueeze(-3) @ v.unsqueeze(-3) @ torch.exp(
-            e.unsqueeze(-2) * branch_lengths.unsqueeze(-1)).diag_embed() @ v.inverse().unsqueeze(
-            -3) @ sqrt_pi.unsqueeze(-3)
+        offset = branch_lengths.dim() - e.dim() + 1
+        return (sqrt_pi_inv @ v).reshape(e.shape[:-1] + (1,) * offset + sqrt_pi_inv.shape[-2:]) @ torch.exp(
+            e.reshape(e.shape[:-1] + (1,) * offset + e.shape[-1:]) * branch_lengths.unsqueeze(-1)).diag_embed() @ (
+                           v.inverse() @ sqrt_pi).reshape(e.shape[:-1] + (1,) * offset + sqrt_pi_inv.shape[-2:])
 
     def eigen(self, Q):
         return torch.symeig(Q, eigenvectors=True)

@@ -236,7 +236,7 @@ class TransformedParameter(Parameter, CallableModel):
         self.x = x
         self.need_update = False
         if isinstance(self.x, list):
-            tensor = self.transform(torch.cat([x.tensor for x in self.x]))
+            tensor = self.transform(torch.cat([x.tensor for x in self.x], -1))
             for xx in self.x:
                 self.add_parameter(xx)
         else:
@@ -260,7 +260,7 @@ class TransformedParameter(Parameter, CallableModel):
             self.need_update = False
 
         if isinstance(self.x, list):
-            return self.transform.log_abs_det_jacobian(torch.cat([x.tensor for x in self.x]), self._tensor)
+            return self.transform.log_abs_det_jacobian(torch.cat([x.tensor for x in self.x], -1), self._tensor)
         else:
             return self.transform.log_abs_det_jacobian(self.x.tensor, self._tensor)
 
@@ -277,7 +277,7 @@ class TransformedParameter(Parameter, CallableModel):
 
     def apply_transform(self):
         if isinstance(self.x, list):
-            self._tensor = self.transform(torch.cat([x.tensor for x in self.x]))
+            self._tensor = self.transform(torch.cat([x.tensor for x in self.x], -1))
         else:
             self._tensor = self.transform(self.x.tensor)
 
@@ -287,6 +287,15 @@ class TransformedParameter(Parameter, CallableModel):
 
     def handle_model_changed(self, model, obj, index):
         pass
+
+    @property
+    def batch_shape(self):
+        # FIXME: is it the shape of self._tensor or self.x
+        return self._tensor.shape[-1:]
+
+    @property
+    def sample_shape(self):
+        return self._tensor.shape[:-1]
 
     @classmethod
     def from_json(cls, data, dic):

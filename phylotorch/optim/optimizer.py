@@ -18,11 +18,11 @@ class Optimizer(JSONSerializable, Runnable):
     """
     A wrapper for torch.optim.Optimizer objects.
 
-    :param parameters: list of Parameter
-    :param loss: loss function
-    :param optimizer: a torch.optim.Optimizer object
-    :param iterations: number of iterations
-    :param kwargs:
+    :param list parameters: list of Parameter
+    :param CallableModel loss: loss function
+    :param torch.optim.Optimizer optimizer: a torch.optim.Optimizer object
+    :param int iterations: number of iterations
+    :param kwargs: optionals
     """
 
     def __init__(self, parameters: ListParameter, loss: CallableModel, optimizer: TorchOptimizer, iterations: int,
@@ -131,6 +131,8 @@ class Optimizer(JSONSerializable, Runnable):
         iterations = data['iterations']
 
         optionals = {}
+        if 'maximize' in data:
+            optionals['maximize'] = data['maximize']
 
         if 'loggers' in data:
             loggers = process_objects(data["loggers"], dic)

@@ -14,6 +14,7 @@ class JointDistributionModel(DistributionModel):
     :param id_: ID of joint distribution
     :param distributions: list of distributions of type DistributionModel or CallableModel
     """
+
     def __init__(self, id_: ID, distributions: List[DistributionModel]) -> None:
         self.distributions = distributions
         super(JointDistributionModel, self).__init__(id_)
@@ -24,13 +25,16 @@ class JointDistributionModel(DistributionModel):
         log_p = []
         for distr in self.distributions:
             lp = distr()
-            if lp.shape == torch.Size([]):
+            sample_shape = distr.sample_shape
+            if lp.shape == sample_shape:
+                log_p.append(lp.unsqueeze(-1))
+            elif lp.shape == torch.Size([]):
                 log_p.append(lp.unsqueeze(0))
             elif lp.shape[-1] != 1:
                 log_p.append(lp.sum(-1, keepdim=True))
             else:
                 log_p.append(lp)
-        return torch.cat(log_p, -1).sum(-1, keepdim=True)
+        return torch.cat(log_p, -1).sum(-1)
 
     def _call(self, *args, **kwargs):
         return self.log_prob()
@@ -51,6 +55,14 @@ class JointDistributionModel(DistributionModel):
 
     def handle_parameter_changed(self, variable, index, event):
         pass
+
+    @property
+    def batch_shape(self):
+        return self.distributions[0].batch_shape
+
+    @property
+    def sample_shape(self):
+        return self.distributions[0].sample_shape
 
     @classmethod
     def from_json(cls, data, dic):

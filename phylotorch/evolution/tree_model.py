@@ -67,19 +67,18 @@ class GeneralNodeHeightTransform(Transform):
         raise NotImplementedError
 
     def log_abs_det_jacobian(self, x, y):
-        # return torch.log(
-        # y[self.indices_sorted[0, self.taxa_count:] - self.taxa_count] - self.bounds[
-        #                                                                 self.taxa_count:-1]).sum()
         return torch.log(
-            y[self.indices_sorted] - self.tree.bounds[self.taxa_count:-1]).sum()
+            y[..., self.indices_sorted] - self.tree.bounds[self.taxa_count:-1]).sum(-1)
 
 
 def heights_to_branch_lengths(node_heights, bounds, indexing):
     taxa_count = int((bounds.shape[0] + 1) / 2)
     indices_sorted = indexing[np.argsort(indexing[:, 1])].transpose()
-    return torch.cat((node_heights[indices_sorted[0, :taxa_count] - taxa_count] - bounds[:taxa_count],
-                      node_heights[indices_sorted[0, taxa_count:] - taxa_count] - node_heights[
-                          indices_sorted[1, taxa_count:] - taxa_count]))
+    return torch.cat((node_heights[..., indices_sorted[0, :taxa_count] - taxa_count] - bounds[:taxa_count],
+                      node_heights[..., indices_sorted[0, taxa_count:] - taxa_count] - node_heights[...,
+                                                                                                    indices_sorted[1,
+                                                                                                    taxa_count:] - taxa_count]),
+                     -1)
 
 
 def transform_ratios(ratios_root_height, bounds, indexing):
@@ -92,12 +91,12 @@ def transform_ratios(ratios_root_height, bounds, indexing):
     :param indexing: pairs of parent/child indices, must be preorder or inorder
     :return: internal node heights
     """
-    taxa_count = ratios_root_height.shape[0] + 1
+    taxa_count = ratios_root_height.shape[-1] + 1
     heights = ratios_root_height.clone()
     for parent_id, id_ in indexing:
         if id_ >= taxa_count:
-            heights[id_ - taxa_count] = bounds[id_] + ratios_root_height[id_ - taxa_count] * (
-                    heights[parent_id - taxa_count] - bounds[id_])
+            heights[..., id_ - taxa_count] = bounds[id_] + ratios_root_height[..., id_ - taxa_count] * (
+                    heights[..., parent_id - taxa_count] - bounds[id_])
     return heights
 
 
@@ -252,6 +251,7 @@ class TreeModel(Model):
 
 def parse_tree(taxa, data):
     taxon_namespace = TaxonNamespace([taxon.id for taxon in taxa])
+    taxon_namespace_size = len(taxon_namespace)
     if 'newick' in data:
         tree = Tree.get(data=data['newick'], schema='newick', preserve_underscores=True,
                         rooting='force-rooted', taxon_namespace=taxon_namespace)
@@ -260,6 +260,8 @@ def parse_tree(taxa, data):
                         rooting='force-rooted', taxon_namespace=taxon_namespace)
     else:
         raise ValueError('Tree model requires a file or newick element to be specified')
+    if taxon_namespace_size != len(taxon_namespace):
+        raise ValueError('Some taxon names in the tree do not match those in the Taxa object')
     tree.resolve_polytomies(update_bipartitions=True)
     setup_indexes(tree)
     return tree
@@ -305,6 +307,14 @@ class UnRootedTreeModel(AbstractTreeModel):
         return self._branch_lengths.tensor  # if self.bounds is not None else torch.cat(
         # (self.branches, torch.zeros(1, dtype=self.branches.dtype)))
 
+    @property
+    def batch_shape(self):
+        return self._branch_lengths.tensor.shape[-1:]
+
+    @property
+    def sample_shape(self):
+        return self._branch_lengths.tensor.shape[:-1]
+
     def update(self, value):
         if isinstance(value, dict):
             if self._branch_lengths.id in value:
@@ -321,8 +331,7 @@ class UnRootedTreeModel(AbstractTreeModel):
         taxa = process_object(data['taxa'], dic)
         tree = parse_tree(taxa, data)
 
-        taxa_count = len(tree.taxon_namespace)
-        if isinstance(data['branch_lengths'], dict) and 'tensor' not in data['branch_lengths']:
+        if isinstance(data['branch_lengths'], dict) and len(data['branch_lengths']) == 1:
             branch_lengths_id = data['branch_lengths']['id']
             bls = torch.tensor(np.array(
                 [float(node.edge_length) for node in
@@ -345,6 +354,8 @@ class TimeTreeModel(AbstractTreeModel):
         self.sampling_times = self.bounds[:self.taxa_count]
         if node_heights is not None:
             self.add_parameter(node_heights)
+        self._branch_lengths = None
+        self.branch_lengths_need_update = True
 
     def create_bounds(self, tree):
         bounds = np.empty(2 * len(tree.taxon_namespace) - 1)
@@ -355,12 +366,34 @@ class TimeTreeModel(AbstractTreeModel):
                 bounds[node.index] = np.max([bounds[x.index] for x in node.child_node_iter()])
         return torch.tensor(bounds)
 
+    def to_newick(self, fp, attributes=False):
+        blens = self.branch_lengths()
+        for n in self.tree.postorder_node_iter():
+            if n.parent_node is not None:
+                n.edge_length = blens[n.index]
+        to_newick(self.tree.seed_node, fp, attributes)
+
+    def to_nexus(self, fp, attributes=False):
+        blens = self.branch_lengths()
+        heights = self.node_heights()
+        for n in self.tree.postorder_node_iter():
+            if n.parent_node is not None:
+                n.edge_length = blens[n.index]
+            n.date = heights[n.index]
+        nexus_header(self, fp)
+        fp.write('tree {} = '.format(1))
+        to_nexus_time(self.tree.seed_node, fp, attributes)
+        fp.write('\nEND;')
+
     @property
     def node_heights(self):
         return self._node_heights.tensor
 
     def branch_lengths(self):
-        return heights_to_branch_lengths(self._node_heights.tensor, self.bounds, self.preorder)
+        if self.branch_lengths_need_update:
+            self._branch_lengths = heights_to_branch_lengths(self._node_heights.tensor, self.bounds, self.preorder)
+            self.branch_lengths_need_update = False
+        return self._branch_lengths
 
     def update(self, value):
         if isinstance(value, dict):
@@ -370,7 +403,16 @@ class TimeTreeModel(AbstractTreeModel):
             self.branches = value
 
     def handle_parameter_changed(self, variable, index, event):
+        self.branch_lengths_need_update = True
         self.fire_model_changed()
+
+    @property
+    def batch_shape(self):
+        return self._node_heights.tensor.shape[-1:]
+
+    @property
+    def sample_shape(self):
+        return self._node_heights.tensor.shape[:-1]
 
     @classmethod
     def from_json(cls, data, dic):
@@ -392,3 +434,48 @@ class TimeTreeModel(AbstractTreeModel):
             tree_model.add_parameter(tree_model._node_heights)
 
         return tree_model
+
+
+def to_nexus_time(node, fp, attributes):
+    if not node.is_leaf():
+        fp.write('(')
+        for i, n in enumerate(node.child_node_iter()):
+            to_nexus_time(n, fp, attributes)
+            if i == 0:
+                fp.write(',')
+        fp.write(')')
+    else:
+        fp.write(str(node.index))
+    if hasattr(node, 'date'):
+        fp.write('[&height={}'.format(node.date))
+        if hasattr(node, 'rate'):
+            fp.write(',rate={}'.format(node.rate))
+        fp.write(']')
+    if node.parent_node is not None:
+        fp.write(':{}'.format(node.edge_length))
+    else:
+        fp.write(';')
+
+
+def nexus_header(tree_model, fp):
+    fp.write("#NEXUS\nBegin trees;\nTranslate\n")
+    fp.write(
+        ',\n'.join(
+            [str(i + 1) + ' ' + x.label.replace("'", '') for i, x in enumerate(tree_model.tree.taxon_namespace)]))
+    fp.write('\n;\n')
+
+
+def to_newick(node, fp, attributes):
+    if not node.is_leaf():
+        fp.write('(')
+        for i, n in enumerate(node.child_node_iter()):
+            to_newick(n, fp, attributes)
+            if i == 0:
+                fp.write(',')
+        fp.write(')')
+    else:
+        fp.write(str(node.taxon).strip("'"))
+    if node.parent_node is not None:
+        fp.write(':{}'.format(node.edge_length))
+    else:
+        fp.write(';')

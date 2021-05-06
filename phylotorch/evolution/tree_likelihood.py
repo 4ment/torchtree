@@ -6,7 +6,6 @@ from .site_model import SiteModel
 from .site_pattern import SitePattern
 from .substitution_model import SubstitutionModel
 from .tree_model import TreeModel
-# from .transforms import NodeHeightAutogradFunction
 from ..core.model import CallableModel
 from ..core.utils import process_object
 
@@ -107,12 +106,13 @@ class TreeLikelihoodModel(CallableModel):
             bls = clock_rates * branch_lengths
 
         mats = self.subst_model.p_t(bls.reshape(batch_shape + (-1, 1)) * rates)
+        frequencies = self.subst_model.frequencies
 
         return calculate_treelikelihood_discrete(self.site_pattern.partials,
                                                  self.site_pattern.weights,
                                                  self.tree_model.postorder,
                                                  mats,
-                                                 self.subst_model.frequencies,
+                                                 frequencies.reshape(frequencies.shape[:-1] + (1, -1)),
                                                  probs)
 
     def update(self, value):
@@ -123,6 +123,14 @@ class TreeLikelihoodModel(CallableModel):
 
     def handle_parameter_changed(self, variable, index, event):
         pass
+
+    @property
+    def batch_shape(self):
+        return self.tree_model.batch_shape
+
+    @property
+    def sample_shape(self):
+        return self.tree_model.sample_shape
 
     @classmethod
     def from_json(cls, data, dic):

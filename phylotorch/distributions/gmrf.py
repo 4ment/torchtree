@@ -28,6 +28,14 @@ class GMRF(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
+    @property
+    def batch_shape(self):
+        return self.x.tensor.shape[-1:]
+
+    @property
+    def sample_shape(self):
+        return self.x.tensor.shape[:-1]
+
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']

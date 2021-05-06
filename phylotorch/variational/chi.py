@@ -1,30 +1,27 @@
 import torch
 
 from ..core.model import CallableModel
-from phylotorch.core.utils import process_object
+from ..core.utils import process_object
+from ..distributions.distributions import DistributionModel
+from ..typing import ID
 
 
 class CUBO(CallableModel):
 
-    def __init__(self, id_, q, p, n, samples):
+    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size, n: torch.Tensor):
         self.q = q
         self.p = p
         self.n = n
         self.samples = samples
         super(CUBO, self).__init__(id_)
 
-    def _call(self):
-        p_log_prob = []
-        q_log_prob = []
-        for i in range(self.samples):
-            self.q.rsample()
-            q_log_prob.append(self.q())
-            p_log_prob.append(self.p())
-        p_log_prob = torch.stack(p_log_prob)
-        q_log_prob = torch.stack(q_log_prob)
-        log_w = float(self.n) * (p_log_prob - q_log_prob)
-        self.lp = (torch.logsumexp(log_w, 0) - torch.log(torch.tensor(float(self.samples)))) / self.n
-        return self.lp
+    def _call(self, *args, **kwargs):
+        samples = kwargs.get('samples', self.samples)
+        self.q.rsample(samples)
+        log_w = self.p() - self.q()
+        log_max = torch.max(log_w)
+        log_w_rescaled = torch.exp(log_w - log_max) ** self.n
+        return torch.log(log_w_rescaled.mean()) / self.n + log_max
 
     def update(self, value):
         pass
@@ -38,7 +35,11 @@ class CUBO(CallableModel):
     @classmethod
     def from_json(cls, data, dic):
         samples = data.get('samples', 1)
-        n = data.get('n', 2.0)
+        if isinstance(samples, list):
+            samples = torch.Size(samples)
+        else:
+            samples = torch.Size((samples,))
+        n = torch.tensor(data.get('n', 2.0))
 
         var_desc = data['variational']
         var = process_object(var_desc, dic)
