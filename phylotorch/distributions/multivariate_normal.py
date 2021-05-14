@@ -1,14 +1,28 @@
+from typing import Union, List
+
 import numpy as np
 import torch
 import torch.distributions
 
-from phylotorch.core.model import CallableModel
-from phylotorch.core.utils import process_objects, process_object
+from .. import Parameter
+from ..core.model import Model
+from ..core.utils import process_objects, process_object
+from ..distributions.distributions import DistributionModel
+from ..typing import ID
 
 
-class MultivariateNormal(CallableModel):
+class MultivariateNormal(DistributionModel):
+    """
+    Multivariate normal distribution.
 
-    def __init__(self, id_, x, loc, **kwargs):
+    :param id_: ID of joint distribution
+    :param x: random variable to evaluate/sample using distribution
+    :param loc: mean of the distribution
+    :param **kwargs: dict keyed with covariance_matrix or precision_matrix or scale_tril and valued with Parameter
+    :param distributions: list of distributions of type DistributionModel or CallableModel
+    """
+
+    def __init__(self, id_: ID, x: Union[List[Parameter], Parameter], loc: Parameter, **kwargs) -> None:
         super(MultivariateNormal, self).__init__(id_)
         self.x = x
         self.loc = loc
@@ -24,58 +38,55 @@ class MultivariateNormal(CallableModel):
         else:
             self.add_parameter(self.x)
 
-    def rsample(self, sample_shape=torch.Size()):
+    def _update_tensor(self, x: Union[List[Parameter], Parameter]) -> None:
+        if isinstance(self.x, (list, tuple)):
+            offset = 0
+            for xx in self.x:
+                xx.tensor = x[..., offset:(offset + xx.shape[-1])]
+                offset += xx.shape[-1]
+        else:
+            self.x.tensor = x
+
+    def rsample(self, sample_shape=torch.Size()) -> None:
         kwargs = {self.parameterization: self.parameter.tensor}
         x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).rsample(sample_shape)
-        if isinstance(self.x, (list, tuple)):
-            offset = 0
-            for xx in self.x:
-                xx.tensor = x[offset:(offset + xx.shape[0])]
-                offset += xx.shape[0]
-        else:
-            self.x.tensor = x
+        self._update_tensor(x)
 
-    def sample(self, sample_shape=torch.Size()):
+    def sample(self, sample_shape=torch.Size()) -> None:
         kwargs = {self.parameterization: self.parameter.tensor}
         x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).sample(sample_shape)
-        if isinstance(self.x, (list, tuple)):
-            offset = 0
-            for xx in self.x:
-                xx.tensor = x[offset:(offset + xx.shape[0])]
-                offset += xx.shape[0]
-        else:
-            self.x.tensor = x
+        self._update_tensor(x)
 
-    def log_prob(self):
+    def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> torch.Tensor:
         kwargs = {self.parameterization: self.parameter.tensor}
         if isinstance(self.x, (list, tuple)):
             return torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).log_prob(
-                torch.cat([xx.tensor for xx in self.x]))
+                torch.cat([xx.tensor for xx in x], -1))
         else:
-            return torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).log_prob(self.x.tensor)
+            return torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).log_prob(x.tensor)
 
     def update(self, value):
         pass
 
-    def handle_model_changed(self, model, obj, index):
+    def handle_model_changed(self, model: Model, obj, index) -> None:
         pass
 
-    def handle_parameter_changed(self, variable, index, event):
+    def handle_parameter_changed(self, variable: Parameter, index, event) -> None:
         pass
 
-    def _call(self, *args, **kwargs):
-        return self.log_prob()
+    def _call(self, *args, **kwargs) -> torch.Tensor:
+        return self.log_prob(self.x)
 
     @property
-    def batch_shape(self):
-        kwargs = {self.parameterization: self.parameter.tensor}
-        if isinstance(self.x, (list, tuple)):
-            return torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).batch_shape
-        else:
-            return torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).batch_shape
+    def event_shape(self) -> torch.Size:
+        return self.loc.shape[-1]
 
     @property
-    def sample_shape(self):
+    def batch_shape(self) -> torch.Size:
+        return self.loc.shape[:-1]
+
+    @property
+    def sample_shape(self) -> torch.Size:
         offset = 1 if len(self.batch_shape) == 0 else len(self.batch_shape)
         return self.x.tensor.shape[:-offset]
 

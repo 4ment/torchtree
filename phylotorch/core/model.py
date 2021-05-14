@@ -2,9 +2,12 @@ import abc
 import collections.abc
 import inspect
 import numbers
+from typing import List, Union, Optional
 
 import numpy as np
 import torch
+import torch.distributions
+from torch import Tensor
 from torch import nn
 
 from .classproperty_decorator import classproperty
@@ -13,11 +16,11 @@ from ..core.utils import process_object, get_class, tensor_rand
 
 
 class Identifiable(JSONSerializable):
-    def __init__(self, id_):
+    def __init__(self, id_: Optional[str]) -> None:
         self._id = id_
 
     @property
-    def id(self):
+    def id(self) -> Optional[str]:
         return self._id
 
     @classmethod
@@ -26,94 +29,8 @@ class Identifiable(JSONSerializable):
         ...
 
 
-class Parametric(object):
-    def __init__(self):
-        self._parameters = []
-
-    def add_parameter(self, parameter):
-        self._parameters.append(parameter)
-
-    def parameters(self):
-        """Returns parameters of instance Parameter"""
-        parameters = []
-        for param in self._parameters:
-            parameters.extend(param.parameters())
-        return parameters
-
-
-class ModelListener(abc.ABC):
-    @abc.abstractmethod
-    def handle_model_changed(self, model, obj, index):
-        ...
-
-
-class ParameterListener(abc.ABC):
-    @abc.abstractmethod
-    def handle_parameter_changed(self, variable, index, event):
-        ...
-
-
-class Model(Identifiable, Parametric, ModelListener, ParameterListener):
-    _tag = None
-
-    def __init__(self, id_):
-        self.listeners = []
-        self._models = []
-        Identifiable.__init__(self, id_)
-        Parametric.__init__(self)
-
-    @abc.abstractmethod
-    def update(self, value):
-        ...
-
-    def add_model(self, model):
-        model.add_model_listener(self)
-        self._models.append(model)
-
-    def add_model_listener(self, listener):
-        self.listeners.append(listener)
-
-    def add_parameter(self, parameter):
-        parameter.add_parameter_listener(self)
-        self._parameters.append(parameter)
-
-    def add_parameter_listener(self, listener):
-        self.listeners.append(listener)
-
-    def fire_model_changed(self, obj=None, index=None):
-        for listener in self.listeners:
-            listener.handle_model_changed(self, obj, index)
-
-    def parameters(self):
-        """Returns parameters of instance Parameter"""
-        parameters = []
-        for param in self._parameters:
-            parameters.extend(param.parameters())
-        for model in self._models:
-            parameters.extend(model.parameters())
-        return parameters
-
-    @classproperty
-    def tag(cls):
-        return cls._tag
-
-
-class CallableModel(Model, collections.abc.Callable):
-    def __init__(self, id_: str) -> None:
-        Model.__init__(self, id_)
-        self.lp = None
-
-    @abc.abstractmethod
-    def _call(self, *args, **kwargs) -> torch.Tensor:
-        pass
-
-    def __call__(self, *args, **kwargs) -> torch.Tensor:
-        self.lp = self._call(*args, **kwargs)
-        return self.lp
-
-
 class Parameter(Identifiable):
-    def __init__(self, id_, tensor):
+    def __init__(self, id_: Optional[str], tensor: Tensor) -> None:
         self._tensor = tensor
         self.listeners = []
         super(Parameter, self).__init__(id_)
@@ -128,28 +45,28 @@ class Parameter(Identifiable):
         return self.id == other.id and torch.all(torch.eq(self._tensor, other.tensor))
 
     @property
-    def tensor(self):
+    def tensor(self) -> Tensor:
         return self._tensor
 
     @tensor.setter
-    def tensor(self, tensor):
+    def tensor(self, tensor: Tensor) -> None:
         self._tensor = tensor
         self.fire_parameter_changed()
 
     @property
-    def shape(self):
+    def shape(self) -> torch.Size:
         return self._tensor.shape
 
     @property
-    def dtype(self):
+    def dtype(self) -> torch.dtype:
         return self._tensor.dtype
 
     @property
-    def requires_grad(self):
+    def requires_grad(self) -> bool:
         return self._tensor.requires_grad
 
     @requires_grad.setter
-    def requires_grad(self, requires_grad):
+    def requires_grad(self, requires_grad: bool) -> None:
         self._tensor.requires_grad = requires_grad
         self.fire_parameter_changed()
 
@@ -161,22 +78,22 @@ class Parameter(Identifiable):
         if self.id in value:
             self.tensor = value[self.id]
 
-    def add_parameter_listener(self, listener):
+    def add_parameter_listener(self, listener) -> None:
         self.listeners.append(listener)
 
-    def fire_parameter_changed(self, index=None, event=None):
+    def fire_parameter_changed(self, index=None, event=None) -> None:
         for listener in self.listeners:
             listener.handle_parameter_changed(self, index, event)
 
-    def parameters(self):
+    def parameters(self) -> List['Parameter']:
         return [self]
 
-    def clone(self):
+    def clone(self) -> 'Parameter':
         """Return a clone of the Parameter. it is not cloning listeners and the clone's id is None"""
         tclone = self.tensor.clone()
         return Parameter(None, tclone)
 
-    def __getitem__(self, subscript):
+    def __getitem__(self, subscript) -> 'Parameter':
         """Can be a slice or index"""
         return Parameter(None, self._tensor[subscript])
 
@@ -228,9 +145,96 @@ class Parameter(Identifiable):
             return cls(data['id'], t)
 
 
+class Parametric(object):
+    def __init__(self) -> None:
+        self._parameters = []
+
+    def add_parameter(self, parameter: Parameter) -> None:
+        self._parameters.append(parameter)
+
+    def parameters(self) -> List[Parameter]:
+        """Returns parameters of instance Parameter"""
+        parameters = []
+        for param in self._parameters:
+            parameters.extend(param.parameters())
+        return parameters
+
+
+class ModelListener(abc.ABC):
+    @abc.abstractmethod
+    def handle_model_changed(self, model, obj, index) -> None:
+        ...
+
+
+class ParameterListener(abc.ABC):
+    @abc.abstractmethod
+    def handle_parameter_changed(self, variable, index, event) -> None:
+        ...
+
+
+class Model(Identifiable, Parametric, ModelListener, ParameterListener):
+    _tag = None
+
+    def __init__(self, id_: Optional[str]) -> None:
+        self.listeners = []
+        self._models = []
+        Identifiable.__init__(self, id_)
+        Parametric.__init__(self)
+
+    @abc.abstractmethod
+    def update(self, value):
+        ...
+
+    def add_model(self, model: 'Model') -> None:
+        model.add_model_listener(self)
+        self._models.append(model)
+
+    def add_model_listener(self, listener: ModelListener) -> None:
+        self.listeners.append(listener)
+
+    def add_parameter(self, parameter: Parameter) -> None:
+        parameter.add_parameter_listener(self)
+        self._parameters.append(parameter)
+
+    def add_parameter_listener(self, listener: ModelListener) -> None:
+        self.listeners.append(listener)
+
+    def fire_model_changed(self, obj=None, index=None) -> None:
+        for listener in self.listeners:
+            listener.handle_model_changed(self, obj, index)
+
+    def parameters(self) -> List[Parameter]:
+        """Returns parameters of instance Parameter"""
+        parameters = []
+        for param in self._parameters:
+            parameters.extend(param.parameters())
+        for model in self._models:
+            parameters.extend(model.parameters())
+        return parameters
+
+    @classproperty
+    def tag(cls) -> Optional[str]:
+        return cls._tag
+
+
+class CallableModel(Model, collections.abc.Callable):
+    def __init__(self, id_: Optional[str]) -> None:
+        Model.__init__(self, id_)
+        self.lp = None
+
+    @abc.abstractmethod
+    def _call(self, *args, **kwargs) -> Tensor:
+        pass
+
+    def __call__(self, *args, **kwargs) -> Tensor:
+        self.lp = self._call(*args, **kwargs)
+        return self.lp
+
+
 class TransformedParameter(Parameter, CallableModel):
 
-    def __init__(self, id_, x, transform):
+    def __init__(self, id_: Optional[str], x: Union[List[Parameter], Parameter],
+                 transform: torch.distributions.Transform) -> None:
         CallableModel.__init__(self, id_)
         self.transform = transform
         self.x = x
@@ -244,7 +248,7 @@ class TransformedParameter(Parameter, CallableModel):
             self.add_parameter(x)
         Parameter.__init__(self, id_, tensor)
 
-    def parameters(self):
+    def parameters(self) -> List[Parameter]:
         if isinstance(self.x, list):
             return [param for params in self.x for param in params.parameters()]
         else:
@@ -254,7 +258,7 @@ class TransformedParameter(Parameter, CallableModel):
         self.x.update(value)
         self._tensor = self.transform(self.x.tensor)
 
-    def _call(self):
+    def _call(self) -> Tensor:
         if self.need_update:
             self.apply_transform()
             self.need_update = False
@@ -265,7 +269,7 @@ class TransformedParameter(Parameter, CallableModel):
             return self.transform.log_abs_det_jacobian(self.x.tensor, self._tensor)
 
     @property
-    def tensor(self):
+    def tensor(self) -> Tensor:
         if self.need_update:
             self.apply_transform()
             self.need_update = False
@@ -275,26 +279,26 @@ class TransformedParameter(Parameter, CallableModel):
     def tensor(self, tensor):
         raise Exception('Cannot assign tensor to TransformedParameter (ID: {})'.format(self.id))
 
-    def apply_transform(self):
+    def apply_transform(self) -> None:
         if isinstance(self.x, list):
             self._tensor = self.transform(torch.cat([x.tensor for x in self.x], -1))
         else:
             self._tensor = self.transform(self.x.tensor)
 
-    def handle_parameter_changed(self, variable, index, event):
+    def handle_parameter_changed(self, variable, index, event) -> None:
         self.need_update = True
         self.fire_parameter_changed()
 
-    def handle_model_changed(self, model, obj, index):
+    def handle_model_changed(self, model, obj, index) -> None:
         pass
 
     @property
-    def batch_shape(self):
+    def batch_shape(self) -> torch.Size:
         # FIXME: is it the shape of self._tensor or self.x
         return self._tensor.shape[-1:]
 
     @property
-    def sample_shape(self):
+    def sample_shape(self) -> torch.Size:
         return self._tensor.shape[:-1]
 
     @classmethod
