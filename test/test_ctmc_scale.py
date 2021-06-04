@@ -42,4 +42,4 @@ def test_ctmc_scale_batch(tree_model_dict):
     tree_model_dict['node_heights']['tensor'] = [[1.5, 4., 6., 16.], [1.5, 4., 6., 16.]]
     tree_model = TimeTreeModel.from_json(tree_model_dict, {})
     ctmc_scale = CTMCScale(None, Parameter(None, torch.tensor([[0.001], [0.001]])), tree_model)
-    torch.allclose(torch.full((2, 1), 4.475351922659342, dtype=torch.float64), ctmc_scale())
+    assert torch.allclose(torch.full((2, 1), 4.475351922659342, dtype=torch.float64), ctmc_scale())

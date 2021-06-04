@@ -36,4 +36,4 @@ def test_batch():
                        Parameter(None, torch.tensor([[1.], [2.]])),
                        OrderedDict({'rate': Parameter(None, torch.tensor([1.]))}))
     joint = JointDistributionModel(None, [normal, exp])
-    torch.allclose(torch.tensor([[-1.418939 - 1], [-2.918939 - 2]]), joint())
+    assert torch.allclose(torch.tensor([-1.418939 - 1, -2.918939 - 2]), joint())

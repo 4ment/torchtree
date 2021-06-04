@@ -98,7 +98,6 @@ def test_constant_json(tree_model_node_heights_transformed):
         'tree_model': tree_model_node_heights_transformed
     }
     constant = ConstantCoalescentModel.from_json(example, {})
-    print(constant.tree.node_heights)
     assert -13.295836866 == pytest.approx(constant().item(), 0.0001)
 
 
@@ -129,7 +128,7 @@ def test_skyride_json(tree_model_node_heights_transformed):
         'theta': {
             'id': 'theta',
             'type': 'phylotorch.core.model.Parameter',
-            'tensor': [3., 10., 4., 2., 3.]
+            'tensor': [3., 10., 4.]
         },
         'tree_model': tree_model_node_heights_transformed
     }
