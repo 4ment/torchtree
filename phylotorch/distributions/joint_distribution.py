@@ -34,6 +34,8 @@ class JointDistributionModel(DistributionModel):
                 log_p.append(lp.unsqueeze(0))
             elif lp.shape[-1] != 1:
                 log_p.append(lp.sum(-1, keepdim=True))
+            elif lp.dim() == 1:
+                log_p.append(lp.expand(self.sample_shape + (1,)))
             else:
                 log_p.append(lp)
         return torch.cat(log_p, -1).sum(-1)
