@@ -1,3 +1,5 @@
+from typing import Optional
+
 import torch
 import torch.distributions
 
@@ -58,7 +60,9 @@ def calculate_treelikelihood_discrete_rescaled(partials, weights, post_indexing,
 
 class TreeLikelihoodModel(CallableModel):
 
-    def __init__(self, id_, site_pattern, tree_model, subst_model, site_model, clock_model=None):
+    def __init__(self, id_: Optional[str], site_pattern: SitePattern, tree_model: TreeModel,
+                 subst_model: SubstitutionModel,
+                 site_model: SiteModel, clock_model: BranchModel = None):
         super(TreeLikelihoodModel, self).__init__(id_)
         self.site_pattern = site_pattern
         self.tree_model = tree_model
@@ -96,7 +100,12 @@ class TreeLikelihoodModel(CallableModel):
     def _call(self):
         branch_lengths = self.tree_model.branch_lengths()
         batch_shape = branch_lengths.shape[:-1]
-        rates = self.site_model.rates().reshape(batch_shape + (1, -1))
+        rates = self.site_model.rates()
+        # for models like JC69 rates is always tensor([1.0])  (i.e. batch_shape == [])
+        if rates.dim() == 1:
+            rates = rates.expand(batch_shape + (1, -1))
+        else:
+            rates = rates.reshape(batch_shape + (1, -1))
         probs = self.site_model.probabilities().reshape((-1, 1, 1))
 
         if self.clock_model is None:

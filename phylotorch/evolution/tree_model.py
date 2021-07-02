@@ -1,4 +1,7 @@
 import abc
+from abc import ABC
+from io import StringIO
+from typing import List, Optional
 
 import numpy as np
 import torch
@@ -9,43 +12,6 @@ from ..core.model import Model, Parameter
 from ..core.utils import process_object
 
 
-class BranchLengthTransform(object):
-    def __init__(self, bounds, indexing):
-        self.bounds = bounds
-        self.indexing = indexing
-
-    def __call__(self, node_heights):
-        return heights_to_branch_lengths(node_heights, self.bounds, self.indexing)
-
-
-class NodeHeightTransform(Transform):
-    r"""
-        Transform from ratios to node heights.
-    """
-    bijective = True
-    sign = +1
-
-    def __init__(self, bounds, indexing, cache_size=0):
-        super(NodeHeightTransform, self).__init__(cache_size=cache_size)
-        self.bounds = bounds
-        self.indexing = indexing
-        self.taxa_count = int((bounds.shape[0] + 1) / 2)
-        self.indices_sorted = indexing[np.argsort(indexing[:, 1])].transpose()[0, self.taxa_count:] - self.taxa_count
-
-    def _call(self, x):
-        return transform_ratios(x, self.bounds, self.indexing)
-
-    def _inverse(self, y):
-        raise NotImplementedError
-
-    def log_abs_det_jacobian(self, x, y):
-        # return torch.log(
-        # y[self.indices_sorted[0, self.taxa_count:] - self.taxa_count] - self.bounds[
-        #                                                                 self.taxa_count:-1]).sum()
-        return torch.log(
-            y[self.indices_sorted] - self.bounds[self.taxa_count:-1]).sum()
-
-
 class GeneralNodeHeightTransform(Transform):
     r"""
         Transform from ratios to node heights.
@@ -53,7 +19,7 @@ class GeneralNodeHeightTransform(Transform):
     bijective = True
     sign = +1
 
-    def __init__(self, tree, cache_size=0):
+    def __init__(self, tree: 'TimeTreeModel', cache_size=0) -> None:
         super(GeneralNodeHeightTransform, self).__init__(cache_size=cache_size)
         self.tree = tree
         self.taxa_count = int((self.tree.bounds.shape[0] + 1) / 2)
@@ -81,8 +47,7 @@ def heights_to_branch_lengths(node_heights, bounds, indexing):
                      -1)
 
 
-def transform_ratios(ratios_root_height, bounds, indexing):
-    ### # type: (Tensor, Tensor, Tuple[Tuple[int, int], ...]) -> Tensor
+def transform_ratios(ratios_root_height: torch.Tensor, bounds, indexing):
     """
     Transform node ratios/root height to internal node heights.
     :param root_height: root height
@@ -148,8 +113,8 @@ def setup_dates(tree, heterochronous=False):
     return oldest
 
 
-def initialize_dates_from_taxa(tree, taxa):
-    dates = [taxon['date'] for taxon in taxa]
+def initialize_dates_from_taxa(tree, taxa, tag='date'):
+    dates = [taxon[tag] for taxon in taxa]
     max_date = max(dates)
 
     # parse dates
@@ -157,13 +122,13 @@ def initialize_dates_from_taxa(tree, taxa):
         # time starts at 0
         if min(dates) == 0.0:
             for node in tree.leaf_node_iter():
-                node.date = taxa[node.index]['date']
+                node.date = taxa[node.index][tag]
                 node.original_date = node.date
         # time is a year
         else:
             for node in tree.leaf_node_iter():
-                node.date = max_date - taxa[node.index]['date']
-                node.original_date = taxa[node.index]['date']
+                node.date = max_date - taxa[node.index][tag]
+                node.original_date = taxa[node.index][tag]
     else:
         for node in tree.leaf_node_iter():
             node.date = 0.0
@@ -179,74 +144,6 @@ def heights_from_branch_lengths(tree):
             child = next(node.child_node_iter())
             heights[node.index] = heights[child.index] + float(child.edge_length)
     return heights[len(tree.taxon_namespace):]
-
-
-class Node:
-    def __init__(self, name, height=0.0):
-        self.name = name
-        self.height = height
-        self.parent = None
-        self.children = []
-
-    def __iter__(self):
-        if len(self.children) > 0:
-            for c in self.children[0]:
-                yield c
-            for c in self.children[1]:
-                yield c
-        yield self
-
-
-def random_tree_from_heights(sampling, heights):
-    nodes = [Node('taxon{}'.format(idx), height=s) for idx, s in enumerate(sampling)]
-
-    for i, height in enumerate(heights):
-        indexes = []
-        for idx, node in enumerate(nodes):
-            if node.height < height:
-                indexes.append(idx)
-        idx1 = idx2 = np.random.randint(0, len(indexes))
-        while idx1 == idx2:
-            idx2 = np.random.randint(0, len(indexes))
-        new_node = Node('node{}'.format(len(nodes)), height=height)
-        idx1, idx2 = sorted([idx1, idx2])
-        new_node.children = (nodes[indexes[idx1]], nodes[indexes[idx2]])
-        nodes[idx1].parent = nodes[idx2].parent = new_node
-        nodes[idx1] = new_node
-        del nodes[idx2]
-    return nodes[0]
-
-
-class TreeModel(Model):
-    _tag = 'tree_model'
-
-    @classmethod
-    def from_json(cls, data, dic):
-        pass
-
-    def handle_model_changed(self, model, obj, index):
-        pass
-
-    def handle_parameter_changed(self, variable, index, event):
-        pass
-
-    def __init__(self, id_, branches, postorder, preorder=None, bounds=None):
-        self._branches = branches
-        self.postorder = postorder
-        self.preorder = preorder
-        self.bounds = bounds
-        super().__init__(id_)
-
-    def branch_lengths(self):
-        return self._branches.tensor  # if self.bounds is not None else torch.cat(
-        # (self.branches, torch.zeros(1, dtype=self.branches.dtype)))
-
-    def update(self, value):
-        if isinstance(value, dict):
-            if self._branches.id in value:
-                self._branches.tensor = value[self._branches.id]
-        else:
-            self.branches = value
 
 
 def parse_tree(taxa, data):
@@ -267,22 +164,44 @@ def parse_tree(taxa, data):
     return tree
 
 
-class AbstractTreeModel(Model):
-    def __init__(self, id_, tree):
+class TreeModel(Model):
+    _tag = 'tree_model'
+
+    @abc.abstractmethod
+    def branch_lengths(self) -> torch.Tensor:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def postorder(self) -> List[List[int]]:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def taxa(self) -> List[str]:
+        ...
+
+    @abc.abstractmethod
+    def write_newick(self, fp, **kwargs) -> None:
+        ...
+
+
+class AbstractTreeModel(TreeModel, ABC):
+    def __init__(self, id_: Optional[str], tree):
+        TreeModel.__init__(self, id_)
         self.tree = tree
         self.taxa_count = len(tree.taxon_namespace)
-        self.postorder = []
+        self._postorder = []
         self.preorder = []
         self.update_traversals()
-        super(AbstractTreeModel, self).__init__(id_)
 
     def update_traversals(self):
         # postorder for peeling
-        self.postorder = []
+        self._postorder = []
         for node in self.tree.postorder_node_iter():
             if not node.is_leaf():
                 children = node.child_nodes()
-                self.postorder.append((node.index, children[0].index, children[1].index))
+                self._postorder.append((node.index, children[0].index, children[1].index))
 
         # preoder indexing to go from ratios to heights
         self.preorder = np.array(
@@ -292,20 +211,51 @@ class AbstractTreeModel(Model):
     def handle_model_changed(self, model, obj, index):
         pass
 
-    @abc.abstractmethod
-    def branch_lengths(self):
-        pass
+    @property
+    def postorder(self):
+        return self._postorder
+
+    @property
+    def taxa(self):
+        return [taxon.label for taxon in self.tree.taxon_namespace]
+
+    def as_newick(self, **kwargs):
+        out = StringIO()
+        self.write_newick(out, **kwargs)
+        return out.getvalue()
+
+    def write_newick(self, fp, **kwargs):
+        self._write_newick(self.tree.seed_node, fp, **kwargs)
+
+    def _write_newick(self, node, fp, **kwargs):
+        if not node.is_leaf():
+            fp.write('(')
+            for i, child in enumerate(node.child_node_iter()):
+                self._write_newick(child, fp, **kwargs)
+                if i == 0:
+                    fp.write(',')
+            fp.write(')')
+        else:
+            taxon_index = kwargs.get('taxon_index', None)
+            if not taxon_index:
+                fp.write(str(node.taxon).strip("'"))
+            else:
+                fp.write(str(node.index + 1))
+        if node.parent_node is not None:
+            branch_lengths = kwargs.get('branch_lengths', self.branch_lengths())
+            fp.write(':{}'.format(branch_lengths[node.index]))
+        else:
+            fp.write(';')
 
 
 class UnRootedTreeModel(AbstractTreeModel):
-    def __init__(self, id_, tree, branch_lengths):
+    def __init__(self, id_, tree, branch_lengths: Parameter):
         super(UnRootedTreeModel, self).__init__(id_, tree)
         self._branch_lengths = branch_lengths
         self.add_parameter(branch_lengths)
 
     def branch_lengths(self):
-        return self._branch_lengths.tensor  # if self.bounds is not None else torch.cat(
-        # (self.branches, torch.zeros(1, dtype=self.branches.dtype)))
+        return self._branch_lengths.tensor
 
     @property
     def batch_shape(self):
@@ -346,7 +296,7 @@ class UnRootedTreeModel(AbstractTreeModel):
 
 class TimeTreeModel(AbstractTreeModel):
 
-    def __init__(self, id_, tree, node_heights):
+    def __init__(self, id_, tree, node_heights: Parameter):
         super(TimeTreeModel, self).__init__(id_, tree)
         self._node_heights = node_heights
         self.taxa_count = len(tree.taxon_namespace)
@@ -357,7 +307,7 @@ class TimeTreeModel(AbstractTreeModel):
         self._branch_lengths = None
         self.branch_lengths_need_update = True
 
-    def create_bounds(self, tree):
+    def create_bounds(self, tree) -> torch.Tensor:
         bounds = np.empty(2 * len(tree.taxon_namespace) - 1)
         for node in tree.postorder_node_iter():
             if node.is_leaf():
@@ -366,30 +316,11 @@ class TimeTreeModel(AbstractTreeModel):
                 bounds[node.index] = np.max([bounds[x.index] for x in node.child_node_iter()])
         return torch.tensor(bounds)
 
-    def to_newick(self, fp, attributes=False):
-        blens = self.branch_lengths()
-        for n in self.tree.postorder_node_iter():
-            if n.parent_node is not None:
-                n.edge_length = blens[n.index]
-        to_newick(self.tree.seed_node, fp, attributes)
-
-    def to_nexus(self, fp, attributes=False):
-        blens = self.branch_lengths()
-        heights = self.node_heights()
-        for n in self.tree.postorder_node_iter():
-            if n.parent_node is not None:
-                n.edge_length = blens[n.index]
-            n.date = heights[n.index]
-        nexus_header(self, fp)
-        fp.write('tree {} = '.format(1))
-        to_nexus_time(self.tree.seed_node, fp, attributes)
-        fp.write('\nEND;')
-
     @property
-    def node_heights(self):
+    def node_heights(self) -> torch.Tensor:
         return self._node_heights.tensor
 
-    def branch_lengths(self):
+    def branch_lengths(self) -> torch.Tensor:
         if self.branch_lengths_need_update:
             self._branch_lengths = heights_to_branch_lengths(self._node_heights.tensor, self.bounds, self.preorder)
             self.branch_lengths_need_update = False
@@ -428,54 +359,11 @@ class TimeTreeModel(AbstractTreeModel):
             dic[node_heights_id] = node_heights
             tree_model = cls(id_, tree, node_heights)
         else:
+            # TODO: tree_model and node_heights may have circular references to each other
+            #       when node_heights is a transformed Parameter requiring the tree_model
             tree_model = cls(id_, tree, None)
             dic[id_] = tree_model
             tree_model._node_heights = process_object(data['node_heights'], dic)
             tree_model.add_parameter(tree_model._node_heights)
 
         return tree_model
-
-
-def to_nexus_time(node, fp, attributes):
-    if not node.is_leaf():
-        fp.write('(')
-        for i, n in enumerate(node.child_node_iter()):
-            to_nexus_time(n, fp, attributes)
-            if i == 0:
-                fp.write(',')
-        fp.write(')')
-    else:
-        fp.write(str(node.index))
-    if hasattr(node, 'date'):
-        fp.write('[&height={}'.format(node.date))
-        if hasattr(node, 'rate'):
-            fp.write(',rate={}'.format(node.rate))
-        fp.write(']')
-    if node.parent_node is not None:
-        fp.write(':{}'.format(node.edge_length))
-    else:
-        fp.write(';')
-
-
-def nexus_header(tree_model, fp):
-    fp.write("#NEXUS\nBegin trees;\nTranslate\n")
-    fp.write(
-        ',\n'.join(
-            [str(i + 1) + ' ' + x.label.replace("'", '') for i, x in enumerate(tree_model.tree.taxon_namespace)]))
-    fp.write('\n;\n')
-
-
-def to_newick(node, fp, attributes):
-    if not node.is_leaf():
-        fp.write('(')
-        for i, n in enumerate(node.child_node_iter()):
-            to_newick(n, fp, attributes)
-            if i == 0:
-                fp.write(',')
-        fp.write(')')
-    else:
-        fp.write(str(node.taxon).strip("'"))
-    if node.parent_node is not None:
-        fp.write(':{}'.format(node.edge_length))
-    else:
-        fp.write(';')

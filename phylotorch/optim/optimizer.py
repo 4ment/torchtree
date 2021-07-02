@@ -35,6 +35,8 @@ class Optimizer(JSONSerializable, Runnable):
         self.convergence = kwargs.get('convergence', None)
         self.loggers = kwargs.get('loggers', ())
         self.maximize = kwargs.get('maximize', True)
+        self.checkpoint = kwargs.get('checkpoint', None)
+        self.checkpoint_frequency = kwargs.get('checkpoint_frequency', 1000)
 
     def run(self) -> None:
         for logger in self.loggers:
@@ -73,20 +75,20 @@ class Optimizer(JSONSerializable, Runnable):
                 if not res:
                     break
 
-            if epoch % 1000 == 0:
-                if not os.path.lexists('checkpoint.json'):
+            if self.checkpoint is not None and epoch % 1000 == 0:
+                if not os.path.lexists(self.checkpoint):
                     # for var_name in self.optimizer.state_dict():
                     #     print(var_name, "\t", self.optimizer.state_dict()[var_name])
                     # torch.save(self.optimizer.state_dict(), 'checkpoint.json')
-                    with open('checkpoint.json', 'w') as fp:
+                    with open(self.checkpoint, 'w') as fp:
                         json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
                 else:
                     # torch.save(self.optimizer.state_dict(), 'checkpoint-new.json')
-                    with open('checkpoint-new.json', 'w') as fp:
+                    with open(self.checkpoint + '.new', 'w') as fp:
                         json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
-                    os.rename('checkpoint.json', 'checkpoint-old.json')
-                    os.rename('checkpoint-new.json', 'checkpoint.json')
-                    os.remove('checkpoint-old.json')
+                    os.rename(self.checkpoint, self.checkpoint + '.old')
+                    os.rename(self.checkpoint + '.new', self.checkpoint)
+                    os.remove(self.checkpoint + '.old')
 
         for logger in self.loggers:
             if hasattr(logger, 'finalize'):
@@ -131,6 +133,20 @@ class Optimizer(JSONSerializable, Runnable):
         iterations = data['iterations']
 
         optionals = {}
+        # checkpointing is used by default and the default file name is checkpoint.json
+        # it can be disabled if 'checkpoint': false is used
+        # the name of the checkpoint file can be modified using 'checkpoint': 'checkpointer.json'
+        if 'checkpoint' in data:
+            if isinstance(data['checkpoint'], bool) and data['checkpoint']:
+                optionals['checkpoint'] = 'checkpoint.json'
+            elif isinstance(data['checkpoint'], str):
+                optionals['checkpoint'] = data['checkpoint']
+        else:
+            optionals['checkpoint'] = 'checkpoint.json'
+
+        if 'checkpoint_frequency' in data:
+            optionals['checkpoint_frequency'] = data['checkpoint_frequency']
+
         if 'maximize' in data:
             optionals['maximize'] = data['maximize']
 
