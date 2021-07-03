@@ -1,7 +1,7 @@
 import math
 
 import torch
-from torch.distributions import Transform
+from torch.distributions import Transform, constraints
 
 
 class TrilExpDiagonalTransform(Transform):
@@ -39,3 +39,62 @@ class TrilExpDiagonalTransform(Transform):
 
     def log_abs_det_jacobian(self, x, y):
         raise NotImplementedError
+
+
+class CumSumExpTransform(Transform):
+    r"""
+    Transform via the mapping :math:`y_i = \exp(\sum_{i=0}^i x_i)`.
+    """
+    domain = constraints.real
+    codomain = constraints.positive
+    bijective = True
+    sign = +1
+
+    def _call(self, x):
+        return x.cumsum(-1).exp()
+
+    def _inverse(self, y):
+        y_log = y.log()
+        return torch.cat((y_log[..., :1], y_log[..., 1:] - y_log[..., :-1]), -1)
+
+    def log_abs_det_jacobian(self, x, y):
+        return torch.zeros(x.shape[:-1])
+
+
+class SoftPlusTransform(Transform):
+    r"""
+    Transform via the mapping :math:`y_i = \log(\exp(x_i) + 1)`.
+    """
+    domain = constraints.real
+    codomain = constraints.positive
+    bijective = True
+    sign = +1
+
+    def _call(self, x):
+        return torch.log(x.exp() + 1.0)
+
+    def _inverse(self, y):
+        return torch.log(y.exp() - 1.0)
+
+    def log_abs_det_jacobian(self, x, y):
+        raise NotImplementedError
+
+
+class CumSumSoftPlusTransform(Transform):
+    """
+    Transform via the mapping :math:`y_i = \exp(\sum_{i=0}^i x_i)`.
+    """
+    domain = constraints.real
+    codomain = constraints.positive
+    bijective = True
+    sign = +1
+
+    def _call(self, x):
+        return torch.log(x.cumsum(-1).exp() + 1.0)
+
+    def _inverse(self, y):
+        y_log = y.log()
+        return torch.cat((y_log[..., :1], y_log[..., 1:] - y_log[..., :-1]), -1)
+
+    def log_abs_det_jacobian(self, x, y):
+        return torch.zeros(x.shape[:-1])
