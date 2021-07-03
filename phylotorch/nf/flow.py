@@ -6,17 +6,20 @@ from torch import nn, Tensor, Size
 from ..core.model import Parameter
 from ..core.utils import process_object, process_objects
 from ..distributions.distributions import Distribution, DistributionModel
-from ..nn.modules import Module
+from ..nn.module import Module
 
 
 class NormalizingFlow(DistributionModel):
-    """
+    r"""
     Class for normalizing flows.
 
     :param id_: ID of object
+    :type id_: str or None
     :param x: parameter or list of parameters
-    :param base: base distribution
+    :type x: List[Parameter]
+    :param Distribution base: base distribution
     :param modules: list of transformations
+    :type modules: List[Module]
     """
 
     def __init__(self, id_: str, x: Union[Parameter, List[Parameter]], base: Distribution,
@@ -91,6 +94,15 @@ class NormalizingFlow(DistributionModel):
 
     @classmethod
     def from_json(cls, data: Dict[str, any], dic: Dict[str, any]) -> 'NormalizingFlow':
+        r"""
+        Create a Flow object.
+
+        :param data: json representation of Flow object.
+        :param dic: dictionary containing additional objects that can be referenced in data.
+
+        :return: a :class:`~phylotorch.nn.flow.NormalizingFlow` object.
+        :rtype: NormalizingFlow
+        """
         id_ = data['id']
         x = process_objects(data['x'], dic)
         base = process_object(data['base'], dic)

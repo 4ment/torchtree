@@ -5,7 +5,7 @@ from torch.nn import Parameter
 
 
 class PlanarTransform(nn.Module):
-    """
+    r"""
     Implementation of the transformation used in planar flow:
 
     f(z) = z + u * tanh(dot(w.T, z) + b)
@@ -13,12 +13,12 @@ class PlanarTransform(nn.Module):
     where z are the inputs and u, w, and b are learnable parameters.
     The shape of z is (batch_size, input_size).
 
-    :param u: scaling factor with shape(1, input_size)
-    :param w: weight with shape (1, input_size)
-    :param b: bias with shape (1)
+    :param Parameter u: scaling factor with shape(1, input_size)
+    :param Parameter w: weight with shape (1, input_size)
+    :param Parameter b: bias with shape (1)
     """
 
-    def __init__(self, u: Parameter, w: Parameter, b: Parameter):
+    def __init__(self, u: Parameter, w: Parameter, b: Parameter) -> None:
         super(PlanarTransform, self).__init__()
         self.u = u  # (1, input_size)
         self.w = w  # (1, input_size)
@@ -43,7 +43,5 @@ class PlanarTransform(nn.Module):
         alpha = (self.w @ self.u.t()).squeeze()
         if alpha >= -1:
             return self.u
-        else:
-            print(alpha)
         a_prime = -1 + torch.log1p(alpha.exp())
         return self.u + (a_prime - alpha) * self.w / (self.w @ self.w.T)
