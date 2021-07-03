@@ -2,11 +2,11 @@ import csv
 import json
 import sys
 from abc import abstractmethod
-from typing import List
+from typing import List, Union
 
 import torch
 
-from phylotorch.core.model import Parameter
+from phylotorch.core.model import Parameter, CallableModel
 from phylotorch.core.parameter_encoder import ParameterEncoder
 from phylotorch.core.runnable import Runnable
 from phylotorch.core.serializable import JSONSerializable
@@ -38,14 +38,15 @@ class LoggerInterface(JSONSerializable, Runnable):
 
 
 class Logger(LoggerInterface):
-    """
+    r"""
     Class for logging Parameter objects to a file.
 
-    :param objs: list of Parameter objects
+    :param objs: list of Parameter or CallableModel objects
+    :type objs: list[Parameter or CallableModel]
     :param kwargs: optionals
     """
 
-    def __init__(self, objs: List[Parameter], **kwargs) -> None:
+    def __init__(self, objs: List[Union[Parameter, CallableModel]], **kwargs) -> None:
         if 'file_name' in kwargs:
             self.file_name = kwargs['file_name']
             del kwargs['file_name']
@@ -84,7 +85,18 @@ class Logger(LoggerInterface):
             self.f.close()
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(cls, data, dic) -> 'Logger':
+        r"""
+        Create a Logger object.
+
+        :param data: json representation of Logger object.
+        :type data: dict[str,Any]
+        :param dic: dictionary containing additional objects that can be referenced in data.
+        :type dic: dict[str,Any]
+
+        :return: a :class:`~phylotorch.core.logger.Logger` object.
+        :rtype: Logger
+        """
         params = process_objects(data['parameters'], dic)
         kwargs = {}
         for key in ('file_name', 'delimiter'):
@@ -97,11 +109,11 @@ class TreeLogger(LoggerInterface):
     """
     Class for logging trees to a file.
 
-    :param objs: TreeModel object
+    :param TreeModel objs: TreeModel object
     :param kwargs: optionals
     """
 
-    def __init__(self, tree_model: TreeModel, **kwargs):
+    def __init__(self, tree_model: TreeModel, **kwargs) -> None:
         self.tree_model = tree_model
         self.file_name = kwargs.get('file_name', None)
         self.kwargs = kwargs
@@ -124,7 +136,8 @@ class TreeLogger(LoggerInterface):
             self.tree_model.write_newick(self.f)
         else:
             self.f.write('tree {} = '.format(self.index))
-            self.tree_model.write_nexus(self.f)
+            optionals = {'taxon_index': True}  # replace taxon name by its index
+            self.tree_model.write_newick(self.f, **optionals)
         self.f.write('\n')
         self.index += 1
 
@@ -135,7 +148,18 @@ class TreeLogger(LoggerInterface):
             self.f.close()
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(cls, data, dic) -> 'TreeLogger':
+        r"""
+        Create a TreeLogger object.
+
+        :param data: json representation of TreeLogger object.
+        :type data: dict[str,Any]
+        :param dic: dictionary containing additional objects that can be referenced in data.
+        :type dic: dict[str,Any]
+
+        :return: a :class:`~phylotorch.core.logger.TreeLogger` object.
+        :rtype: TreeLogger
+        """
         tree = process_object(data['tree_model'], dic)
         kwargs = {}
         for key in ('file_name', 'format'):
@@ -145,6 +169,13 @@ class TreeLogger(LoggerInterface):
 
 
 class CSV(JSONSerializable, Runnable):
+    r"""
+    Class for writting parameters to a CSV file.
+
+    :param objs: list of Parameter objects
+    :type objs: list[Parameter]
+    """
+
     def __init__(self, objs: List[Parameter], **kwargs) -> None:
         self.objs = objs
         self.file_name = kwargs.get('file_name', None)
@@ -164,7 +195,18 @@ class CSV(JSONSerializable, Runnable):
             f.close()
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(cls, data, dic) -> 'CSV':
+        r"""
+        Create a CSV object.
+
+        :param data: json representation of CSV object.
+        :type data: dict[str,Any]
+        :param dic: dictionary containing additional objects that can be referenced in data.
+        :type dic: dict[str,Any]
+
+        :return: a :class:`~phylotorch.core.logger.CSV` object.
+        :rtype: CSV
+        """
         params = process_objects(data['parameters'], dic)
         kwargs = {}
         for key in ('file_name', 'delimiter'):
@@ -174,6 +216,12 @@ class CSV(JSONSerializable, Runnable):
 
 
 class Dumper(JSONSerializable, Runnable):
+    r"""
+    Class for saving parameters to a json file.
+
+    :param parameters: list of Parameters.
+    :type parameters: list[Parameter]
+    """
 
     def __init__(self, parameters: List[Parameter], **kwargs) -> None:
         if 'file_name' in kwargs:
@@ -183,6 +231,9 @@ class Dumper(JSONSerializable, Runnable):
         self.parameters = parameters
 
     def run(self) -> None:
+        r"""
+        Write the parameters to the file.
+        """
         if self.file_name is not None:
             with open(self.file_name, 'w') as fp:
                 json.dump(self.parameters, fp, cls=ParameterEncoder, **self.kwargs)
@@ -190,7 +241,18 @@ class Dumper(JSONSerializable, Runnable):
             json.dumps(self.parameters, cls=ParameterEncoder, **self.kwargs)
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(cls, data, dic) -> 'Dumper':
+        r"""
+        Create a Dumper object.
+
+        :param data: json representation of Dumper object.
+        :type data: dict[str,Any]
+        :param dic: dictionary containing additional objects that can be referenced in data.
+        :type dic: dict[str,Any]
+
+        :return: a :class:`~phylotorch.core.logger.Dumper` object.
+        :rtype: Dumper
+        """
         parameters = process_objects(data['parameters'], dic)
         kwargs = {'indent': 2}
         for key in ('file_name', 'indent'):

@@ -1,52 +1,54 @@
-import csv
-import sys
 from typing import List
 
-from . import Parameter
-from .core.runnable import Runnable
-from .core.serializable import JSONSerializable
-from .core.utils import process_objects, process_object
-from .distributions.distributions import DistributionModel
+from ..core.logger import LoggerInterface
+from ..core.runnable import Runnable
+from ..core.serializable import JSONSerializable
+from ..core.utils import process_objects, process_object
+from ..distributions.distributions import DistributionModel
 
 
 class Sampler(JSONSerializable, Runnable):
-    def __init__(self, model: DistributionModel, objs: List[Parameter], samples: int, **kwargs):
+    r"""
+    Class for sampling a distribution and optionally logging things.
+
+    :param DistributionModel model: model to sample from.
+    :param int samples: number of sample to draw.
+    :param loggers: list of loggers.
+    :type loggers: list[LoggerInterface]
+    """
+
+    def __init__(self, model: DistributionModel, samples: int, loggers: List[LoggerInterface]) -> None:
         self.model = model
-        self.objs = objs
         self.samples = samples
-        if 'file_name' in kwargs:
-            self.file_name = kwargs['file_name']
-            del kwargs['file_name']
-        self.kwargs = kwargs
+        self.loggers = loggers
 
-    def run(self):
-        if self.file_name:
-            f = open(self.file_name, 'w')
-            writer = csv.writer(f, **self.kwargs)
-        else:
-            writer = csv.writer(sys.stdout, **self.kwargs)
-        header = []
-        for obj in self.objs:
-            header.extend(['{}.{}'.format(obj.id, i) for i in range(obj.shape[-1])])
-        writer.writerow(header)
-
+    def run(self) -> None:
+        """Run sampler: sample and log to loggers."""
+        for logger in self.loggers:
+            logger.initialize()
         for i in range(self.samples):
             self.model.sample()
-            row = []
-            for obj in self.objs:
-                row.extend(obj.tensor.detach().numpy().tolist())
-            writer.writerow(row)
-
-        if self.file_name:
-            f.close()
+            for logger in self.loggers:
+                logger.log()
+        for logger in self.loggers:
+            logger.close()
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(cls, data, dic) -> 'Sampler':
+        r"""
+        Create a Sampler object.
+
+        :param data: json representation of Sampler object.
+        :type data: dict[str,Any]
+        :param dic: dictionary containing additional objects that can be referenced in data.
+        :type dic: dict[str,Any]
+
+        :return: a :class:`~phylotorch.inference.sampler.Sampler` object.
+        :rtype: Sampler
+        """
         model = process_object(data['model'], dic)
-        params = process_objects(data['parameters'], dic)
+        loggers = process_objects(data['loggers'], dic)
+        if not isinstance(loggers, list):
+            loggers = [loggers]
         samples = data['samples']
-        kwargs = {}
-        for key in ('file_name', 'delimiter'):
-            if key in data:
-                kwargs[key] = data[key]
-        return cls(model, params, samples, **kwargs)
+        return cls(model, samples, loggers)
