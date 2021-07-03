@@ -128,6 +128,7 @@ class SignalHandler():
 
     def exit(self, signum, frame):
         self.stop = True
+        signal.signal(signal.SIGINT, signal.default_int_handler)
 
 
 def validate(data, rules):
@@ -222,3 +223,16 @@ def expand_plates(obj, parent=None, idx=None):
         else:
             for value in obj.values():
                 expand_plates(value, obj, None)
+
+
+def print_graph(g: torch.Tensor, level: int = 0) -> None:
+    r"""
+    Print computation graph.
+
+    :param torch.Tensor g: a tensor
+    :param level: indentation level
+    """
+    if g is not None:
+        print('*' * level * 4, g)
+        for subg in g.next_functions:
+            print_graph(subg[0], level + 1)
