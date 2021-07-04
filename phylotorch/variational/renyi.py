@@ -8,16 +8,29 @@ from ..distributions.distributions import DistributionModel
 from ..typing import ID
 
 
-class RenyiELBO(CallableModel):
+class VR(CallableModel):
+    r"""
+    Class representing the variational Renyi bound (VR) [#Li2016]_.
+    VR extends traditional variational inference to Rényi’s :math:`\alpha`-divergences.
 
-    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size, alpha: float):
+    :param id_: unique identifier of object.
+    :type id_: str or None
+    :param DistributionModel q: variational distribution.
+    :param CallableModel p: joint distribution.
+    :param torch.Size samples: number of samples to form estimator.
+    :param float alpha: order of :math:`\alpha`-divergence.
+
+    .. [#Li2016] Yingzhen Li, Richard E. Turner. Rényi Divergence Variational Inference.
+    """
+
+    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size, alpha: float) -> None:
         self.q = q
         self.p = p
         self.samples = samples
         self.alpha = alpha
-        super(RenyiELBO, self).__init__(id_)
+        super(VR, self).__init__(id_)
 
-    def _call(self, *args, **kwargs):
+    def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
         self.q.rsample(samples)
         log_w = (1. - self.alpha) * (self.p() - self.q())
@@ -34,7 +47,7 @@ class RenyiELBO(CallableModel):
         pass
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(cls, data, dic) -> 'VR':
         samples = data.get('samples', 1)
         if isinstance(samples, list):
             samples = torch.Size(samples)

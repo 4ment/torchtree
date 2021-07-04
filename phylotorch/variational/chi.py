@@ -7,15 +7,28 @@ from ..typing import ID
 
 
 class CUBO(CallableModel):
+    r"""
+    Class representing the :math:`\chi`-upper bound (CUBO) objective [#Dieng2017]_.
 
-    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size, n: torch.Tensor):
+    :param id_: unique identifier of object.
+    :type id_: str or None
+    :param DistributionModel q: variational distribution.
+    :param CallableModel p: joint distribution.
+    :param torch.Size samples: number of samples to form estimator.
+    :param torch.Tensor n: order of :math:`\chi`-divergence.
+
+    .. [#Dieng2017] Adji Bousso Dieng, Dustin Tran, Rajesh Ranganath, John Paisley, David Blei. Variational Inference
+     via :math:`\chi` Upper Bound Minimization
+    """
+
+    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size, n: torch.Tensor) -> None:
         self.q = q
         self.p = p
         self.n = n
         self.samples = samples
         super(CUBO, self).__init__(id_)
 
-    def _call(self, *args, **kwargs):
+    def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
         self.q.rsample(samples)
         log_w = self.p() - self.q()
@@ -33,7 +46,7 @@ class CUBO(CallableModel):
         pass
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(cls, data, dic) -> 'CUBO':
         samples = data.get('samples', 1)
         if isinstance(samples, list):
             samples = torch.Size(samples)
