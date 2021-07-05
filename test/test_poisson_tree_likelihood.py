@@ -52,4 +52,4 @@ def test_poisson_json():
 
     poisson = PoissonTreeLikelihood.from_json(poisson_model, dic)
     assert pytest.approx(poisson().item(), 1e-5) == torch.distributions.Poisson(distances * 0.01).log_prob(
-        noisy_distances).sum().item()
+        torch.tensor(noisy_distances, dtype=torch.long)).sum().item()
