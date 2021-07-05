@@ -50,6 +50,7 @@ def test_1rho():
     print(log_p)
     # exit(2)
 
+@pytest.mark.skip
 def test_1rho2times():
     sampling_times = torch.tensor(np.array([0., 0., 0.]))
     heights = torch.tensor(np.array([4.5, 5.5]))

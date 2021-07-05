@@ -1,12 +1,11 @@
 from pathlib import Path
-
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='phylotorch',
     version='1.0.0',
-    packages=['phylotorch'],
-    url='https://github.com/4ment/phytorch',
+    packages=find_packages(),
+    url='https://github.com/4ment/phylotorch',
     author='Mathieu Fourment',
     author_email='mathieu.fourment@uts.edu.au',
     keywords="phylogenetics, variational, Bayes, pytorch",
@@ -18,6 +17,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
     install_requires=[
