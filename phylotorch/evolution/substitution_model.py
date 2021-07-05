@@ -2,6 +2,7 @@ from abc import abstractmethod
 
 import numpy as np
 import torch
+import torch.linalg
 
 from ..core.model import Model, Parameter
 from ..core.utils import process_object
@@ -89,7 +90,7 @@ class SymmetricSubstitutionModel(SubstitutionModel):
                            v.inverse() @ sqrt_pi).reshape(e.shape[:-1] + (1,) * offset + sqrt_pi_inv.shape[-2:])
 
     def eigen(self, Q):
-        return torch.symeig(Q, eigenvectors=True)
+        return torch.linalg.eigh(Q)
 
 
 class GTR(SymmetricSubstitutionModel):

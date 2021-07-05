@@ -1,7 +1,6 @@
 import abc
 import inspect
 import numbers
-import typing
 from collections import OrderedDict
 from typing import Union, List, Type, Optional
 
@@ -41,7 +40,7 @@ class Distribution(DistributionModel):
 
     def __init__(self, id_: Optional[str], dist: Type[torch.distributions.Distribution],
                  x: Union[List[Parameter], Parameter],
-                 args: typing.OrderedDict[str, Parameter], **kwargs) -> None:
+                 args: 'OrderedDict[str, Parameter]', **kwargs) -> None:
         super(Distribution, self).__init__(id_)
         self.dist = dist
         self.x = x
