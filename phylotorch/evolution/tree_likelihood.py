@@ -109,7 +109,7 @@ class TreeLikelihoodModel(CallableModel):
         probs = self.site_model.probabilities().reshape((-1, 1, 1))
 
         if self.clock_model is None:
-            bls = torch.cat((branch_lengths, torch.zeros(batch_shape + (1,), dtype=branch_lengths.dtype)))
+            bls = torch.cat((branch_lengths, torch.zeros(batch_shape + (1,), dtype=branch_lengths.dtype)), -1)
         else:
             clock_rates = self.clock_model.rates
             bls = clock_rates * branch_lengths

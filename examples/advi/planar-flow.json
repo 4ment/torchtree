@@ -1,0 +1,145 @@
+[
+  {
+    "id": "energy",
+    "type": "phylotorch.nf.energy_functions.EnergyFunctionModel",
+    "x": {
+      "id": "z",
+      "type": "phylotorch.core.model.Parameter",
+      "zeros": [
+        128,
+        2
+      ]
+    },
+    "function": "u_z1"
+  },
+  {
+    "id": "advi",
+    "type": "phylotorch.optim.Optimizer",
+    "algorithm": "torch.optim.Adam",
+    "maximize": true,
+    "lr": 6e-4,
+    "iterations": 20000,
+    "loss": {
+      "id": "elbo",
+      "type": "phylotorch.variational.kl.ELBO",
+      "samples": [
+        128
+      ],
+      "joint": "energy",
+      "_forward": true,
+      "variational": {
+        "id": "varmodel",
+        "type": "phylotorch.nf.flow.NormalizingFlow",
+        "x": "z",
+        "layers": [
+          {
+            "type": "phylotorch.Plate",
+            "range": "0:32",
+            "object": {
+              "id": "planar.*",
+              "type": "phylotorch.nn.Module",
+              "module": "phylotorch.nf.planar.PlanarTransform",
+              "parameters": {
+                "u": {
+                  "id": "flow.u.*",
+                  "type": "phylotorch.core.model.Parameter",
+                  "full": [
+                    1,
+                    2
+                  ],
+                  "rand": "normal(0,0.1)",
+                  "nn": true
+                },
+                "w": {
+                  "id": "flow.w.*",
+                  "type": "phylotorch.core.model.Parameter",
+                  "full": [
+                    1,
+                    2
+                  ],
+                  "rand": "normal(0,0.1)",
+                  "nn": true
+                },
+                "b": {
+                  "id": "flow.b.*",
+                  "type": "phylotorch.core.model.Parameter",
+                  "full": [
+                    1
+                  ],
+                  "rand": "normal(0,0.1)",
+                  "nn": true
+                }
+              }
+            }
+          }
+        ],
+        "base": {
+          "id": "base",
+          "type": "phylotorch.distributions.MultivariateNormal",
+          "parameters": {
+            "loc": {
+              "id": "base.loc",
+              "type": "phylotorch.core.model.Parameter",
+              "zeros": 2
+            },
+            "covariance_matrix": {
+              "id": "base.scale",
+              "type": "phylotorch.core.model.Parameter",
+              "tensor": [
+                [
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0
+                ]
+              ]
+            }
+          },
+          "x": {
+            "id": "flow.z",
+            "type": "phylotorch.core.model.Parameter",
+            "zeros": [
+              2
+            ]
+          }
+        }
+      }
+    },
+    "_parameters": [
+      "flow.u.{0:32}",
+      "flow.w.{0:32}",
+      "flow.b.{0:32}"
+    ],
+    "parameters": [
+      "varmodel"
+    ],
+    "convergence": {
+      "type": "phylotorch.optim.VariationalConvergence",
+      "loss": "elbo",
+      "every": 1000,
+      "start": 1,
+      "samples": 0
+    }
+  },
+  {
+    "id": "sampler",
+    "type": "phylotorch.inference.sampler.Sampler",
+    "model": "varmodel",
+    "samples": 1000,
+    "loggers": [
+      {
+        "id": "logger",
+        "type": "phylotorch.core.logger.Logger",
+        "file_name": "samples.csv",
+        "parameters": [
+          "energy",
+          "varmodel",
+          "z"
+        ],
+        "delimiter": "\t"
+      }
+    ]
+  }
+]
