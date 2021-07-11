@@ -4,6 +4,7 @@ import torch
 from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
 
+from .coalescent_functions import ConstanCoalescentAutogradFunction
 from .tree_model import TreeModel, TimeTreeModel
 from ..core.model import CallableModel, Parameter
 from ..core.utils import process_object
@@ -53,7 +54,7 @@ class ConstantCoalescentModel(CallableModel):
             times = numpy.array(data['times'])
             events = numpy.array(data['events'])
             sampling_times = torch.tensor(times[events == 1], dtype=theta.dtype)
-            node_heights = torch.tensor(times[events == 0], dtype=theta.dtype)
+            node_heights = Parameter(None, torch.tensor(times[events == 0], dtype=theta.dtype))
         return cls(id_, theta, node_heights, sampling_times)
 
 
@@ -202,7 +203,7 @@ class PiecewiseConstantCoalescentGridModel(ConstantCoalescentModel):
             times = numpy.array(data['times'])
             events = numpy.array(data['events'])
             sampling_times = torch.tensor(times[events == 1], dtype=theta.dtype)
-            node_heights = torch.tensor(times[events == 0], dtype=theta.dtype)
+            node_heights = Parameter(None, torch.tensor(times[events == 0], dtype=theta.dtype))
 
         if 'grid' not in data:
             cutoff = data['cutoff']  # float

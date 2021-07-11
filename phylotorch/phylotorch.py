@@ -22,9 +22,9 @@ def update_tensors(obj, tensors):
                         del obj[key]
                 # set new tensor
                 obj['tensor'] = tensors[obj['id']]['tensor']
-            else:
-                for value in obj.values():
-                    update_tensors(value, tensors)
+        else:
+            for value in obj.values():
+                update_tensors(value, tensors)
 
 
 def main():
