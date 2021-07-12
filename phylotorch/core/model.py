@@ -12,7 +12,7 @@ from torch import nn
 
 from .classproperty_decorator import classproperty
 from .serializable import JSONSerializable
-from ..core.utils import process_object, get_class, tensor_rand
+from ..core.utils import process_object, get_class, tensor_rand, JSONParseError
 
 
 class Identifiable(JSONSerializable):
@@ -29,7 +29,54 @@ class Identifiable(JSONSerializable):
         ...
 
 
-class Parameter(Identifiable):
+class AbstractParameter(Identifiable, abc.ABC):
+    def __init__(self, id_) -> None:
+        super(AbstractParameter, self).__init__(id_)
+
+    @property
+    @abc.abstractmethod
+    def tensor(self) -> Tensor:
+        ...
+
+    @tensor.setter
+    @abc.abstractmethod
+    def tensor(self, tensor: Tensor) -> None:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def shape(self) -> torch.Size:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def dtype(self) -> torch.dtype:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def requires_grad(self) -> bool:
+        ...
+
+    @requires_grad.setter
+    @abc.abstractmethod
+    def requires_grad(self, requires_grad: bool) -> None:
+        ...
+
+    @abc.abstractmethod
+    def parameters(self) -> List['AbstractParameter']:
+        ...
+
+    @abc.abstractmethod
+    def add_parameter_listener(self, listener) -> None:
+        ...
+
+    @abc.abstractmethod
+    def fire_parameter_changed(self, index=None, event=None) -> None:
+        ...
+
+
+class Parameter(AbstractParameter):
     def __init__(self, id_: Optional[str], tensor: Tensor) -> None:
         self._tensor = tensor
         self.listeners = []
@@ -323,3 +370,141 @@ class TransformedParameter(Parameter, CallableModel):
         else:
             x = process_object(data['x'], dic)
         return cls(data['id'], x, transform)
+
+
+class ViewParameter(AbstractParameter, ParameterListener):
+
+    def __init__(self, id_, parameter, indices) -> None:
+        r"""
+        Class representing a view of another parameter.
+
+        :param id_: ID of object
+        :type id_: str or None
+        :param Parameter parameter: parameter that ViewParameter wrap
+        :param indices: indices used on parameter
+        """
+        super(ViewParameter, self).__init__(id_)
+        self.parameter = parameter
+        self.indices = indices
+        self.listeners = []
+        self.parameter.add_parameter_listener(self)
+
+    def __str__(self):
+        return f"{self._id}"
+
+    def __repr__(self):
+        if isinstance(self.indices, slice):
+            indices = []
+            for x in (self.indices.start, self.indices.stop, self.indices.step):
+                if x is None:
+                    indices.append('')
+                else:
+                    indices.append(x)
+            indices = "'{}:{}:{}'".format(*indices)
+        elif isinstance(self.indices, torch.Tensor):
+            indices = self.indices.tolist()
+        else:
+            indices = self.indices
+        return f"ViewParameter(id_='{self._id}', parameter={repr(self.parameter)}, indices={indices})"
+
+    def __eq__(self, other):
+        return self.id == other.id and self.parameter.__eq__(other.parameter) and self.indices.__eq__(other.indices)
+
+    @property
+    def tensor(self) -> Tensor:
+        return self.parameter.tensor[..., self.indices]
+
+    @tensor.setter
+    def tensor(self, tensor: Tensor) -> None:
+        self.parameter.tensor[..., self.indices] = tensor
+        self.parameter.fire_parameter_changed()
+
+    @property
+    def shape(self) -> torch.Size:
+        return self.parameter.tensor.shape
+
+    @property
+    def dtype(self) -> torch.dtype:
+        return self.parameter.dtype
+
+    @property
+    def requires_grad(self) -> bool:
+        return self.parameter.requires_grad
+
+    @requires_grad.setter
+    def requires_grad(self, requires_grad: bool) -> None:
+        raise Exception('requires_grad setter cannot be called on ViewParameter')
+
+    def assign(self, parameter):
+        raise Exception('assign cannot be called on ViewParameter')
+
+    def update(self, value):
+        if self.id in value:
+            self.tensor = value[self.id]
+
+    def add_parameter_listener(self, listener) -> None:
+        self.listeners.append(listener)
+
+    def fire_parameter_changed(self, index=None, event=None) -> None:
+        for listener in self.listeners:
+            listener.handle_parameter_changed(self, index, event)
+
+    def parameters(self) -> List['ViewParameter']:
+        return [self]
+
+    def clone(self) -> 'ViewParameter':
+        """Return a clone of the Parameter. it is not cloning listeners and the clone's id is None"""
+        return ViewParameter(None, self.parameter.clone(), self.indices)
+
+    def __getitem__(self, subscript) -> 'ViewParameter':
+        raise NotImplementedError
+
+    def handle_parameter_changed(self, variable, index, event) -> None:
+        # propagate event when self.parameter changes
+        self.fire_parameter_changed()
+
+    @classmethod
+    def from_json(cls, data, dic):
+        parameter = process_object(data['parameter'], dic)
+        if isinstance(data['indices'], int):
+            # we 'lose' a dimension in this case
+            # example: torch.tensor([0,1,2])[1] == torch.tensor(1)
+            # use slicing if we want to keep the original shape
+            # example: torch.tensor([0,1,2])[1:2] == torch.tensor([1])
+            indices = data['indices']
+        elif isinstance(data['indices'], list):
+            if isinstance(data['indices'], int):
+                indices = torch.LongTensor(data['indices'])
+            elif isinstance(data['indices'], bool):
+                indices = torch.BoolTensor(data['indices'])
+        elif isinstance(data['indices'], str):
+            # [ <first element to include> : <first element to exclude> : <step> ]
+            slice_indexes = [x for x in data['indices'].split(':')]
+            for idx in range(len(slice_indexes)):
+                if slice_indexes[idx] != '':
+                    slice_indexes[idx] = int(slice_indexes[idx])
+                else:
+                    slice_indexes[idx] = None
+
+            if len(slice_indexes) == 3 and slice_indexes[2] < 0:
+                if slice_indexes[0] is None:
+                    start = parameter.tensor.size(-1) - 1
+                else:
+                    start = slice_indexes[0]
+                if slice_indexes[1] is None:
+                    end = -1
+                else:
+                    end = slice_indexes[1]
+                indices = torch.arange(start, end, slice_indexes[2])
+            else:
+                indices = slice(*slice_indexes)
+        elif isinstance(data['indices'], Parameter):
+            tensor = data['indices'].tensor
+            if isinstance(tensor, torch.FloatTensor) or isinstance(tensor, torch.BoolTensor):
+                indices = tensor
+            else:
+                raise JSONParseError('indices must be a Parameter wrapping a BoolTensor or FloatTensor')
+        else:
+            raise JSONParseError('indices must be a string, list, or Parameter (with a FloatTensor or BoolTensor)')
+
+        return cls(data['id'], parameter, indices)
