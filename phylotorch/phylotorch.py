@@ -6,25 +6,7 @@ import torch
 
 from phylotorch.core.runnable import Runnable
 from phylotorch.core.utils import JSONParseError, remove_comments, expand_plates
-from phylotorch.core.utils import process_objects
-
-
-def update_tensors(obj, tensors):
-    if isinstance(obj, list):
-        for element in obj:
-            update_tensors(element, tensors)
-    elif isinstance(obj, dict):
-        if 'type' in obj and obj['type'] in ('phylotorch.core.model.Parameter', 'phylotorch.Parameter'):
-            if obj['id'] in tensors:
-                # get rid of full, full_like, tensor...
-                for key in list(obj.keys()).copy():
-                    if key not in ('id', 'type', 'dtype', 'nn'):
-                        del obj[key]
-                # set new tensor
-                obj['tensor'] = tensors[obj['id']]['tensor']
-        else:
-            for value in obj.values():
-                update_tensors(value, tensors)
+from phylotorch.core.utils import process_objects, update_parameters
 
 
 def main():
@@ -53,7 +35,7 @@ def main():
             tensors = {}
             for param in checkpoint:
                 tensors[param['id']] = param
-            update_tensors(data, tensors)
+            update_parameters(data, tensors)
 
     dic = {}
     try:

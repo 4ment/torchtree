@@ -225,6 +225,32 @@ def expand_plates(obj, parent=None, idx=None):
                 expand_plates(value, obj, None)
 
 
+def update_parameters(json_object, parameters) -> None:
+    """
+    Recursively replace tensor in json_object with tensors present in parameters.
+
+    :param dict json_object: json object
+    :param parameters: list of Parameters
+    :type parameters: list(Parameter)
+    """
+    if isinstance(json_object, list):
+        for element in json_object:
+            update_parameters(element, parameters)
+    elif isinstance(json_object, dict):
+        if 'type' in json_object and json_object['type'] in (
+        'phylotorch.core.model.Parameter', 'phylotorch.Parameter', 'Parameter'):
+            if json_object['id'] in parameters:
+                # get rid of full, full_like, tensor...
+                for key in list(json_object.keys()).copy():
+                    if key not in ('id', 'type', 'dtype', 'nn'):
+                        del json_object[key]
+                # set new tensor
+                json_object['tensor'] = parameters[json_object['id']]['tensor']
+        else:
+            for value in json_object.values():
+                update_parameters(value, parameters)
+
+
 def print_graph(g: torch.Tensor, level: int = 0) -> None:
     r"""
     Print computation graph.
