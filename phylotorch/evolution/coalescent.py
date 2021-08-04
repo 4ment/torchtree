@@ -1,11 +1,11 @@
-from typing import Tuple
+from typing import List, Tuple, Union
 
 import torch
 from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
 
 from ..core.model import CallableModel, Parameter
-from ..core.utils import process_object
+from ..core.utils import process_object, process_objects
 from ..typing import ID
 from .tree_model import TimeTreeModel, TreeModel
 
@@ -46,16 +46,6 @@ class ConstantCoalescentModel(CallableModel):
     def sample_shape(self):
         return self.theta.tensor.shape[: -len(self.batch_shape)]
 
-    @staticmethod
-    def _process_times_events(
-        time_list: list, event_list: list, dtype: torch.dtype
-    ) -> Tuple[torch.Tensor, Parameter]:
-        times = torch.tensor(time_list, dtype=dtype)
-        events = torch.LongTensor(event_list)
-        sampling_times = times[events == 1]
-        node_heights = Parameter(None, times[events == 0])
-        return sampling_times, node_heights
-
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
@@ -65,7 +55,7 @@ class ConstantCoalescentModel(CallableModel):
             sampling_times = tree_model.sampling_times
             node_heights = tree_model._node_heights
         else:
-            sampling_times, node_heights = cls._process_times_events(
+            sampling_times, node_heights = process_times_events(
                 data['times'], data['events'], theta.dtype
             )
         return cls(id_, theta, node_heights, sampling_times)
@@ -261,23 +251,47 @@ class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
         )
 
 
-class PiecewiseConstantCoalescentGridModel(ConstantCoalescentModel):
+class PiecewiseConstantCoalescentGridModel(CallableModel):
     def __init__(
         self,
         id_: ID,
         theta: Parameter,
-        node_heights: Parameter,
+        node_heights: Union[Parameter, List[Parameter]],
         sampling_times: torch.Tensor,
         grid: Parameter,
     ) -> None:
+        super().__init__(id_)
         self.grid = grid
-        super().__init__(id_, theta, node_heights, sampling_times)
+        self.theta = theta
+        self.sampling_times = sampling_times
+        self.node_heights = node_heights
+        self.add_parameter(theta)
+        if isinstance(node_heights, list):
+            for parameter in node_heights:
+                self.add_parameter(parameter)
+        else:
+            self.add_parameter(node_heights)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         pwc = PiecewiseConstantCoalescentGrid(
             self.sampling_times, self.theta.tensor, self.grid.tensor
         )
-        return pwc.log_prob(self.node_heights.tensor)
+        if isinstance(self.node_heights, list):
+            log_p = pwc.log_prob(
+                torch.stack([param.tensor for param in self.node_heights])
+            ).sum(0)
+        else:
+            log_p = pwc.log_prob(self.node_heights.tensor)
+        return log_p
+
+    def update(self, value):
+        pass
+
+    def handle_model_changed(self, model, obj, index) -> None:
+        pass
+
+    def handle_parameter_changed(self, variable, index, event) -> None:
+        self.fire_model_changed()
 
     @classmethod
     def from_json(cls, data, dic):
@@ -286,11 +300,15 @@ class PiecewiseConstantCoalescentGridModel(ConstantCoalescentModel):
         theta = process_object(data['theta'], dic)
 
         if TreeModel.tag in data:
-            tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
-            sampling_times = tree_model.sampling_times
-            node_heights = tree_model._node_heights
+            tree_model = process_objects(data[TreeModel.tag], dic)
+            if isinstance(tree_model, list):
+                sampling_times = tree_model[0].sampling_times
+                node_heights = [parameter.tensor for parameter in tree_model]
+            else:
+                sampling_times = tree_model.sampling_times
+                node_heights = tree_model._node_heights
         else:
-            sampling_times, node_heights = cls._process_times_events(
+            sampling_times, node_heights = process_times_events(
                 data['times'], data['events'], theta.dtype
             )
 
@@ -305,3 +323,13 @@ class PiecewiseConstantCoalescentGridModel(ConstantCoalescentModel):
         assert grid.shape[0] + 1 == theta.shape[-1]
 
         return cls(id_, theta, node_heights, sampling_times, grid)
+
+
+def process_times_events(
+    time_list: list, event_list: list, dtype: torch.dtype
+) -> Tuple[torch.Tensor, Parameter]:
+    times = torch.tensor(time_list, dtype=dtype)
+    events = torch.LongTensor(event_list)
+    sampling_times = times[events == 1]
+    node_heights = Parameter(None, times[events == 0])
+    return sampling_times, node_heights

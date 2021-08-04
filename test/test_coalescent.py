@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 import torch
 
+from phylotorch import Parameter
 from phylotorch.evolution.coalescent import (
     ConstantCoalescent,
     ConstantCoalescentModel,
@@ -237,4 +238,27 @@ def test_skygrid_heterochronous_batch_thetas():
             [[-19.594893640219844], [-19.594893640219844]], dtype=thetas.dtype
         ),
         log_p,
+    )
+
+
+def test_skygrid_heterochronous_2_trees():
+    sampling_times = torch.tensor(np.array([0.0, 1.0, 2.0, 3.0, 12.0]))
+    thetas_log = torch.tensor(np.array([1.0, 3.0, 6.0, 8.0, 9.0]))
+    thetas = Parameter(None, thetas_log.exp())
+    grid = Parameter(None, torch.linspace(0, 10.0, steps=5)[1:])
+    constant = PiecewiseConstantCoalescentGridModel(
+        None,
+        thetas,
+        [
+            Parameter(None, torch.tensor([1.5, 4.0, 6.0, 16.0])),
+            Parameter(None, torch.tensor([1.5, 4.0, 6.0, 26.0])),
+        ],
+        sampling_times,
+        grid,
+    )
+    assert torch.allclose(
+        torch.tensor(
+            [[-19.594893640219844], [-19.596127738260712]], dtype=thetas.dtype
+        ).sum(0),
+        constant(),
     )
