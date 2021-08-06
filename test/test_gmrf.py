@@ -2,7 +2,7 @@ import pytest
 import torch
 
 from phylotorch.core.model import Parameter
-from phylotorch.distributions.gmrf import GMRF
+from phylotorch.distributions.gmrf import GMRF, GMRFCovariate
 from phylotorch.evolution.tree_model import TimeTreeModel
 
 
@@ -16,7 +16,7 @@ from phylotorch.evolution.tree_model import TimeTreeModel
 def test_gmrf(thetas, precision, expected):
     gmrf = GMRF(
         None,
-        x=Parameter(None, torch.tensor(thetas)),
+        field=Parameter(None, torch.tensor(thetas)),
         precision=Parameter(None, torch.tensor([precision])),
         tree_model=None,
     )
@@ -26,7 +26,7 @@ def test_gmrf(thetas, precision, expected):
 def test_gmrf_batch():
     gmrf = GMRF(
         None,
-        x=Parameter(
+        field=Parameter(
             None, torch.tensor([[2.0, 30.0, 4.0, 15.0, 6.0], [1.0, 3.0, 6.0, 8.0, 9.0]])
         ),
         precision=Parameter(None, torch.tensor([[2.0], [0.1]])),
@@ -40,7 +40,7 @@ def test_gmrf_batch():
 def test_gmrfw2():
     gmrf = GMRF(
         None,
-        x=Parameter(None, torch.tensor([3.0, 10.0, 4.0]).log()),
+        field=Parameter(None, torch.tensor([3.0, 10.0, 4.0]).log()),
         precision=Parameter(None, torch.tensor([0.1])),
         tree_model=None,
     )
@@ -64,7 +64,7 @@ def test_smoothed(rescale, expected):
 
     gmrf = GMRF(
         None,
-        x=Parameter(None, torch.tensor([3.0, 10.0, 4.0]).log()),
+        field=Parameter(None, torch.tensor([3.0, 10.0, 4.0]).log()),
         precision=Parameter(None, torch.tensor([0.1])),
         tree_model=tree_model,
         rescale=rescale,
@@ -82,7 +82,7 @@ def test_gmrf2(thetas, precision):
     precision = torch.tensor([precision])
     gmrf = GMRF(
         None,
-        x=Parameter(None, thetas),
+        field=Parameter(None, thetas),
         precision=Parameter(None, precision),
         tree_model=None,
     )
@@ -122,7 +122,7 @@ def test_gmrf_time_aware(thetas, precision, weights, rescale):
     weights_tensor = torch.tensor(weights) if weights is not None else None
     gmrf = GMRF(
         None,
-        x=Parameter(None, thetas),
+        field=Parameter(None, thetas),
         precision=Parameter(None, precision),
         tree_model=None,
         weights=weights_tensor,
@@ -156,3 +156,19 @@ def test_gmrf_time_aware(thetas, precision, weights, rescale):
     )
 
     assert lp1.item() == pytest.approx(lp2.item())
+
+
+def test_gmrf_covariates_simple():
+    gmrf = GMRF(
+        None,
+        Parameter(None, torch.tensor([1.0, 2.0, 3.0])),
+        Parameter(None, torch.tensor([0.1])),
+    )
+    gmrf_covariate = GMRFCovariate(
+        None,
+        field=Parameter(None, torch.tensor([1.0, 2.0, 3.0])),
+        precision=Parameter(None, torch.tensor([0.1])),
+        covariates=Parameter(None, torch.arange(1.0, 7.0).view((3, 2))),
+        beta=Parameter(None, torch.tensor([0.0, 0.0])),
+    )
+    assert gmrf() == gmrf_covariate()
