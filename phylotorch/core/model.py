@@ -2,17 +2,16 @@ import abc
 import collections.abc
 import inspect
 import numbers
-from typing import List, Union, Optional
+from typing import List, Optional, Union, overload
 
 import numpy as np
 import torch
 import torch.distributions
-from torch import Tensor
-from torch import nn
+from torch import Tensor, nn
 
+from ..core.utils import JSONParseError, get_class, process_object, tensor_rand
 from .classproperty_decorator import classproperty
 from .serializable import JSONSerializable
-from ..core.utils import process_object, get_class, tensor_rand, JSONParseError
 
 
 class Identifiable(JSONSerializable):
@@ -30,9 +29,6 @@ class Identifiable(JSONSerializable):
 
 
 class AbstractParameter(Identifiable, abc.ABC):
-    def __init__(self, id_) -> None:
-        super(AbstractParameter, self).__init__(id_)
-
     @property
     @abc.abstractmethod
     def tensor(self) -> Tensor:
@@ -64,7 +60,23 @@ class AbstractParameter(Identifiable, abc.ABC):
         ...
 
     @abc.abstractmethod
+    def dim(self) -> int:
+        ...
+
+    @abc.abstractmethod
     def parameters(self) -> List['AbstractParameter']:
+        ...
+
+    @abc.abstractmethod
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        ...
+
+    @abc.abstractmethod
+    def cpu(self) -> None:
+        ...
+
+    @abc.abstractmethod
+    def to(self, *args, **kwargs) -> None:
         ...
 
     @abc.abstractmethod
@@ -78,9 +90,9 @@ class AbstractParameter(Identifiable, abc.ABC):
 
 class Parameter(AbstractParameter):
     def __init__(self, id_: Optional[str], tensor: Tensor) -> None:
+        super().__init__(id_)
         self._tensor = tensor
         self.listeners = []
-        super(Parameter, self).__init__(id_)
 
     def __str__(self):
         return f"{self._id}"
@@ -117,6 +129,9 @@ class Parameter(AbstractParameter):
         self._tensor.requires_grad = requires_grad
         self.fire_parameter_changed()
 
+    def dim(self) -> int:
+        return self._tensor.dim()
+
     def assign(self, parameter):
         self._tensor = parameter.tensor
         self.fire_parameter_changed()
@@ -136,13 +151,57 @@ class Parameter(AbstractParameter):
         return [self]
 
     def clone(self) -> 'Parameter':
-        """Return a clone of the Parameter. it is not cloning listeners and the clone's id is None"""
+        """Return a clone of the Parameter.
+
+        it is not cloning listeners and the clone's id is None
+        """
         tclone = self.tensor.clone()
         return Parameter(None, tclone)
 
     def __getitem__(self, subscript) -> 'Parameter':
-        """Can be a slice or index"""
+        """Can be a slice, int, or Tensor."""
         return Parameter(None, self._tensor[subscript])
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        self._tensor = self._tensor.cuda(device)
+
+    def cpu(self) -> None:
+        self._tensor = self._tensor.cpu()
+
+    @overload
+    def to(
+        self,
+        device: Optional[Union[int, torch.device]] = None,
+        dtype: Optional[Union[torch.dtype, str]] = None,
+    ) -> None:
+        ...
+
+    @overload
+    def to(self, dtype: Union[torch.dtype, str] = None) -> None:
+        ...
+
+    def to(self, *args, **kwargs) -> None:
+        """Performs Tensor dtype and/or device conversion.
+
+        A torch.dtype and torch.device are inferred from the arguments
+        of self.to(*args, **kwargs)
+
+        This can be called as
+
+        .. function:: to(device=None, dtype=None)
+
+        .. function:: to(dtype)
+
+        .. function:: to(device)
+        """
+        if 'dtype' in kwargs:
+            self._tensor = self._tensor.to(args[0], dtype=kwargs['dtype'])
+        else:
+            self._tensor = self._tensor.to(args[0])
+
+    @property
+    def device(self) -> torch.device:
+        return self._tensor.device
 
     @classmethod
     def from_json(cls, data, dic):
@@ -184,23 +243,23 @@ class Parameter(AbstractParameter):
             values = data['tensor']
             if 'dimension' in data:
                 values = np.repeat(values, data['dimension'] / len(values) + 1)
-                values = values[:data['dimension']]
+                values = values[: data['dimension']]
             t = torch.tensor(values, dtype=dtype)
         if 'nn' in data and data['nn']:
             return cls(data['id'], nn.Parameter(t))
-        else:
-            return cls(data['id'], t)
+        return cls(data['id'], t)
 
 
-class Parametric(object):
+class Parametric:
     def __init__(self) -> None:
         self._parameters = []
 
     def add_parameter(self, parameter: Parameter) -> None:
         self._parameters.append(parameter)
+        parameter.add_parameter_listener(self)
 
     def parameters(self) -> List[Parameter]:
-        """Returns parameters of instance Parameter"""
+        """Returns parameters of instance Parameter."""
         parameters = []
         for param in self._parameters:
             parameters.extend(param.parameters())
@@ -251,7 +310,7 @@ class Model(Identifiable, Parametric, ModelListener, ParameterListener):
             listener.handle_model_changed(self, obj, index)
 
     def parameters(self) -> List[Parameter]:
-        """Returns parameters of instance Parameter"""
+        """Returns parameters of instance Parameter."""
         parameters = []
         for param in self._parameters:
             parameters.extend(param.parameters())
@@ -262,6 +321,24 @@ class Model(Identifiable, Parametric, ModelListener, ParameterListener):
     @classproperty
     def tag(cls) -> Optional[str]:
         return cls._tag
+
+    def to(self, *args, **kwargs) -> None:
+        for param in self._parameters:
+            param.to(*args, **kwargs)
+        for model in self._models:
+            model.cuda(*args, **kwargs)
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        for param in self._parameters:
+            param.cuda(device)
+        for model in self._models:
+            model.cuda(device)
+
+    def cpu(self) -> None:
+        for param in self._parameters:
+            param.cpu()
+        for model in self._models:
+            model.cpu()
 
 
 class CallableModel(Model, collections.abc.Callable):
@@ -279,9 +356,12 @@ class CallableModel(Model, collections.abc.Callable):
 
 
 class TransformedParameter(Parameter, CallableModel):
-
-    def __init__(self, id_: Optional[str], x: Union[List[Parameter], Parameter],
-                 transform: torch.distributions.Transform) -> None:
+    def __init__(
+        self,
+        id_: Optional[str],
+        x: Union[List[Parameter], Parameter],
+        transform: torch.distributions.Transform,
+    ) -> None:
         CallableModel.__init__(self, id_)
         self.transform = transform
         self.x = x
@@ -305,13 +385,15 @@ class TransformedParameter(Parameter, CallableModel):
         self.x.update(value)
         self._tensor = self.transform(self.x.tensor)
 
-    def _call(self) -> Tensor:
+    def _call(self, *args, **kwargs) -> Tensor:
         if self.need_update:
             self.apply_transform()
             self.need_update = False
 
         if isinstance(self.x, list):
-            return self.transform.log_abs_det_jacobian(torch.cat([x.tensor for x in self.x], -1), self._tensor)
+            return self.transform.log_abs_det_jacobian(
+                torch.cat([x.tensor for x in self.x], -1), self._tensor
+            )
         else:
             return self.transform.log_abs_det_jacobian(self.x.tensor, self._tensor)
 
@@ -324,7 +406,16 @@ class TransformedParameter(Parameter, CallableModel):
 
     @tensor.setter
     def tensor(self, tensor):
-        raise Exception('Cannot assign tensor to TransformedParameter (ID: {})'.format(self.id))
+        raise Exception(
+            'Cannot assign tensor to TransformedParameter (ID: {})'.format(self.id)
+        )
+
+    @property
+    def shape(self) -> torch.Size:
+        if self.need_update:
+            self.apply_transform()
+            self.need_update = False
+        return self._tensor.shape
 
     def apply_transform(self) -> None:
         if isinstance(self.x, list):
@@ -340,13 +431,23 @@ class TransformedParameter(Parameter, CallableModel):
         pass
 
     @property
-    def batch_shape(self) -> torch.Size:
-        # FIXME: is it the shape of self._tensor or self.x
-        return self._tensor.shape[-1:]
-
-    @property
     def sample_shape(self) -> torch.Size:
-        return self._tensor.shape[:-1]
+        return self.tensor.shape[:-1]
+
+    def to(self, *args, **kwargs) -> None:
+        for param in self._parameters:
+            param.to(*args, **kwargs)
+        self.need_update = True
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None):
+        for param in self._parameters:
+            param.cuda(device)
+        self.need_update = True
+
+    def cpu(self):
+        for param in self._parameters:
+            param.cpu()
+        self.need_update = True
 
     @classmethod
     def from_json(cls, data, dic):
@@ -373,8 +474,12 @@ class TransformedParameter(Parameter, CallableModel):
 
 
 class ViewParameter(AbstractParameter, ParameterListener):
-
-    def __init__(self, id_, parameter, indices) -> None:
+    def __init__(
+        self,
+        id_: Optional[str],
+        parameter: Parameter,
+        indices: Union[int, slice, Tensor],
+    ) -> None:
         r"""
         Class representing a view of another parameter.
 
@@ -383,7 +488,7 @@ class ViewParameter(AbstractParameter, ParameterListener):
         :param Parameter parameter: parameter that ViewParameter wrap
         :param indices: indices used on parameter
         """
-        super(ViewParameter, self).__init__(id_)
+        super().__init__(id_)
         self.parameter = parameter
         self.indices = indices
         self.listeners = []
@@ -405,10 +510,17 @@ class ViewParameter(AbstractParameter, ParameterListener):
             indices = self.indices.tolist()
         else:
             indices = self.indices
-        return f"ViewParameter(id_='{self._id}', parameter={repr(self.parameter)}, indices={indices})"
+        return (
+            f"ViewParameter(id_='{self._id}', parameter={repr(self.parameter)},"
+            f" indices={indices})"
+        )
 
     def __eq__(self, other):
-        return self.id == other.id and self.parameter.__eq__(other.parameter) and self.indices.__eq__(other.indices)
+        return (
+            self.id == other.id
+            and self.parameter.__eq__(other.parameter)
+            and self.indices.__eq__(other.indices)
+        )
 
     @property
     def tensor(self) -> Tensor:
@@ -435,6 +547,9 @@ class ViewParameter(AbstractParameter, ParameterListener):
     def requires_grad(self, requires_grad: bool) -> None:
         raise Exception('requires_grad setter cannot be called on ViewParameter')
 
+    def dim(self) -> int:
+        return self.tensor.dim()
+
     def assign(self, parameter):
         raise Exception('assign cannot be called on ViewParameter')
 
@@ -453,7 +568,10 @@ class ViewParameter(AbstractParameter, ParameterListener):
         return [self]
 
     def clone(self) -> 'ViewParameter':
-        """Return a clone of the Parameter. it is not cloning listeners and the clone's id is None"""
+        """Return a clone of the Parameter.
+
+        it is not cloning listeners and the clone's id is None
+        """
         return ViewParameter(None, self.parameter.clone(), self.indices)
 
     def __getitem__(self, subscript) -> 'ViewParameter':
@@ -463,9 +581,19 @@ class ViewParameter(AbstractParameter, ParameterListener):
         # propagate event when self.parameter changes
         self.fire_parameter_changed()
 
+    def to(self, *args, **kwargs) -> None:
+        self.parameter.to(*args, **kwargs)
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        self.parameter.cuda(device)
+
+    def cpu(self) -> None:
+        self.parameter.cpu()
+
     @classmethod
     def from_json(cls, data, dic):
         parameter = process_object(data['parameter'], dic)
+        indices = None
         if isinstance(data['indices'], int):
             # we 'lose' a dimension in this case
             # example: torch.tensor([0,1,2])[1] == torch.tensor(1)
@@ -479,10 +607,10 @@ class ViewParameter(AbstractParameter, ParameterListener):
                 indices = torch.BoolTensor(data['indices'])
         elif isinstance(data['indices'], str):
             # [ <first element to include> : <first element to exclude> : <step> ]
-            slice_indexes = [x for x in data['indices'].split(':')]
-            for idx in range(len(slice_indexes)):
-                if slice_indexes[idx] != '':
-                    slice_indexes[idx] = int(slice_indexes[idx])
+            slice_indexes = data['indices'].split(':')
+            for idx, value in enumerate(slice_indexes):
+                if value != '':
+                    slice_indexes[idx] = int(value)
                 else:
                     slice_indexes[idx] = None
 
@@ -500,11 +628,13 @@ class ViewParameter(AbstractParameter, ParameterListener):
                 indices = slice(*slice_indexes)
         elif isinstance(data['indices'], Parameter):
             tensor = data['indices'].tensor
-            if isinstance(tensor, torch.FloatTensor) or isinstance(tensor, torch.BoolTensor):
+            if isinstance(tensor, (torch.FloatTensor, torch.BoolTensor)):
                 indices = tensor
-            else:
-                raise JSONParseError('indices must be a Parameter wrapping a BoolTensor or FloatTensor')
-        else:
-            raise JSONParseError('indices must be a string, list, or Parameter (with a FloatTensor or BoolTensor)')
+
+        if indices is None:
+            raise JSONParseError(
+                'indices must be a string, list, or Parameter'
+                ' (with a FloatTensor or BoolTensor)'
+            )
 
         return cls(data['id'], parameter, indices)
