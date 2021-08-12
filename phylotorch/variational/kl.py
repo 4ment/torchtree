@@ -9,7 +9,8 @@ from ..typing import ID
 class ELBO(CallableModel):
     r"""
     Class representing the evidence lower bound (ELBO) objective.
-    Maximizing the ELBO is equivalent to minimizing exclusive Kullback-Leibler divergence from p to q :math:`KL(q\|p)`.
+    Maximizing the ELBO is equivalent to minimizing exclusive Kullback-Leibler
+    divergence from p to q :math:`KL(q\|p)`.
 
     The shape of ``samples`` is at most 2 dimensional.
 
@@ -23,11 +24,15 @@ class ELBO(CallableModel):
     :param torch.Size samples: number of samples.
     """
 
-    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size) -> None:
+    def __init__(
+        self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size
+    ) -> None:
+        super().__init__(id_)
         self.q = q
         self.p = p
         self.samples = samples
-        super(ELBO, self).__init__(id_)
+        self.add_model(q)
+        self.add_model(p)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
@@ -36,7 +41,10 @@ class ELBO(CallableModel):
             self.q.rsample(samples)
             log_q = self.q()
             log_p = self.p()
-            lp = (torch.logsumexp(log_p - log_q, -1) - torch.tensor(float(log_p.shape[-1])).log()).mean()
+            lp = (
+                torch.logsumexp(log_p - log_q, -1)
+                - torch.tensor(float(log_p.shape[-1])).log()
+            ).mean()
         else:
             self.q.rsample(samples)
             lp = (self.p() - self.q()).mean()
@@ -46,7 +54,7 @@ class ELBO(CallableModel):
         pass
 
     def handle_model_changed(self, model, obj, index):
-        pass
+        self.fire_model_changed()
 
     def handle_parameter_changed(self, variable, index, event):
         pass
@@ -67,15 +75,20 @@ class KLpq(CallableModel):
     :param CallableModel p: joint distribution.
     :param torch.Size samples: number of samples.
 
-    .. [#oh1992] Oh, M.-S., & Berger, J. O. (1992). Adaptive importance sampling in Monte Carlo integration.
+    .. [#oh1992] Oh, M.-S., & Berger, J. O. (1992). Adaptive importance sampling in
+     Monte Carlo integration.
      Journal of Statistical Computation and Simulation, 41(3-4), 143–168.
     """
 
-    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size) -> None:
+    def __init__(
+        self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size
+    ) -> None:
+        super().__init__(id_)
         self.q = q
         self.p = p
         self.samples = samples
-        super(KLpq, self).__init__(id_)
+        self.add_model(q)
+        self.add_model(p)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
@@ -100,7 +113,8 @@ class KLpq(CallableModel):
 
 class KLpqImportance(CallableModel):
     r"""
-    Class for minimizing inclusive Kullback-Leibler divergence from q to p :math:`KL(p\|q)`
+    Class for minimizing inclusive Kullback-Leibler divergence
+    from q to p :math:`KL(p\|q)`
     using self-normalized importance sampling gradient estimator [#oh1992]_.
 
     :param id_: ID of object.
@@ -111,11 +125,15 @@ class KLpqImportance(CallableModel):
 
     """
 
-    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size) -> None:
+    def __init__(
+        self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size
+    ) -> None:
+        super().__init__(id_)
         self.q = q
         self.p = p
         self.samples = samples
-        super(KLpqImportance, self).__init__(id_)
+        self.add_model(q)
+        self.add_model(p)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)

@@ -17,16 +17,26 @@ class CUBO(CallableModel):
     :param torch.Size samples: number of samples to form estimator.
     :param torch.Tensor n: order of :math:`\chi`-divergence.
 
-    .. [#Dieng2017] Adji Bousso Dieng, Dustin Tran, Rajesh Ranganath, John Paisley, David Blei. Variational Inference
+    .. [#Dieng2017] Adji Bousso Dieng, Dustin Tran, Rajesh Ranganath, John Paisley,
+     David Blei. Variational Inference
      via :math:`\chi` Upper Bound Minimization
     """
 
-    def __init__(self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size, n: torch.Tensor) -> None:
+    def __init__(
+        self,
+        id_: ID,
+        q: DistributionModel,
+        p: CallableModel,
+        samples: torch.Size,
+        n: torch.Tensor,
+    ) -> None:
+        super().__init__(id_)
         self.q = q
         self.p = p
         self.n = n
         self.samples = samples
-        super(CUBO, self).__init__(id_)
+        self.add_model(q)
+        self.add_model(p)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
@@ -40,7 +50,7 @@ class CUBO(CallableModel):
         pass
 
     def handle_model_changed(self, model, obj, index):
-        pass
+        self.fire_model_changed()
 
     def handle_parameter_changed(self, variable, index, event):
         pass
