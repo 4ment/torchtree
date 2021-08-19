@@ -1,6 +1,5 @@
 import torch
-import torch.nn as nn
-from torch import Tensor
+from torch import Tensor, nn
 from torch.nn import Parameter
 
 
@@ -19,7 +18,7 @@ class PlanarTransform(nn.Module):
     """
 
     def __init__(self, u: Parameter, w: Parameter, b: Parameter) -> None:
-        super(PlanarTransform, self).__init__()
+        super().__init__()
         self.u = u  # (1, input_size)
         self.w = w  # (1, input_size)
         self.b = b  # (1)
@@ -31,7 +30,9 @@ class PlanarTransform(nn.Module):
 
         # calculate log det jacobian
         psi = (1 - a ** 2) @ self.w
-        self._log_det_jacobian = torch.log(torch.abs(1 + torch.matmul(psi, u_hat.t()))).squeeze()
+        self._log_det_jacobian = torch.log(
+            torch.abs(1 + torch.matmul(psi, u_hat.t()))
+        ).squeeze()
 
         return z + u_hat * a
 

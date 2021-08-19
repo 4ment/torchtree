@@ -1,19 +1,18 @@
 import collections
 import collections.abc
 import inspect
-from typing import OrderedDict
+from collections import OrderedDict
 
 import torch
 from torch import nn
 
-from phylotorch.core.model import Parameter, Identifiable, Parametric
-from phylotorch.core.utils import get_class, process_objects
-from phylotorch.typing import ID
+from ..core.model import Identifiable, Parameter, Parametric
+from ..core.utils import get_class, process_objects
+from ..typing import ID
 
 
 class Module(Identifiable, Parametric, collections.abc.Callable):
-    r"""
-    Wrapper class for torch.nn.Module.
+    r"""Wrapper class for torch.nn.Module.
 
     :param id_: ID of object.
     :type id_: str or None
@@ -22,7 +21,9 @@ class Module(Identifiable, Parametric, collections.abc.Callable):
     :type parameters: OrderedDict[str,Parameter]
     """
 
-    def __init__(self, id_: ID, module: nn.Module, parameters: OrderedDict[str, Parameter]) -> None:
+    def __init__(
+        self, id_: ID, module: nn.Module, parameters: OrderedDict[str, Parameter]
+    ) -> None:
         Identifiable.__init__(self, id_)
         Parametric.__init__(self)
         self._module = module
@@ -42,11 +43,11 @@ class Module(Identifiable, Parametric, collections.abc.Callable):
 
     @classmethod
     def from_json(cls, data, dic):
-        r"""
-        Create a Module object.
+        r"""Create a Module object.
 
         :param data: json representation of Module object.
-        :param dic: dictionary containing additional objects that can be referenced in data.
+        :param dic: dictionary containing additional objects that can be referenced
+         in data.
 
         :return: a :class:`~phylotorch.nn.module.Module` object.
         :rtype: Module

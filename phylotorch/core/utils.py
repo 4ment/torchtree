@@ -22,12 +22,14 @@ def as_tensor(dct, dtype=torch.float64):
 
 
 def tensor_rand(distribution, dtype, shape):
-    """ Create a tensor with the given dtype and shape and initialize it using a distribution.
+    """Create a tensor with the given dtype and shape and initialize it using a
+    distribution.
 
     Continuous distributions: normal, log_normal, uniform.
     Discrete distributions: random, bernoulli
 
-    :param distribution: distribution as a string (e.g. 'normal(1.0,2.0)', 'normal', 'normal()').
+    :param distribution: distribution as a string (e.g. 'normal(1.0,2.0)', 'normal',
+     'normal()').
     :type distribution: str
     :param dtype: dtype of the tensor
     :type dtype: torch.dtype
@@ -63,7 +65,11 @@ def tensor_rand(distribution, dtype, shape):
     elif name[0] == 'bernoulli':
         tensor = torch.empty(shape, dtype=dtype).bernoulli_(*params)
     else:
-        raise Exception('{} is not a valid distribution to initialize tensor. input: {}'.format(name, distribution))
+        raise Exception(
+            '{} is not a valid distribution to initialize tensor. input: {}'.format(
+                name, distribution
+            )
+        )
     return tensor
 
 
@@ -99,29 +105,39 @@ def process_object(data, dic):
             else:
                 obj = dic[data]
         except KeyError:
-            raise JSONParseError('Object with ID `{}\' not found'.format(data))
+            raise JSONParseError(
+                'Object with ID `{}\' not found'.format(data)
+            ) from None
     elif isinstance(data, dict):
         id_ = data['id']
         if id_ in dic:
             raise JSONParseError('Object with ID `{}\' already exists'.format(id_))
         if 'type' not in data:
-            raise JSONParseError('Object with ID `{}\' does not have a type'.format(id_))
+            raise JSONParseError(
+                'Object with ID `{}\' does not have a type'.format(id_)
+            )
 
         try:
             klass = get_class(data['type'])
         except ModuleNotFoundError as e:
-            raise JSONParseError(str(e) + " in object with ID '" + data['id'] + "'")
+            raise JSONParseError(
+                str(e) + " in object with ID '" + data['id'] + "'"
+            ) from None
         except AttributeError as e:
-            raise JSONParseError(str(e) + " in object with ID '" + data['id'] + "'")
+            raise JSONParseError(
+                str(e) + " in object with ID '" + data['id'] + "'"
+            ) from None
 
         obj = klass.from_json_safe(data, dic)
         dic[id_] = obj
     else:
-        raise JSONParseError('Object is not valid (should be str or object)\nProvided: {}'.format(data))
+        raise JSONParseError(
+            'Object is not valid (should be str or object)\nProvided: {}'.format(data)
+        )
     return obj
 
 
-class SignalHandler():
+class SignalHandler:
     def __init__(self):
         self.stop = False
         signal.signal(signal.SIGINT, self.exit)
@@ -132,8 +148,6 @@ class SignalHandler():
 
 
 def validate(data, rules):
-    data_keys_set = set(data.keys())
-    rules_keys_set = set(rules.keys())
     allowed_keys_set = {'type', 'instanceof', 'list', 'constraint', 'optional'}
 
     # check rules were written properly
@@ -143,7 +157,6 @@ def validate(data, rules):
         if len(diff) != 0:
             print('Not allowed', diff)
 
-    # data_keys_set.difference(rules_keys_set)
     # check missing keys in json
     for rule_key in rules.keys():
         if rule_key not in data and rules[rule_key].get('optional', False) is not True:
@@ -154,8 +167,12 @@ def validate(data, rules):
         if datum_key not in ('id', 'type') and datum_key not in rules:
             raise ValueError('Key not allowed: {}'.format(datum_key))
 
-    types = dict(zip(['string', 'bool', 'int', 'float', 'object', 'numbers.Number'],
-                     [str, bool, int, float, dict, numbers.Number]))
+    types = dict(
+        zip(
+            ['string', 'bool', 'int', 'float', 'object', 'numbers.Number'],
+            [str, bool, int, float, dict, numbers.Number],
+        )
+    )
     for datum_key in data.keys():
         if datum_key not in ('id', 'type'):
             # if not isinstance(datum_key, str):
@@ -163,17 +180,19 @@ def validate(data, rules):
             # continue
 
             # check type
-            type = None
+            type_found = None
             for rule_type in rules[datum_key]['type'].split('|'):
                 if rules[datum_key].get('list', False):
-                    all_ok = all(isinstance(x, types.get(rule_type)) for x in data[datum_key])
+                    all_ok = all(
+                        isinstance(x, types.get(rule_type)) for x in data[datum_key]
+                    )
                     if all_ok:
-                        type = True
+                        type_found = True
                         break
                 elif isinstance(data[datum_key], types.get(rule_type)):
-                    type = True
+                    type_found = True
                     break
-            if type is None:
+            if type_found is None:
                 raise ValueError('\'type\' is not valid: {}'.format(data[datum_key]))
 
 
@@ -226,8 +245,8 @@ def expand_plates(obj, parent=None, idx=None):
 
 
 def update_parameters(json_object, parameters) -> None:
-    """
-    Recursively replace tensor in json_object with tensors present in parameters.
+    """Recursively replace tensor in json_object with tensors present in
+    parameters.
 
     :param dict json_object: json object
     :param parameters: list of Parameters
@@ -238,7 +257,10 @@ def update_parameters(json_object, parameters) -> None:
             update_parameters(element, parameters)
     elif isinstance(json_object, dict):
         if 'type' in json_object and json_object['type'] in (
-        'phylotorch.core.model.Parameter', 'phylotorch.Parameter', 'Parameter'):
+            'phylotorch.core.model.Parameter',
+            'phylotorch.Parameter',
+            'Parameter',
+        ):
             if json_object['id'] in parameters:
                 # get rid of full, full_like, tensor...
                 for key in list(json_object.keys()).copy():

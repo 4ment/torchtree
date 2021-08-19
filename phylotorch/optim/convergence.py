@@ -9,13 +9,11 @@ import torch
 
 from ..core.model import CallableModel
 from ..core.serializable import JSONSerializable
-from ..core.utils import process_objects, JSONParseError
+from ..core.utils import JSONParseError, process_objects
 
 
 class BaseConvergence(JSONSerializable):
-    """
-    Base class for all convergence diagnostic classes.
-    """
+    """Base class for all convergence diagnostic classes."""
 
     @abc.abstractmethod
     def check(self, iteration: int, *args, **kwargs) -> bool:
@@ -23,18 +21,23 @@ class BaseConvergence(JSONSerializable):
 
 
 class VariationalConvergence(BaseConvergence):
-    """
-    Class that does not check for convergence but output ELBO.
+    """Class that does not check for convergence but output ELBO.
 
     :param loss: ELBO function
     :param int every: evaluate ELBO at every "every" iteration
-    :param int samples: number of samples for ELBO calculation
+    :param torch.Size samples: number of samples for ELBO calculation
     :param int start: start checking at iteration number "start (Default is 0)"
-    :param str file_name: print to file_name or print to sys.stdout if fiole_name is None
+    :param str file_name: print to file_name or print to sys.stdout if file_name is None
     """
 
-    def __init__(self, loss: CallableModel, every: int, samples: torch.Size, start: int = 0,
-                 file_name: str = None) -> None:
+    def __init__(
+        self,
+        loss: CallableModel,
+        every: int,
+        samples: torch.Size,
+        start: int = 0,
+        file_name: str = None,
+    ) -> None:
         self.loss = loss
         self.every = every
         self.samples = samples
@@ -57,7 +60,9 @@ class VariationalConvergence(BaseConvergence):
         return True
 
     @classmethod
-    def from_json(cls, data: Dict[str, any], dic: Dict[str, any]) -> 'VariationalConvergence':
+    def from_json(
+        cls, data: Dict[str, any], dic: Dict[str, any]
+    ) -> 'VariationalConvergence':
         loss = process_objects(data['loss'], dic)
         every = data.get('every', 100)
         samples = data.get('samples', 100)
@@ -73,21 +78,30 @@ class VariationalConvergence(BaseConvergence):
 
 
 class StanVariationalConvergence(VariationalConvergence):
-    """
-    Class for checking SGD convergence using Stan's algorithm.
-    Code adapted from https://github.com/stan-dev/stan/blob/develop/src/stan/variational/advi.hpp
+    """Class for checking SGD convergence using Stan's algorithm.
+
+    Code adapted from:
+     https://github.com/stan-dev/stan/blob/develop/src/stan/variational/advi.hpp
 
     :param CallableModel loss: ELBO function
     :param int every: evaluate ELBO at every "every" iteration
     :param int samples: number of samples for ELBO calculation
     :param int max_iterations: maximum number of iterations
     :param int start: start checking at iteration number "start" (Default is 0)
-    :param float tol_rel_obj: relative tolerance parameter for convergence (Default is 0.01)
+    :param float tol_rel_obj: relative tolerance parameter for convergence
+     (Default is 0.01)
     """
 
-    def __init__(self, loss: CallableModel, every: int, samples: torch.Size, max_iterations: int, start: int = 0,
-                 tol_rel_obj: float = 0.01):
-        super(StanVariationalConvergence, self).__init__(loss, every, samples, start)
+    def __init__(
+        self,
+        loss: CallableModel,
+        every: int,
+        samples: torch.Size,
+        max_iterations: int,
+        start: int = 0,
+        tol_rel_obj: float = 0.01,
+    ) -> None:
+        super().__init__(loss, every, samples, start)
         self.tol_rel_obj = tol_rel_obj
         self.elbo = 0.0
         self.elbo_best = -sys.float_info.max
@@ -128,14 +142,16 @@ class StanVariationalConvergence(VariationalConvergence):
                 if delta_elbo_med > 0.5 or delta_elbo_ave > 0.5:
                     ss += '   MAY BE DIVERGING... INSPECT ELBO'
 
-            print('  {:>4}  {:>15.3f}  {:>16.3f}  {:>15.3f}{}'.format(iteration, self.elbo, delta_elbo_ave,
-                                                                      delta_elbo_med, ss))
+            print(
+                '  {:>4}  {:>15.3f}  {:>16.3f}  {:>15.3f}{}'.format(
+                    iteration, self.elbo, delta_elbo_ave, delta_elbo_med, ss
+                )
+            )
         return keep_going
 
     @staticmethod
     def rel_difference(prev: float, curr: float) -> float:
-        """
-        Compute the relative difference between two double values.
+        """Compute the relative difference between two double values.
 
         :param prev: previous value
         :param curr: current value
@@ -144,7 +160,9 @@ class StanVariationalConvergence(VariationalConvergence):
         return math.fabs((curr - prev) / prev)
 
     @classmethod
-    def from_json(cls, data: Dict[str, any], dic: Dict[str, any]) -> 'StanVariationalConvergence':
+    def from_json(
+        cls, data: Dict[str, any], dic: Dict[str, any]
+    ) -> 'StanVariationalConvergence':
         loss = process_objects(data['loss'], dic)
         every = data.get('every', 100)
         samples = data.get('samples', 100)
@@ -156,6 +174,8 @@ class StanVariationalConvergence(VariationalConvergence):
         if 'max_iterations' in data:
             max_iterations = data['max_iterations']
         else:
-            raise JSONParseError('StanVBConvergence needs max_iterations to be specified')
+            raise JSONParseError(
+                'StanVBConvergence needs max_iterations to be specified'
+            )
         tol_rel_obj = data.get('tol_rel_obj', 0.01)
         return cls(loss, every, samples, max_iterations, start, tol_rel_obj)

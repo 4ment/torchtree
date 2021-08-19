@@ -6,18 +6,16 @@ from typing import List, Union
 
 import torch
 
-from phylotorch.core.model import Parameter, CallableModel
-from phylotorch.core.parameter_encoder import ParameterEncoder
-from phylotorch.core.runnable import Runnable
-from phylotorch.core.serializable import JSONSerializable
-from phylotorch.core.utils import process_objects, process_object
-from phylotorch.evolution.tree_model import TreeModel
+from ..evolution.tree_model import TreeModel
+from .model import CallableModel, Parameter
+from .parameter_encoder import ParameterEncoder
+from .runnable import Runnable
+from .serializable import JSONSerializable
+from .utils import process_object, process_objects
 
 
 class LoggerInterface(JSONSerializable, Runnable):
-    """
-    Interface for logging things like parameters or trees to a file.
-    """
+    """Interface for logging things like parameters or trees to a file."""
 
     @abstractmethod
     def log(self, *args, **kwargs) -> None:
@@ -86,12 +84,12 @@ class Logger(LoggerInterface):
 
     @classmethod
     def from_json(cls, data, dic) -> 'Logger':
-        r"""
-        Create a Logger object.
+        r"""Create a Logger object.
 
         :param data: json representation of Logger object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced in data.
+        :param dic: dictionary containing additional objects that can be referenced
+         in data.
         :type dic: dict[str,Any]
 
         :return: a :class:`~phylotorch.core.logger.Logger` object.
@@ -106,8 +104,7 @@ class Logger(LoggerInterface):
 
 
 class TreeLogger(LoggerInterface):
-    """
-    Class for logging trees to a file.
+    """Class for logging trees to a file.
 
     :param TreeModel objs: TreeModel object
     :param kwargs: optionals
@@ -127,12 +124,18 @@ class TreeLogger(LoggerInterface):
         if self.kwargs.get('format', 'newick') == 'nexus':
             self.f.write('#NEXUS\nBegin trees;\nTranslate\n')
             self.f.write(
-                ',\n'.join([str(i + 1) + ' ' + x.replace("'", '') for i, x in enumerate(self.tree_model.taxa)]))
+                ',\n'.join(
+                    [
+                        str(i + 1) + ' ' + x.replace("'", '')
+                        for i, x in enumerate(self.tree_model.taxa)
+                    ]
+                )
+            )
             self.f.write('\n;\n')
 
     def log(self, *args, **kwargs) -> None:
-        format = self.kwargs.get('format', 'newick')
-        if format == 'newick':
+        tree_format = self.kwargs.get('format', 'newick')
+        if tree_format == 'newick':
             self.tree_model.write_newick(self.f)
         else:
             self.f.write('tree {} = '.format(self.index))
@@ -154,7 +157,8 @@ class TreeLogger(LoggerInterface):
 
         :param data: json representation of TreeLogger object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced in data.
+        :param dic: dictionary containing additional objects that can be referenced
+         in data.
         :type dic: dict[str,Any]
 
         :return: a :class:`~phylotorch.core.logger.TreeLogger` object.
@@ -201,7 +205,8 @@ class CSV(JSONSerializable, Runnable):
 
         :param data: json representation of CSV object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced in data.
+        :param dic: dictionary containing additional objects that can be referenced
+         in data.
         :type dic: dict[str,Any]
 
         :return: a :class:`~phylotorch.core.logger.CSV` object.
@@ -247,7 +252,8 @@ class Dumper(JSONSerializable, Runnable):
 
         :param data: json representation of Dumper object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced in data.
+        :param dic: dictionary containing additional objects that can be referenced
+         in data.
         :type dic: dict[str,Any]
 
         :return: a :class:`~phylotorch.core.logger.Dumper` object.

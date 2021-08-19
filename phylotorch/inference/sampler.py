@@ -3,7 +3,7 @@ from typing import List
 from ..core.logger import LoggerInterface
 from ..core.runnable import Runnable
 from ..core.serializable import JSONSerializable
-from ..core.utils import process_objects, process_object
+from ..core.utils import process_object, process_objects
 from ..distributions.distributions import DistributionModel
 
 
@@ -17,7 +17,9 @@ class Sampler(JSONSerializable, Runnable):
     :type loggers: list[LoggerInterface]
     """
 
-    def __init__(self, model: DistributionModel, samples: int, loggers: List[LoggerInterface]) -> None:
+    def __init__(
+        self, model: DistributionModel, samples: int, loggers: List[LoggerInterface]
+    ) -> None:
         self.model = model
         self.samples = samples
         self.loggers = loggers
@@ -26,7 +28,7 @@ class Sampler(JSONSerializable, Runnable):
         """Run sampler: sample and log to loggers."""
         for logger in self.loggers:
             logger.initialize()
-        for i in range(self.samples):
+        for _ in range(self.samples):
             self.model.sample()
             for logger in self.loggers:
                 logger.log()
@@ -35,12 +37,12 @@ class Sampler(JSONSerializable, Runnable):
 
     @classmethod
     def from_json(cls, data, dic) -> 'Sampler':
-        r"""
-        Create a Sampler object.
+        r"""Create a Sampler object.
 
         :param data: json representation of Sampler object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced in data.
+        :param dic: dictionary containing additional objects that can be referenced
+        in data.
         :type dic: dict[str,Any]
 
         :return: a :class:`~phylotorch.inference.sampler.Sampler` object.

@@ -2,21 +2,20 @@ import copy
 import inspect
 import json
 import os
-from typing import Dict, Union, Tuple
+from typing import Dict, Tuple, Union
 
 from torch.optim import Optimizer as TorchOptimizer
 
-from ..core.model import Parameter, Parametric, CallableModel
+from ..core.model import CallableModel, Parameter, Parametric
 from ..core.parameter_encoder import ParameterEncoder
 from ..core.runnable import Runnable
 from ..core.serializable import JSONSerializable
-from ..core.utils import get_class, process_objects, SignalHandler, JSONParseError
+from ..core.utils import JSONParseError, SignalHandler, get_class, process_objects
 from ..typing import ListParameter, ListTensor
 
 
 class Optimizer(JSONSerializable, Runnable):
-    """
-    A wrapper for torch.optim.Optimizer objects.
+    """A wrapper for torch.optim.Optimizer objects.
 
     :param list parameters: list of Parameter
     :param CallableModel loss: loss function
@@ -25,8 +24,14 @@ class Optimizer(JSONSerializable, Runnable):
     :param kwargs: optionals
     """
 
-    def __init__(self, parameters: ListParameter, loss: CallableModel, optimizer: TorchOptimizer, iterations: int,
-                 **kwargs):
+    def __init__(
+        self,
+        parameters: ListParameter,
+        loss: CallableModel,
+        optimizer: TorchOptimizer,
+        iterations: int,
+        **kwargs
+    ) -> None:
         self.parameters = parameters
         self.loss = loss
         self.optimizer = optimizer
@@ -95,7 +100,9 @@ class Optimizer(JSONSerializable, Runnable):
                 logger.finalize()
 
     @staticmethod
-    def parse_params(params: Dict[str, Union[list, float]], dic) -> Tuple[ListTensor, ListParameter]:
+    def parse_params(
+        params: Dict[str, Union[list, float]], dic
+    ) -> Tuple[ListTensor, ListParameter]:
         parameter_or_parametric_list = process_objects(params, dic)
         if not isinstance(parameter_or_parametric_list, list):
             parameter_or_parametric_list = [parameter_or_parametric_list]
@@ -112,21 +119,40 @@ class Optimizer(JSONSerializable, Runnable):
                     parameters.append(parameter)
             else:
                 raise JSONParseError(
-                    'Optimizable expects a list of Parameters or Parametric models\n{} was provided'.format(type(poml)))
+                    'Optimizable expects a list of Parameters or Parametric models\n{}'
+                    ' was provided'.format(type(poml))
+                )
         return tensors, parameters
 
     @classmethod
     def from_json(cls, data: Dict[str, any], dic: Dict[str, any]) -> 'Optimizer':
-        rules = {
+        rules = {  # noqa: F841
             'loss': {'type': 'object|string', 'instanceof': 'CallableModel'},
-            'parameters': {'type': 'object|string', 'instanceof': 'Parameter', 'list': True},
+            'parameters': {
+                'type': 'object|string',
+                'instanceof': 'Parameter',
+                'list': True,
+            },
             'iterations': {'type': 'int', 'constraint': {'>': 0}},
             'algorithm': {'type': 'string', 'instanceof': 'torch.optim.Optimizer'},
             'maximize': {'type': 'bool', 'optional': True},
-            'loggers': {'type': 'object', 'instanceof': 'Logger', 'list': True, 'optional': True},
-            'scheduler': {'type': 'object', 'instanceof': 'Scheduler', 'optional': True},
-            'lr': {'type': 'numbers.Number', 'constraint': {'>': 0.0}, 'optional': True},
-            'convergence': {'type': 'object', 'optional': True}
+            'loggers': {
+                'type': 'object',
+                'instanceof': 'Logger',
+                'list': True,
+                'optional': True,
+            },
+            'scheduler': {
+                'type': 'object',
+                'instanceof': 'Scheduler',
+                'optional': True,
+            },
+            'lr': {
+                'type': 'numbers.Number',
+                'constraint': {'>': 0.0},
+                'optional': True,
+            },
+            'convergence': {'type': 'object', 'optional': True},
         }
         # validate(data, rules)
 
@@ -135,7 +161,8 @@ class Optimizer(JSONSerializable, Runnable):
         optionals = {}
         # checkpointing is used by default and the default file name is checkpoint.json
         # it can be disabled if 'checkpoint': false is used
-        # the name of the checkpoint file can be modified using 'checkpoint': 'checkpointer.json'
+        # the name of the checkpoint file can be modified using
+        # 'checkpoint': 'checkpointer.json'
         if 'checkpoint' in data:
             if isinstance(data['checkpoint'], bool) and data['checkpoint']:
                 optionals['checkpoint'] = 'checkpoint.json'
@@ -158,7 +185,9 @@ class Optimizer(JSONSerializable, Runnable):
 
         loss = process_objects(data['loss'], dic)
 
-        optimizer_params = []  # an iterable of torch.Tensor s or dict s. Specifies what Tensors should be optimized
+        # an iterable of torch.Tensors or dicts: specifies what Tensors should
+        # be optimized
+        optimizer_params = []
         parameters = []  # a list of phylotorch.Parameters
         if isinstance(data['parameters'][0], dict):
             # [{'params': ['model']},
@@ -182,12 +211,14 @@ class Optimizer(JSONSerializable, Runnable):
         for arg in signature_params[1:]:
             if arg in data:
                 kwargs[arg] = data[arg]
-        optimizer = optim_class(optimizer_params, **kwargs)  # type: int
+        optimizer = optim_class(optimizer_params, **kwargs)
 
         # instanciate torch.optim.scheduler
         if 'scheduler' in data:
             klass = get_class(data['scheduler']['type'])
-            optionals['scheduler'] = klass.from_json(data['scheduler'], None, optimizer=optimizer)
+            optionals['scheduler'] = klass.from_json(
+                data['scheduler'], None, optimizer=optimizer
+            )
 
         # instanciate phylotorch.optim.Convergence
         if 'convergence' in data:

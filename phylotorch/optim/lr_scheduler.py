@@ -8,20 +8,21 @@ from ..core.utils import get_class
 
 
 class Scheduler(JSONSerializable):
-    """
-    A wrapper for :class:`~torch.optim.lr_scheduler` objects.
+    """A wrapper for :class:`~torch.optim.lr_scheduler` objects.
 
     :param scheduler: a :class:`~torch.optim.lr_scheduler`
     """
 
-    def __init__(self, scheduler: TorchScheduler):
+    def __init__(self, scheduler: TorchScheduler) -> None:
         self.scheduler = scheduler
 
     def step(self, *args) -> None:
         self.scheduler.step(*args)
 
     @classmethod
-    def from_json(cls, data: Dict[str, any], dic: Dict[str, any], **kwargs) -> 'Scheduler':
+    def from_json(
+        cls, data: Dict[str, any], dic: Dict[str, any], **kwargs
+    ) -> 'Scheduler':
         scheduler_class = get_class(data['scheduler'])
         signature_params = list(inspect.signature(scheduler_class.__init__).parameters)
         optionals = {}
