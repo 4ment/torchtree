@@ -38,17 +38,17 @@ def draw_tree(fig, tree, **kwargs):
                 bb = t.get_window_extent(renderer=r)
                 taxa_labels[node] = (node.name, bb.width, bb.height)
                 taxon_height = bb.height
-                s = (fig_width - branch_tip_space - bb.width) / (tree.height - node.height)
+                s = (fig_width - branch_tip_space - bb.width) / (
+                    tree.height - node.height
+                )
                 scaler = min(s, scaler)
 
-    if showTaxa == False:
+    if not showTaxa:
         scaler = fig_width / tree.height
 
     y = taxon_height
 
     yy = taxon_height + taxaCount * (yspace + taxon_height)
-
-    intervals = []
 
     for node in tree:
         x1 = ((tree.height - node.height) * scaler) + left_offset + root_length
@@ -59,13 +59,20 @@ def draw_tree(fig, tree, **kwargs):
         if len(node.children) == 0:
             y1 = y2 = y - taxon_height * 0.5
             if showTaxa:
-                ax.text(x1 + branch_tip_space, y - (taxon_height - branch_width) * 0.5, taxa_labels[node][0], va='top',
-                        size=taxon_font_size)
+                ax.text(
+                    x1 + branch_tip_space,
+                    y - (taxon_height - branch_width) * 0.5,
+                    taxa_labels[node][0],
+                    va='top',
+                    size=taxon_font_size,
+                )
             y += yspace + taxon_height
         else:
             y1, y2 = [coordinates[c]['endY'] for c in node.children]
             # Vertical branch
-            ax.plot([x1, x1], [y1, y2], lw=branch_width, color='steelblue', ls='-', zorder=9)
+            ax.plot(
+                [x1, x1], [y1, y2], lw=branch_width, color='steelblue', ls='-', zorder=9
+            )
 
             y1 = y2 = y1 + (y2 - y1) / 2.0  # midpoint between childs
 
@@ -76,10 +83,24 @@ def draw_tree(fig, tree, **kwargs):
         if node.parent is not None:
             node_branch_length = node.parent.height - node.height
             if node_branch_length is not None and node_branch_length > 0.0:
-                ax.plot([x1, x2], [y1, y2], lw=branch_width, color='steelblue', ls='-', zorder=9)
+                ax.plot(
+                    [x1, x2],
+                    [y1, y2],
+                    lw=branch_width,
+                    color='steelblue',
+                    ls='-',
+                    zorder=9,
+                )
                 coordinates[node] = {'startX': x2, 'endX': x1, 'startY': y2, 'endY': y2}
             elif node_branch_length is None and root_length > 0.0:
-                ax.plot([x1, x1 - root_length], [y1, y2], lw=branch_width, color='steelblue', ls='-', zorder=9)
+                ax.plot(
+                    [x1, x1 - root_length],
+                    [y1, y2],
+                    lw=branch_width,
+                    color='steelblue',
+                    ls='-',
+                    zorder=9,
+                )
 
     if showIntervals:
         nodes = sorted(coordinates.keys(), key=lambda n: n.height, reverse=True)

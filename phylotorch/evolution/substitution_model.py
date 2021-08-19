@@ -364,8 +364,8 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
     def q(self) -> torch.Tensor:
         indices = torch.triu_indices(self.state_count, self.state_count, 1)
         R = torch.zeros((self.state_count, self.state_count), dtype=self.rates.dtype)
-        R[indices[0], indices[1]] = self.rates
-        R[indices[1], indices[0]] = self.rates
+        R[indices[0], indices[1]] = self.rates[self.mapping.tensor]
+        R[indices[1], indices[0]] = self.rates[self.mapping.tensor]
         Q = R @ self.frequencies.diag()
         Q[range(len(Q)), range(len(Q))] = -torch.sum(Q, dim=1)
         return Q
