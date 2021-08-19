@@ -1,9 +1,11 @@
 import sys
 
 import dendropy
-from dendropy import Tree, DnaCharacterMatrix
+import numpy as np
+import torch
+from dendropy import DnaCharacterMatrix, Tree
 
-from .evolution.tree_model import setup_indexes, setup_dates
+from .evolution.tree_model import setup_dates, setup_indexes
 
 
 def read_tree_and_alignment(tree, alignment, dated=True, heterochornous=True):
@@ -14,8 +16,14 @@ def read_tree_and_alignment(tree, alignment, dated=True, heterochornous=True):
         if next(fp).upper().startswith('#NEXUS'):
             tree_format = 'nexus'
 
-    tree = Tree.get(path=tree, schema=tree_format, tree_offset=0, taxon_namespace=taxa, preserve_underscores=True,
-                    rooting='force-rooted')
+    tree = Tree.get(
+        path=tree,
+        schema=tree_format,
+        tree_offset=0,
+        taxon_namespace=taxa,
+        preserve_underscores=True,
+        rooting='force-rooted',
+    )
     tree.resolve_polytomies(update_bipartitions=True)
 
     setup_indexes(tree)
@@ -60,7 +68,14 @@ def convert_samples_to_nexus(tree, sample, output):
     taxaCount = len(tree.taxon_namespace)
     outp = open(output, 'w')
     outp.write('#NEXUS\nBegin trees;\nTranslate\n')
-    outp.write(',\n'.join([str(i + 1) + ' ' + x.label.replace("'", '') for i, x in enumerate(tree.taxon_namespace)]))
+    outp.write(
+        ',\n'.join(
+            [
+                str(i + 1) + ' ' + x.label.replace("'", '')
+                for i, x in enumerate(tree.taxon_namespace)
+            ]
+        )
+    )
     outp.write('\n;\n')
 
     for i in range(len(sample)):
@@ -75,3 +90,39 @@ def convert_samples_to_nexus(tree, sample, output):
         outp.write('\n')
     outp.write('END;')
     outp.close()
+
+
+class Node:
+    def __init__(self, name, height=0.0):
+        self.name = name
+        self.height = height
+        self.parent = None
+        self.children = []
+
+    def __iter__(self):
+        if len(self.children) > 0:
+            for c in self.children[0]:
+                yield c
+            for c in self.children[1]:
+                yield c
+        yield self
+
+
+def random_tree_from_heights(sampling: torch.Tensor, heights: torch.Tensor) -> Node:
+    nodes = [Node('taxon{}'.format(idx), height=s) for idx, s in enumerate(sampling)]
+
+    for i, height in enumerate(heights):
+        indexes = []
+        for idx, node in enumerate(nodes):
+            if node.height < height:
+                indexes.append(idx)
+        idx1 = idx2 = np.random.randint(0, len(indexes))
+        while idx1 == idx2:
+            idx2 = np.random.randint(0, len(indexes))
+        new_node = Node('node{}'.format(len(nodes)), height=height)
+        idx1, idx2 = sorted([idx1, idx2])
+        new_node.children = (nodes[indexes[idx1]], nodes[indexes[idx2]])
+        nodes[idx1].parent = nodes[idx2].parent = new_node
+        nodes[idx1] = new_node
+        del nodes[idx2]
+    return nodes[0]

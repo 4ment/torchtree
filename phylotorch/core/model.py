@@ -340,6 +340,11 @@ class Model(Identifiable, Parametric, ModelListener, ParameterListener):
         for model in self._models:
             model.cpu()
 
+    @property
+    @abc.abstractmethod
+    def sample_shape(self) -> torch.Size:
+        ...
+
 
 class CallableModel(Model, collections.abc.Callable):
     def __init__(self, id_: Optional[str]) -> None:

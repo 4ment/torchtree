@@ -10,17 +10,19 @@ from phylotorch.typing import ID
 
 
 class RootParameter(Parameter, CallableModel):
-    r"""
-    This root height parameter is calculated from number of substitutions / substitution rate.
+    r"""This root height parameter is calculated from
+     number of substitutions / substitution rate.
 
     :param id_: ID of object
     :type id_: str or None
     :param Parameter distance: number of substitution parameter
     :param Parameter rate: rate parameter
-    :param float shift: shift root height by this amount. Used by serially sampled trees.
+    :param float shift: shift root height by this amount. Used by serially sampled trees
     """
 
-    def __init__(self, id_: ID, distance: Parameter, rate: Parameter, shift: float) -> None:
+    def __init__(
+        self, id_: ID, distance: Parameter, rate: Parameter, shift: float
+    ) -> None:
         CallableModel.__init__(self, id_)
         self.distance = distance
         self.rate = rate
@@ -54,7 +56,9 @@ class RootParameter(Parameter, CallableModel):
 
     @tensor.setter
     def tensor(self, tensor):
-        raise Exception('Cannot assign tensor to TransformedParameter (ID: {})'.format(self.id))
+        raise Exception(
+            'Cannot assign tensor to TransformedParameter (ID: {})'.format(self.id)
+        )
 
     def transform(self) -> Tensor:
         """Return root height."""
@@ -68,11 +72,6 @@ class RootParameter(Parameter, CallableModel):
         pass
 
     @property
-    def batch_shape(self) -> torch.Size:
-        # FIXME: is it the shape of self._tensor or self.x
-        return self._tensor.shape[-1:]
-
-    @property
     def sample_shape(self) -> torch.Size:
         return self._tensor.shape[:-1]
 
@@ -83,7 +82,8 @@ class RootParameter(Parameter, CallableModel):
 
         :param data: json representation of RootParameter object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced in data.
+        :param dic: dictionary containing additional objects that can be referenced
+         in data.
         :type dic: dict[str,Any]
 
         :return: a :class:`~phylotorch.evolution.root_transform.RootParameter` object.

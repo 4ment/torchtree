@@ -2,13 +2,13 @@ import torch
 
 import phylotorch.evolution.tree_likelihood as likelihood
 from phylotorch import Parameter
+from phylotorch.evolution.alignment import Alignment, Sequence
 from phylotorch.evolution.branch_model import StrictClockModel
+from phylotorch.evolution.datatype import NucleotideDataType
 from phylotorch.evolution.site_model import WeibullSiteModel
-from phylotorch.evolution.site_pattern import (
-    SitePattern,
-    get_dna_leaves_partials_compressed,
-)
+from phylotorch.evolution.site_pattern import SitePattern, compress_alignment
 from phylotorch.evolution.substitution_model import JC69
+from phylotorch.evolution.taxa import Taxa, Taxon
 from phylotorch.evolution.tree_model import TimeTreeModel
 from phylotorch.io import read_tree_and_alignment
 
@@ -28,7 +28,15 @@ def _prepare_tiny(tiny_newick_file, tiny_fasta_file):
     for node in tree.postorder_internal_node_iter():
         indices.append([node.index] + [child.index for child in node.child_nodes()])
 
-    partials_tensor, weights_tensor = get_dna_leaves_partials_compressed(dna)
+    sequences = []
+    taxa = []
+    for taxon, seq in dna.items():
+        sequences.append(Sequence(taxon.label, str(seq)))
+        taxa.append(Taxon(taxon.label, None))
+
+    partials_tensor, weights_tensor = compress_alignment(
+        Alignment(None, sequences, Taxa(None, taxa)), NucleotideDataType()
+    )
     return partials_tensor, weights_tensor, indices, branch_lengths
 
 
@@ -37,9 +45,9 @@ def test_calculate_pytorch(tiny_newick_file, tiny_fasta_file, jc69_model):
         tiny_newick_file, tiny_fasta_file
     )
     mats = jc69_model.p_t(branch_lengths)
-
+    freqs = jc69_model.frequencies.reshape(jc69_model.frequencies.shape[:-1] + (1, -1))
     log_p = likelihood.calculate_treelikelihood(
-        partials_tensor, weights_tensor, indices, mats, jc69_model.frequencies
+        partials_tensor, weights_tensor, indices, mats, freqs
     )
     assert torch.allclose(torch.tensor(-83.329016, dtype=log_p.dtype), log_p)
 
@@ -83,7 +91,12 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
         'id': 'tree',
         'type': 'phylotorch.evolution.tree_model.UnRootedTreeModel',
         'file': tiny_newick_file,
-        'branch_lengths': {'id': 'branches'},
+        'branch_lengths': {
+            'id': 'branches',
+            'type': 'phylotorch.Parameter',
+            'tensor': [0.0],
+        },
+        'keep_branch_lengths': True,
         'taxa': {
             'id': 'taxa',
             'type': 'phylotorch.evolution.taxa.Taxa',

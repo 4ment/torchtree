@@ -4,7 +4,7 @@ import torch.distributions
 from phylotorch.core.model import CallableModel, Parameter
 from phylotorch.core.utils import process_object
 from phylotorch.evolution.branch_model import BranchModel
-from phylotorch.evolution.tree_model import TreeModel, TimeTreeModel
+from phylotorch.evolution.tree_model import TimeTreeModel, TreeModel
 from phylotorch.typing import ID
 
 
@@ -19,8 +19,14 @@ class PoissonTreeLikelihood(CallableModel):
     :param Parameter edge_lengths: edge lengths.
     """
 
-    def __init__(self, id_: ID, tree_model: TimeTreeModel, clock_model: BranchModel, edge_lengths: Parameter) -> None:
-        super(PoissonTreeLikelihood, self).__init__(id_)
+    def __init__(
+        self,
+        id_: ID,
+        tree_model: TimeTreeModel,
+        clock_model: BranchModel,
+        edge_lengths: Parameter,
+    ) -> None:
+        super().__init__(id_)
         self.tree_model = tree_model
         self.clock_model = clock_model
         self.edge_lengths = edge_lengths
@@ -29,16 +35,24 @@ class PoissonTreeLikelihood(CallableModel):
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         distances = self.tree_model.branch_lengths() * self.clock_model.rates
-        return torch.distributions.Poisson(distances).log_prob(self.edge_lengths.tensor).sum()
+        return (
+            torch.distributions.Poisson(distances)
+            .log_prob(self.edge_lengths.tensor)
+            .sum()
+        )
 
     def update(self, value):
         pass
 
     def handle_model_changed(self, model, obj, index):
-        pass
+        self.fire_model_changed()
 
     def handle_parameter_changed(self, variable, index, event):
         pass
+
+    @property
+    def sample_shape(self) -> torch.Size:
+        return max([model.sample_shape for model in self._models], key=len)
 
     @classmethod
     def from_json(cls, data, dic) -> 'PoissonTreeLikelihood':
@@ -47,7 +61,9 @@ class PoissonTreeLikelihood(CallableModel):
         clock_model = process_object(data[BranchModel.tag], dic)
         if 'edge_lengths' in data:
             if isinstance(data['edge_lengths'], list):
-                edge_lengths = Parameter(None, torch.tensor(data['edge_lengths'], dtype=torch.long))
+                edge_lengths = Parameter(
+                    None, torch.tensor(data['edge_lengths'], dtype=torch.long)
+                )
             else:
                 edge_lengths = process_object(data['edge_lengths'], dic)
         else:

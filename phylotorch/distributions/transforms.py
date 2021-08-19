@@ -6,9 +6,10 @@ from torch.distributions import Transform, constraints
 
 class TrilExpDiagonalTransform(Transform):
     r"""
-    Transform a 1D tensor to a triangular tensor. The diagonal of the triangular matrix is exponentiated.
-    Useful for variational inference with the multivariate normal distribution as the variational distribution
-    and it is parameterized with scale_tril, a lower-triangular matrix with positive diagonal.
+    Transform a 1D tensor to a triangular tensor. The diagonal of the triangular matrix
+    is exponentiated. Useful for variational inference with the multivariate normal
+    distribution as the variational distribution and it is parameterized
+    with scale_tril, a lower-triangular matrix with positive diagonal.
 
     Example:
 
@@ -43,7 +44,7 @@ class TrilExpDiagonalTransform(Transform):
 
 class CumSumExpTransform(Transform):
     r"""
-    Transform via the mapping :math:`y_i = \exp(\sum_{i=0}^i x_i)`.
+    Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.
     """
     domain = constraints.real
     codomain = constraints.positive
@@ -81,8 +82,8 @@ class SoftPlusTransform(Transform):
 
 
 class CumSumSoftPlusTransform(Transform):
-    """
-    Transform via the mapping :math:`y_i = \exp(\sum_{i=0}^i x_i)`.
+    r"""
+    Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.
     """
     domain = constraints.real
     codomain = constraints.positive

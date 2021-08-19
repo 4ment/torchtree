@@ -2,24 +2,24 @@ from typing import List, Union
 
 import torch.distributions
 
-from .distributions import DistributionModel
 from .. import Parameter
 from ..core.model import Model
 from ..core.utils import process_object
 from ..typing import ID
+from .distributions import DistributionModel
 
 
 class JointDistributionModel(DistributionModel):
-    """
-    Joint distribution of independent distributions.
+    """Joint distribution of independent distributions.
 
     :param id_: ID of joint distribution
-    :param distributions: list of distributions of type DistributionModel or CallableModel
+    :param distributions: list of distributions of type DistributionModel or
+     CallableModel
     """
 
     def __init__(self, id_: ID, distributions: List[DistributionModel]) -> None:
+        super().__init__(id_)
         self.distributions = distributions
-        super(JointDistributionModel, self).__init__(id_)
         for distr in self.distributions:
             self.add_model(distr)
 
@@ -55,18 +55,14 @@ class JointDistributionModel(DistributionModel):
         pass
 
     def handle_model_changed(self, model: Model, obj, index) -> None:
-        pass
+        self.fire_model_changed()
 
     def handle_parameter_changed(self, variable: Parameter, index, event) -> None:
         pass
 
     @property
-    def batch_shape(self) -> torch.Size:
-        return self.distributions[0].batch_shape
-
-    @property
     def sample_shape(self) -> torch.Size:
-        return self.distributions[0].sample_shape
+        return max([model.sample_shape for model in self._models], key=len)
 
     @classmethod
     def from_json(cls, data, dic):

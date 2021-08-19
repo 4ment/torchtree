@@ -26,7 +26,7 @@ class GMRF(CallableModel):
         self.add_parameter(precision)
         self.rescale = rescale
 
-    def _call(self, *args, **kwargs):
+    def _call(self, *args, **kwargs) -> torch.Tensor:
         diff_square = torch.pow(
             self.field.tensor[..., :-1] - self.field.tensor[..., 1:], 2.0
         )
@@ -65,11 +65,7 @@ class GMRF(CallableModel):
         self.fire_model_changed()
 
     @property
-    def batch_shape(self):
-        return self.field.tensor.shape[-1:]
-
-    @property
-    def sample_shape(self):
+    def sample_shape(self) -> torch.Size:
         return self.field.tensor.shape[:-1]
 
     @classmethod
@@ -108,7 +104,7 @@ class GMRFCovariate(CallableModel):
         self.beta = beta
         self.add_parameter(beta)
 
-    def _call(self, *args, **kwargs):
+    def _call(self, *args, **kwargs) -> torch.Tensor:
         dim = self.field.shape[-1]
         precision = self.precision.tensor
         covariates = (
@@ -140,11 +136,7 @@ class GMRFCovariate(CallableModel):
         self.fire_model_changed()
 
     @property
-    def batch_shape(self):
-        return self.field.tensor.shape[-1:]
-
-    @property
-    def sample_shape(self):
+    def sample_shape(self) -> torch.Size:
         return self.field.tensor.shape[:-1]
 
     @classmethod

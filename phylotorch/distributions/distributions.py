@@ -2,7 +2,7 @@ import abc
 import inspect
 import numbers
 from collections import OrderedDict
-from typing import Union, List, Type, Optional
+from typing import List, Optional, Type, Union
 
 import torch
 import torch.distributions
@@ -13,7 +13,6 @@ from ..core.utils import get_class, process_object, process_objects
 
 
 class DistributionModel(CallableModel):
-
     @abc.abstractmethod
     def rsample(self, sample_shape=torch.Size()) -> None:
         ...
@@ -28,8 +27,7 @@ class DistributionModel(CallableModel):
 
 
 class Distribution(DistributionModel):
-    """
-    Wrapper for torch Distribution.
+    """Wrapper for torch Distribution.
 
     :param id_: ID of joint distribution
     :param dist: class of torch Distribution
@@ -38,10 +36,15 @@ class Distribution(DistributionModel):
     :param **kwargs: optional arguments for instanciating torch Distribution
     """
 
-    def __init__(self, id_: Optional[str], dist: Type[torch.distributions.Distribution],
-                 x: Union[List[Parameter], Parameter],
-                 args: 'OrderedDict[str, Parameter]', **kwargs) -> None:
-        super(Distribution, self).__init__(id_)
+    def __init__(
+        self,
+        id_: Optional[str],
+        dist: Type[torch.distributions.Distribution],
+        x: Union[List[Parameter], Parameter],
+        args: 'OrderedDict[str, Parameter]',
+        **kwargs
+    ) -> None:
+        super().__init__(id_)
         self.dist = dist
         self.x = x
         self.args = args
@@ -57,22 +60,26 @@ class Distribution(DistributionModel):
             self.add_parameter(self.x)
 
     def rsample(self, sample_shape=torch.Size()) -> None:
-        x = self.dist(*[arg.tensor for arg in self.args.values()],
-                      **self.kwargs).rsample(sample_shape)
+        x = self.dist(
+            *[arg.tensor for arg in self.args.values()], **self.kwargs
+        ).rsample(sample_shape)
         self.x.tensor = x
 
     def sample(self, sample_shape=torch.Size()) -> None:
-        x = self.dist(*[arg.tensor for arg in self.args.values()],
-                      **self.kwargs).sample(sample_shape)
+        x = self.dist(
+            *[arg.tensor for arg in self.args.values()], **self.kwargs
+        ).sample(sample_shape)
         self.x.tensor = x
 
     def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> torch.Tensor:
         if isinstance(self.x, list):
-            return self.dist(*[arg.tensor for arg in self.args.values()],
-                             **self.kwargs).log_prob(torch.cat([xx.tensor for xx in x], -1))
+            return self.dist(
+                *[arg.tensor for arg in self.args.values()], **self.kwargs
+            ).log_prob(torch.cat([xx.tensor for xx in x], -1))
         else:
-            return self.dist(*[arg.tensor for arg in self.args.values()],
-                             **self.kwargs).log_prob(x.tensor)
+            return self.dist(
+                *[arg.tensor for arg in self.args.values()], **self.kwargs
+            ).log_prob(x.tensor)
 
     def update(self, value):
         for name in self.args.keys():
@@ -89,8 +96,16 @@ class Distribution(DistributionModel):
         return self.log_prob(self.x)
 
     @property
+    def event_shape(self) -> torch.Size:
+        return self.dist(
+            *[arg.tensor for arg in self.args.values()], **self.kwargs
+        ).event_shape
+
+    @property
     def batch_shape(self) -> torch.Size:
-        return self.dist(*[arg.tensor for arg in self.args.values()], **self.kwargs).batch_shape
+        return self.dist(
+            *[arg.tensor for arg in self.args.values()], **self.kwargs
+        ).batch_shape
 
     @property
     def sample_shape(self) -> torch.Size:
@@ -114,9 +129,13 @@ class Distribution(DistributionModel):
                 if isinstance(data_dist[arg], str):
                     params[arg] = dic[data_dist[arg]]
                 elif isinstance(data_dist[arg], numbers.Number):
-                    params[arg] = Parameter(None, torch.tensor(data_dist[arg], dtype=x.dtype))
+                    params[arg] = Parameter(
+                        None, torch.tensor(data_dist[arg], dtype=x.dtype)
+                    )
                 elif isinstance(data_dist[arg], list):
-                    params[arg] = Parameter(None, torch.tensor(data_dist[arg], dtype=x.dtype))
+                    params[arg] = Parameter(
+                        None, torch.tensor(data_dist[arg], dtype=x.dtype)
+                    )
                 else:
                     params[arg] = process_object(data_dist[arg], dic)
 

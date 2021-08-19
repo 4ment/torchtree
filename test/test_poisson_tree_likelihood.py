@@ -1,37 +1,25 @@
-import pytest
 import torch
 import torch.distributions
 
 from phylotorch.evolution.poisson_tree_likelihood import PoissonTreeLikelihood
-from phylotorch.evolution.tree_model import heights_to_branch_lengths, TimeTreeModel
+from phylotorch.evolution.tree_model import TimeTreeModel, heights_to_branch_lengths
 
 
 def test_poisson_json():
-    tree_model = {
-        'id': 'tree',
-        'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
-        'newick': '(((A,B),C),D);',
-        'node_heights': {
-            'id': 'node_heights',
-            'type': 'phylotorch.core.model.Parameter',
-            'tensor': [10.0, 20.0, 30.0]
-        },
-        'taxa': {
-            'id': 'taxa',
-            'type': 'phylotorch.evolution.taxa.Taxa',
-            'taxa': [
-                {"id": "A", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 0.0}},
-                {"id": "B", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 0.0}},
-                {"id": "C", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 0.0}},
-                {"id": "D", "type": "phylotorch.evolution.taxa.Taxon", "attributes": {"date": 0.0}}
-            ]
-        }
-    }
-
     dic = {}
-    tree = TimeTreeModel.from_json(tree_model, dic)
-    distances = heights_to_branch_lengths(tree.node_heights, tree.bounds, tree.preorder)
-    noisy_distances = torch.clamp(distances * torch.rand(1), min=0.0)
+    tree_model = TimeTreeModel.from_json(
+        TimeTreeModel.json_factory(
+            'tree',
+            '(((A,B),C),D);',
+            dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
+            **{'node_heights': [10.0, 20.0, 30.0]}
+        ),
+        dic,
+    )
+    distances = heights_to_branch_lengths(
+        tree_model.node_heights, tree_model.bounds, tree_model.preorder
+    )
+    noisy_distances = torch.clamp(distances * torch.rand(1), min=0.0).long()
 
     poisson_model = {
         'id': 'a',
@@ -45,11 +33,13 @@ def test_poisson_json():
             'rate': {
                 'id': 'rate',
                 'type': 'phylotorch.core.model.Parameter',
-                'tensor': [0.01]
-            }
-        }
+                'tensor': [0.01],
+            },
+        },
     }
 
     poisson = PoissonTreeLikelihood.from_json(poisson_model, dic)
-    assert pytest.approx(poisson().item(), 1e-5) == torch.distributions.Poisson(distances * 0.01).log_prob(
-        torch.tensor(noisy_distances, dtype=torch.long)).sum().item()
+    assert torch.allclose(
+        poisson(),
+        torch.distributions.Poisson(distances * 0.01).log_prob(noisy_distances).sum(),
+    )

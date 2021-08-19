@@ -1,29 +1,31 @@
-from typing import Union, List
+from typing import List, Union
 
-import numpy as np
 import torch
 import torch.distributions
 
 from .. import Parameter
 from ..core.model import Model
-from ..core.utils import process_objects, process_object
+from ..core.utils import process_object, process_objects
 from ..distributions.distributions import DistributionModel
 from ..typing import ID
 
 
 class MultivariateNormal(DistributionModel):
-    """
-    Multivariate normal distribution.
+    """Multivariate normal distribution.
 
     :param id_: ID of joint distribution
     :param x: random variable to evaluate/sample using distribution
     :param loc: mean of the distribution
-    :param **kwargs: dict keyed with covariance_matrix or precision_matrix or scale_tril and valued with Parameter
-    :param distributions: list of distributions of type DistributionModel or CallableModel
+    :param **kwargs: dict keyed with covariance_matrix or precision_matrix or
+     scale_tril and valued with Parameter
+    :param distributions: list of distributions of type DistributionModel or
+     CallableModel
     """
 
-    def __init__(self, id_: ID, x: Union[List[Parameter], Parameter], loc: Parameter, **kwargs) -> None:
-        super(MultivariateNormal, self).__init__(id_)
+    def __init__(
+        self, id_: ID, x: Union[List[Parameter], Parameter], loc: Parameter, **kwargs
+    ) -> None:
+        super().__init__(id_)
         self.x = x
         self.loc = loc
         self.parameterization = list(kwargs.keys())[0]
@@ -42,28 +44,35 @@ class MultivariateNormal(DistributionModel):
         if isinstance(self.x, (list, tuple)):
             offset = 0
             for xx in self.x:
-                xx.tensor = x[..., offset:(offset + xx.shape[-1])]
+                xx.tensor = x[..., offset : (offset + xx.shape[-1])]
                 offset += xx.shape[-1]
         else:
             self.x.tensor = x
 
     def rsample(self, sample_shape=torch.Size()) -> None:
         kwargs = {self.parameterization: self.parameter.tensor}
-        x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).rsample(sample_shape)
+        x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).rsample(
+            sample_shape
+        )
         self._update_tensor(x)
 
     def sample(self, sample_shape=torch.Size()) -> None:
         kwargs = {self.parameterization: self.parameter.tensor}
-        x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).sample(sample_shape)
+        x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).sample(
+            sample_shape
+        )
         self._update_tensor(x)
 
     def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> torch.Tensor:
         kwargs = {self.parameterization: self.parameter.tensor}
         if isinstance(self.x, (list, tuple)):
-            return torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).log_prob(
-                torch.cat([xx.tensor for xx in x], -1))
+            return torch.distributions.MultivariateNormal(
+                self.loc.tensor, **kwargs
+            ).log_prob(torch.cat([xx.tensor for xx in x], -1))
         else:
-            return torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).log_prob(x.tensor)
+            return torch.distributions.MultivariateNormal(
+                self.loc.tensor, **kwargs
+            ).log_prob(x.tensor)
 
     def update(self, value):
         pass
@@ -100,14 +109,18 @@ class MultivariateNormal(DistributionModel):
         for p in ('covariance_matrix', 'scale_tril', 'precision_matrix'):
             if p in data['parameters']:
                 parameterization = p
-                kwargs[parameterization] = process_object(data['parameters'][parameterization], dic)
+                kwargs[parameterization] = process_object(
+                    data['parameters'][parameterization], dic
+                )
 
         if len(kwargs) != 1:
             raise NotImplementedError(
-                'MultivariateNormal is parameterized with either covariance_matrix, scale_tril or precision_matrix')
+                'MultivariateNormal is parameterized with either covariance_matrix,'
+                ' scale_tril or precision_matrix'
+            )
 
         if isinstance(x, list):
-            x_count = np.sum([xx.shape[0] for xx in x])
+            x_count = sum([xx.shape[0] for xx in x])
             assert x_count == loc.shape[0]
             assert torch.Size((x_count, x_count)) == kwargs[parameterization].shape
         else:

@@ -1,15 +1,23 @@
 import collections
+from typing import List
 
-from phylotorch.core.model import Identifiable
-from phylotorch.core.utils import process_object
-
+from ..core.model import Identifiable
+from ..core.utils import process_object
+from ..typing import ID
+from .taxa import Taxa
 
 Sequence = collections.namedtuple('Sequence', ['taxon', 'sequence'])
 
 
 class Alignment(Identifiable, collections.UserList):
+    """Sequence alignment.
 
-    def __init__(self, id_, sequences, taxa):
+    :param id_: ID of object
+    :param sequences: list of sequences
+    :param taxa: Taxa object
+    """
+
+    def __init__(self, id_: ID, sequences: List[Sequence], taxa: Taxa) -> None:
         self._sequence_size = len(sequences[0].sequence)
         self._taxa = taxa
         indexing = {taxon.id: idx for idx, taxon in enumerate(taxa)}
@@ -18,15 +26,15 @@ class Alignment(Identifiable, collections.UserList):
         collections.UserList.__init__(self, sequences)
 
     @property
-    def sequence_size(self):
+    def sequence_size(self) -> int:
         return self._sequence_size
 
     @property
-    def taxa(self):
+    def taxa(self) -> Taxa:
         return self._taxa
 
     @classmethod
-    def get(cls, id_, filename, taxa):
+    def get(cls, id_: ID, filename: str, taxa: Taxa) -> 'Alignment':
         sequences = read_fasta_sequences(filename)
         return cls(id_, sequences, taxa)
 
@@ -46,7 +54,7 @@ class Alignment(Identifiable, collections.UserList):
         return cls(id_, sequences, taxa)
 
 
-def read_fasta_sequences(filename):
+def read_fasta_sequences(filename: str) -> List[Sequence]:
     sequences = {}
     with open(filename, 'r') as fp:
         for line in fp:

@@ -1,10 +1,9 @@
-from typing import Optional
-
 import torch
 import torch.distributions
 
 from ..core.model import CallableModel
 from ..core.utils import process_object
+from ..typing import ID
 from .branch_model import BranchModel
 from .site_model import SiteModel
 from .site_pattern import SitePattern
@@ -21,19 +20,20 @@ def calculate_treelikelihood(
 ) -> torch.Tensor:
     """Simple function for calculating the log tree likelihood.
 
-    :param partials: list of tensors of partials [S,N] leaves and [S,N] internals
+    :param partials: list of tensors of partials [S,N] leaves and [...,S,N] internals
     :param weights: [N]
     :param post_indexing: list of indexes in postorder
-    :param mats: tensor of probability matrices [B,S,S]
-    :param freqs: tensor of frequencies [S]
-    :return: tree log likelihood [1]
+    :param mats: tensor of probability matrices [...,B,S,S]
+    :param freqs: tensor of frequencies [...,S]
+    :return: tree log likelihood [batch]
     """
     for node, left, right in post_indexing:
-        partials[node] = torch.matmul(mats[left], partials[left]) * torch.matmul(
-            mats[right], partials[right]
+        partials[node] = (mats[..., left, :, :] @ partials[left]) * (
+            mats[..., right, :, :] @ partials[right]
         )
     return torch.sum(
-        torch.log(torch.matmul(freqs, partials[post_indexing[-1][0]])) * weights
+        torch.log(freqs @ partials[post_indexing[-1][0]]) * weights,
+        -1,
     )
 
 
@@ -105,7 +105,7 @@ def calculate_treelikelihood_discrete_rescaled(
 class TreeLikelihoodModel(CallableModel):
     def __init__(
         self,
-        id_: Optional[str],
+        id_: ID,
         site_pattern: SitePattern,
         tree_model: TreeModel,
         subst_model: SubstitutionModel,
@@ -127,32 +127,35 @@ class TreeLikelihoodModel(CallableModel):
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         branch_lengths = self.tree_model.branch_lengths()
-        batch_shape = self.site_model.rates().shape[:-1]
+        sample_shape = self.sample_shape
         rates = self.site_model.rates()
-        # for models like JC69 rates is always tensor([1.0])  (i.e. batch_shape == [])
+        # for models like JC69 rates is always tensor([1.0])  (i.e. sample_shape == [])
         if rates.dim() == 1:
-            rates = rates.expand(batch_shape + (1, -1))
+            rates = rates.expand(sample_shape + (1, -1))
         else:
-            rates = rates.reshape(batch_shape + (1, -1))
+            rates = rates.reshape(sample_shape + (1, -1))
         probs = self.site_model.probabilities().reshape((-1, 1, 1))
-
         if self.clock_model is None:
             bls = torch.cat(
                 (
                     branch_lengths,
-                    torch.zeros(batch_shape + (1,), dtype=branch_lengths.dtype),
+                    torch.zeros(
+                        sample_shape + (1,),
+                        dtype=branch_lengths.dtype,
+                        device=branch_lengths.device,
+                    ),
                 ),
                 -1,
             )
         else:
             if branch_lengths.dim() == 1:
                 bls = self.clock_model.rates * branch_lengths.expand(
-                    batch_shape + (1, -1)
+                    sample_shape + (1, -1)
                 )
             else:
                 bls = self.clock_model.rates * branch_lengths
 
-        mats = self.subst_model.p_t(bls.reshape(batch_shape + (-1, 1)) * rates)
+        mats = self.subst_model.p_t(bls.reshape(sample_shape + (-1, 1)) * rates)
         frequencies = self.subst_model.frequencies
         if self.rescale:
             log_p = calculate_treelikelihood_discrete_rescaled(
@@ -184,12 +187,8 @@ class TreeLikelihoodModel(CallableModel):
         pass
 
     @property
-    def batch_shape(self) -> torch.Size:
-        return self.tree_model.batch_shape
-
-    @property
     def sample_shape(self) -> torch.Size:
-        return self.tree_model.sample_shape
+        return max([model.sample_shape for model in self._models], key=len)
 
     @classmethod
     def from_json(cls, data, dic):

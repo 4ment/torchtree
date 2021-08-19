@@ -6,21 +6,39 @@ from ..evolution.tree_model import TreeModel
 from ..typing import ID
 
 
-# Code adapted from https://github.com/beast-dev/beast-mcmc/blob/master/src/dr/evomodel/tree/CTMCScalePrior.java
+# Code adapted from
+# github.com/beast-dev/beast-mcmc/blob/master/src/dr/evomodel/tree/CTMCScalePrior.java
 class CTMCScale(CallableModel):
+    """Class implementing the CTMC scale prior [#ferreira2008]_
+
+    :param id_: ID of object
+    :type id_: str or None
+    :param torch.Tensor x: substitutin rate parameter
+    :param TreeModel tree_model: tree model
+
+    .. [#ferreira2008] Ferreira and Suchard. Bayesian analysis of elapsed times
+     in continuous-time Markov chains. 2008
+    """
+
     shape = torch.tensor([0.5])
     log_gamma_one_half = torch.lgamma(shape)
 
-    def __init__(self, id_: ID, x, tree_model: TreeModel) -> None:
+    def __init__(self, id_: ID, x: torch.Tensor, tree_model: TreeModel) -> None:
         super(CTMCScale, self).__init__(id_)
         self.x = x
         self.tree_model = tree_model
         self.add_parameter(x)
 
-    def _call(self, *args, **kwargs):
+    def _call(self, *args, **kwargs) -> torch.Tensor:
         total_tree_time = self.tree_model.branch_lengths().sum(-1, keepdim=True)
-        log_normalization = self.shape * torch.log(total_tree_time) - self.log_gamma_one_half
-        log_like = log_normalization - self.shape * self.x.tensor.log() - self.x.tensor * total_tree_time
+        log_normalization = (
+            self.shape * torch.log(total_tree_time) - self.log_gamma_one_half
+        )
+        log_like = (
+            log_normalization
+            - self.shape * self.x.tensor.log()
+            - self.x.tensor * total_tree_time
+        )
         return log_like
 
     def update(self, value):
@@ -33,11 +51,7 @@ class CTMCScale(CallableModel):
         self.fire_model_changed()
 
     @property
-    def batch_shape(self):
-        return self.x.tensor.shape[-1:]
-
-    @property
-    def sample_shape(self):
+    def sample_shape(self) -> torch.Size:
         return self.x.tensor.shape[:-1]
 
     @classmethod

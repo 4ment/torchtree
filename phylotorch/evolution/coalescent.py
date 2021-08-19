@@ -39,12 +39,11 @@ class ConstantCoalescentModel(CallableModel):
         return coalescent.log_prob(self.node_heights.tensor)
 
     @property
-    def batch_shape(self):
-        return self.theta.tensor.shape[-1:]
-
-    @property
-    def sample_shape(self):
-        return self.theta.tensor.shape[: -len(self.batch_shape)]
+    def sample_shape(self) -> torch.Size:
+        return max(
+            [parameter.shape[:-1] for parameter in self._parameters],
+            key=len,
+        )
 
     @classmethod
     def from_json(cls, data, dic):
@@ -292,6 +291,13 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
 
     def handle_parameter_changed(self, variable, index, event) -> None:
         self.fire_model_changed()
+
+    @property
+    def sample_shape(self):
+        return max(
+            [parameter.shape[:-1] for parameter in self._parameters],
+            key=len,
+        )
 
     @classmethod
     def from_json(cls, data, dic):

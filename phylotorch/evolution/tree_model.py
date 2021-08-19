@@ -10,6 +10,7 @@ from torch.distributions.transforms import Transform
 
 from ..core.model import Model, Parameter
 from ..core.utils import process_object
+from ..typing import ID
 
 
 class GeneralNodeHeightTransform(Transform):
@@ -208,7 +209,7 @@ class TreeModel(Model):
 
 
 class AbstractTreeModel(TreeModel, ABC):
-    def __init__(self, id_: Optional[str], tree):
+    def __init__(self, id_: ID, tree) -> None:
         TreeModel.__init__(self, id_)
         self.tree = tree
         self.taxa_count = len(tree.taxon_namespace)
@@ -216,7 +217,7 @@ class AbstractTreeModel(TreeModel, ABC):
         self.preorder = []
         self.update_traversals()
 
-    def update_traversals(self):
+    def update_traversals(self) -> None:
         # postorder for peeling
         self._postorder = []
         for node in self.tree.postorder_node_iter():
@@ -251,10 +252,10 @@ class AbstractTreeModel(TreeModel, ABC):
         self.write_newick(out, **kwargs)
         return out.getvalue()
 
-    def write_newick(self, steam, **kwargs):
+    def write_newick(self, steam, **kwargs) -> None:
         self._write_newick(self.tree.seed_node, steam, **kwargs)
 
-    def _write_newick(self, node, steam, **kwargs):
+    def _write_newick(self, node, steam, **kwargs) -> None:
         if not node.is_leaf():
             steam.write('(')
             for i, child in enumerate(node.child_node_iter()):
@@ -276,20 +277,16 @@ class AbstractTreeModel(TreeModel, ABC):
 
 
 class UnRootedTreeModel(AbstractTreeModel):
-    def __init__(self, id_, tree, branch_lengths: Parameter):
+    def __init__(self, id_: ID, tree, branch_lengths: Parameter) -> None:
         super().__init__(id_, tree)
         self._branch_lengths = branch_lengths
         self.add_parameter(branch_lengths)
 
-    def branch_lengths(self):
+    def branch_lengths(self) -> torch.Tensor:
         return self._branch_lengths.tensor
 
     @property
-    def batch_shape(self):
-        return self._branch_lengths.tensor.shape[-1:]
-
-    @property
-    def sample_shape(self):
+    def sample_shape(self) -> torch.Size:
         return self._branch_lengths.tensor.shape[:-1]
 
     def update(self, value):
@@ -307,32 +304,24 @@ class UnRootedTreeModel(AbstractTreeModel):
         id_ = data['id']
         taxa = process_object(data['taxa'], dic)
         tree = parse_tree(taxa, data)
-
-        if (
-            isinstance(data['branch_lengths'], dict)
-            and len(data['branch_lengths']) == 1
-        ):
-            branch_lengths_id = data['branch_lengths']['id']
-            bls = torch.tensor(
-                np.array(
+        branch_lengths = process_object(data['branch_lengths'], dic)
+        if 'keep_branch_lengths' in data:
+            branch_lengths.tensor = torch.tensor(
+                torch.tensor(
                     [
                         float(node.edge_length)
                         for node in sorted(
                             list(tree.postorder_node_iter())[:-1], key=lambda x: x.index
                         )
-                    ]
+                    ],
+                    dtype=branch_lengths.dtype,
                 )
             )
-            branch_lengths = Parameter(branch_lengths_id, bls)
-            dic[branch_lengths_id] = branch_lengths
-        else:
-            branch_lengths = process_object(data['branch_lengths'], dic)
-
         return cls(id_, tree, branch_lengths)
 
 
 class TimeTreeModel(AbstractTreeModel):
-    def __init__(self, id_, tree, node_heights: Parameter):
+    def __init__(self, id_: ID, tree, node_heights: Parameter) -> None:
         super().__init__(id_, tree)
         self._node_heights = node_heights
         self.taxa_count = len(tree.taxon_namespace)
@@ -379,12 +368,16 @@ class TimeTreeModel(AbstractTreeModel):
         self.fire_model_changed()
 
     @property
-    def batch_shape(self):
-        return self._node_heights.tensor.shape[-1:]
-
-    @property
-    def sample_shape(self):
+    def sample_shape(self) -> torch.Size:
         return self._node_heights.tensor.shape[:-1]
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        super().cuda(device)
+        self.bounds.cuda(device)
+
+    def cpu(self) -> None:
+        super().cpu()
+        self.bounds.cpu()
 
     @staticmethod
     def json_factory(id_: str, newick: str, taxa: Union[dict, list, str], **kwargs):
@@ -455,6 +448,9 @@ class TimeTreeModel(AbstractTreeModel):
         initialize_dates_from_taxa(tree, taxa)
 
         if isinstance(data['node_heights'], dict) and len(data['node_heights']) == 1:
+            # TODO: get rid of this. Define a Parameter and use a flag like
+            #       `keep_heights=true` to populate the Parameter from the tree.
+            #       Special care if node_height parameter is a transformed parameter
             node_heights_id = data['node_heights']['id']
             heights_np = heights_from_branch_lengths(tree)
             node_heights = Parameter(node_heights_id, torch.tensor(heights_np))

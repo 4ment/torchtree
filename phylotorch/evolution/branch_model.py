@@ -1,8 +1,10 @@
 from abc import abstractmethod
 
-from phylotorch.core.utils import process_object
+import torch
 
-from ..core.model import Model
+from ..core.model import Model, Parameter
+from ..core.utils import process_object
+from ..typing import ID
 from .tree_model import TreeModel
 
 
@@ -16,7 +18,7 @@ class BranchModel(Model):
 
 
 class AbstractClockModel(BranchModel):
-    def __init__(self, id_, rates, tree):
+    def __init__(self, id_: ID, rates: Parameter, tree: TreeModel) -> None:
         super().__init__(id_)
         self._rates = rates
         self.tree = tree
@@ -35,14 +37,18 @@ class AbstractClockModel(BranchModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
+    @property
+    def sample_shape(self) -> torch.Size:
+        return self._rates.shape[:-1]
+
 
 class StrictClockModel(AbstractClockModel):
-    def __init__(self, id_, rates, tree):
+    def __init__(self, id_: ID, rates: Parameter, tree: TreeModel) -> None:
         self.branch_count = tree.taxa_count * 2 - 2
         super().__init__(id_, rates, tree)
 
     @property
-    def rates(self):
+    def rates(self) -> torch.Tensor:
         return self._rates.tensor.expand(
             [-1] * (self._rates.tensor.dim() - 1) + [self.branch_count]
         )
@@ -57,7 +63,7 @@ class StrictClockModel(AbstractClockModel):
 
 class SimpleClockModel(AbstractClockModel):
     @property
-    def rates(self):
+    def rates(self) -> torch.Tensor:
         return self._rates.tensor
 
     @classmethod

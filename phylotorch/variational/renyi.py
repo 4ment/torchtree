@@ -55,6 +55,10 @@ class VR(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
+    @property
+    def sample_shape(self) -> torch.Size:
+        return self.q.sample_shape
+
     @classmethod
     def from_json(cls, data, dic) -> 'VR':
         samples = data.get('samples', 1)

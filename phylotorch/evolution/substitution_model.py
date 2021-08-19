@@ -1,61 +1,66 @@
 from abc import abstractmethod
+from typing import Optional, Union
 
-import numpy as np
 import torch
 import torch.linalg
 
 from ..core.model import Model, Parameter
 from ..core.utils import process_object
+from ..typing import ID
 
 
 class SubstitutionModel(Model):
     _tag = 'substitution_model'
 
-    def __init__(self, id_, frequencies):
+    def __init__(self, id_: ID, frequencies: Parameter) -> None:
+        super().__init__(id_)
         self._frequencies = frequencies
-        super(SubstitutionModel, self).__init__(id_)
 
     @property
-    def frequencies(self):
+    def frequencies(self) -> torch.Tensor:
         return self._frequencies.tensor
 
     @abstractmethod
-    def p_t(self, branch_lengths):
+    def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
         pass
 
     @abstractmethod
-    def q(self):
+    def q(self) -> torch.Tensor:
         pass
 
     @staticmethod
-    def norm(Q, frequencies):
+    def norm(Q, frequencies: torch.Tensor) -> torch.Tensor:
         return -torch.sum(torch.diagonal(Q, dim1=-2, dim2=-1) * frequencies, -1)
 
 
 class JC69(SubstitutionModel):
-    def __init__(self, id_):
-        frequencies = Parameter('frequencies', torch.tensor(np.repeat(0.25, 4)))
-        super(JC69, self).__init__(id_, frequencies)
+    def __init__(self, id_: ID) -> None:
+        frequencies = Parameter(None, torch.full((4,), 0.25, dtype=torch.float64))
+        super().__init__(id_, frequencies)
 
-    def p_t(self, branch_lengths):
-        """Calculate transition probability matrices
+    def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
+        """Calculate transition probability matrices.
 
         :param branch_lengths: tensor of branch lengths [B,K]
         :return: tensor of probability matrices [B,K,4,4]
         """
         d = torch.unsqueeze(branch_lengths, -1)
-        a = 0.25 + 3. / 4. * torch.exp(-4. / 3. * d)
-        b = 0.25 - 0.25 * torch.exp(-4. / 3. * d)
-        return torch.cat((a, b, b, b,
-                          b, a, b, b,
-                          b, b, a, b,
-                          b, b, b, a), -1).reshape(d.shape[:-1] + (4, 4))
+        a = 0.25 + 3.0 / 4.0 * torch.exp(-4.0 / 3.0 * d)
+        b = 0.25 - 0.25 * torch.exp(-4.0 / 3.0 * d)
+        return torch.cat((a, b, b, b, b, a, b, b, b, b, a, b, b, b, b, a), -1).reshape(
+            d.shape[:-1] + (4, 4)
+        )
 
-    def q(self):
-        return torch.tensor(np.array([[-1., 1. / 3, 1. / 3, 1. / 3],
-                                      [1. / 3, -1., 1. / 3, 1. / 3],
-                                      [1. / 3, 1. / 3, -1., 1. / 3],
-                                      [1. / 3, 1. / 3, 1. / 3, -1.]]))
+    def q(self) -> torch.Tensor:
+        return torch.tensor(
+            [
+                [-1.0, 1.0 / 3, 1.0 / 3, 1.0 / 3],
+                [1.0 / 3, -1.0, 1.0 / 3, 1.0 / 3],
+                [1.0 / 3, 1.0 / 3, -1.0, 1.0 / 3],
+                [1.0 / 3, 1.0 / 3, 1.0 / 3, -1.0],
+            ],
+            dtype=self.frequencies.dtype,
+        )
 
     def update(self, value):
         pass
@@ -66,41 +71,68 @@ class JC69(SubstitutionModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
+    @property
+    def sample_shape(self) -> torch.Size:
+        return torch.Size([])
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        self._frequencies.cuda(device)
+
+    def cpu(self) -> None:
+        self._frequencies.cpu()
+
     @classmethod
     def from_json(cls, data, dic):
         return cls(data['id'])
 
 
 class SymmetricSubstitutionModel(SubstitutionModel):
-
-    def __init__(self, id_, frequencies):
-        super(SymmetricSubstitutionModel, self).__init__(id_, frequencies)
+    def __init__(self, id_: ID, frequencies: Parameter):
+        super().__init__(id_, frequencies)
         self.add_parameter(frequencies)
 
-    def p_t(self, branch_lengths):
+    def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
         Q_unnorm = self.q()
-        Q = Q_unnorm / SubstitutionModel.norm(Q_unnorm, self.frequencies).unsqueeze(-1).unsqueeze(-1)
+        Q = Q_unnorm / SubstitutionModel.norm(Q_unnorm, self.frequencies).unsqueeze(
+            -1
+        ).unsqueeze(-1)
         sqrt_pi = self.frequencies.sqrt().diag_embed(dim1=-2, dim2=-1)
-        sqrt_pi_inv = (1. / self.frequencies.sqrt()).diag_embed(dim1=-2, dim2=-1)
+        sqrt_pi_inv = (1.0 / self.frequencies.sqrt()).diag_embed(dim1=-2, dim2=-1)
         S = sqrt_pi @ Q @ sqrt_pi_inv
         e, v = self.eigen(S)
         offset = branch_lengths.dim() - e.dim() + 1
-        return (sqrt_pi_inv @ v).reshape(e.shape[:-1] + (1,) * offset + sqrt_pi_inv.shape[-2:]) @ torch.exp(
-            e.reshape(e.shape[:-1] + (1,) * offset + e.shape[-1:]) * branch_lengths.unsqueeze(-1)).diag_embed() @ (
-                           v.inverse() @ sqrt_pi).reshape(e.shape[:-1] + (1,) * offset + sqrt_pi_inv.shape[-2:])
+        return (
+            (sqrt_pi_inv @ v).reshape(
+                e.shape[:-1] + (1,) * offset + sqrt_pi_inv.shape[-2:]
+            )
+            @ torch.exp(
+                e.reshape(e.shape[:-1] + (1,) * offset + e.shape[-1:])
+                * branch_lengths.unsqueeze(-1)
+            ).diag_embed()
+            @ (v.inverse() @ sqrt_pi).reshape(
+                e.shape[:-1] + (1,) * offset + sqrt_pi_inv.shape[-2:]
+            )
+        )
 
-    def eigen(self, Q):
+    def eigen(self, Q: torch.Tensor) -> torch.Tensor:
         return torch.linalg.eigh(Q)
+
+    @property
+    def sample_shape(self) -> torch.Size:
+        return max(
+            [parameter.shape[:-1] for parameter in self._parameters],
+            key=len,
+        )
 
 
 class GTR(SymmetricSubstitutionModel):
-    def __init__(self, id_, rates, frequencies):
-        super(GTR, self).__init__(id_, frequencies)
+    def __init__(self, id_: ID, rates: Parameter, frequencies: Parameter):
+        super().__init__(id_, frequencies)
         self._rates = rates
         self.add_parameter(rates)
 
     @property
-    def rates(self):
+    def rates(self) -> torch.Tensor:
         return self._rates.tensor
 
     def update(self, value):
@@ -118,34 +150,50 @@ class GTR(SymmetricSubstitutionModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
-    def q(self):
+    def q(self) -> torch.Tensor:
         if len(self.frequencies.shape) == 1:
             pi = self.frequencies.unsqueeze(0)
             rates = self.rates.unsqueeze(0)
         else:
             pi = self.frequencies.unsqueeze(-2)
             rates = self.rates.unsqueeze(-2)
-        return torch.cat((
-            -(rates[..., 0] * pi[..., 1] + rates[..., 1] * pi[..., 2] + rates[..., 2] * pi[..., 3]),
-            rates[..., 0] * pi[..., 1],
-            rates[..., 1] * pi[..., 2],
-            rates[..., 2] * pi[..., 3],
-
-            rates[..., 0] * pi[..., 0],
-            -(rates[..., 0] * pi[..., 0] + rates[..., 3] * pi[..., 2] + rates[..., 4] * pi[..., 3]),
-            rates[..., 3] * pi[..., 2],
-            rates[..., 4] * pi[..., 3],
-
-            rates[..., 1] * pi[..., 0],
-            rates[..., 3] * pi[..., 1],
-            -(rates[..., 1] * pi[..., 0] + rates[..., 3] * pi[..., 1] + rates[..., 5] * pi[..., 3]),
-            rates[..., 5] * pi[..., 3],
-
-            rates[..., 2] * pi[..., 0],
-            rates[..., 4] * pi[..., 1],
-            rates[..., 5] * pi[..., 2],
-            -(rates[..., 2] * pi[..., 0] + rates[..., 4] * pi[..., 1] + rates[..., 5] * pi[..., 2])), -1).reshape(
-            self.rates.shape[:-1] + (4, 4))
+        return torch.cat(
+            (
+                -(
+                    rates[..., 0] * pi[..., 1]
+                    + rates[..., 1] * pi[..., 2]
+                    + rates[..., 2] * pi[..., 3]
+                ),
+                rates[..., 0] * pi[..., 1],
+                rates[..., 1] * pi[..., 2],
+                rates[..., 2] * pi[..., 3],
+                rates[..., 0] * pi[..., 0],
+                -(
+                    rates[..., 0] * pi[..., 0]
+                    + rates[..., 3] * pi[..., 2]
+                    + rates[..., 4] * pi[..., 3]
+                ),
+                rates[..., 3] * pi[..., 2],
+                rates[..., 4] * pi[..., 3],
+                rates[..., 1] * pi[..., 0],
+                rates[..., 3] * pi[..., 1],
+                -(
+                    rates[..., 1] * pi[..., 0]
+                    + rates[..., 3] * pi[..., 1]
+                    + rates[..., 5] * pi[..., 3]
+                ),
+                rates[..., 5] * pi[..., 3],
+                rates[..., 2] * pi[..., 0],
+                rates[..., 4] * pi[..., 1],
+                rates[..., 5] * pi[..., 2],
+                -(
+                    rates[..., 2] * pi[..., 0]
+                    + rates[..., 4] * pi[..., 1]
+                    + rates[..., 5] * pi[..., 2]
+                ),
+            ),
+            -1,
+        ).reshape(self.rates.shape[:-1] + (4, 4))
 
     @classmethod
     def from_json(cls, data, dic):
@@ -156,13 +204,13 @@ class GTR(SymmetricSubstitutionModel):
 
 
 class HKY(SymmetricSubstitutionModel):
-    def __init__(self, id_, kappa, frequencies):
-        super(SymmetricSubstitutionModel, self).__init__(id_, frequencies)
+    def __init__(self, id_: ID, kappa: Parameter, frequencies: Parameter) -> None:
+        super().__init__(id_, frequencies)
         self._kappa = kappa
         self.add_parameter(kappa)
 
     @property
-    def kappa(self):
+    def kappa(self) -> torch.Tensor:
         return self._kappa.tensor
 
     def update(self, value):
@@ -180,7 +228,7 @@ class HKY(SymmetricSubstitutionModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
-    def p_t2(self, branch_lengths):
+    def p_t2(self, branch_lengths: torch.Tensor) -> torch.Tensor:
         d = torch.unsqueeze(branch_lengths, -1)
         pi = self.frequencies
         R = pi[0] + pi[2]
@@ -188,51 +236,93 @@ class HKY(SymmetricSubstitutionModel):
         kappa = self.kappa[0]
         k1 = kappa * Y + R
         k2 = kappa * R + Y
-        r = 1. / (2. * (pi[0] * pi[1] + pi[1] * pi[2] + pi[0] * pi[3] + pi[2] * pi[3] + kappa * (
-                pi[1] * pi[3] + pi[0] * pi[2])))
+        r = 1.0 / (
+            2.0
+            * (
+                pi[0] * pi[1]
+                + pi[1] * pi[2]
+                + pi[0] * pi[3]
+                + pi[2] * pi[3]
+                + kappa * (pi[1] * pi[3] + pi[0] * pi[2])
+            )
+        )
 
         exp1 = torch.exp(-d * r)
         exp22 = torch.exp(-k2 * d * r)
         exp21 = torch.exp(-k1 * d * r)
-        return torch.cat((pi[0] * (1. + (Y / R) * exp1) + (pi[2] / R) * exp22,
-                          pi[1] * (1. - exp1),
-                          pi[2] * (1. + (Y / R) * exp1) - (pi[2] / R) * exp22,
-                          pi[3] * (1. - exp1),
+        return torch.cat(
+            (
+                pi[0] * (1.0 + (Y / R) * exp1) + (pi[2] / R) * exp22,
+                pi[1] * (1.0 - exp1),
+                pi[2] * (1.0 + (Y / R) * exp1) - (pi[2] / R) * exp22,
+                pi[3] * (1.0 - exp1),
+                pi[0] * (1.0 - exp1),
+                pi[1] * (1.0 + (R / Y) * exp1) + (pi[3] / Y) * exp21,
+                pi[2] * (1.0 - exp1),
+                pi[3] * (1.0 + (R / Y) * exp1) - (pi[3] / Y) * exp21,
+                pi[0] * (1.0 + (Y / R) * exp1) - (pi[0] / R) * exp22,
+                pi[1] * (1.0 - exp1),
+                pi[2] * (1.0 + (Y / R) * exp1) + (pi[0] / R) * exp22,
+                pi[3] * (1.0 - exp1),
+                pi[0] * (1.0 - exp1),
+                pi[1] * (1.0 + (R / Y) * exp1) - (pi[1] / Y) * exp21,
+                pi[2] * (1.0 - exp1),
+                pi[3] * (1.0 + (R / Y) * exp1) + (pi[1] / Y) * exp21,
+            ),
+            -1,
+        ).reshape(d.shape[0], d.shape[1], 4, 4)
 
-                          pi[0] * (1. - exp1),
-                          pi[1] * (1. + (R / Y) * exp1) + (pi[3] / Y) * exp21,
-                          pi[2] * (1. - exp1),
-                          pi[3] * (1. + (R / Y) * exp1) - (pi[3] / Y) * exp21,
-
-                          pi[0] * (1. + (Y / R) * exp1) - (pi[0] / R) * exp22,
-                          pi[1] * (1. - exp1),
-                          pi[2] * (1. + (Y / R) * exp1) + (pi[0] / R) * exp22,
-                          pi[3] * (1. - exp1),
-
-                          pi[0] * (1. - exp1),
-                          pi[1] * (1. + (R / Y) * exp1) - (pi[1] / Y) * exp21,
-                          pi[2] * (1. - exp1),
-                          pi[3] * (1. + (R / Y) * exp1) + (pi[1] / Y) * exp21), -1).reshape(
-            d.shape[0], d.shape[1], 4, 4)
-
-    def q2(self):
+    def q2(self) -> torch.Tensor:
         pi = self.frequencies.unsqueeze(-1)
-        return torch.cat((-(pi[1] + self.kappa * pi[2] + pi[3]), pi[1], self.kappa * pi[2], pi[3],
-                          pi[0], -(pi[0] + pi[2] + self.kappa * pi[3]), pi[2], self.kappa * pi[3],
-                          self.kappa * pi[0], pi[1], -(self.kappa * pi[0] + pi[1] + pi[3]), pi[3],
-                          pi[0], self.kappa * pi[1], pi[2], -(pi[0] + self.kappa * pi[1] + pi[2])), 0).reshape((4, 4))
+        return torch.cat(
+            (
+                -(pi[1] + self.kappa * pi[2] + pi[3]),
+                pi[1],
+                self.kappa * pi[2],
+                pi[3],
+                pi[0],
+                -(pi[0] + pi[2] + self.kappa * pi[3]),
+                pi[2],
+                self.kappa * pi[3],
+                self.kappa * pi[0],
+                pi[1],
+                -(self.kappa * pi[0] + pi[1] + pi[3]),
+                pi[3],
+                pi[0],
+                self.kappa * pi[1],
+                pi[2],
+                -(pi[0] + self.kappa * pi[1] + pi[2]),
+            ),
+            0,
+        ).reshape((4, 4))
 
-    def q(self):
+    def q(self) -> torch.Tensor:
         if len(self.frequencies.shape) == 1:
             pi = self.frequencies.unsqueeze(0)
         else:
             pi = self.frequencies.unsqueeze(-2)
         kappa = self.kappa
-        return torch.cat((-(pi[..., 1] + kappa * pi[..., 2] + pi[..., 3]), pi[..., 1], kappa * pi[..., 2], pi[..., 3],
-                          pi[..., 0], -(pi[..., 0] + pi[..., 2] + kappa * pi[..., 3]), pi[..., 2], kappa * pi[..., 3],
-                          kappa * pi[..., 0], pi[..., 1], -(kappa * pi[..., 0] + pi[..., 1] + pi[..., 3]), pi[..., 3],
-                          pi[..., 0], kappa * pi[..., 1], pi[..., 2], -(pi[..., 0] + kappa * pi[..., 1] + pi[..., 2])),
-                         -1).reshape(kappa.shape[:-1] + (4, 4))
+        return torch.cat(
+            (
+                -(pi[..., 1] + kappa * pi[..., 2] + pi[..., 3]),
+                pi[..., 1],
+                kappa * pi[..., 2],
+                pi[..., 3],
+                pi[..., 0],
+                -(pi[..., 0] + pi[..., 2] + kappa * pi[..., 3]),
+                pi[..., 2],
+                kappa * pi[..., 3],
+                kappa * pi[..., 0],
+                pi[..., 1],
+                -(kappa * pi[..., 0] + pi[..., 1] + pi[..., 3]),
+                pi[..., 3],
+                pi[..., 0],
+                kappa * pi[..., 1],
+                pi[..., 2],
+                -(pi[..., 0] + kappa * pi[..., 1] + pi[..., 2]),
+            ),
+            -1,
+        ).reshape(kappa.shape[:-1] + (4, 4))
 
     @classmethod
     def from_json(cls, data, dic):
@@ -243,16 +333,17 @@ class HKY(SymmetricSubstitutionModel):
 
 
 class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
-
-    def __init__(self, id_, mapping, rates, frequencies):
-        super(GeneralSymmetricSubstitutionModel, self).__init__(id_, frequencies)
+    def __init__(
+        self, id_: ID, mapping: Parameter, rates: Parameter, frequencies: Parameter
+    ) -> None:
+        super().__init__(id_, frequencies)
         self._rates = rates
         self.mapping = mapping
         self.state_count = frequencies.shape[0]
         self.add_parameter(rates)
 
     @property
-    def rates(self):
+    def rates(self) -> torch.Tensor:
         return self._rates.tensor
 
     def update(self, value):
@@ -270,7 +361,7 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
-    def q(self):
+    def q(self) -> torch.Tensor:
         indices = torch.triu_indices(self.state_count, self.state_count, 1)
         R = torch.zeros((self.state_count, self.state_count), dtype=self.rates.dtype)
         R[indices[0], indices[1]] = self.rates
