@@ -1,6 +1,6 @@
 import numpy as np
 
-from phylotorch.evolution.datatype import NucleotideDataType, GeneralDataType
+from phylotorch.evolution.datatype import GeneralDataType, NucleotideDataType
 
 
 def test_general():
@@ -16,7 +16,7 @@ def test_general():
         'B': ['C', 'G', 'T'],
         'D': ['A', 'G', 'T'],
         'H': ['A', 'C', 'T'],
-        'V': ['A', 'C', 'G']
+        'V': ['A', 'C', 'G'],
     }
     nuc = NucleotideDataType()
     gen = GeneralDataType('id', codes, ambiguities)

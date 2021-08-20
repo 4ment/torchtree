@@ -1,7 +1,12 @@
 import torch
 import torch.distributions
 
-from phylotorch.core.model import Parameter, TransformedParameter
+from phylotorch.core.model import (
+    Parameter,
+    ParameterListener,
+    TransformedParameter,
+    ViewParameter,
+)
 
 
 def test_parameter_repr():
@@ -31,3 +36,153 @@ def test_transformed_parameter():
     assert p2.need_update is False
 
     assert torch.all(p2.tensor.eq(p1.tensor.exp()))
+
+
+def test_parameter_to_dtype():
+    p = Parameter('param', torch.tensor([1], dtype=torch.int32))
+    assert p.dtype == torch.int32
+    p.to(torch.float32)
+    assert p.dtype == torch.float32
+
+
+def test_view_parameter_repr():
+    p = Parameter('param', torch.tensor([1, 2]))
+    p2 = ViewParameter('p2', p, 1)
+    assert eval(repr(p2)) == p2
+
+
+def test_view_parameter():
+    t = torch.tensor([[1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0]])
+    p = Parameter('param', t)
+
+    p1 = ViewParameter('param1', p, 3)
+    assert torch.all(p1.tensor.eq(t[..., 3]))
+
+    p1 = ViewParameter('param1', p, slice(3))
+    assert torch.all(p1.tensor.eq(t[..., :3]))
+
+    p1 = ViewParameter('param1', p, torch.tensor([0, 3]))
+    assert torch.all(p1.tensor.eq(t[..., torch.tensor([0, 3])]))
+
+    p1 = ViewParameter.from_json(
+        {
+            'id': 'a',
+            'type': 'phylotorch.ViewParameter',
+            'parameter': 'param',
+            'indices': 3,
+        },
+        {'param': p},
+    )
+    assert torch.all(p1.tensor.eq(t[..., 3]))
+
+    p1 = ViewParameter.from_json(
+        {
+            'id': 'a',
+            'type': 'phylotorch.ViewParameter',
+            'parameter': 'param',
+            'indices': ':3',
+        },
+        {'param': p},
+    )
+    assert torch.all(p1.tensor.eq(t[..., :3]))
+
+    p1 = ViewParameter.from_json(
+        {
+            'id': 'a',
+            'type': 'phylotorch.ViewParameter',
+            'parameter': 'param',
+            'indices': '2:',
+        },
+        {'param': p},
+    )
+    assert torch.all(p1.tensor.eq(t[..., 2:]))
+
+    p1 = ViewParameter.from_json(
+        {
+            'id': 'a',
+            'type': 'phylotorch.ViewParameter',
+            'parameter': 'param',
+            'indices': '1:3',
+        },
+        {'param': p},
+    )
+    assert torch.all(p1.tensor.eq(t[..., 1:3]))
+
+    p1 = ViewParameter.from_json(
+        {
+            'id': 'a',
+            'type': 'phylotorch.ViewParameter',
+            'parameter': 'param',
+            'indices': '1:4:2',
+        },
+        {'param': p},
+    )
+    assert torch.all(p1.tensor.eq(t[..., 1:4:2]))
+
+    p1 = ViewParameter.from_json(
+        {
+            'id': 'a',
+            'type': 'phylotorch.ViewParameter',
+            'parameter': 'param',
+            'indices': '::-1',
+        },
+        {'param': p},
+    )
+    assert torch.all(p1.tensor.eq(t[..., torch.LongTensor([3, 2, 1, 0])]))
+
+    p1 = ViewParameter.from_json(
+        {
+            'id': 'a',
+            'type': 'phylotorch.ViewParameter',
+            'parameter': 'param',
+            'indices': '2::-1',
+        },
+        {'param': p},
+    )
+    assert torch.all(p1.tensor.eq(torch.tensor(t.numpy()[Ellipsis, 2::-1].copy())))
+
+    p1 = ViewParameter.from_json(
+        {
+            'id': 'a',
+            'type': 'phylotorch.ViewParameter',
+            'parameter': 'param',
+            'indices': ':0:-1',
+        },
+        {'param': p},
+    )
+    assert torch.all(p1.tensor.eq(torch.tensor(t.numpy()[..., :0:-1].copy())))
+
+    p1 = ViewParameter.from_json(
+        {
+            'id': 'a',
+            'type': 'phylotorch.ViewParameter',
+            'parameter': 'param',
+            'indices': '2:0:-1',
+        },
+        {'param': p},
+    )
+    assert torch.all(p1.tensor.eq(torch.tensor(t.numpy()[..., 2:0:-1].copy())))
+
+
+def test_view_parameter_listener():
+    t = torch.tensor([1.0, 2.0, 3.0, 4.0])
+    p = Parameter('param', t)
+
+    p1 = ViewParameter('param1', p, 3)
+
+    class FakeListener(ParameterListener):
+        def __init__(self):
+            self.gotit = False
+
+        def handle_parameter_changed(self, variable, index, event):
+            self.gotit = True
+
+    listener = FakeListener()
+    p1.add_parameter_listener(listener)
+
+    p.fire_parameter_changed()
+    assert listener.gotit is True
+
+    listener.gotit = False
+    p1.fire_parameter_changed()
+    assert listener.gotit is True
