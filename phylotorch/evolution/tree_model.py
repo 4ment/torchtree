@@ -11,6 +11,7 @@ from torch.distributions.transforms import Transform
 from ..core.model import Model, Parameter
 from ..core.utils import process_object
 from ..typing import ID
+from .taxa import Taxa
 
 
 class GeneralNodeHeightTransform(Transform):
@@ -23,7 +24,7 @@ class GeneralNodeHeightTransform(Transform):
     def __init__(self, tree: 'TimeTreeModel', cache_size=0) -> None:
         super().__init__(cache_size=cache_size)
         self.tree = tree
-        self.taxa_count = int((self.tree.bounds.shape[0] + 1) / 2)
+        self.taxa_count = self.tree.taxa_count
         self.indices_sorted = (
             self.tree.preorder[np.argsort(self.tree.preorder[:, 1])].transpose()[
                 0, self.taxa_count :
@@ -35,7 +36,7 @@ class GeneralNodeHeightTransform(Transform):
         return transform_ratios(x, self.tree.bounds, self.tree.preorder)
 
     def _inverse(self, y):
-        raise NotImplementedError
+        return transform_heights_to_ratios(y, self.tree.bounds, self.tree.preorder)
 
     def log_abs_det_jacobian(self, x, y):
         return torch.log(
@@ -74,6 +75,33 @@ def transform_ratios(ratios_root_height: torch.Tensor, bounds, indexing):
                 ..., id_ - taxa_count
             ] * (heights[..., parent_id - taxa_count] - bounds[id_])
     return heights
+
+
+def transform_heights_to_ratios(
+    node_heights: torch.Tensor, bounds: torch.Tensor, indexing
+):
+    """Transform internal node heights to ratios/root height.
+
+    :param node_heights: internal node heights
+    :param bounds: lower bound of each node
+    :param indexing: pairs of parent/child indices, must be preorder or inorder
+    :return: node ratios of internal nodes
+    """
+    taxa_count = int((bounds.shape[0] + 1) / 2)
+    indices_sorted = indexing[np.argsort(indexing[:, 1])].transpose()
+    return torch.cat(
+        (
+            (
+                node_heights[..., indices_sorted[1, taxa_count:] - taxa_count]
+                - bounds[taxa_count:-1]
+            )
+            / (
+                node_heights[..., indices_sorted[0, taxa_count:] - taxa_count]
+                + bounds[taxa_count:-1]
+            ),
+            node_heights[..., -1:],
+        )
+    )
 
 
 def setup_indexes(tree):
@@ -209,12 +237,12 @@ class TreeModel(Model):
 
 
 class AbstractTreeModel(TreeModel, ABC):
-    def __init__(self, id_: ID, tree) -> None:
+    def __init__(self, id_: ID, tree, taxa: Taxa) -> None:
         TreeModel.__init__(self, id_)
         self.tree = tree
+        self._taxa = taxa
         self.taxa_count = len(tree.taxon_namespace)
         self._postorder = []
-        self.preorder = []
         self.update_traversals()
 
     def update_traversals(self) -> None:
@@ -227,15 +255,6 @@ class AbstractTreeModel(TreeModel, ABC):
                     (node.index, children[0].index, children[1].index)
                 )
 
-        # preoder indexing to go from ratios to heights
-        self.preorder = np.array(
-            [
-                (node.parent_node.index, node.index)
-                for node in self.tree.preorder_node_iter()
-                if node != self.tree.seed_node
-            ]
-        )
-
     def handle_model_changed(self, model, obj, index):
         pass
 
@@ -245,7 +264,8 @@ class AbstractTreeModel(TreeModel, ABC):
 
     @property
     def taxa(self):
-        return [taxon.label for taxon in self.tree.taxon_namespace]
+        # return [taxon.label for taxon in self.tree.taxon_namespace]
+        return [taxon.id for taxon in self._taxa]
 
     def as_newick(self, **kwargs):
         out = StringIO()
@@ -277,8 +297,8 @@ class AbstractTreeModel(TreeModel, ABC):
 
 
 class UnRootedTreeModel(AbstractTreeModel):
-    def __init__(self, id_: ID, tree, branch_lengths: Parameter) -> None:
-        super().__init__(id_, tree)
+    def __init__(self, id_: ID, tree, taxa: Taxa, branch_lengths: Parameter) -> None:
+        super().__init__(id_, tree, taxa)
         self._branch_lengths = branch_lengths
         self.add_parameter(branch_lengths)
 
@@ -317,41 +337,100 @@ class UnRootedTreeModel(AbstractTreeModel):
                     dtype=branch_lengths.dtype,
                 )
             )
-        return cls(id_, tree, branch_lengths)
+        return cls(id_, tree, taxa, branch_lengths)
 
 
 class TimeTreeModel(AbstractTreeModel):
-    def __init__(self, id_: ID, tree, node_heights: Parameter) -> None:
-        super().__init__(id_, tree)
+    def __init__(self, id_: ID, tree, taxa: Taxa, node_heights: Parameter) -> None:
+        super().__init__(id_, tree, taxa)
         self._node_heights = node_heights
         self.taxa_count = len(tree.taxon_namespace)
-        self.bounds = self.create_bounds(tree)
-        self.sampling_times = self.bounds[: self.taxa_count]
+        self.bounds = None
+        self.sampling_times = None
+        self.update_leaf_heights()
+        self.update_bounds()
         if node_heights is not None:
             self.add_parameter(node_heights)
         self._branch_lengths = None
         self.branch_lengths_need_update = True
 
-    @staticmethod
-    def create_bounds(tree) -> torch.Tensor:
-        bounds = np.empty(2 * len(tree.taxon_namespace) - 1)
-        for node in tree.postorder_node_iter():
-            if node.is_leaf():
-                bounds[node.index] = node.date
-            else:
-                bounds[node.index] = np.max(
-                    [bounds[x.index] for x in node.child_node_iter()]
-                )
-        return torch.tensor(bounds)
+    def update_leaf_heights(self, dtype=torch.float64) -> None:
+        leaf_heights = [None] * len(self._taxa)
+
+        dates = [taxon['date'] for taxon in self._taxa]
+        max_date = max(dates)
+
+        # time starts at 0
+        if min(dates) == 0.0:
+            for idx, taxon in enumerate(self._taxa):
+                leaf_heights[idx] = taxon['date']
+        # time is a year
+        else:
+            for idx, taxon in enumerate(self._taxa):
+                leaf_heights[idx] = max_date - taxon['date']
+
+        self.sampling_times = torch.tensor(leaf_heights, dtype=dtype)
+
+    def update_bounds(self) -> None:
+        taxa_count = self.taxa_count
+        internal_heights = [None] * (taxa_count - 1)
+        for node, left, right in self.postorder:
+            left_height = (
+                self.sampling_times[left]
+                if left < taxa_count
+                else internal_heights[left - taxa_count]
+            )
+            right_height = (
+                self.sampling_times[right]
+                if right < taxa_count
+                else internal_heights[right - taxa_count]
+            )
+
+            internal_heights[node - taxa_count] = (
+                left_height if left_height > right_height else right_height
+            )
+        self.bounds = torch.cat(
+            (self.sampling_times, torch.stack(internal_heights)), -1
+        )
+
+    def update_traversals(self):
+        super().update_traversals()
+        # preoder indexing to go from ratios to heights
+        self.preorder = np.array(
+            [
+                (node.parent_node.index, node.index)
+                for node in self.tree.preorder_node_iter()
+                if node != self.tree.seed_node
+            ]
+        )
 
     @property
     def node_heights(self) -> torch.Tensor:
         return self._node_heights.tensor
 
     def branch_lengths(self) -> torch.Tensor:
+        """Return branch lengths calculated from node heights.
+
+        Branch lengths are indexed by node index on the distal side of
+        the tree. For example branch_lengths[0] corresponds to the branch
+        starting from taxon with index 0.
+
+        :return: branch lengths of tree
+        :rtype: torch.Tensor
+        """
         if self.branch_lengths_need_update:
-            self._branch_lengths = heights_to_branch_lengths(
-                self._node_heights.tensor, self.bounds, self.preorder
+            indices_sorted = self.preorder[np.argsort(self.preorder[:, 1])].transpose()
+            heights = torch.cat(
+                (
+                    self.sampling_times.expand(
+                        self._node_heights.tensor.shape[:-1] + (-1,)
+                    ),
+                    self._node_heights.tensor,
+                ),
+                -1,
+            )
+            self._branch_lengths = (
+                heights[..., indices_sorted[0]] - heights[..., indices_sorted[1]]
             )
             self.branch_lengths_need_update = False
         return self._branch_lengths
@@ -455,12 +534,12 @@ class TimeTreeModel(AbstractTreeModel):
             heights_np = heights_from_branch_lengths(tree)
             node_heights = Parameter(node_heights_id, torch.tensor(heights_np))
             dic[node_heights_id] = node_heights
-            tree_model = cls(id_, tree, node_heights)
+            tree_model = cls(id_, tree, taxa, node_heights)
         else:
             # TODO: tree_model and node_heights may have circular references to each
             #       other when node_heights is a transformed Parameter requiring
             #       the tree_model
-            tree_model = cls(id_, tree, None)
+            tree_model = cls(id_, tree, taxa, None)
             dic[id_] = tree_model
             tree_model._node_heights = process_object(data['node_heights'], dic)
             tree_model.add_parameter(tree_model._node_heights)
