@@ -62,9 +62,6 @@ class JC69(SubstitutionModel):
             dtype=self.frequencies.dtype,
         )
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model, obj, index):
         pass
 
@@ -135,15 +132,6 @@ class GTR(SymmetricSubstitutionModel):
     def rates(self) -> torch.Tensor:
         return self._rates.tensor
 
-    def update(self, value):
-        if isinstance(value, dict):
-            if self._rates.id in value:
-                self._rates.tensor = value[self._rates.id]
-            if self._frequencies.id in value:
-                self._frequencies.tensor = value[self._frequencies.id]
-        else:
-            self._rates, self._frequencies = value
-
     def handle_model_changed(self, model, obj, index):
         pass
 
@@ -212,15 +200,6 @@ class HKY(SymmetricSubstitutionModel):
     @property
     def kappa(self) -> torch.Tensor:
         return self._kappa.tensor
-
-    def update(self, value):
-        if isinstance(value, dict):
-            if self._kappa.id in value:
-                self._kappa.tensor = value[self._kappa.id]
-            if self._frequencies.id in value:
-                self._frequencies.tensor = value[self._frequencies.id]
-        else:
-            self._kappa, self._frequencies = value
 
     def handle_model_changed(self, model, obj, index):
         pass
@@ -345,15 +324,6 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
     @property
     def rates(self) -> torch.Tensor:
         return self._rates.tensor
-
-    def update(self, value):
-        if isinstance(value, dict):
-            if self._rates.id in value:
-                self._rates.tensor = value[self._rates.id]
-            if self._frequencies.id in value:
-                self._frequencies.tensor = value[self._frequencies.id]
-        else:
-            self._rates, self._frequencies = value
 
     def handle_model_changed(self, model, obj, index):
         pass

@@ -51,9 +51,6 @@ class JointDistributionModel(DistributionModel):
         for distr in self.distributions:
             distr.sample(sample_shape)
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model: Model, obj, index) -> None:
         self.fire_model_changed()
 

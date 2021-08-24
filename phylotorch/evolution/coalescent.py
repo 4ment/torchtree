@@ -27,9 +27,6 @@ class ConstantCoalescentModel(CallableModel):
         if node_heights:
             self.add_parameter(node_heights)
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model, obj, index):
         self.fire_model_changed()
 
@@ -275,9 +272,6 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
         else:
             log_p = pwc.log_prob(self.node_heights.tensor)
         return log_p
-
-    def update(self, value):
-        pass
 
     def handle_model_changed(self, model, obj, index) -> None:
         self.fire_model_changed()

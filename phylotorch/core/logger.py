@@ -48,17 +48,20 @@ class Logger(LoggerInterface):
         if 'file_name' in kwargs:
             self.file_name = kwargs['file_name']
             del kwargs['file_name']
+        else:
+            self.file_name = None
         self.kwargs = kwargs
         self.objs = objs
+        self.f = None
+        self.writer = None
+        self.sample = 1
 
+    def initialize(self) -> None:
         if self.file_name:
             self.f = open(self.file_name, 'w')
         else:
             self.f = sys.stdout
         self.writer = csv.writer(self.f, **self.kwargs)
-        self.sample = 1
-
-    def initialize(self) -> None:
         header = ['sample']
         for obj in self.objs:
             if isinstance(obj, Parameter):
@@ -114,13 +117,14 @@ class TreeLogger(LoggerInterface):
         self.tree_model = tree_model
         self.file_name = kwargs.get('file_name', None)
         self.kwargs = kwargs
+        self.index = 1
+        self.f = None
+
+    def initialize(self) -> None:
         if self.file_name is not None:
             self.f = open(self.file_name, 'w')
         else:
             self.f = sys.stdout
-        self.index = 1
-
-    def initialize(self) -> None:
         if self.kwargs.get('format', 'newick') == 'nexus':
             self.f.write('#NEXUS\nBegin trees;\nTranslate\n')
             self.f.write(

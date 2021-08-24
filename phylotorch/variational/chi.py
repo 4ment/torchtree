@@ -46,9 +46,6 @@ class CUBO(CallableModel):
         log_w_rescaled = torch.exp(log_w - log_max) ** self.n
         return torch.log(log_w_rescaled.mean()) / self.n + log_max
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model, obj, index):
         self.fire_model_changed()
 

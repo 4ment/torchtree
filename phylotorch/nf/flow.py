@@ -86,9 +86,6 @@ class NormalizingFlow(DistributionModel):
             parameters.extend(module.parameters())
         return parameters
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model, obj, index):
         pass
 

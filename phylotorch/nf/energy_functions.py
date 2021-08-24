@@ -54,9 +54,6 @@ class EnergyFunctionModel(CallableModel):
             z = self.x.tensor
         return -self.U(z)
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model, obj, index):
         pass
 

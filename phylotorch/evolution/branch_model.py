@@ -24,13 +24,6 @@ class AbstractClockModel(BranchModel):
         self.tree = tree
         self.add_parameter(rates)
 
-    def update(self, value):
-        if isinstance(value, dict):
-            if self._rates.id in value:
-                self._rates.set_tensor(value[self._rates.id])
-        else:
-            self._rates = value
-
     def handle_model_changed(self, model, obj, index):
         pass
 

@@ -81,11 +81,6 @@ class Distribution(DistributionModel):
                 *[arg.tensor for arg in self.args.values()], **self.kwargs
             ).log_prob(x.tensor)
 
-    def update(self, value):
-        for name in self.args.keys():
-            if name in value:
-                self.args[name] = value[name]
-
     def handle_model_changed(self, model: Model, obj, index) -> None:
         pass
 

@@ -36,10 +36,6 @@ class RootParameter(Parameter, CallableModel):
     def parameters(self) -> List[Parameter]:
         return [self.distance, self.rate]
 
-    def update(self, value):
-        self.distance.update(value)
-        self._tensor = self.transform()
-
     def _call(self) -> Tensor:
         if self.need_update:
             self._tensor = self.transform()

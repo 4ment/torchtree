@@ -19,9 +19,6 @@ class SitePattern(Model):
         self.partials = partials
         self.weights = weights
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model, obj, index):
         pass
 

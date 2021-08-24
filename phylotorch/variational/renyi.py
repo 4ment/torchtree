@@ -46,9 +46,6 @@ class VR(CallableModel):
         log_w_mean = torch.logsumexp(log_w, dim=-1) - math.log(log_w.shape[-1])
         return log_w_mean.sum(-1) / (1.0 - self.alpha)
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model, obj, index):
         self.fire_model_changed()
 

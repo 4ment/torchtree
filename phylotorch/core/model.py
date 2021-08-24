@@ -138,10 +138,6 @@ class Parameter(AbstractParameter):
         self._tensor = parameter.tensor
         self.fire_parameter_changed()
 
-    def update(self, value):
-        if self.id in value:
-            self.tensor = value[self.id]
-
     def add_parameter_listener(self, listener) -> None:
         self.listeners.append(listener)
 
@@ -282,10 +278,6 @@ class Model(Identifiable, Parametric, ModelListener, ParameterListener):
         Identifiable.__init__(self, id_)
         Parametric.__init__(self)
 
-    @abc.abstractmethod
-    def update(self, value):
-        ...
-
     def add_model(self, model: 'Model') -> None:
         model.add_model_listener(self)
         self._models.append(model)
@@ -380,10 +372,6 @@ class TransformedParameter(Parameter, CallableModel):
             return [param for params in self.x for param in params.parameters()]
         else:
             return self.x.parameters()
-
-    def update(self, value):
-        self.x.update(value)
-        self._tensor = self.transform(self.x.tensor)
 
     def _call(self, *args, **kwargs) -> Tensor:
         if self.need_update:
@@ -554,10 +542,6 @@ class ViewParameter(AbstractParameter, ParameterListener):
 
     def assign(self, parameter):
         raise Exception('assign cannot be called on ViewParameter')
-
-    def update(self, value):
-        if self.id in value:
-            self.tensor = value[self.id]
 
     def add_parameter_listener(self, listener) -> None:
         self.listeners.append(listener)

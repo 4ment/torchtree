@@ -74,9 +74,6 @@ class MultivariateNormal(DistributionModel):
                 self.loc.tensor, **kwargs
             ).log_prob(x.tensor)
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model: Model, obj, index) -> None:
         pass
 

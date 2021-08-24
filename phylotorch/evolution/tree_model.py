@@ -9,7 +9,7 @@ from dendropy import TaxonNamespace, Tree
 from torch.distributions.transforms import Transform
 
 from ..core.model import Model, Parameter
-from ..core.utils import process_object, JSONParseError
+from ..core.utils import JSONParseError, process_object
 from ..typing import ID
 from .taxa import Taxa
 
@@ -291,13 +291,6 @@ class UnRootedTreeModel(AbstractTreeModel):
     def sample_shape(self) -> torch.Size:
         return self._branch_lengths.tensor.shape[:-1]
 
-    def update(self, value):
-        if isinstance(value, dict):
-            if self._branch_lengths.id in value:
-                self._branch_lengths.tensor = value[self._branch_lengths.id]
-        else:
-            self._branch_lengths.tensor = value
-
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
@@ -421,13 +414,6 @@ class TimeTreeModel(AbstractTreeModel):
             )
             self.branch_lengths_need_update = False
         return self._branch_lengths
-
-    def update(self, value):
-        if isinstance(value, dict):
-            if self._branch_lengths.id in value:
-                self._branch_lengths.tensor = value[self._branch_lengths.id]
-        else:
-            self._branch_lengths.tensor = value
 
     def handle_parameter_changed(self, variable, index, event):
         self.branch_lengths_need_update = True

@@ -50,9 +50,6 @@ class ELBO(CallableModel):
             lp = (self.p() - self.q()).mean()
         return lp
 
-    def update(self, value):
-        pass
-
     def handle_model_changed(self, model, obj, index):
         self.fire_model_changed()
 
@@ -100,9 +97,6 @@ class KLpq(CallableModel):
         log_w = self.p() - self.q()
         log_w_norm = log_w - torch.logsumexp(log_w, -1)
         return torch.sum(log_w_norm.exp() * log_w)
-
-    def update(self, value):
-        pass
 
     def handle_model_changed(self, model, obj, index):
         pass
@@ -154,9 +148,6 @@ class KLpqImportance(CallableModel):
         return -torch.sum(w_norm * log_q)
         # log_w_norm = log_w - torch.logsumexp(log_w, -1)
         # return torch.sum(log_w_norm.exp() * log_q)
-
-    def update(self, value):
-        pass
 
     def handle_model_changed(self, model, obj, index):
         pass

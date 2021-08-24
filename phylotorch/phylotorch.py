@@ -26,6 +26,12 @@ def main():
         '-c', '--checkpoint', required=False, default=None, help='JSON checkpoint file'
     )
     parser.add_argument(
+        '--dry',
+        required=False,
+        action='store_true',
+        help='do not run anything, just parse',
+    )
+    parser.add_argument(
         '-s',
         '--seed',
         type=int,
@@ -60,7 +66,7 @@ def main():
     try:
         for element in data:
             obj = process_objects(element, dic)
-            if isinstance(obj, Runnable):
+            if isinstance(obj, Runnable) and not arg.dry:
                 obj.run()
     except JSONParseError as error:
         logging.error(error)

@@ -13,10 +13,6 @@ class SiteModel(Model):
     _tag = 'site_model'
 
     @abstractmethod
-    def update(self, value):
-        pass
-
-    @abstractmethod
     def rates(self) -> torch.Tensor:
         pass
 
@@ -30,9 +26,6 @@ class ConstantSiteModel(SiteModel):
         super().__init__(id_)
         self._rate = torch.tensor([1.0], dtype=torch.float64)
         self._probability = torch.tensor([1.0], dtype=torch.float64)
-
-    def update(self, value):
-        pass
 
     def rates(self) -> torch.Tensor:
         return self._rate
@@ -85,14 +78,6 @@ class InvariantSiteModel(SiteModel):
             ),
             -1,
         )
-
-    def update(self, value):
-        if isinstance(value, dict):
-            if self._invariant.id in value:
-                self._invariant.tensor = value[self._invariant.id]
-                self.update_rates_probs(self.invariant)
-        else:
-            self.update_rates_probs(value)
 
     def rates(self) -> torch.Tensor:
         if self.need_update:
@@ -175,20 +160,6 @@ class WeibullSiteModel(SiteModel):
 
         self._rates = rates / (rates * self.probs).sum(-1, keepdim=True)
 
-    def update(self, value):
-        if isinstance(value, dict):
-            update = False
-            if self._shape.id in value:
-                update = True
-                self._shape.tensor = value[self._shape.id]
-            if self._invariant and self._invariant.id in value:
-                update = True
-                self._invariant.tensor = value[self._invariant.id]
-            if update:
-                self.update_rates(self.shape, self.invariant)
-        else:
-            self.update_rates(value, None)
-
     def rates(self) -> torch.Tensor:
         if self.need_update:
             self.update_rates(self.shape, self.invariant)
@@ -253,14 +224,6 @@ class LogNormalSiteModel(SiteModel):
     def update_rates(self, value):
         rates = LogNormal(-value * value / 2.0, value).icdf(self.quantile)
         self._rates = rates / (rates.sum() * self.probs)
-
-    def update(self, value):
-        if isinstance(value, dict):
-            if self._scale.id in value:
-                self._scale.tensor = value[self._scale.id]
-                self.update_rates(self.scale)
-        else:
-            self.update_rates(value)
 
     def rates(self) -> torch.Tensor:
         if self.need_update:
