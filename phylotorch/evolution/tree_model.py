@@ -9,7 +9,7 @@ from dendropy import TaxonNamespace, Tree
 from torch.distributions.transforms import Transform
 
 from ..core.model import Model, Parameter
-from ..core.utils import process_object
+from ..core.utils import process_object, JSONParseError
 from ..typing import ID
 from .taxa import Taxa
 
@@ -25,22 +25,50 @@ class GeneralNodeHeightTransform(Transform):
         super().__init__(cache_size=cache_size)
         self.tree = tree
         self.taxa_count = self.tree.taxa_count
-        self.indices_sorted = (
+        self.indices = (
             self.tree.preorder[np.argsort(self.tree.preorder[:, 1])].transpose()[
                 0, self.taxa_count :
             ]
             - self.taxa_count
         )
 
-    def _call(self, x):
-        return transform_ratios(x, self.tree.bounds, self.tree.preorder)
+    def _call(self, x: torch.Tensor) -> torch.Tensor:
+        """Transform node ratios and root height to internal node heights."""
+        heights = x.clone()
+        for parent_id, id_ in self.tree.preorder:
+            if id_ >= self.taxa_count:
+                heights[..., id_ - self.taxa_count] = self.tree.bounds[id_] + x[
+                    ..., id_ - self.taxa_count
+                ] * (heights[..., parent_id - self.taxa_count] - self.tree.bounds[id_])
+        return heights
 
-    def _inverse(self, y):
-        return transform_heights_to_ratios(y, self.tree.bounds, self.tree.preorder)
+    def _inverse(self, y: torch.Tensor) -> torch.Tensor:
+        """Transform internal node heights to ratios/root height."""
+        indices = self.tree.preorder[np.argsort(self.tree.preorder[:, 1])].transpose()
+        bounds = self.tree.bounds[indices[1, self.taxa_count :]]
+        return torch.cat(
+            (
+                (
+                    y[
+                        ...,
+                        indices[1, self.taxa_count :] - self.taxa_count,
+                    ]
+                    - bounds
+                )
+                / (
+                    y[
+                        ...,
+                        indices[0, self.taxa_count :] - self.taxa_count,
+                    ]
+                    - bounds
+                ),
+                y[..., -1:],
+            )
+        )
 
     def log_abs_det_jacobian(self, x, y):
         return torch.log(
-            y[..., self.indices_sorted] - self.tree.bounds[self.taxa_count : -1]
+            y[..., self.indices] - self.tree.bounds[self.taxa_count : -1]
         ).sum(-1)
 
 
@@ -55,52 +83,6 @@ def heights_to_branch_lengths(node_heights, bounds, indexing):
             - node_heights[..., indices_sorted[1, taxa_count:] - taxa_count],
         ),
         -1,
-    )
-
-
-def transform_ratios(ratios_root_height: torch.Tensor, bounds, indexing):
-    """Transform node ratios/root height to internal node heights.
-
-    :param root_height: root height
-    :param ratios: node ratios of internal nodes
-    :param bounds: lower bound of each node
-    :param indexing: pairs of parent/child indices, must be preorder or inorder
-    :return: internal node heights
-    """
-    taxa_count = ratios_root_height.shape[-1] + 1
-    heights = ratios_root_height.clone()
-    for parent_id, id_ in indexing:
-        if id_ >= taxa_count:
-            heights[..., id_ - taxa_count] = bounds[id_] + ratios_root_height[
-                ..., id_ - taxa_count
-            ] * (heights[..., parent_id - taxa_count] - bounds[id_])
-    return heights
-
-
-def transform_heights_to_ratios(
-    node_heights: torch.Tensor, bounds: torch.Tensor, indexing
-):
-    """Transform internal node heights to ratios/root height.
-
-    :param node_heights: internal node heights
-    :param bounds: lower bound of each node
-    :param indexing: pairs of parent/child indices, must be preorder or inorder
-    :return: node ratios of internal nodes
-    """
-    taxa_count = int((bounds.shape[0] + 1) / 2)
-    indices_sorted = indexing[np.argsort(indexing[:, 1])].transpose()
-    return torch.cat(
-        (
-            (
-                node_heights[..., indices_sorted[1, taxa_count:] - taxa_count]
-                - bounds[taxa_count:-1]
-            )
-            / (
-                node_heights[..., indices_sorted[0, taxa_count:] - taxa_count]
-                + bounds[taxa_count:-1]
-            ),
-            node_heights[..., -1:],
-        )
     )
 
 
@@ -341,18 +323,20 @@ class UnRootedTreeModel(AbstractTreeModel):
 
 
 class TimeTreeModel(AbstractTreeModel):
-    def __init__(self, id_: ID, tree, taxa: Taxa, node_heights: Parameter) -> None:
+    def __init__(self, id_: ID, tree, taxa: Taxa, internal_heights: Parameter) -> None:
         super().__init__(id_, tree, taxa)
-        self._node_heights = node_heights
+        self._internal_heights = None
         self.taxa_count = len(tree.taxon_namespace)
         self.bounds = None
         self.sampling_times = None
         self.update_leaf_heights()
         self.update_bounds()
-        if node_heights is not None:
-            self.add_parameter(node_heights)
-        self._branch_lengths = None
+        if internal_heights is not None:
+            self.add_parameter(internal_heights)
+        self._branch_lengths = None  # tensor
+        self._node_heights = None  # tensor
         self.branch_lengths_need_update = True
+        self.heights_need_update = True
 
     def update_leaf_heights(self, dtype=torch.float64) -> None:
         leaf_heights = [None] * len(self._taxa)
@@ -406,7 +390,18 @@ class TimeTreeModel(AbstractTreeModel):
 
     @property
     def node_heights(self) -> torch.Tensor:
-        return self._node_heights.tensor
+        if self.heights_need_update:
+            self._node_heights = torch.cat(
+                (
+                    self.sampling_times.expand(
+                        self._internal_heights.tensor.shape[:-1] + (-1,)
+                    ),
+                    self._internal_heights.tensor,
+                ),
+                -1,
+            )
+            self.heights_need_update = False
+        return self._node_heights
 
     def branch_lengths(self) -> torch.Tensor:
         """Return branch lengths calculated from node heights.
@@ -420,15 +415,7 @@ class TimeTreeModel(AbstractTreeModel):
         """
         if self.branch_lengths_need_update:
             indices_sorted = self.preorder[np.argsort(self.preorder[:, 1])].transpose()
-            heights = torch.cat(
-                (
-                    self.sampling_times.expand(
-                        self._node_heights.tensor.shape[:-1] + (-1,)
-                    ),
-                    self._node_heights.tensor,
-                ),
-                -1,
-            )
+            heights = self.node_heights
             self._branch_lengths = (
                 heights[..., indices_sorted[0]] - heights[..., indices_sorted[1]]
             )
@@ -444,11 +431,12 @@ class TimeTreeModel(AbstractTreeModel):
 
     def handle_parameter_changed(self, variable, index, event):
         self.branch_lengths_need_update = True
+        self.heights_need_update = True
         self.fire_model_changed()
 
     @property
     def sample_shape(self) -> torch.Size:
-        return self._node_heights.tensor.shape[:-1]
+        return self._internal_heights.tensor.shape[:-1]
 
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
         super().cuda(device)
@@ -468,9 +456,10 @@ class TimeTreeModel(AbstractTreeModel):
         :param taxa: dictionary of taxa with attributes or str reference
 
 
-        :key node_heights_id:  ID of node_heights
-        :key node_heights: node_heights. Can be a list of floats, a dictionary
-        corresponding to a transformed parameter, or a str corresponding to a reference
+        :key internal_heights_id:  ID of internal_heights
+        :key internal_heights: internal node heights. Can be a list of floats,
+        a dictionary corresponding to a transformed parameter, or a str corresponding
+        to a reference
 
         :return: tree model in JSON format compatible with from_json class method
         """
@@ -480,18 +469,19 @@ class TimeTreeModel(AbstractTreeModel):
             'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
             'newick': newick,
         }
-        node_heights = kwargs.get('node_heights', None)
-        node_heights_id = kwargs.get('node_heights_id', None)
-        if node_heights is None:
-            tree_model['node_heights'] = {"id": node_heights_id}
-        elif isinstance(node_heights, list):
-            tree_model['node_heights'] = {
+        if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
+            tree_model['keep_branch_lengths'] = kwargs['keep_branch_lengths']
+
+        internal_heights = kwargs.get('internal_heights', None)
+        node_heights_id = kwargs.get('internal_heights_id', None)
+        if isinstance(internal_heights, list):
+            tree_model['internal_heights'] = {
                 "id": node_heights_id,
                 "type": "phylotorch.Parameter",
-                "tensor": node_heights,
+                "tensor": internal_heights,
             }
-        elif isinstance(node_heights, (dict, str)):
-            tree_model['node_heights'] = node_heights
+        elif isinstance(internal_heights, (dict, str)):
+            tree_model['internal_heights'] = internal_heights
 
         if isinstance(taxa, dict):
             taxon_list = []
@@ -526,22 +516,20 @@ class TimeTreeModel(AbstractTreeModel):
         tree = parse_tree(taxa, data)
         initialize_dates_from_taxa(tree, taxa)
 
-        if isinstance(data['node_heights'], dict) and len(data['node_heights']) == 1:
-            # TODO: get rid of this. Define a Parameter and use a flag like
-            #       `keep_heights=true` to populate the Parameter from the tree.
-            #       Special care if node_height parameter is a transformed parameter
-            node_heights_id = data['node_heights']['id']
-            heights_np = heights_from_branch_lengths(tree)
-            node_heights = Parameter(node_heights_id, torch.tensor(heights_np))
-            dic[node_heights_id] = node_heights
-            tree_model = cls(id_, tree, taxa, node_heights)
-        else:
-            # TODO: tree_model and node_heights may have circular references to each
-            #       other when node_heights is a transformed Parameter requiring
-            #       the tree_model
-            tree_model = cls(id_, tree, taxa, None)
-            dic[id_] = tree_model
-            tree_model._node_heights = process_object(data['node_heights'], dic)
-            tree_model.add_parameter(tree_model._node_heights)
+        # TODO: tree_model and internal_heights may have circular references to each
+        #       other when internal_heights is a transformed Parameter requiring
+        #       the tree_model
+        if id_ in dic:
+            raise JSONParseError('Object with ID `{}\' already exists'.format(id_))
+        tree_model = cls(id_, tree, taxa, None)
+        dic[id_] = tree_model
+        tree_model._internal_heights = process_object(data['internal_heights'], dic)
+        tree_model.add_parameter(tree_model._internal_heights)
+
+        if data.get('keep_branch_lengths', False):
+            tree_model._internal_heights.tensor = torch.tensor(
+                heights_from_branch_lengths(tree),
+                dtype=tree_model._internal_heights.dtype,
+            )
 
         return tree_model

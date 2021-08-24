@@ -34,7 +34,7 @@ class GMRF(CallableModel):
             heights = torch.cat(
                 (
                     torch.zeros(self.tree_model.node_heights.shape[:-1] + (1,)),
-                    self.tree_model.node_heights,
+                    self.tree_model.node_heights[..., self.tree_model.taxa_count :],
                 ),
                 -1,
             )

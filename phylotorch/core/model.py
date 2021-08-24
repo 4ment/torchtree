@@ -2,14 +2,20 @@ import abc
 import collections.abc
 import inspect
 import numbers
-from typing import List, Optional, Union, overload
+from typing import List, Optional, Tuple, Union, overload
 
 import numpy as np
 import torch
 import torch.distributions
 from torch import Tensor, nn
 
-from ..core.utils import JSONParseError, get_class, process_object, tensor_rand
+from ..core.utils import (
+    JSONParseError,
+    get_class,
+    process_object,
+    process_objects,
+    tensor_rand,
+)
 from .classproperty_decorator import classproperty
 from .serializable import JSONSerializable
 
@@ -28,7 +34,26 @@ class Identifiable(JSONSerializable):
         ...
 
 
-class AbstractParameter(Identifiable, abc.ABC):
+class Device(abc.ABC):
+    @property
+    @abc.abstractmethod
+    def device(self) -> torch.device:
+        ...
+
+    @abc.abstractmethod
+    def to(self, *args, **kwargs) -> None:
+        ...
+
+    @abc.abstractmethod
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        ...
+
+    @abc.abstractmethod
+    def cpu(self) -> None:
+        ...
+
+
+class AbstractParameter(Identifiable, Device, abc.ABC):
     @property
     @abc.abstractmethod
     def tensor(self) -> Tensor:
@@ -40,44 +65,31 @@ class AbstractParameter(Identifiable, abc.ABC):
         ...
 
     @property
-    @abc.abstractmethod
     def shape(self) -> torch.Size:
-        ...
+        return self.tensor.shape
 
     @property
-    @abc.abstractmethod
     def dtype(self) -> torch.dtype:
-        ...
+        return self.tensor.dtype
 
     @property
-    @abc.abstractmethod
     def requires_grad(self) -> bool:
-        ...
+        return self.tensor.requires_grad
 
     @requires_grad.setter
     @abc.abstractmethod
     def requires_grad(self, requires_grad: bool) -> None:
         ...
 
-    @abc.abstractmethod
     def dim(self) -> int:
-        ...
+        return self.tensor.dim()
 
-    @abc.abstractmethod
     def parameters(self) -> List['AbstractParameter']:
-        ...
+        return [self]
 
-    @abc.abstractmethod
-    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
-        ...
-
-    @abc.abstractmethod
-    def cpu(self) -> None:
-        ...
-
-    @abc.abstractmethod
-    def to(self, *args, **kwargs) -> None:
-        ...
+    @property
+    def device(self) -> torch.device:
+        return self.tensor.device
 
     @abc.abstractmethod
     def add_parameter_listener(self, listener) -> None:
@@ -98,7 +110,8 @@ class Parameter(AbstractParameter):
         return f"{self._id}"
 
     def __repr__(self):
-        return f"Parameter(id_='{self._id}', tensor=torch.{self._tensor})"
+        id_ = "'" + self._id + "'" if self._id else None
+        return f"Parameter(id_={id_}, tensor=torch.{self._tensor})"
 
     def __eq__(self, other):
         return self.id == other.id and torch.all(torch.eq(self._tensor, other.tensor))
@@ -113,14 +126,6 @@ class Parameter(AbstractParameter):
         self.fire_parameter_changed()
 
     @property
-    def shape(self) -> torch.Size:
-        return self._tensor.shape
-
-    @property
-    def dtype(self) -> torch.dtype:
-        return self._tensor.dtype
-
-    @property
     def requires_grad(self) -> bool:
         return self._tensor.requires_grad
 
@@ -128,9 +133,6 @@ class Parameter(AbstractParameter):
     def requires_grad(self, requires_grad: bool) -> None:
         self._tensor.requires_grad = requires_grad
         self.fire_parameter_changed()
-
-    def dim(self) -> int:
-        return self._tensor.dim()
 
     def assign(self, parameter):
         self._tensor = parameter.tensor
@@ -146,9 +148,6 @@ class Parameter(AbstractParameter):
     def fire_parameter_changed(self, index=None, event=None) -> None:
         for listener in self.listeners:
             listener.handle_parameter_changed(self, index, event)
-
-    def parameters(self) -> List['Parameter']:
-        return [self]
 
     def clone(self) -> 'Parameter':
         """Return a clone of the Parameter.
@@ -198,10 +197,6 @@ class Parameter(AbstractParameter):
             self._tensor = self._tensor.to(args[0], dtype=kwargs['dtype'])
         else:
             self._tensor = self._tensor.to(args[0])
-
-    @property
-    def device(self) -> torch.device:
-        return self._tensor.device
 
     @classmethod
     def from_json(cls, data, dic):
@@ -411,9 +406,14 @@ class TransformedParameter(Parameter, CallableModel):
 
     @tensor.setter
     def tensor(self, tensor):
-        raise Exception(
-            'Cannot assign tensor to TransformedParameter (ID: {})'.format(self.id)
-        )
+        if isinstance(self.x, list):
+            inv_tensor = self.transform.inv(tensor)
+            start = 0
+            for x in self.x:
+                x.tensor = inv_tensor[..., start : (start + x.shape[-1])]
+                start += x.shape[-1]
+        else:
+            self.x.tensor = self.transform.inv(tensor)
 
     @property
     def shape(self) -> torch.Size:
@@ -552,9 +552,6 @@ class ViewParameter(AbstractParameter, ParameterListener):
     def requires_grad(self, requires_grad: bool) -> None:
         raise Exception('requires_grad setter cannot be called on ViewParameter')
 
-    def dim(self) -> int:
-        return self.tensor.dim()
-
     def assign(self, parameter):
         raise Exception('assign cannot be called on ViewParameter')
 
@@ -568,9 +565,6 @@ class ViewParameter(AbstractParameter, ParameterListener):
     def fire_parameter_changed(self, index=None, event=None) -> None:
         for listener in self.listeners:
             listener.handle_parameter_changed(self, index, event)
-
-    def parameters(self) -> List['ViewParameter']:
-        return [self]
 
     def clone(self) -> 'ViewParameter':
         """Return a clone of the Parameter.
@@ -643,3 +637,97 @@ class ViewParameter(AbstractParameter, ParameterListener):
             )
 
         return cls(data['id'], parameter, indices)
+
+
+class CatParameter(AbstractParameter, ParameterListener):
+    def __init__(
+        self,
+        id_: Optional[str],
+        parameters: Union[List[Parameter], Tuple[Parameter, ...]],
+        dim: Optional[int] = 0,
+    ) -> None:
+        super().__init__(id_)
+        self._parameters = parameters
+        self._dim = dim
+        self._tensor = None
+        self._need_update = True
+        self.update()
+        for parameter in self._parameters:
+            parameter.add_parameter_listener(self)
+        self._listeners = []
+
+    def __str__(self):
+        return f"{self._id}"
+
+    def __repr__(self):
+        id_ = "'" + self._id + "'" if self._id else None
+        return (
+            f"CatParameter(id_={id_}, parameters={repr(self._parameters)},"
+            f" dim={self._dim})"
+        )
+
+    def __eq__(self, other):
+        return (
+            self.id == other.id
+            and sum([a.__eq__(b) for a, b in zip(self._parameters, other._parameters)])
+            == len(self._parameters)
+            and self._dim.__eq__(other._dim)
+        )
+
+    def update(self):
+        if self._need_update:
+            self._tensor = torch.cat(
+                [parameter.tensor for parameter in self._parameters], dim=self._dim
+            )
+            self._need_update = False
+
+    @property
+    def tensor(self) -> Tensor:
+        self.update()
+        return self._tensor
+
+    @property
+    def requires_grad(self) -> bool:
+        return self.tensor.requires_grad
+
+    @requires_grad.setter
+    def requires_grad(self, requires_grad: bool) -> None:
+        for parameter in self._parameters:
+            parameter.requires_grad = requires_grad
+        self._need_update = True
+
+    def to(self, *args, **kwargs) -> None:
+        for parameter in self._parameters:
+            parameter.to(*args, **kwargs)
+        self._need_update = True
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        for parameter in self._parameters:
+            parameter.cuda(device)
+        self._need_update = True
+
+    def cpu(self) -> None:
+        for parameter in self._parameters:
+            parameter.cpu()
+        self._need_update = True
+
+    @property
+    def device(self) -> torch.device:
+        return self._parameters[0].device
+
+    def add_parameter_listener(self, listener) -> None:
+        self._listeners.append(listener)
+
+    def fire_parameter_changed(self, index=None, event=None) -> None:
+        for listener in self._listeners:
+            listener.handle_parameter_changed(self, index, event)
+
+    def handle_parameter_changed(self, variable, index, event) -> None:
+        self._need_update = True
+        self.fire_parameter_changed()
+
+    @classmethod
+    def from_json(cls, data, dic):
+        parameters = process_objects(data['parameters'], dic)
+        dim = data.get('dim', 0)
+        return cls(data['id'], parameters, dim)

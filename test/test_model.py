@@ -2,6 +2,7 @@ import torch
 import torch.distributions
 
 from phylotorch.core.model import (
+    CatParameter,
     Parameter,
     ParameterListener,
     TransformedParameter,
@@ -186,3 +187,11 @@ def test_view_parameter_listener():
     listener.gotit = False
     p1.fire_parameter_changed()
     assert listener.gotit is True
+
+
+def test_cat_parameter():
+    t1 = torch.arange(4).view(2, 2)
+    t2 = torch.arange(6).view(2, 3)
+    param = CatParameter('param', (Parameter(None, t1), Parameter(None, t2)), -1)
+    assert torch.all(torch.cat((t1, t2), -1) == param.tensor)
+    assert eval(repr(param)) == param

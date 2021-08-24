@@ -1,5 +1,3 @@
-from typing import List, Tuple, Union
-
 import torch
 from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
@@ -15,31 +13,42 @@ class ConstantCoalescentModel(CallableModel):
         self,
         id_: ID,
         theta: Parameter,
-        node_heights: Parameter,
-        sampling_times: torch.Tensor,
+        *,
+        tree_model: TimeTreeModel = None,
+        node_heights: Parameter = None,
     ) -> None:
         super().__init__(id_)
         self.theta = theta
-        self.sampling_times = sampling_times
-        self.node_heights = node_heights
         self.add_parameter(theta)
-        self.add_parameter(node_heights)
+        self.tree_model = tree_model
+        if tree_model:
+            self.add_model(tree_model)
+        self.node_heights = node_heights
+        if node_heights:
+            self.add_parameter(node_heights)
 
     def update(self, value):
         pass
 
     def handle_model_changed(self, model, obj, index):
-        pass
+        self.fire_model_changed()
 
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
-        coalescent = ConstantCoalescent(self.sampling_times, self.theta.tensor)
-        return coalescent.log_prob(self.node_heights.tensor)
+        coalescent = ConstantCoalescent(self.theta.tensor)
+        if self.tree_model:
+            return coalescent.log_prob(self.tree_model.node_heights)
+        else:
+            return coalescent.log_prob(self.node_heights.tensor)
 
     @property
     def sample_shape(self) -> torch.Size:
+        if self.tree_model:
+            return max(
+                self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
+            )
         return max(
             [parameter.shape[:-1] for parameter in self._parameters],
             key=len,
@@ -51,46 +60,32 @@ class ConstantCoalescentModel(CallableModel):
         theta = process_object(data['theta'], dic)
         if TreeModel.tag in data:
             tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
-            sampling_times = tree_model.sampling_times
-            node_heights = tree_model._node_heights
+            return cls(id_, theta, tree_model=tree_model)
         else:
-            sampling_times, node_heights = process_times_events(
-                data['times'], data['events'], theta.dtype
-            )
-        return cls(id_, theta, node_heights, sampling_times)
+            node_heights = process_data_coalesent(data, theta.dtype)
+            return cls(id_, theta, node_heights=node_heights)
 
 
 class ConstantCoalescent(Distribution):
 
     arg_constraints = {
         'theta': constraints.positive,
-        'sampling_times': constraints.greater_than_eq(0.0),
     }
     support = constraints.positive
     has_rsample = True
 
-    def __init__(
-        self, sampling_times: torch.Tensor, theta: torch.Tensor, validate_args=None
-    ) -> None:
-        self.sampling_times = sampling_times
+    def __init__(self, theta: torch.Tensor, validate_args=None) -> None:
         self.theta = theta
-        self.taxon_count = sampling_times.shape
         batch_shape, event_shape = self.theta.shape[:-1], self.theta.shape[-1:]
         super().__init__(batch_shape, event_shape, validate_args=validate_args)
 
     def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
-        sampling_times = (
-            self.sampling_times
-            if node_heights.dim() == 1
-            else self.sampling_times.expand(node_heights.shape[:-1] + torch.Size([-1]))
-        )
-        heights = torch.cat([sampling_times, node_heights], dim=-1)
+        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
         node_mask = torch.cat(
             [
-                torch.full(sampling_times.shape, False, dtype=torch.bool),
+                torch.full(taxa_shape, False, dtype=torch.bool),
                 torch.full(
-                    sampling_times.shape[:-1]
-                    + torch.Size([sampling_times.shape[-1] - 1]),
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
                     True,
                     dtype=torch.bool,
                 ),
@@ -98,8 +93,8 @@ class ConstantCoalescent(Distribution):
             dim=-1,
         )
 
-        indices = torch.argsort(heights, descending=False)
-        heights_sorted = torch.gather(heights, -1, indices)
+        indices = torch.argsort(node_heights, descending=False)
+        heights_sorted = torch.gather(node_heights, -1, indices)
         node_mask_sorted = torch.gather(node_mask, -1, indices)
         lineage_count = torch.where(
             node_mask_sorted,
@@ -110,7 +105,7 @@ class ConstantCoalescent(Distribution):
         durations = heights_sorted[..., 1:] - heights_sorted[..., :-1]
         lchoose2 = lineage_count * (lineage_count - 1) / 2.0
         return torch.sum(-lchoose2 * durations / self.theta, -1, keepdim=True) - (
-            self.taxon_count[-1] - 1
+            taxa_shape[-1] - 1
         ) * torch.log(self.theta)
 
     def rsample(self, sample_shape=torch.Size()):
@@ -124,19 +119,12 @@ class ConstantCoalescent(Distribution):
 
 class PiecewiseConstantCoalescent(ConstantCoalescent):
     def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
-        sampling_times = (
-            self.sampling_times
-            if node_heights.dim() == 1
-            else self.sampling_times.expand(node_heights.shape[:-1] + torch.Size([-1]))
-        )
-
-        heights = torch.cat([sampling_times, node_heights], -1)
+        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
         node_mask = torch.cat(
             [
-                torch.full(sampling_times.shape, 1, dtype=torch.int),  # sampling event
+                torch.full(taxa_shape, 1, dtype=torch.int),  # sampling event
                 torch.full(
-                    sampling_times.shape[:-1]
-                    + torch.Size([sampling_times.shape[-1] - 1]),
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
                     -1,
                     dtype=torch.int,
                 ),
@@ -144,8 +132,8 @@ class PiecewiseConstantCoalescent(ConstantCoalescent):
             dim=-1,
         )
 
-        indices = torch.argsort(heights, descending=False)
-        heights_sorted = torch.gather(heights, -1, indices)
+        indices = torch.argsort(node_heights, descending=False)
+        heights_sorted = torch.gather(node_heights, -1, indices)
         node_mask_sorted = torch.gather(node_mask, -1, indices)
         lineage_count = node_mask_sorted.cumsum(-1)[..., :-1]
 
@@ -166,19 +154,21 @@ class PiecewiseConstantCoalescent(ConstantCoalescent):
 
 class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
     def _call(self, *args, **kwargs) -> torch.Tensor:
-        pwc = PiecewiseConstantCoalescent(self.sampling_times, self.theta.tensor)
-        return pwc.log_prob(self.node_heights.tensor)
+        pwc = PiecewiseConstantCoalescent(self.theta.tensor)
+        if self.tree_model:
+            return pwc.log_prob(self.tree_model.node_heights)
+        else:
+            return pwc.log_prob(self.node_heights.tensor)
 
 
 class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
     def __init__(
         self,
-        sampling_times: torch.Tensor,
         thetas: torch.Tensor,
         grid: torch.Tensor,
         validate_args=None,
     ) -> None:
-        super().__init__(sampling_times, thetas, validate_args)
+        super().__init__(thetas, validate_args)
         self.grid = grid
 
     def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
@@ -187,27 +177,26 @@ class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
         else:
             batch_shape = self.theta.shape[:-1]
 
-        sampling_times = self.sampling_times.expand(batch_shape + torch.Size([-1]))
         grid = self.grid.expand(batch_shape + torch.Size([-1]))
 
         if node_heights.dim() < self.theta.dim():
             heights = torch.cat(
                 [
-                    sampling_times,
                     node_heights.expand(batch_shape + torch.Size([-1])),
                     grid,
                 ],
                 -1,
             )
-        else:
-            heights = torch.cat([sampling_times, node_heights, grid], -1)
 
+        else:
+            heights = torch.cat([node_heights, grid], -1)
+
+        taxa_shape = heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
         node_mask = torch.cat(
             [
-                torch.full(sampling_times.shape, 1, dtype=torch.int),  # sampling event
+                torch.full(taxa_shape, 1, dtype=torch.int),  # sampling event
                 torch.full(
-                    sampling_times.shape[:-1]
-                    + torch.Size([sampling_times.shape[-1] - 1]),
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
                     -1,
                     dtype=torch.int,
                 ),
@@ -255,30 +244,34 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
         self,
         id_: ID,
         theta: Parameter,
-        node_heights: Union[Parameter, List[Parameter]],
-        sampling_times: torch.Tensor,
         grid: Parameter,
+        *,
+        tree_model: TimeTreeModel = None,
+        node_heights: Parameter = None,
     ) -> None:
         super().__init__(id_)
         self.grid = grid
         self.theta = theta
-        self.sampling_times = sampling_times
-        self.node_heights = node_heights
         self.add_parameter(theta)
-        if isinstance(node_heights, list):
-            for parameter in node_heights:
-                self.add_parameter(parameter)
+        self.tree_model = tree_model
+        self.node_heights = node_heights
+        if tree_model:
+            if isinstance(tree_model, list):
+                for tree in tree_model:
+                    self.add_model(tree)
+            else:
+                self.add_model(tree_model)
         else:
             self.add_parameter(node_heights)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
-        pwc = PiecewiseConstantCoalescentGrid(
-            self.sampling_times, self.theta.tensor, self.grid.tensor
-        )
-        if isinstance(self.node_heights, list):
+        pwc = PiecewiseConstantCoalescentGrid(self.theta.tensor, self.grid.tensor)
+        if isinstance(self.tree_model, list):
             log_p = pwc.log_prob(
-                torch.stack([param.tensor for param in self.node_heights])
+                torch.stack([model.node_heights for model in self.tree_model])
             ).sum(0)
+        elif self.tree_model:
+            log_p = pwc.log_prob(self.tree_model.node_heights)
         else:
             log_p = pwc.log_prob(self.node_heights.tensor)
         return log_p
@@ -287,13 +280,17 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
         pass
 
     def handle_model_changed(self, model, obj, index) -> None:
-        pass
+        self.fire_model_changed()
 
     def handle_parameter_changed(self, variable, index, event) -> None:
         self.fire_model_changed()
 
     @property
-    def sample_shape(self):
+    def sample_shape(self) -> torch.Size:
+        if self.tree_model:
+            return max(
+                self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
+            )
         return max(
             [parameter.shape[:-1] for parameter in self._parameters],
             key=len,
@@ -305,19 +302,6 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
 
         theta = process_object(data['theta'], dic)
 
-        if TreeModel.tag in data:
-            tree_model = process_objects(data[TreeModel.tag], dic)
-            if isinstance(tree_model, list):
-                sampling_times = tree_model[0].sampling_times
-                node_heights = [parameter.tensor for parameter in tree_model]
-            else:
-                sampling_times = tree_model.sampling_times
-                node_heights = tree_model._node_heights
-        else:
-            sampling_times, node_heights = process_times_events(
-                data['times'], data['events'], theta.dtype
-            )
-
         if 'grid' not in data:
             cutoff: float = data['cutoff']
             grid = Parameter(None, torch.linspace(0, cutoff, theta.shape[-1])[1:])
@@ -328,14 +312,18 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
                 grid = process_object(data['grid'], dic)
         assert grid.shape[0] + 1 == theta.shape[-1]
 
-        return cls(id_, theta, node_heights, sampling_times, grid)
+        if TreeModel.tag in data:
+            tree_model = process_objects(data[TreeModel.tag], dic)
+            return cls(id_, theta, grid, tree_model=tree_model)
+        else:
+            node_heights = process_data_coalesent(data, theta.dtype)
+            return cls(id_, theta, grid, node_heights=node_heights)
 
 
-def process_times_events(
-    time_list: list, event_list: list, dtype: torch.dtype
-) -> Tuple[torch.Tensor, Parameter]:
-    times = torch.tensor(time_list, dtype=dtype)
-    events = torch.LongTensor(event_list)
-    sampling_times = times[events == 1]
-    node_heights = Parameter(None, times[events == 0])
-    return sampling_times, node_heights
+def process_data_coalesent(data, dtype: torch.dtype) -> Parameter:
+    if 'times' in data:
+        times = torch.tensor(data['times'], dtype=dtype)
+    else:
+        times = torch.tensor([0.0] + data['intervals'], dtype=dtype).cumsum(0)
+    events = torch.LongTensor(data['events'])
+    return Parameter(None, torch.cat((times[events == 1], times[events == 0]), -1))

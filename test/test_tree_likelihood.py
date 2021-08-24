@@ -198,7 +198,7 @@ def test_treelikelihood_batch():
         'id': 'tree',
         'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
         'newick': '(((A,B),C),D);',
-        'node_heights': {
+        'internal_heights': {
             'id': 'heights',
             'type': 'phylotorch.Parameter',
             'tensor': [[10.0, 20.0, 30.0], [100.0, 200.0, 300.0]],
@@ -209,7 +209,7 @@ def test_treelikelihood_batch():
         'id': 'tree',
         'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
         'newick': '(((A,B),C),D);',
-        'node_heights': {
+        'internal_heights': {
             'id': 'heights',
             'type': 'phylotorch.Parameter',
             'tensor': [100.0, 200.0, 300.0],

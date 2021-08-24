@@ -55,10 +55,13 @@ def test_gmrfw2():
     ],
 )
 def test_smoothed(rescale, expected):
-    taxa = {'A': 0.0, 'B': 1.0, 'C': 1.0, 'D': 0.0}
-    optionals = {'node_heights_id': 'node_heights', 'node_heights': [3.0, 2.0, 4.0]}
     tree_model = TimeTreeModel.from_json(
-        TimeTreeModel.json_factory('id', '((A,B),(C,D));', taxa, **optionals),
+        TimeTreeModel.json_factory(
+            'tree',
+            '(((A,B),C),D);',
+            dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
+            **{'internal_heights': [3.0, 2.0, 4.0]}
+        ),
         {},
     )
 

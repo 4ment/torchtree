@@ -12,7 +12,7 @@ def tree_model_dict():
         'tree',
         '((((A_0:1.5,B_1:0.5):2.5,C_2:2):2,D_3:3):10,E_12:4);',
         dict(zip(['A_0', 'B_1', 'C_2', 'D_3', 'E_12'], [0.0, 1.0, 2.0, 3.0, 12.0])),
-        **{'node_heights': [1.5, 4.0, 6.0, 16.0]}
+        **{'internal_heights': [1.5, 4.0, 6.0, 16.0]}
     )
     return tree_model
 
@@ -24,7 +24,7 @@ def test_ctmc_scale(tree_model_dict):
 
 
 def test_ctmc_scale_batch(tree_model_dict):
-    tree_model_dict['node_heights']['tensor'] = [
+    tree_model_dict['internal_heights']['tensor'] = [
         [1.5, 4.0, 6.0, 16.0],
         [1.5, 4.0, 6.0, 16.0],
     ]

@@ -2,7 +2,7 @@ import torch
 import torch.distributions
 
 from phylotorch.evolution.poisson_tree_likelihood import PoissonTreeLikelihood
-from phylotorch.evolution.tree_model import TimeTreeModel, heights_to_branch_lengths
+from phylotorch.evolution.tree_model import TimeTreeModel
 
 
 def test_poisson_json():
@@ -12,13 +12,12 @@ def test_poisson_json():
             'tree',
             '(((A,B),C),D);',
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
-            **{'node_heights': [10.0, 20.0, 30.0]}
+            **{'internal_heights': [10.0, 20.0, 30.0]}
         ),
         dic,
     )
-    distances = heights_to_branch_lengths(
-        tree_model.node_heights, tree_model.bounds, tree_model.preorder
-    )
+
+    distances = tree_model.branch_lengths()
     noisy_distances = torch.clamp(distances * torch.rand(1), min=0.0).long()
 
     poisson_model = {
