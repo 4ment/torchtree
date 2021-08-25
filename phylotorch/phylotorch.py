@@ -4,8 +4,8 @@ import logging
 
 import torch
 
-from phylotorch.core.runnable import Runnable
-from phylotorch.core.utils import (
+from .core.runnable import Runnable
+from .core.utils import (
     JSONParseError,
     expand_plates,
     process_objects,
@@ -27,7 +27,6 @@ def main():
     )
     parser.add_argument(
         '--dry',
-        required=False,
         action='store_true',
         help='do not run anything, just parse',
     )

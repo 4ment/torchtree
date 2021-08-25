@@ -1,11 +1,11 @@
 import torch
 import torch.distributions
 
-from phylotorch.core.model import CallableModel, Parameter
-from phylotorch.core.utils import process_object
-from phylotorch.evolution.branch_model import BranchModel
-from phylotorch.evolution.tree_model import TimeTreeModel, TreeModel
-from phylotorch.typing import ID
+from ..core.model import CallableModel, Parameter
+from ..core.utils import process_object
+from ..evolution.branch_model import BranchModel
+from ..evolution.tree_model import TimeTreeModel, TreeModel
+from ..typing import ID
 
 
 class PoissonTreeLikelihood(CallableModel):

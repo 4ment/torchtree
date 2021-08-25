@@ -4,14 +4,14 @@ import inspect
 from collections import OrderedDict
 
 import torch
-from torch import nn
+from torch import Tensor, nn
 
-from ..core.model import Identifiable, Parameter, Parametric
+from ..core.model import CallableModel, Parameter
 from ..core.utils import get_class, process_objects
-from ..typing import ID
+from ..typing import ID, OrderedDictType
 
 
-class Module(Identifiable, Parametric, collections.abc.Callable):
+class Module(CallableModel):
     r"""Wrapper class for torch.nn.Module.
 
     :param id_: ID of object.
@@ -22,16 +22,12 @@ class Module(Identifiable, Parametric, collections.abc.Callable):
     """
 
     def __init__(
-        self, id_: ID, module: nn.Module, parameters: OrderedDict[str, Parameter]
+        self, id_: ID, module: nn.Module, parameters: OrderedDictType[str, Parameter]
     ) -> None:
-        Identifiable.__init__(self, id_)
-        Parametric.__init__(self)
+        super().__init__(id_)
         self._module = module
         for parameter in parameters.values():
             self.add_parameter(parameter)
-
-    def __call__(self, *args, **kwargs) -> torch.Tensor:
-        return self._module()
 
     @property
     def module(self) -> nn.Module:
@@ -40,6 +36,19 @@ class Module(Identifiable, Parametric, collections.abc.Callable):
         :rtype: torch.nn.Module
         """
         return self._module
+
+    def handle_model_changed(self, model, obj, index) -> None:
+        self.fire_model_changed()
+
+    def handle_parameter_changed(self, variable, index, event) -> None:
+        self.fire_model_changed()
+
+    def _call(self, *args, **kwargs) -> Tensor:
+        return self._module()
+
+    @property
+    def sample_shape(self) -> torch.Size:
+        raise NotImplementedError
 
     @classmethod
     def from_json(cls, data, dic):

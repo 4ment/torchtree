@@ -3,10 +3,9 @@ from typing import List
 import torch
 from torch import Tensor
 
-from phylotorch import Parameter
-from phylotorch.core.model import CallableModel
-from phylotorch.core.utils import process_object
-from phylotorch.typing import ID
+from ..core.model import CallableModel, Parameter
+from ..core.utils import process_object
+from ..typing import ID
 
 
 class RootParameter(Parameter, CallableModel):

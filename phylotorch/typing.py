@@ -1,8 +1,16 @@
 from typing import List, Union
 
+try:
+    from typing import OrderedDict  # introduced in the python 3.7.2
+
+    OrderedDictType = OrderedDict
+except ImportError:
+    from typing import MutableMapping
+
+    OrderedDictType = MutableMapping
 import torch
 
-from phylotorch import Parameter
+from .core.model import Parameter
 
 ListTensor = List[torch.tensor]
 ListParameter = List[Parameter]

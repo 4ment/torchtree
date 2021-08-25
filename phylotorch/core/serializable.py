@@ -1,7 +1,7 @@
 import abc
 import logging
 
-from phylotorch.core.utils import JSONParseError
+from .utils import JSONParseError
 
 
 class JSONSerializable(abc.ABC):
