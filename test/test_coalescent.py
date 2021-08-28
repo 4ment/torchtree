@@ -55,8 +55,8 @@ def tree_model_node_heights_transformed(node_heights_transformed):
     tree_model = TimeTreeModel.json_factory(
         'tree',
         '(((A,B),C),D);',
+        node_heights_transformed,
         dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
-        **{'internal_heights': node_heights_transformed}
     )
     return tree_model
 

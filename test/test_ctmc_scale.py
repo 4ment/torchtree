@@ -11,8 +11,8 @@ def tree_model_dict():
     tree_model = TimeTreeModel.json_factory(
         'tree',
         '((((A_0:1.5,B_1:0.5):2.5,C_2:2):2,D_3:3):10,E_12:4);',
+        [1.5, 4.0, 6.0, 16.0],
         dict(zip(['A_0', 'B_1', 'C_2', 'D_3', 'E_12'], [0.0, 1.0, 2.0, 3.0, 12.0])),
-        **{'internal_heights': [1.5, 4.0, 6.0, 16.0]}
     )
     return tree_model
 

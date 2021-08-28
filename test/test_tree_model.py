@@ -40,8 +40,8 @@ def test_general_node_height_transform(ratios, root_height):
         TimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
+            node_heights,
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
-            **{'internal_heights': node_heights}
         ),
         dic,
     )
@@ -63,8 +63,8 @@ def test_general_node_height_transform_hetero(ratios, root_height):
         TimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
+            node_heights,
             dict(zip('ABCD', [0.0, 1.0, 4.0, 5.0])),
-            **{'internal_heights': node_heights}
         ),
         dic,
     )
@@ -94,8 +94,9 @@ def test_general_node_height_transform_hetero_all(
         TimeTreeModel.json_factory(
             'tree',
             '(A:2,(B:1.5,(C:2,D:1):2.5):2.5);',
+            node_heights,
             dict(zip('ABCD', [5.0, 3.0, 0.0, 1.0])),
-            **{'internal_heights': node_heights, 'keep_branch_lengths': keep}
+            **{'keep_branch_lengths': keep}
         ),
         dic,
     )
@@ -130,8 +131,8 @@ def test_general_node_height_transform_hetero_7():
         TimeTreeModel.json_factory(
             'tree',
             '(A,(B,(C,(D,(E,(F,G))))));',
+            node_heights,
             taxa,
-            **{'internal_heights': node_heights}
         ),
         dic,
     )
@@ -155,8 +156,8 @@ def test_general_node_height_heights_to_ratios(ratios, root_height):
         TimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
+            node_heights,
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
-            **{'internal_heights': node_heights}
         ),
         {},
     )
@@ -175,8 +176,9 @@ def test_keep_branch_lengths_heights():
         TimeTreeModel.json_factory(
             'tree',
             '((((A_0:1.5,B_1:0.5):2.5,C_2:2):2,D_3:3):10,E_12:4);',
+            [0.0] * 4,
             dict(zip(['A_0', 'B_1', 'C_2', 'D_3', 'E_12'], [0.0, 1.0, 2.0, 3.0, 12.0])),
-            **{'internal_heights': [0.0] * 4, 'keep_branch_lengths': True}
+            **{'keep_branch_lengths': True}
         ),
         dic,
     )

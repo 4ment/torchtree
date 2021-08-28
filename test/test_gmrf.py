@@ -59,8 +59,8 @@ def test_smoothed(rescale, expected):
         TimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
+            [3.0, 2.0, 4.0],
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
-            **{'internal_heights': [3.0, 2.0, 4.0]}
         ),
         {},
     )

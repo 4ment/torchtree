@@ -294,6 +294,69 @@ class UnRootedTreeModel(AbstractTreeModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
+    @staticmethod
+    def json_factory(
+        id_: str,
+        newick: str,
+        branch_lengths: Union[dict, list, str],
+        taxa: Union[dict, list, str],
+        **kwargs
+    ):
+        r"""
+        Factory for creating tree models in JSON format.
+
+        :param id_: ID of the tree model
+        :param newick: tree in newick format
+        :param branch_lengths: branch lengths
+        :param taxa: list dictionary of taxa with attributes or str reference
+
+
+        :key branch_lengths_id:  ID of branch_lengths (default: branch_lengths)
+        :key taxa_id:  ID of taxa (default: taxa)
+        :key keep_branch_lengths: if True use branch lengths in newick tree
+
+        :return: tree model in JSON format compatible with from_json class method
+        """
+
+        tree_model = {
+            'id': id_,
+            'type': 'phylotorch.evolution.tree_model.UnRootedTreeModel',
+            'newick': newick,
+        }
+        if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
+            tree_model['keep_branch_lengths'] = kwargs['keep_branch_lengths']
+
+        if isinstance(branch_lengths, list):
+            tree_model['branch_lengths'] = {
+                "id": kwargs.get('branch_lengths_id', 'branch_lengths'),
+                "type": "phylotorch.Parameter",
+                "tensor": branch_lengths,
+            }
+        elif isinstance(branch_lengths, (dict, str)):
+            tree_model['branch_lengths'] = branch_lengths
+
+        if isinstance(taxa, dict):
+            taxon_list = []
+            for taxon in taxa.keys():
+                taxon_list.append(
+                    {"id": taxon, "type": "phylotorch.evolution.taxa.Taxon"}
+                )
+            tree_model['taxa'] = {
+                'id': kwargs.get('taxa_id', 'taxa'),
+                'type': 'phylotorch.evolution.taxa.Taxa',
+                'taxa': taxon_list,
+            }
+        elif isinstance(taxa, list):
+            tree_model['taxa'] = {
+                'id': kwargs.get('taxa_id', 'taxa'),
+                'type': 'phylotorch.evolution.taxa.Taxa',
+                'taxa': taxa,
+            }
+        else:
+            tree_model['taxa'] = taxa
+
+        return tree_model
+
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
@@ -301,7 +364,7 @@ class UnRootedTreeModel(AbstractTreeModel):
         tree = parse_tree(taxa, data)
         branch_lengths = process_object(data['branch_lengths'], dic)
         if 'keep_branch_lengths' in data:
-            branch_lengths.tensor = torch.tensor(
+            blens = torch.tensor(
                 torch.tensor(
                     [
                         float(node.edge_length)
@@ -312,6 +375,8 @@ class UnRootedTreeModel(AbstractTreeModel):
                     dtype=branch_lengths.dtype,
                 )
             )
+            blens[-2] += blens[-1]
+            branch_lengths.tensor = blens[:-1]
         return cls(id_, tree, taxa, branch_lengths)
 
 
@@ -433,7 +498,13 @@ class TimeTreeModel(AbstractTreeModel):
         self.bounds.cpu()
 
     @staticmethod
-    def json_factory(id_: str, newick: str, taxa: Union[dict, list, str], **kwargs):
+    def json_factory(
+        id_: str,
+        newick: str,
+        internal_heights: Union[dict, list, str],
+        taxa: Union[dict, list, str],
+        **kwargs
+    ):
         r"""
         Factory for creating tree models in JSON format.
 
@@ -458,7 +529,6 @@ class TimeTreeModel(AbstractTreeModel):
         if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
             tree_model['keep_branch_lengths'] = kwargs['keep_branch_lengths']
 
-        internal_heights = kwargs.get('internal_heights', None)
         node_heights_id = kwargs.get('internal_heights_id', None)
         if isinstance(internal_heights, list):
             tree_model['internal_heights'] = {
@@ -480,13 +550,13 @@ class TimeTreeModel(AbstractTreeModel):
                     }
                 )
             tree_model['taxa'] = {
-                'id': 'taxa',
+                'id': kwargs.get('taxa_id', 'taxa'),
                 'type': 'phylotorch.evolution.taxa.Taxa',
                 'taxa': taxon_list,
             }
         elif isinstance(taxa, list):
             tree_model['taxa'] = {
-                'id': 'taxa',
+                'id': kwargs.get('taxa_id', 'taxa'),
                 'type': 'phylotorch.evolution.taxa.Taxa',
                 'taxa': taxa,
             }

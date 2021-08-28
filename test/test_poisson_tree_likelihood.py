@@ -11,8 +11,8 @@ def test_poisson_json():
         TimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
+            [10.0, 20.0, 30.0],
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
-            **{'internal_heights': [10.0, 20.0, 30.0]}
         ),
         dic,
     )
