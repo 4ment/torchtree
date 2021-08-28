@@ -2,6 +2,7 @@ import collections
 import collections.abc
 import inspect
 from collections import OrderedDict
+from typing import Optional, Union
 
 import torch
 from torch import Tensor, nn
@@ -49,6 +50,15 @@ class Module(CallableModel):
     @property
     def sample_shape(self) -> torch.Size:
         raise NotImplementedError
+
+    def to(self, *args, **kwargs) -> None:
+        self._module = self._module.to(*args, **kwargs)
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        self._module = self._module.cuda(device)
+
+    def cpu(self) -> None:
+        self._module = self._module.cpu()
 
     @classmethod
     def from_json(cls, data, dic):

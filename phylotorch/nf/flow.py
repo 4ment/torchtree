@@ -1,10 +1,10 @@
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import torch.nn
 from torch import Size, Tensor, nn
 
 from ..core.model import Parameter
-from ..core.utils import process_object, process_objects
+from ..core.utils import get_class, process_object, process_objects
 from ..distributions.distributions import Distribution, DistributionModel
 from ..nn.module import Module
 
@@ -28,6 +28,8 @@ class NormalizingFlow(DistributionModel):
         x: Union[Parameter, List[Parameter]],
         base: Distribution,
         modules: List[Module],
+        dtype=None,
+        device=None,
     ) -> None:
         DistributionModel.__init__(self, id_)
         self.x = x
@@ -35,6 +37,8 @@ class NormalizingFlow(DistributionModel):
         self.modules = modules
         self.layers = nn.ModuleList([t.module for t in modules])
         self.sum_log_abs_det_jacobians = None
+        if device is not None or dtype is not None:
+            self.to(device=device, dtype=dtype)
 
     def forward(self, x: Tensor) -> Tuple[Tensor, Tensor]:
         log_det_J = 0.0
@@ -92,6 +96,21 @@ class NormalizingFlow(DistributionModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
+    def to(self, *args, **kwargs) -> None:
+        for module in self.modules:
+            module.to(*args, **kwargs)
+        self.base.to(*args, **kwargs)
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        for module in self.modules:
+            module.cuda(device)
+        self.base.cuda(device)
+
+    def cpu(self) -> None:
+        for module in self.modules:
+            module.cpu()
+        self.base.cpu()
+
     @classmethod
     def from_json(cls, data: Dict[str, any], dic: Dict[str, any]) -> 'NormalizingFlow':
         r"""
@@ -108,5 +127,10 @@ class NormalizingFlow(DistributionModel):
         x = process_objects(data['x'], dic)
         base = process_object(data['base'], dic)
         modules = process_objects(data['layers'], dic)
+        if 'dtype' in data:
+            dtype = get_class(data['dtype'])
+        else:
+            dtype = None
+        device = data.get('device', None)
 
-        return cls(id_, x, base, modules)
+        return cls(id_, x, base, modules, dtype, device)

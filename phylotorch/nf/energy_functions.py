@@ -3,7 +3,7 @@ import math
 import torch
 
 from ..core.model import CallableModel, Parameter
-from ..core.utils import process_object
+from ..core.utils import get_class, process_object
 from ..typing import ID
 
 
@@ -20,7 +20,7 @@ def w3(z):
 
 
 class EnergyFunctionModel(CallableModel):
-    def __init__(self, id_: ID, x: Parameter, desc: str):
+    def __init__(self, id_: ID, x: Parameter, desc: str, dtype=None, device=None):
         super().__init__(id_)
         self.x = x
         self.desc = desc
@@ -46,6 +46,8 @@ class EnergyFunctionModel(CallableModel):
                 + torch.exp(-0.5 * ((z[:, 1] - w1(z) + w3(z)) / 0.35) ** 2)
                 + 1e-10
             )
+        if device is not None or dtype is not None:
+            self.to(device=device, dtype=dtype)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         if self.x.tensor.dim() == 1:
@@ -67,5 +69,10 @@ class EnergyFunctionModel(CallableModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
+        if 'dtype' in data:
+            dtype = get_class(data['dtype'])
+        else:
+            dtype = None
+        device = data.get('device', None)
         x = process_object(data['x'], dic)
-        return cls(id_, x, data['function'])
+        return cls(id_, x, data['function'], dtype, device)

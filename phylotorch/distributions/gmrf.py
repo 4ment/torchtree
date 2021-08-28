@@ -33,7 +33,11 @@ class GMRF(CallableModel):
         if self.tree_model is not None:
             heights = torch.cat(
                 (
-                    torch.zeros(self.tree_model.node_heights.shape[:-1] + (1,)),
+                    torch.zeros(
+                        self.tree_model.node_heights.shape[:-1] + (1,),
+                        dtype=self.field.dtype,
+                        device=self.field.device,
+                    ),
                     self.tree_model.node_heights[..., self.tree_model.taxa_count :],
                 ),
                 -1,
@@ -96,8 +100,7 @@ class GMRFCovariate(CallableModel):
         self.precision = precision
         self.add_parameter(precision)
         self.covariates = covariates
-        if covariates is not None:
-            self.add_parameter(covariates)
+        self.add_parameter(covariates)
         self.beta = beta
         self.add_parameter(beta)
 
@@ -109,7 +112,11 @@ class GMRFCovariate(CallableModel):
             if self.covariates.shape[:-2] == self.beta.shape[:-1]
             else self.covariates.tensor.expand(self.beta.shape[:-1], (-1,))
         )
-        design_matrix = torch.zeros(self.field.shape[:-1] + (dim, dim))
+        design_matrix = torch.zeros(
+            self.field.shape[:-1] + (dim, dim),
+            dtype=self.field.dtype,
+            device=self.field.device,
+        )
         design_matrix[..., range(dim - 1), range(1, dim)] = design_matrix[
             ..., range(1, dim), range(dim - 1)
         ] = -precision.expand(self.field.shape[:-1] + (dim - 1,))
@@ -140,7 +147,10 @@ class GMRFCovariate(CallableModel):
         precision = process_object(data['precision'], dic)
         if isinstance(data['covariates'], list):
             covariates = Parameter(
-                None, torch.tensor(data['covariates'], dtype=field.dtype)
+                None,
+                torch.tensor(
+                    data['covariates'], dtype=field.dtype, device=field.device
+                ),
             )
         else:
             covariates = process_object(data['covariates'], dic)

@@ -1,3 +1,5 @@
+from typing import Optional, Union
+
 import torch
 
 from ..core.model import CallableModel, Parameter
@@ -50,6 +52,21 @@ class CTMCScale(CallableModel):
     @property
     def sample_shape(self) -> torch.Size:
         return self.x.tensor.shape[:-1]
+
+    def to(self, *args, **kwargs) -> None:
+        super().to(*args, **kwargs)
+        self.shape = self.shape.to(*args, **kwargs)
+        self.log_gamma_one_half = self.log_gamma_one_half.to(*args, **kwargs)
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        super().cuda(device)
+        self.shape = self.shape.cuda(device)
+        self.log_gamma_one_half = self.log_gamma_one_half.cuda(device)
+
+    def cpu(self) -> None:
+        super().cpu()
+        self.shape = self.shape.cpu()
+        self.log_gamma_one_half = self.log_gamma_one_half.cpu()
 
     @classmethod
     def from_json(cls, data, dic):
