@@ -22,7 +22,6 @@ def _prepare_tiny(tiny_newick_file, tiny_fasta_file):
                 list(tree.postorder_node_iter())[:-1], key=lambda x: x.index
             )
         ],
-        dtype=torch.float64,
     )
     indices = []
     for node in tree.postorder_internal_node_iter():
@@ -164,7 +163,7 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
     }
 
     like = likelihood.TreeLikelihoodModel.from_json(tree_likelihood, {})
-    assert torch.allclose(torch.tensor([-83.329016], dtype=torch.float64), like())
+    assert torch.allclose(torch.tensor([-83.329016]), like())
 
 
 def test_treelikelihood_batch():

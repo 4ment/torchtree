@@ -396,7 +396,7 @@ class TimeTreeModel(AbstractTreeModel):
         self.branch_lengths_need_update = True
         self.heights_need_update = True
 
-    def update_leaf_heights(self, dtype=torch.float64) -> None:
+    def update_leaf_heights(self) -> None:
         leaf_heights = [None] * len(self._taxa)
 
         dates = [taxon['date'] for taxon in self._taxa]
@@ -411,7 +411,7 @@ class TimeTreeModel(AbstractTreeModel):
             for idx, taxon in enumerate(self._taxa):
                 leaf_heights[idx] = max_date - taxon['date']
 
-        self.sampling_times = torch.tensor(leaf_heights, dtype=dtype)
+        self.sampling_times = torch.tensor(leaf_heights)
 
     def update_bounds(self) -> None:
         taxa_count = self.taxa_count

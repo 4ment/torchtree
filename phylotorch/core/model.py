@@ -189,53 +189,64 @@ class Parameter(AbstractParameter):
 
         .. function:: to(device)
         """
-        if 'dtype' in kwargs:
-            self._tensor = self._tensor.to(args[0], dtype=kwargs['dtype'])
+        if len(args) == 0:
+            self._tensor = self._tensor.to(
+                device=kwargs['device'], dtype=kwargs['dtype']
+            )
         else:
             self._tensor = self._tensor.to(args[0])
 
     @classmethod
     def from_json(cls, data, dic):
-        dtype = get_class(data.get('dtype', 'torch.float64'))
+        dtype = get_class(data['dtype']) if 'dtype' in data else None
+        device = data.get('device', None)
+        kwargs = {'device': device}
 
         if 'full_like' in data:
             input_param = process_object(data['full_like'], dic)
-            dtype = dtype if 'dtype' in data else input_param.dtype
             if 'rand' in data:
-                t = tensor_rand(data['rand'], input_param.dtype, input_param.shape)
+                t = tensor_rand(data['rand'], input_param.shape, **kwargs)
             else:
                 values = data['tensor']
-                t = torch.full_like(input_param.tensor, values, dtype=dtype)
+                t = torch.full_like(input_param.tensor, values, **kwargs)
         elif 'full' in data:
+            if dtype:
+                kwargs['dtype'] = dtype
             size = data['full']  # a list
             if 'rand' in data:
-                t = tensor_rand(data['rand'], dtype, size)
+                t = tensor_rand(data['rand'], size, **kwargs)
             else:
                 values = data['tensor']
-                t = torch.full(size, values, dtype=dtype)
+                t = torch.full(size, values, **kwargs)
         elif 'zeros_like' in data:
             input_param = process_object(data['zeros_like'], dic)
-            dtype = dtype if 'dtype' in data else input_param.dtype
-            t = torch.zeros_like(input_param.tensor, dtype=dtype)
+            t = torch.zeros_like(input_param.tensor, **kwargs)
         elif 'zeros' in data:
+            if dtype:
+                kwargs['dtype'] = dtype
             size = data['zeros']
-            t = torch.zeros(size, dtype=dtype)
+            t = torch.zeros(size, **kwargs)
         elif 'ones_like' in data:
             input_param = process_object(data['ones_like'], dic)
-            dtype = dtype if 'dtype' in data else input_param.dtype
-            t = torch.ones_like(input_param.tensor, dtype=dtype)
+            t = torch.ones_like(input_param.tensor, **kwargs)
         elif 'ones' in data:
+            if dtype:
+                kwargs['dtype'] = dtype
             size = data['ones']
-            t = torch.ones(size, dtype=dtype)
+            t = torch.ones(size, **kwargs)
         elif 'eye' in data:
+            if dtype:
+                kwargs['dtype'] = dtype
             size = data['eye']
-            t = torch.eye(size, dtype=dtype)
+            t = torch.eye(size, **kwargs)
         else:
+            if dtype:
+                kwargs['dtype'] = dtype
             values = data['tensor']
             if 'dimension' in data:
                 values = np.repeat(values, data['dimension'] / len(values) + 1)
-                values = values[: data['dimension']]
-            t = torch.tensor(values, dtype=dtype)
+                values = values[: data['dimension']].tolist()
+            t = torch.tensor(values, **kwargs)
         if 'nn' in data and data['nn']:
             return cls(data['id'], nn.Parameter(t))
         return cls(data['id'], t)
@@ -313,7 +324,7 @@ class Model(Identifiable, Parametric, ModelListener, ParameterListener):
         for param in self._parameters:
             param.to(*args, **kwargs)
         for model in self._models:
-            model.cuda(*args, **kwargs)
+            model.to(*args, **kwargs)
 
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
         for param in self._parameters:

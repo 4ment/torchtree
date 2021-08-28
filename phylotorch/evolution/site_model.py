@@ -24,8 +24,8 @@ class SiteModel(Model):
 class ConstantSiteModel(SiteModel):
     def __init__(self, id_: ID) -> None:
         super().__init__(id_)
-        self._rate = torch.tensor([1.0], dtype=torch.float64)
-        self._probability = torch.tensor([1.0], dtype=torch.float64)
+        self._rate = torch.tensor([1.0])
+        self._probability = torch.tensor([1.0])
 
     def rates(self) -> torch.Tensor:
         return self._rate

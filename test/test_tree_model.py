@@ -84,7 +84,7 @@ def test_general_node_height_transform_hetero(ratios, root_height):
 def test_general_node_height_transform_hetero_all(
     ratios, root_height, keep, expected_ratios_root
 ):
-    ratios_root = torch.tensor(expected_ratios_root, dtype=torch.float64)
+    ratios_root = torch.tensor(expected_ratios_root)
     node_heights = node_heights_general_transform(
         'internal_heights', 'tree', ratios, root_height
     )
@@ -100,13 +100,9 @@ def test_general_node_height_transform_hetero_all(
         ),
         dic,
     )
-    expected = torch.tensor([5.0, 3.0, 0.0, 1.0, 2.0, 4.5, 7.0], dtype=torch.float64)
-    expected_bounds = torch.tensor(
-        [5.0, 3.0, 0.0, 1.0, 1.0, 3.0, 5.0], dtype=torch.float64
-    )
-    expected_branch_lengths = torch.tensor(
-        [2.0, 1.5, 2.0, 1.0, 2.5, 2.5], dtype=torch.float64
-    )
+    expected = torch.tensor([5.0, 3.0, 0.0, 1.0, 2.0, 4.5, 7.0])
+    expected_bounds = torch.tensor([5.0, 3.0, 0.0, 1.0, 1.0, 3.0, 5.0])
+    expected_branch_lengths = torch.tensor([2.0, 1.5, 2.0, 1.0, 2.5, 2.5])
     log_det_jacobian = torch.log(expected[5] - expected_bounds[4]) + torch.log(
         expected[6] - expected_bounds[5]
     )
@@ -136,7 +132,7 @@ def test_general_node_height_transform_hetero_7():
         ),
         dic,
     )
-    log_det_jacobian = torch.tensor([0], dtype=torch.float64)
+    log_det_jacobian = torch.tensor([0.0])
     for i in range(len(taxa), 2 * len(taxa) - 2):
         log_det_jacobian += (
             tree_model.node_heights[i + 1] - tree_model.bounds[i]
@@ -184,5 +180,5 @@ def test_keep_branch_lengths_heights():
     )
     assert torch.allclose(
         tree_model.branch_lengths(),
-        torch.tensor([1.5, 0.5, 2.0, 3.0, 4.0, 2.5, 2.0, 10.0], dtype=torch.float64),
+        torch.tensor([1.5, 0.5, 2.0, 3.0, 4.0, 2.5, 2.0, 10.0]),
     )

@@ -50,15 +50,17 @@ def test_GTR():
     pi = torch.tensor(np.array([0.479367, 0.172572, 0.140933, 0.207128]))
     subst_model = GTR('gtr', Parameter('rates', rates), Parameter('pi', pi))
     P = subst_model.p_t(torch.tensor(np.array([[0.1]])))
-    P_expected = np.array(
-        [
-            [0.93717830, 0.009506685, 0.047505899, 0.005809115],
-            [0.02640748, 0.894078744, 0.006448058, 0.073065722],
-            [0.16158572, 0.007895626, 0.820605951, 0.009912704],
-            [0.01344433, 0.060875872, 0.006744752, 0.918935042],
-        ]
+    P_expected = torch.tensor(
+        np.array(
+            [
+                [0.93717830, 0.009506685, 0.047505899, 0.005809115],
+                [0.02640748, 0.894078744, 0.006448058, 0.073065722],
+                [0.16158572, 0.007895626, 0.820605951, 0.009912704],
+                [0.01344433, 0.060875872, 0.006744752, 0.918935042],
+            ]
+        )
     )
-    np.testing.assert_allclose(P.squeeze(), P_expected, rtol=1e-06)
+    assert torch.allclose(P.squeeze(), P_expected, rtol=1e-05)
 
     subst_model = GTR.from_json(
         {
@@ -68,17 +70,19 @@ def test_GTR():
                 'id': 'rates',
                 'type': 'phylotorch.core.model.Parameter',
                 'tensor': [0.060602, 0.402732, 0.028230, 0.047910, 0.407249, 0.053277],
+                'dtype': 'torch.float64',
             },
             'frequencies': {
                 'id': 'pi',
                 'type': 'phylotorch.core.model.Parameter',
                 'tensor': [0.479367, 0.172572, 0.140933, 0.207128],
+                'dtype': 'torch.float64',
             },
         },
         {},
     )
-    P = subst_model.p_t(torch.tensor(np.array([[0.1]])))
-    np.testing.assert_allclose(P.squeeze(), P_expected, rtol=1e-06)
+    P = subst_model.p_t(torch.tensor([[0.1]]))
+    assert torch.allclose(P.squeeze(), P_expected, rtol=1e-05)
 
 
 def test_GTR_batch():
@@ -127,26 +131,24 @@ def test_GTR_batch():
 
 @pytest.fixture
 def hky_fixture():
-    kappa = torch.tensor(np.array([3.0]))
-    pi = torch.tensor(np.array([0.479367, 0.172572, 0.140933, 0.207128]))
-    branch_lengths = torch.tensor(np.array([0.1, 0.001]))
+    kappa = torch.tensor([3.0])
+    pi = torch.tensor([0.479367, 0.172572, 0.140933, 0.207128])
+    branch_lengths = torch.tensor([0.1, 0.001])
     P_expected = torch.tensor(
-        np.array(
+        [
             [
-                [
-                    [0.93211187, 0.01511617, 0.03462891, 0.01814305],
-                    [0.04198939, 0.89405292, 0.01234480, 0.05161289],
-                    [0.11778615, 0.01511617, 0.84895463, 0.01814305],
-                    [0.04198939, 0.04300210, 0.01234480, 0.90266370],
-                ],
-                [
-                    [0.9992649548, 0.0001581235, 0.0003871353, 0.0001897863],
-                    [0.0004392323, 0.9988625812, 0.0001291335, 0.0005690531],
-                    [0.0013167952, 0.0001581235, 0.9983352949, 0.0001897863],
-                    [0.0004392323, 0.0004741156, 0.0001291335, 0.9989575186],
-                ],
-            ]
-        )
+                [0.93211187, 0.01511617, 0.03462891, 0.01814305],
+                [0.04198939, 0.89405292, 0.01234480, 0.05161289],
+                [0.11778615, 0.01511617, 0.84895463, 0.01814305],
+                [0.04198939, 0.04300210, 0.01234480, 0.90266370],
+            ],
+            [
+                [0.9992649548, 0.0001581235, 0.0003871353, 0.0001897863],
+                [0.0004392323, 0.9988625812, 0.0001291335, 0.0005690531],
+                [0.0013167952, 0.0001581235, 0.9983352949, 0.0001897863],
+                [0.0004392323, 0.0004741156, 0.0001291335, 0.9989575186],
+            ],
+        ]
     )
     return kappa, pi, P_expected, branch_lengths
 
@@ -156,7 +158,7 @@ def test_HKY(hky_fixture):
     kappa, pi, hky_P_expected, branch_lengths = hky_fixture
     subst_model = HKY('hky', Parameter('kappa', kappa), Parameter('pi', pi))
     P = subst_model.p_t(branch_lengths)
-    assert torch.allclose(P.squeeze(), hky_P_expected, rtol=1e-06)
+    assert torch.allclose(P.squeeze(), hky_P_expected, atol=1e-06)
 
 
 def test_HKY_json(hky_fixture):
@@ -180,7 +182,7 @@ def test_HKY_json(hky_fixture):
         {},
     )
     P = subst_model.p_t(branch_lengths)
-    np.testing.assert_allclose(P, hky_P_expected, rtol=1e-06)
+    assert torch.allclose(P, hky_P_expected, atol=1e-06)
 
 
 def test_HKY_batch(hky_fixture):

@@ -23,7 +23,7 @@ def node_heights_difference_transform(
 
 def test_difference_height_transform_hetero():
     taxa = dict(zip('ABCDEFG', [5.0, 3.0, 0.0, 1.0, 0.0, 5.0, 6.0]))
-    differences = torch.tensor([2.0] * (len(taxa) - 1), dtype=torch.float64)
+    differences = torch.tensor([2.0] * (len(taxa) - 1))
     node_heights = node_heights_difference_transform(
         'internal_heights', 'tree', differences.tolist()
     )

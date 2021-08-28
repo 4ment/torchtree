@@ -8,6 +8,7 @@ from .core.runnable import Runnable
 from .core.utils import (
     JSONParseError,
     expand_plates,
+    get_class,
     process_objects,
     remove_comments,
     update_parameters,
@@ -31,6 +32,13 @@ def main():
         help='do not run anything, just parse',
     )
     parser.add_argument(
+        '--dtype',
+        required=False,
+        choices=['float32', 'float64'],
+        default='float64',
+        help='``torch.Tensor`` type to floating point tensor type (default: float64)',
+    )
+    parser.add_argument(
         '-s',
         '--seed',
         type=int,
@@ -43,6 +51,11 @@ def main():
     if arg.seed is not None:
         torch.manual_seed(arg.seed)
     print('SEED: {}'.format(torch.initial_seed()))
+
+    dtype_class = get_class('torch.' + arg.dtype)
+    torch.set_default_dtype(dtype_class)
+    print('dtype: {}'.format('torch.' + arg.dtype))
+
     print()
 
     logging.basicConfig(format='%(levelname)s: %(message)s')

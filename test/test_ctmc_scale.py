@@ -32,6 +32,4 @@ def test_ctmc_scale_batch(tree_model_dict):
     ctmc_scale = CTMCScale(
         None, Parameter(None, torch.tensor([[0.001], [0.001]])), tree_model
     )
-    assert torch.allclose(
-        torch.full((2, 1), 4.475351922659342, dtype=torch.float64), ctmc_scale()
-    )
+    assert torch.allclose(torch.full((2, 1), 4.475351922659342), ctmc_scale())

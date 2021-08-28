@@ -72,9 +72,7 @@ def compress_alignment(
     count_dict = Counter(list(zip(*sequences)))
     pattern_ordering = sorted(list(count_dict.keys()))
     patterns_list = list(zip(*pattern_ordering))
-    weights = torch.tensor(
-        [count_dict[pattern] for pattern in pattern_ordering], dtype=torch.float64
-    )
+    weights = torch.tensor([count_dict[pattern] for pattern in pattern_ordering])
     patterns = dict(zip(taxa, patterns_list))
 
     partials = []
@@ -82,7 +80,8 @@ def compress_alignment(
     for taxon in taxa:
         partials.append(
             torch.tensor(
-                [data_type.partial(c) for c in patterns[taxon]], dtype=torch.float64
+                [data_type.partial(c) for c in patterns[taxon]],
+                dtype=torch.get_default_dtype(),
             ).t()
         )
 

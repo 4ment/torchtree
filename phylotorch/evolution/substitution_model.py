@@ -35,7 +35,7 @@ class SubstitutionModel(Model):
 
 class JC69(SubstitutionModel):
     def __init__(self, id_: ID) -> None:
-        frequencies = Parameter(None, torch.full((4,), 0.25, dtype=torch.float64))
+        frequencies = Parameter(None, torch.full((4,), 0.25))
         super().__init__(id_, frequencies)
 
     def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
