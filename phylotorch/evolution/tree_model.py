@@ -364,19 +364,22 @@ class UnRootedTreeModel(AbstractTreeModel):
         tree = parse_tree(taxa, data)
         branch_lengths = process_object(data['branch_lengths'], dic)
         if 'keep_branch_lengths' in data:
-            blens = torch.tensor(
-                torch.tensor(
-                    [
-                        float(node.edge_length)
-                        for node in sorted(
-                            list(tree.postorder_node_iter())[:-1], key=lambda x: x.index
+            blens = [
+                float(node.edge_length)
+                for node in sorted(
+                    list(
+                        tree.postorder_node_iter(
+                            lambda node: node.parent_node is not None
                         )
-                    ],
-                    dtype=branch_lengths.dtype,
+                    ),
+                    key=lambda x: x.index,
                 )
-            )
-            blens[-2] += blens[-1]
-            branch_lengths.tensor = blens[:-1]
+            ]
+            child_1, child_2 = tree.seed_node.child_node_iter()
+            blens[child_1.index] += child_2.edge_length
+            blens[child_2.index] += child_1.edge_length
+
+            branch_lengths.tensor = torch.tensor(blens[:-1], dtype=branch_lengths.dtype)
         return cls(id_, tree, taxa, branch_lengths)
 
 
