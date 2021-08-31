@@ -31,8 +31,6 @@ class ELBO(CallableModel):
         self.q = q
         self.p = p
         self.samples = samples
-        self.add_model(q)
-        self.add_model(p)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
@@ -88,8 +86,6 @@ class KLpq(CallableModel):
         self.q = q
         self.p = p
         self.samples = samples
-        self.add_model(q)
-        self.add_model(p)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
@@ -134,8 +130,6 @@ class KLpqImportance(CallableModel):
         self.q = q
         self.p = p
         self.samples = samples
-        self.add_model(q)
-        self.add_model(p)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)

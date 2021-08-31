@@ -21,9 +21,7 @@ class GMRF(CallableModel):
         self.tree_model = tree_model
         self.weights = weights
         self.field = field
-        self.add_parameter(self.field)
         self.precision = precision
-        self.add_parameter(precision)
         self.rescale = rescale
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
@@ -96,13 +94,9 @@ class GMRFCovariate(CallableModel):
     ) -> None:
         super().__init__(id_)
         self.field = field
-        self.add_parameter(self.field)
         self.precision = precision
-        self.add_parameter(precision)
         self.covariates = covariates
-        self.add_parameter(covariates)
         self.beta = beta
-        self.add_parameter(beta)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         dim = self.field.shape[-1]

@@ -8,7 +8,13 @@ import torch
 import torch.distributions
 
 from .. import Parameter
-from ..core.model import CallableModel, Model
+from ..core.model import (
+    AbstractParameter,
+    CallableModel,
+    CatParameter,
+    Container,
+    Model,
+)
 from ..core.utils import get_class, process_object, process_objects
 
 
@@ -22,7 +28,7 @@ class DistributionModel(CallableModel):
         ...
 
     @abc.abstractmethod
-    def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> torch.Tensor:
+    def log_prob(self, x: AbstractParameter = None) -> torch.Tensor:
         ...
 
 
@@ -40,24 +46,21 @@ class Distribution(DistributionModel):
         self,
         id_: Optional[str],
         dist: Type[torch.distributions.Distribution],
-        x: Union[List[Parameter], Parameter],
-        args: 'OrderedDict[str, Parameter]',
+        x: Union[List[AbstractParameter], AbstractParameter],
+        args: 'OrderedDict[str, AbstractParameter]',
         **kwargs
     ) -> None:
         super().__init__(id_)
         self.dist = dist
-        self.x = x
         self.args = args
         self.kwargs = kwargs
 
-        for p in self.args.values():
-            if p.id is not None:
-                self.add_parameter(p)
-        if isinstance(self.x, list):
-            for xx in self.x:
-                self.add_parameter(xx)
+        self.parameters = Container(None, self.args.values())
+
+        if isinstance(x, (tuple, list)):
+            self.x = CatParameter('x', x, dim=-1)
         else:
-            self.add_parameter(self.x)
+            self.x = x
 
     def rsample(self, sample_shape=torch.Size()) -> None:
         x = self.dist(
@@ -71,15 +74,12 @@ class Distribution(DistributionModel):
         ).sample(sample_shape)
         self.x.tensor = x
 
-    def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> torch.Tensor:
-        if isinstance(self.x, list):
-            return self.dist(
-                *[arg.tensor for arg in self.args.values()], **self.kwargs
-            ).log_prob(torch.cat([xx.tensor for xx in x], -1))
-        else:
-            return self.dist(
-                *[arg.tensor for arg in self.args.values()], **self.kwargs
-            ).log_prob(x.tensor)
+    def log_prob(
+        self, x: Union[List[AbstractParameter], AbstractParameter] = None
+    ) -> torch.Tensor:
+        return self.dist(
+            *[arg.tensor for arg in self.args.values()], **self.kwargs
+        ).log_prob(x.tensor)
 
     def handle_model_changed(self, model: Model, obj, index) -> None:
         pass

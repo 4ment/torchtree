@@ -30,8 +30,6 @@ class PoissonTreeLikelihood(CallableModel):
         self.tree_model = tree_model
         self.clock_model = clock_model
         self.edge_lengths = edge_lengths
-        self.add_model(tree_model)
-        self.add_model(clock_model)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         distances = self.tree_model.branch_lengths() * self.clock_model.rates

@@ -6,6 +6,7 @@ from phylotorch import Parameter
 from phylotorch.evolution.coalescent import (
     ConstantCoalescent,
     ConstantCoalescentModel,
+    FakeTreeModel,
     PiecewiseConstantCoalescent,
     PiecewiseConstantCoalescentGrid,
     PiecewiseConstantCoalescentGridModel,
@@ -266,15 +267,17 @@ def test_skygrid_heterochronous_2_trees():
         None,
         thetas,
         grid,
-        node_heights=Parameter(
-            None,
-            torch.tensor(
-                [
-                    [sampling_times + [1.5, 4.0, 6.0, 16.0]],
-                    [sampling_times + [1.5, 4.0, 6.0, 26.0]],
-                ],
-                dtype=thetas.dtype,
-            ),
+        FakeTreeModel(
+            Parameter(
+                None,
+                torch.tensor(
+                    [
+                        [sampling_times + [1.5, 4.0, 6.0, 16.0]],
+                        [sampling_times + [1.5, 4.0, 6.0, 26.0]],
+                    ],
+                    dtype=thetas.dtype,
+                ),
+            )
         ),
     )
     assert torch.allclose(

@@ -33,15 +33,10 @@ class CompoundGammaDirichletPrior(CallableModel):
     ):
         super().__init__(id_)
         self.tree_model = tree_model
-        self.add_model(tree_model)
         self.alpha = alpha
-        self.add_parameter(alpha)
         self.c = c
-        self.add_parameter(c)
         self.shape = shape
-        self.add_parameter(shape)
         self.rate = rate
-        self.add_parameter(rate)
 
     def _call(self, *args, **kwargs) -> Tensor:
         taxa_count = self.tree_model.taxa_count

@@ -29,7 +29,6 @@ class CTMCScale(CallableModel):
         super(CTMCScale, self).__init__(id_)
         self.x = x
         self.tree_model = tree_model
-        self.add_parameter(x)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         total_tree_time = self.tree_model.branch_lengths().sum(-1, keepdim=True)

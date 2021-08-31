@@ -86,7 +86,6 @@ class JC69(SubstitutionModel):
 class SymmetricSubstitutionModel(SubstitutionModel):
     def __init__(self, id_: ID, frequencies: Parameter):
         super().__init__(id_, frequencies)
-        self.add_parameter(frequencies)
 
     def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
         Q_unnorm = self.q()
@@ -117,7 +116,7 @@ class SymmetricSubstitutionModel(SubstitutionModel):
     @property
     def sample_shape(self) -> torch.Size:
         return max(
-            [parameter.shape[:-1] for parameter in self._parameters],
+            [parameter.shape[:-1] for parameter in self._parameters.values()],
             key=len,
         )
 
@@ -126,7 +125,6 @@ class GTR(SymmetricSubstitutionModel):
     def __init__(self, id_: ID, rates: Parameter, frequencies: Parameter):
         super().__init__(id_, frequencies)
         self._rates = rates
-        self.add_parameter(rates)
 
     @property
     def rates(self) -> torch.Tensor:
@@ -195,7 +193,6 @@ class HKY(SymmetricSubstitutionModel):
     def __init__(self, id_: ID, kappa: Parameter, frequencies: Parameter) -> None:
         super().__init__(id_, frequencies)
         self._kappa = kappa
-        self.add_parameter(kappa)
 
     @property
     def kappa(self) -> torch.Tensor:
@@ -319,7 +316,6 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
         self._rates = rates
         self.mapping = mapping
         self.state_count = frequencies.shape[0]
-        self.add_parameter(rates)
 
     @property
     def rates(self) -> torch.Tensor:

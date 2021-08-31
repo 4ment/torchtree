@@ -63,7 +63,6 @@ class InvariantSiteModel(SiteModel):
         self._rates = None
         self._probs = None
         self.need_update = True
-        self.add_parameter(self._invariant)
 
     @property
     def invariant(self) -> torch.Tensor:
@@ -122,9 +121,6 @@ class WeibullSiteModel(SiteModel):
         )
         self._rates = None
         self.need_update = True
-        self.add_parameter(self._shape)
-        if invariant:
-            self.add_parameter(self._invariant)
 
     @property
     def shape(self) -> torch.Tensor:
@@ -182,7 +178,7 @@ class WeibullSiteModel(SiteModel):
     @property
     def sample_shape(self) -> torch.Size:
         return max(
-            [parameter.shape[:-1] for parameter in self._parameters],
+            [parameter.shape[:-1] for parameter in self._parameters.values()],
             key=len,
         )
 
@@ -215,7 +211,6 @@ class LogNormalSiteModel(SiteModel):
         self._rates = None
         self.update_rates(self.scale)
         self.need_update = True
-        self.add_parameter(self._scale)
 
     @property
     def scale(self) -> torch.Tensor:
@@ -244,7 +239,7 @@ class LogNormalSiteModel(SiteModel):
     @property
     def sample_shape(self) -> torch.Size:
         return max(
-            [parameter.shape[:-1] for parameter in self._parameters],
+            [parameter.shape[:-1] for parameter in self._parameters.values()],
             key=len,
         )
 

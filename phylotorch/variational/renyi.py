@@ -36,8 +36,6 @@ class VR(CallableModel):
         self.p = p
         self.samples = samples
         self.alpha = alpha
-        self.add_model(q)
-        self.add_model(p)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)

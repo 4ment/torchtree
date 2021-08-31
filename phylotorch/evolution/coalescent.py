@@ -13,19 +13,11 @@ class ConstantCoalescentModel(CallableModel):
         self,
         id_: ID,
         theta: Parameter,
-        *,
         tree_model: TimeTreeModel = None,
-        node_heights: Parameter = None,
     ) -> None:
         super().__init__(id_)
         self.theta = theta
-        self.add_parameter(theta)
         self.tree_model = tree_model
-        if tree_model:
-            self.add_model(tree_model)
-        self.node_heights = node_heights
-        if node_heights:
-            self.add_parameter(node_heights)
 
     def handle_model_changed(self, model, obj, index):
         self.fire_model_changed()
@@ -35,20 +27,12 @@ class ConstantCoalescentModel(CallableModel):
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         coalescent = ConstantCoalescent(self.theta.tensor)
-        if self.tree_model:
-            return coalescent.log_prob(self.tree_model.node_heights)
-        else:
-            return coalescent.log_prob(self.node_heights.tensor)
+        return coalescent.log_prob(self.tree_model.node_heights)
 
     @property
     def sample_shape(self) -> torch.Size:
-        if self.tree_model:
-            return max(
-                self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
-            )
         return max(
-            [parameter.shape[:-1] for parameter in self._parameters],
-            key=len,
+            self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
         )
 
     @classmethod
@@ -60,7 +44,7 @@ class ConstantCoalescentModel(CallableModel):
             return cls(id_, theta, tree_model=tree_model)
         else:
             node_heights = process_data_coalesent(data, theta.dtype)
-            return cls(id_, theta, node_heights=node_heights)
+            return cls(id_, theta, FakeTreeModel(node_heights))
 
 
 class ConstantCoalescent(Distribution):
@@ -152,10 +136,7 @@ class PiecewiseConstantCoalescent(ConstantCoalescent):
 class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
     def _call(self, *args, **kwargs) -> torch.Tensor:
         pwc = PiecewiseConstantCoalescent(self.theta.tensor)
-        if self.tree_model:
-            return pwc.log_prob(self.tree_model.node_heights)
-        else:
-            return pwc.log_prob(self.node_heights.tensor)
+        return pwc.log_prob(self.tree_model.node_heights)
 
 
 class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
@@ -242,24 +223,16 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
         id_: ID,
         theta: Parameter,
         grid: Parameter,
-        *,
         tree_model: TimeTreeModel = None,
-        node_heights: Parameter = None,
     ) -> None:
         super().__init__(id_)
         self.grid = grid
         self.theta = theta
-        self.add_parameter(theta)
-        self.tree_model = tree_model
-        self.node_heights = node_heights
-        if tree_model:
-            if isinstance(tree_model, list):
-                for tree in tree_model:
-                    self.add_model(tree)
-            else:
-                self.add_model(tree_model)
+        if isinstance(tree_model, list):
+            for tree in tree_model:
+                setattr(self, tree.id, tree)
         else:
-            self.add_parameter(node_heights)
+            self.tree_model = tree_model
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         pwc = PiecewiseConstantCoalescentGrid(self.theta.tensor, self.grid.tensor)
@@ -267,10 +240,8 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
             log_p = pwc.log_prob(
                 torch.stack([model.node_heights for model in self.tree_model])
             ).sum(0)
-        elif self.tree_model:
-            log_p = pwc.log_prob(self.tree_model.node_heights)
         else:
-            log_p = pwc.log_prob(self.node_heights.tensor)
+            log_p = pwc.log_prob(self.tree_model.node_heights)
         return log_p
 
     def handle_model_changed(self, model, obj, index) -> None:
@@ -281,13 +252,8 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
 
     @property
     def sample_shape(self) -> torch.Size:
-        if self.tree_model:
-            return max(
-                self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
-            )
         return max(
-            [parameter.shape[:-1] for parameter in self._parameters],
-            key=len,
+            self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
         )
 
     @classmethod
@@ -308,10 +274,19 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
 
         if TreeModel.tag in data:
             tree_model = process_objects(data[TreeModel.tag], dic)
-            return cls(id_, theta, grid, tree_model=tree_model)
+            return cls(id_, theta, grid, tree_model)
         else:
             node_heights = process_data_coalesent(data, theta.dtype)
-            return cls(id_, theta, grid, node_heights=node_heights)
+            return cls(id_, theta, grid, FakeTreeModel(node_heights))
+
+
+class FakeTreeModel:
+    def __init__(self, node_heights):
+        self._node_heights = node_heights
+
+    @property
+    def node_heights(self):
+        return self._node_heights.tensor
 
 
 def process_data_coalesent(data, dtype: torch.dtype) -> Parameter:

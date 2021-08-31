@@ -2,6 +2,7 @@ import abc
 import collections.abc
 import inspect
 import numbers
+from collections import OrderedDict
 from typing import List, Optional, Tuple, Union, overload
 
 import numpy as np
@@ -134,10 +135,6 @@ class Parameter(AbstractParameter):
         self._tensor.requires_grad = requires_grad
         self.fire_parameter_changed()
 
-    def assign(self, parameter):
-        self._tensor = parameter.tensor
-        self.fire_parameter_changed()
-
     def add_parameter_listener(self, listener) -> None:
         self.listeners.append(listener)
 
@@ -254,17 +251,72 @@ class Parameter(AbstractParameter):
 
 class Parametric:
     def __init__(self) -> None:
-        self._parameters = []
+        self._parameters = OrderedDict()
+        self._models = OrderedDict()
 
-    def add_parameter(self, parameter: Parameter) -> None:
-        self._parameters.append(parameter)
+    def __getattr__(self, name: str) -> Union[AbstractParameter, 'Model']:
+        if '_parameters' in self.__dict__:
+            _parameters = self.__dict__['_parameters']
+            if name in _parameters:
+                return _parameters[name]
+        if '_models' in self.__dict__:
+            _models = self.__dict__['_models']
+            if name in _models:
+                return _models[name]
+        raise AttributeError(
+            "'{}' object has no attribute '{}'".format(type(self).__name__, name)
+        )
+
+    def __setattr__(self, name: str, value: Union[AbstractParameter, 'Model']) -> None:
+        def remove_from(*dicts_or_sets):
+            for d in dicts_or_sets:
+                if name in d:
+                    if isinstance(d, dict):
+                        del d[name]
+                    else:
+                        d.discard(name)
+
+        params = self.__dict__.get('_parameters')
+        if isinstance(value, AbstractParameter):
+            if params is None:
+                raise AttributeError(
+                    "cannot assign parameters before Model.__init__() call"
+                )
+            remove_from(self.__dict__, self._models)
+            self.register_parameter(name, value)
+        elif isinstance(value, Model):
+            if params is None:
+                raise AttributeError(
+                    "cannot assign parameters before Model.__init__() call"
+                )
+            remove_from(self.__dict__, self._parameters)
+            self.register_model(name, value)
+        else:
+            object.__setattr__(self, name, value)
+
+    def __delattr__(self, name):
+        if name in self._parameters:
+            del self._parameters[name]
+        elif name in self._models:
+            del self._models[name]
+        else:
+            object.__delattr__(self, name)
+
+    def register_parameter(self, name: str, parameter: Parameter) -> None:
+        self._parameters[name] = parameter
         parameter.add_parameter_listener(self)
+
+    def register_model(self, name: str, model: 'Model') -> None:
+        self._models[name] = model
+        model.add_model_listener(self)
 
     def parameters(self) -> List[Parameter]:
         """Returns parameters of instance Parameter."""
         parameters = []
-        for param in self._parameters:
+        for param in self._parameters.values():
             parameters.extend(param.parameters())
+        for model in self._models.values():
+            parameters.extend(model.parameters())
         return parameters
 
 
@@ -280,63 +332,45 @@ class ParameterListener(abc.ABC):
         ...
 
 
-class Model(Identifiable, Parametric, ModelListener, ParameterListener):
+class Model(Parametric, Identifiable, ModelListener, ParameterListener):
     _tag = None
 
     def __init__(self, id_: Optional[str]) -> None:
-        self.listeners = []
-        self._models = []
-        Identifiable.__init__(self, id_)
         Parametric.__init__(self)
-
-    def add_model(self, model: 'Model') -> None:
-        model.add_model_listener(self)
-        self._models.append(model)
+        Identifiable.__init__(self, id_)
+        self.listeners = []
 
     def add_model_listener(self, listener: ModelListener) -> None:
         self.listeners.append(listener)
 
-    def add_parameter(self, parameter: Parameter) -> None:
-        parameter.add_parameter_listener(self)
-        self._parameters.append(parameter)
-
-    def add_parameter_listener(self, listener: ModelListener) -> None:
+    def add_parameter_listener(self, listener: ParameterListener) -> None:
         self.listeners.append(listener)
 
     def fire_model_changed(self, obj=None, index=None) -> None:
         for listener in self.listeners:
             listener.handle_model_changed(self, obj, index)
 
-    def parameters(self) -> List[Parameter]:
-        """Returns parameters of instance Parameter."""
-        parameters = []
-        for param in self._parameters:
-            parameters.extend(param.parameters())
-        for model in self._models:
-            parameters.extend(model.parameters())
-        return parameters
-
     @classproperty
     def tag(cls) -> Optional[str]:
         return cls._tag
 
     def to(self, *args, **kwargs) -> None:
-        for param in self._parameters:
-            param.to(*args, **kwargs)
-        for model in self._models:
-            model.to(*args, **kwargs)
+        self._apply(lambda x: x.to(*args, **kwargs))
 
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
-        for param in self._parameters:
-            param.cuda(device)
-        for model in self._models:
-            model.cuda(device)
+        self._apply(lambda x: x.cuda(device))
 
     def cpu(self) -> None:
+        self._apply(lambda x: x.cpu())
+
+    def _apply(self, fn):
         for param in self._parameters:
-            param.cpu()
+            fn(param)
         for model in self._models:
-            model.cpu()
+            fn(model)
+
+    def models(self):
+        return self._models.values()
 
     @property
     @abc.abstractmethod
@@ -358,43 +392,32 @@ class CallableModel(Model, collections.abc.Callable):
         return self.lp
 
 
-class TransformedParameter(Parameter, CallableModel):
+class TransformedParameter(AbstractParameter, CallableModel):
     def __init__(
         self,
         id_: Optional[str],
         x: Union[List[Parameter], Parameter],
         transform: torch.distributions.Transform,
     ) -> None:
+        AbstractParameter.__init__(self, id_)
         CallableModel.__init__(self, id_)
         self.transform = transform
-        self.x = x
         self.need_update = False
-        if isinstance(self.x, list):
-            tensor = self.transform(torch.cat([x.tensor for x in self.x], -1))
-            for xx in self.x:
-                self.add_parameter(xx)
+        if isinstance(x, list):
+            self.x = CatParameter(None, x, -1)
         else:
-            tensor = self.transform(self.x.tensor)
-            self.add_parameter(x)
-        Parameter.__init__(self, id_, tensor)
+            self.x = x
+        self._tensor = self.transform(self.x.tensor)
 
     def parameters(self) -> List[Parameter]:
-        if isinstance(self.x, list):
-            return [param for params in self.x for param in params.parameters()]
-        else:
-            return self.x.parameters()
+        return self.x.parameters()
 
     def _call(self, *args, **kwargs) -> Tensor:
         if self.need_update:
             self.apply_transform()
             self.need_update = False
 
-        if isinstance(self.x, list):
-            return self.transform.log_abs_det_jacobian(
-                torch.cat([x.tensor for x in self.x], -1), self._tensor
-            )
-        else:
-            return self.transform.log_abs_det_jacobian(self.x.tensor, self._tensor)
+        return self.transform.log_abs_det_jacobian(self.x.tensor, self._tensor)
 
     @property
     def tensor(self) -> Tensor:
@@ -405,14 +428,15 @@ class TransformedParameter(Parameter, CallableModel):
 
     @tensor.setter
     def tensor(self, tensor):
-        if isinstance(self.x, list):
-            inv_tensor = self.transform.inv(tensor)
-            start = 0
-            for x in self.x:
-                x.tensor = inv_tensor[..., start : (start + x.shape[-1])]
-                start += x.shape[-1]
-        else:
-            self.x.tensor = self.transform.inv(tensor)
+        self.x.tensor = self.transform.inv(tensor)
+
+    @property
+    def requires_grad(self) -> bool:
+        return self._tensor.requires_grad
+
+    @requires_grad.setter
+    def requires_grad(self, requires_grad: bool) -> None:
+        self.x.requires_grad = requires_grad
 
     @property
     def shape(self) -> torch.Size:
@@ -422,10 +446,7 @@ class TransformedParameter(Parameter, CallableModel):
         return self._tensor.shape
 
     def apply_transform(self) -> None:
-        if isinstance(self.x, list):
-            self._tensor = self.transform(torch.cat([x.tensor for x in self.x], -1))
-        else:
-            self._tensor = self.transform(self.x.tensor)
+        self._tensor = self.transform(self.x.tensor)
 
     def handle_parameter_changed(self, variable, index, event) -> None:
         self.need_update = True
@@ -433,6 +454,13 @@ class TransformedParameter(Parameter, CallableModel):
 
     def handle_model_changed(self, model, obj, index) -> None:
         pass
+
+    def add_parameter_listener(self, listener) -> None:
+        self.listeners.append(listener)
+
+    def fire_parameter_changed(self, index=None, event=None) -> None:
+        for listener in self.listeners:
+            listener.handle_parameter_changed(self, index, event)
 
     @property
     def sample_shape(self) -> torch.Size:
@@ -492,7 +520,7 @@ class ViewParameter(AbstractParameter, ParameterListener):
         :param Parameter parameter: parameter that ViewParameter wrap
         :param indices: indices used on parameter
         """
-        super().__init__(id_)
+        AbstractParameter.__init__(self, id_)
         self.parameter = parameter
         self.indices = indices
         self.listeners = []
@@ -641,7 +669,7 @@ class CatParameter(AbstractParameter, ParameterListener):
         parameters: Union[List[Parameter], Tuple[Parameter, ...]],
         dim: Optional[int] = 0,
     ) -> None:
-        super().__init__(id_)
+        AbstractParameter.__init__(self, id_)
         self._parameters = parameters
         self._dim = dim
         self._tensor = None
@@ -680,6 +708,14 @@ class CatParameter(AbstractParameter, ParameterListener):
     def tensor(self) -> Tensor:
         self.update()
         return self._tensor
+
+    @tensor.setter
+    def tensor(self, tensor):
+        start = 0
+        for parameter in self._parameters:
+            parameter.tensor = tensor[..., start : (start + parameter.shape[-1])]
+            start += parameter.shape[-1]
+        self._need_update = True
 
     @property
     def requires_grad(self) -> bool:
@@ -726,3 +762,65 @@ class CatParameter(AbstractParameter, ParameterListener):
         parameters = process_objects(data['parameters'], dic)
         dim = data.get('dim', 0)
         return cls(data['id'], parameters, dim)
+
+
+class Container(Model):
+    """Container for multiple objects of type Model or AbstractParameter.
+
+    :param id_: ID of objects
+    :param objects: list of Models or AbstractParameters
+    """
+
+    def __init__(
+        self, id_: Optional[str], objects: List[Union[Model, AbstractParameter]]
+    ):
+        super().__init__(id_)
+        for obj in objects:
+            if isinstance(obj, Model):
+                self._add_distribution(obj)
+            elif isinstance(obj, AbstractParameter):
+                self._add_parameter(obj)
+
+    def _unique_id(self, obj):
+        index = 0
+        id_ = str(obj.id)
+        unique_id = id_
+        while hasattr(self, unique_id):
+            index += 1
+            unique_id = id_ + str(index)
+        return unique_id
+
+    def _add_distribution(self, distr):
+        """distributions should have unique IDs but one of them can have an ID
+        that clashes with other attributes."""
+        setattr(self, self._unique_id(distr), distr)
+
+    def _add_parameter(self, parameter):
+        """parameters should have unique IDs but one of them can have an ID
+        that clashes with other attributes."""
+        setattr(self, self._unique_id(parameter), parameter)
+
+    @property
+    def sample_shape(self) -> torch.Size:
+        sample_models = torch.Size([])
+        sample_parameters = torch.Size([])
+        if len(self._parameters) > 0:
+            sample_parameters = max(
+                [parameter.shape[:-1] for parameter in self._parameters.values()],
+                key=len,
+            )
+        if len(self._models) > 0:
+            sample_models = max(
+                [model.sample_shape for model in self._models.values()], key=len
+            )
+        return max(sample_models, sample_parameters, key=len)
+
+    @classmethod
+    def from_json(cls, data, dic):
+        raise NotImplementedError
+
+    def handle_model_changed(self, model, obj, index) -> None:
+        self.fire_model_changed(self)
+
+    def handle_parameter_changed(self, variable, index, event) -> None:
+        self.fire_model_changed(self)

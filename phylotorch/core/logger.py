@@ -75,7 +75,7 @@ class Logger(LoggerInterface):
         row = [self.sample]
         for obj in self.objs:
             if isinstance(obj, Parameter):
-                row.extend(obj.tensor.detach().numpy().tolist())
+                row.extend(obj.tensor.detach().cpu().tolist())
             else:
                 row.append(obj().item())
         self.writer.writerow(row)

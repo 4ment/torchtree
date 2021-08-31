@@ -60,7 +60,7 @@ def test_parameterization_rsample(parameterization, param):
     assert torch.all(samples == dist_model.x.tensor)
 
     torch.manual_seed(0)
-    x_tuple = (Parameter(None, x[:-1]), Parameter(None, x[-1:]))
+    x_tuple = (Parameter(':-1', x[:-1]), Parameter('-1:', x[-1:]))
     dist_model = MultivariateNormal(None, x_tuple, Parameter(None, loc), **kwargs)
     dist_model.rsample()
-    assert torch.all(samples == torch.cat([xx.tensor for xx in dist_model.x]))
+    assert torch.all(samples == dist_model.x.tensor)

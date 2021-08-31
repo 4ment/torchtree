@@ -118,11 +118,6 @@ class TreeLikelihoodModel(CallableModel):
         self.subst_model = subst_model
         self.site_model = site_model
         self.clock_model = clock_model
-        self.add_model(tree_model)
-        self.add_model(subst_model)
-        self.add_model(site_model)
-        if clock_model:
-            self.add_model(clock_model)
         self.rescale = False
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
@@ -185,7 +180,7 @@ class TreeLikelihoodModel(CallableModel):
 
     @property
     def sample_shape(self) -> torch.Size:
-        return max([model.sample_shape for model in self._models], key=len)
+        return max([model.sample_shape for model in self._models.values()], key=len)
 
     @classmethod
     def from_json(cls, data, dic):

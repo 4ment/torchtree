@@ -282,7 +282,6 @@ class UnRootedTreeModel(AbstractTreeModel):
     def __init__(self, id_: ID, tree, taxa: Taxa, branch_lengths: Parameter) -> None:
         super().__init__(id_, tree, taxa)
         self._branch_lengths = branch_lengths
-        self.add_parameter(branch_lengths)
 
     def branch_lengths(self) -> torch.Tensor:
         return self._branch_lengths.tensor
@@ -392,8 +391,6 @@ class TimeTreeModel(AbstractTreeModel):
         self.sampling_times = None
         self.update_leaf_heights()
         self.update_bounds()
-        if internal_heights is not None:
-            self.add_parameter(internal_heights)
         self._branch_lengths = None  # tensor
         self._node_heights = None  # tensor
         self.branch_lengths_need_update = True
@@ -583,7 +580,6 @@ class TimeTreeModel(AbstractTreeModel):
         tree_model = cls(id_, tree, taxa, None)
         dic[id_] = tree_model
         tree_model._internal_heights = process_object(data['internal_heights'], dic)
-        tree_model.add_parameter(tree_model._internal_heights)
 
         if data.get('keep_branch_lengths', False):
             tree_model._internal_heights.tensor = torch.tensor(

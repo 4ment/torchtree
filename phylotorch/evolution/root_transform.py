@@ -3,12 +3,12 @@ from typing import List
 import torch
 from torch import Tensor
 
-from ..core.model import CallableModel, Parameter
+from ..core.model import AbstractParameter, CallableModel, Parameter
 from ..core.utils import process_object
 from ..typing import ID
 
 
-class RootParameter(Parameter, CallableModel):
+class RootParameter(AbstractParameter, CallableModel):
     r"""This root height parameter is calculated from
      number of substitutions / substitution rate.
 
@@ -23,14 +23,13 @@ class RootParameter(Parameter, CallableModel):
         self, id_: ID, distance: Parameter, rate: Parameter, shift: float
     ) -> None:
         CallableModel.__init__(self, id_)
+        AbstractParameter.__init__(self, id_)
         self.distance = distance
         self.rate = rate
         self.shift = shift
         self.need_update = False
-        tensor = self.transform()
-        self.add_parameter(distance)
-        self.add_parameter(rate)
-        Parameter.__init__(self, id_, tensor)
+        self._tensor = self.transform()
+        self.listeners = []
 
     def parameters(self) -> List[Parameter]:
         return [self.distance, self.rate]
@@ -65,6 +64,13 @@ class RootParameter(Parameter, CallableModel):
 
     def handle_model_changed(self, model, obj, index) -> None:
         pass
+
+    def add_parameter_listener(self, listener) -> None:
+        self.listeners.append(listener)
+
+    def fire_parameter_changed(self, index=None, event=None) -> None:
+        for listener in self.listeners:
+            listener.handle_parameter_changed(self, index, event)
 
     @property
     def sample_shape(self) -> torch.Size:

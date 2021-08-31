@@ -3,7 +3,7 @@ from typing import List, Union
 import torch.distributions
 
 from .. import Parameter
-from ..core.model import Model
+from ..core.model import Container, Model
 from ..core.utils import process_object
 from ..typing import ID
 from .distributions import DistributionModel
@@ -19,13 +19,11 @@ class JointDistributionModel(DistributionModel):
 
     def __init__(self, id_: ID, distributions: List[DistributionModel]) -> None:
         super().__init__(id_)
-        self.distributions = distributions
-        for distr in self.distributions:
-            self.add_model(distr)
+        self._distributions = Container(None, distributions)
 
     def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> torch.Tensor:
         log_p = []
-        for distr in self.distributions:
+        for distr in self._distributions.models():
             lp = distr()
             sample_shape = distr.sample_shape
             if lp.shape == sample_shape:
@@ -44,11 +42,11 @@ class JointDistributionModel(DistributionModel):
         return self.log_prob()
 
     def rsample(self, sample_shape=torch.Size()) -> None:
-        for distr in self.distributions:
+        for distr in self._distributions.models():
             distr.rsample(sample_shape)
 
     def sample(self, sample_shape=torch.Size()) -> None:
-        for distr in self.distributions:
+        for distr in self._distributions.models():
             distr.sample(sample_shape)
 
     def handle_model_changed(self, model: Model, obj, index) -> None:
@@ -59,7 +57,7 @@ class JointDistributionModel(DistributionModel):
 
     @property
     def sample_shape(self) -> torch.Size:
-        return max([model.sample_shape for model in self._models], key=len)
+        return self._distributions.sample_shape
 
     @classmethod
     def from_json(cls, data, dic):

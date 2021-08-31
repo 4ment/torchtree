@@ -7,7 +7,7 @@ from typing import Optional, Union
 import torch
 from torch import Tensor, nn
 
-from ..core.model import CallableModel, Parameter
+from ..core.model import CallableModel, Container, Parameter
 from ..core.utils import get_class, process_objects
 from ..typing import ID, OrderedDictType
 
@@ -27,8 +27,7 @@ class Module(CallableModel):
     ) -> None:
         super().__init__(id_)
         self._module = module
-        for parameter in parameters.values():
-            self.add_parameter(parameter)
+        self.x = Container(None, parameters.values())
 
     @property
     def module(self) -> nn.Module:

@@ -1,10 +1,8 @@
-from typing import List, Union
-
 import torch
 import torch.distributions
 
 from .. import Parameter
-from ..core.model import Model
+from ..core.model import AbstractParameter, CatParameter, Model
 from ..core.utils import process_object, process_objects
 from ..distributions.distributions import DistributionModel
 from ..typing import ID
@@ -16,63 +14,63 @@ class MultivariateNormal(DistributionModel):
     :param id_: ID of joint distribution
     :param x: random variable to evaluate/sample using distribution
     :param loc: mean of the distribution
-    :param **kwargs: dict keyed with covariance_matrix or precision_matrix or
-     scale_tril and valued with Parameter
-    :param distributions: list of distributions of type DistributionModel or
-     CallableModel
+    :param covariance_matrix: covariance matrix Parameter
+    :param precision_matrixs: precision matrix Parameter
+    :param scale_tril: scale tril Parameter
     """
 
     def __init__(
-        self, id_: ID, x: Union[List[Parameter], Parameter], loc: Parameter, **kwargs
+        self,
+        id_: ID,
+        x: AbstractParameter,
+        loc: AbstractParameter,
+        covariance_matrix=None,
+        precision_matrix=None,
+        scale_tril=None,
     ) -> None:
         super().__init__(id_)
-        self.x = x
+        if (covariance_matrix is not None) + (scale_tril is not None) + (
+            precision_matrix is not None
+        ) != 1:
+            raise ValueError(
+                "Exactly one of covariance_matrix or precision_matrix or"
+                " scale_tril may be specified."
+            )
         self.loc = loc
-        self.parameterization = list(kwargs.keys())[0]
-        self.parameter = list(kwargs.values())[0]
-
-        self.add_parameter(self.loc)
-        self.add_parameter(self.parameter)
-
-        if isinstance(self.x, (list, tuple)):
-            for xx in self.x:
-                self.add_parameter(xx)
+        if covariance_matrix is not None:
+            self.parameterization = 'covariance_matrix'
+            self.parameter = covariance_matrix
+        elif precision_matrix is not None:
+            self.parameterization = 'precision_matrix'
+            self.parameter = precision_matrix
         else:
-            self.add_parameter(self.x)
+            self.parameterization = 'scale_tril'
+            self.parameter = scale_tril
 
-    def _update_tensor(self, x: Union[List[Parameter], Parameter]) -> None:
-        if isinstance(self.x, (list, tuple)):
-            offset = 0
-            for xx in self.x:
-                xx.tensor = x[..., offset : (offset + xx.shape[-1])]
-                offset += xx.shape[-1]
+        if isinstance(x, (list, tuple)):
+            self.x = CatParameter(None, x, dim=-1)
         else:
-            self.x.tensor = x
+            self.x = x
 
     def rsample(self, sample_shape=torch.Size()) -> None:
         kwargs = {self.parameterization: self.parameter.tensor}
         x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).rsample(
             sample_shape
         )
-        self._update_tensor(x)
+        self.x.tensor = x
 
     def sample(self, sample_shape=torch.Size()) -> None:
         kwargs = {self.parameterization: self.parameter.tensor}
         x = torch.distributions.MultivariateNormal(self.loc.tensor, **kwargs).sample(
             sample_shape
         )
-        self._update_tensor(x)
+        self.x.tensor = x
 
-    def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> torch.Tensor:
+    def log_prob(self, x: Parameter = None) -> torch.Tensor:
         kwargs = {self.parameterization: self.parameter.tensor}
-        if isinstance(self.x, (list, tuple)):
-            return torch.distributions.MultivariateNormal(
-                self.loc.tensor, **kwargs
-            ).log_prob(torch.cat([xx.tensor for xx in x], -1))
-        else:
-            return torch.distributions.MultivariateNormal(
-                self.loc.tensor, **kwargs
-            ).log_prob(x.tensor)
+        return torch.distributions.MultivariateNormal(
+            self.loc.tensor, **kwargs
+        ).log_prob(x.tensor)
 
     def handle_model_changed(self, model: Model, obj, index) -> None:
         pass

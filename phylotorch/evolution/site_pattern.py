@@ -41,7 +41,7 @@ class SitePattern(Model):
 
     @property
     def sample_shape(self) -> torch.Size:
-        raise RuntimeError('Do not call sample_shape on a SitePattern')
+        return torch.Size([])
 
     @classmethod
     def from_json(cls, data, dic):
