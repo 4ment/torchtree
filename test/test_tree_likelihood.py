@@ -34,7 +34,7 @@ def _prepare_tiny(tiny_newick_file, tiny_fasta_file):
         taxa.append(Taxon(taxon.label, None))
 
     partials_tensor, weights_tensor = compress_alignment(
-        Alignment(None, sequences, Taxa(None, taxa)), NucleotideDataType()
+        Alignment(None, sequences, Taxa(None, taxa), NucleotideDataType())
     )
     return partials_tensor, weights_tensor, indices, branch_lengths
 
@@ -73,10 +73,10 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
     site_pattern = {
         'id': 'sp',
         'type': 'phylotorch.evolution.site_pattern.SitePattern',
-        'datatype': 'nucleotide',
         'alignment': {
             "id": "alignment",
             "type": "phylotorch.evolution.alignment.Alignment",
+            'datatype': 'nucleotide',
             'file': tiny_fasta_file,
             'taxa': 'taxa',
         },
@@ -218,10 +218,10 @@ def test_treelikelihood_batch():
     site_pattern_dict = {
         "id": "sites",
         "type": "phylotorch.evolution.site_pattern.SitePattern",
-        "datatype": "nucleotide",
         "alignment": {
             "id": "alignment",
             "type": "phylotorch.evolution.alignment.Alignment",
+            'datatype': 'nucleotide',
             "taxa": 'taxa',
             "sequences": [
                 {"taxon": "A", "sequence": "AAG"},

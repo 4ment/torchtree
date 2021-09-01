@@ -559,11 +559,11 @@
         "site_pattern": {
           "id": "sp",
           "type": "phylotorch.evolution.site_pattern.SitePattern",
-          "datatype": "nucleotide",
           "taxa": "taxa",
           "alignment": {
             "id": "alignment",
             "type": "phylotorch.evolution.alignment.Alignment",
+            "datatype": "nucleotide",
             "taxa": "taxa",
             "sequences": [
               {

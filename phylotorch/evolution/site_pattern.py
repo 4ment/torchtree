@@ -6,7 +6,6 @@ import torch
 from ..core.model import Model
 from ..core.utils import process_object
 from .alignment import Alignment
-from .datatype import DataType, NucleotideDataType
 
 
 class SitePattern(Model):
@@ -46,25 +45,16 @@ class SitePattern(Model):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-
-        if isinstance(data['datatype'], str) and data['datatype'] == 'nucleotide':
-            data_type = NucleotideDataType()
-        else:
-            data_type = process_object(data['datatype'], dic)
-
         alignment = process_object(data['alignment'], dic)
-        partials, weights = compress_alignment(alignment, data_type)
+        partials, weights = compress_alignment(alignment)
 
         return cls(id_, partials, weights)
 
 
-def compress_alignment(
-    alignment: Alignment, data_type: DataType
-) -> Tuple[torch.Tensor, torch.Tensor]:
+def compress_alignment(alignment: Alignment) -> Tuple[torch.Tensor, torch.Tensor]:
     """Compress alignment using data_type.
 
     :param Alignment alignment: sequence alignment
-    :param DataType data_type: data type
     :return: a tuple containing partials and weights
     :rtype: Tuple[torch.Tensor, torch.Tensor]
     """
@@ -80,7 +70,7 @@ def compress_alignment(
     for taxon in taxa:
         partials.append(
             torch.tensor(
-                [data_type.partial(c) for c in patterns[taxon]],
+                [alignment.data_type.partial(c) for c in patterns[taxon]],
                 dtype=torch.get_default_dtype(),
             ).t()
         )
