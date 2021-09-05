@@ -117,7 +117,7 @@ class SymmetricSubstitutionModel(SubstitutionModel, ABC):
     @property
     def sample_shape(self) -> torch.Size:
         return max(
-            [parameter.shape[:-1] for parameter in self.params()],
+            [parameter.shape[:-1] for parameter in self._parameters.values()],
             key=len,
         )
 

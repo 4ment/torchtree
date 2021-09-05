@@ -22,13 +22,13 @@ class SiteModel(Model):
 
 
 class ConstantSiteModel(SiteModel):
-    def __init__(self, id_: ID) -> None:
+    def __init__(self, id_: ID, mu: Parameter = None) -> None:
         super().__init__(id_)
-        self._rate = torch.tensor([1.0])
-        self._probability = torch.tensor([1.0])
+        self._rate = mu if mu is not None else Parameter(None, torch.ones((1,)))
+        self._probability = torch.ones_like(self._rate.tensor)
 
     def rates(self) -> torch.Tensor:
-        return self._rate
+        return self._rate.tensor
 
     def probabilities(self) -> torch.Tensor:
         return self._probability
@@ -37,29 +37,34 @@ class ConstantSiteModel(SiteModel):
         pass
 
     def handle_parameter_changed(self, variable, index, event):
-        pass
+        self.fire_model_changed()
 
     @property
     def sample_shape(self) -> torch.Size:
-        return torch.Size([])
+        return self._rate.shape[:-1]
 
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
-        self._rate = self._rate.cuda(device)
+        self._rate.cuda(device)
         self._probability = self._probability.cuda(device)
 
     def cpu(self) -> None:
-        self._rate = self._rate.cpu()
+        self._rate.cpu()
         self._probability = self._probability.cpu()
 
     @classmethod
     def from_json(cls, data, dic):
-        return cls(data['id'])
+        if 'mu' in data:
+            mu = process_object(data['mu'], dic)
+        else:
+            mu = Parameter(None, torch.ones((1,)))
+        return cls(data['id'], mu)
 
 
 class InvariantSiteModel(SiteModel):
-    def __init__(self, id_: ID, invariant: Parameter) -> None:
+    def __init__(self, id_: ID, invariant: Parameter, mu: Parameter = None) -> None:
         super().__init__(id_)
         self._invariant = invariant
+        self._mu = mu
         self._rates = None
         self._probs = None
         self.need_update = True
@@ -77,6 +82,8 @@ class InvariantSiteModel(SiteModel):
             ),
             -1,
         )
+        if self._mu is not None:
+            self._rates *= self._mu.tensor
 
     def rates(self) -> torch.Tensor:
         if self.need_update:
@@ -105,17 +112,27 @@ class InvariantSiteModel(SiteModel):
     def from_json(cls, data, dic):
         id_ = data['id']
         invariant = process_object(data['invariant'], dic)
-        return cls(id_, invariant)
+        if 'mu' in data:
+            mu = process_object(data['mu'], dic)
+        else:
+            mu = None
+        return cls(id_, invariant, mu)
 
 
 class WeibullSiteModel(SiteModel):
     def __init__(
-        self, id_: ID, shape: Parameter, categories: int, invariant: Parameter = None
+        self,
+        id_: ID,
+        shape: Parameter,
+        categories: int,
+        invariant: Parameter = None,
+        mu: Parameter = None,
     ) -> None:
         super().__init__(id_)
         self._shape = shape
         self.categories = categories
         self._invariant = invariant
+        self._mu = mu
         self.probs = torch.full(
             (categories,), 1.0 / categories, dtype=self.shape.dtype, device=shape.device
         )
@@ -155,6 +172,8 @@ class WeibullSiteModel(SiteModel):
             rates = torch.pow(-torch.log(1.0 - quantile), 1.0 / shape)
 
         self._rates = rates / (rates * self.probs).sum(-1, keepdim=True)
+        if self._mu is not None:
+            self._rates *= self._mu.tensor
 
     def rates(self) -> torch.Tensor:
         if self.need_update:
@@ -184,11 +203,11 @@ class WeibullSiteModel(SiteModel):
 
     def cuda(self, device: Optional[Union[int, torch.device]] = None):
         super().cuda()
-        self.probs.cuda()
+        self.need_update = True
 
     def cpu(self) -> None:
         super().cpu()
-        self.probs.cpu()
+        self.need_update = True
 
     @classmethod
     def from_json(cls, data, dic):
@@ -198,7 +217,11 @@ class WeibullSiteModel(SiteModel):
         invariant = None
         if 'invariant' in data:
             invariant = process_object(data['invariant'], dic)
-        return cls(id_, shape, categories, invariant)
+        if 'mu' in data:
+            mu = process_object(data['mu'], dic)
+        else:
+            mu = None
+        return cls(id_, shape, categories, invariant, mu)
 
 
 class LogNormalSiteModel(SiteModel):
@@ -219,6 +242,8 @@ class LogNormalSiteModel(SiteModel):
     def update_rates(self, value):
         rates = LogNormal(-value * value / 2.0, value).icdf(self.quantile)
         self._rates = rates / (rates.sum() * self.probs)
+        if self._mu is not None:
+            self._rates *= self._mu.tensor
 
     def rates(self) -> torch.Tensor:
         if self.need_update:

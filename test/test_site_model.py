@@ -10,9 +10,16 @@ from phylotorch.evolution.site_model import (
 )
 
 
-def test_constant():
-    sitemodel = ConstantSiteModel('constant')
-    assert sitemodel.rates()[0] == 1.0
+@pytest.mark.parametrize(
+    "mu,expected",
+    (
+        (None, torch.tensor([1.0])),
+        (Parameter('mu', torch.tensor([2.0])), torch.tensor([2.0])),
+    ),
+)
+def test_constant(mu, expected):
+    sitemodel = ConstantSiteModel('constant', mu)
+    assert torch.all(sitemodel.rates() == expected)
     assert sitemodel.probabilities()[0] == 1.0
 
 
@@ -89,6 +96,14 @@ def test_invariant():
     assert torch.all(torch.cat((prop_invariant, torch.tensor([0.8]))).eq(props))
 
 
+def test_invariant_mu():
+    prop_invariant = torch.tensor([0.2])
+    site_model = InvariantSiteModel(
+        'pinv', Parameter('inv', prop_invariant), Parameter('mu', torch.tensor([2.0]))
+    )
+    assert site_model.rates()[1] == 2 / 0.8
+
+
 def test_weibull_json():
     dic = {}
     rates_expected = (0.1457844, 0.5131316, 1.0708310, 2.2702530)
@@ -109,3 +124,14 @@ def test_weibull_json():
     np.testing.assert_allclose(sitemodel.rates(), rates_expected, rtol=1e-06)
     dic['shape'].tensor = torch.tensor(np.array([0.1]))
     np.testing.assert_allclose(sitemodel.rates(), new_rates_expected, rtol=1e-06)
+
+
+def test_weibull_mu():
+    sitemodel = WeibullSiteModel(
+        'weibull',
+        Parameter('shape', torch.tensor([1.0])),
+        4,
+        mu=Parameter('mu', torch.tensor([2.0])),
+    )
+    rates_expected = torch.tensor([0.1457844, 0.5131316, 1.0708310, 2.2702530]) * 2
+    np.testing.assert_allclose(sitemodel.rates(), rates_expected, rtol=1e-06)
