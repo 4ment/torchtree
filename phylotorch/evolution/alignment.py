@@ -18,6 +18,8 @@ class Alignment(Identifiable, collections.UserList):
     :param taxa: Taxa object
     """
 
+    _tag = 'alignment'
+
     def __init__(
         self, id_: ID, sequences: List[Sequence], taxa: Taxa, data_type: DataType
     ) -> None:

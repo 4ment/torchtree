@@ -1,9 +1,11 @@
 import copy
+import functools
 import importlib
 import json
 import numbers
 import re
 import signal
+from typing import Union
 
 import torch
 
@@ -286,3 +288,45 @@ def print_graph(g: torch.Tensor, level: int = 0) -> None:
         print('*' * level * 4, g)
         for subg in g.next_functions:
             print_graph(subg[0], level + 1)
+
+
+class AlternativeAttributeError(Exception):
+    """Custom exception for debugging conflicts between @property and
+    __getattr__
+
+    https://stackoverflow.com/questions/36575068/attributeerrors-undesired-interaction-between-property-and-getattr
+    """
+
+    @classmethod
+    def wrapper(err_type, f):
+        """wraps a function to reraise an AttributeError as the alternate
+        type."""
+
+        @functools.wraps(f)
+        def alt_AttrError_wrapper(*args, **kw):
+            try:
+                return f(*args, **kw)
+            except AttributeError as e:
+                new_err = err_type(e)
+                new_err.__traceback__ = e.__traceback__.tb_next
+                raise new_err from None
+
+        return alt_AttrError_wrapper
+
+
+def string_to_list_index(index_str) -> Union[int, slice]:
+    slice_indexes_str = index_str.split(':')
+    if len(slice_indexes_str) == 1:
+        index = int(slice_indexes_str[0])
+    else:
+        # [ <first element to include> : <first element to exclude> : <step> ]
+        start = None if slice_indexes_str[0] == '' else int(slice_indexes_str[0])
+        end_excluded = None
+        step = None
+        if len(slice_indexes_str) > 1:
+            if slice_indexes_str[1] != '':
+                end_excluded = int(slice_indexes_str[1])
+            if len(slice_indexes_str) == 3 and slice_indexes_str[2] != '':
+                step = int(slice_indexes_str[2])
+        index = slice(start, end_excluded, step)
+    return index
