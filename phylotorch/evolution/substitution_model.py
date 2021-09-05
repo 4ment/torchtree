@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Optional, Union
 
 import torch
@@ -60,6 +60,7 @@ class JC69(SubstitutionModel):
                 [1.0 / 3, 1.0 / 3, 1.0 / 3, -1.0],
             ],
             dtype=self.frequencies.dtype,
+            device=self.frequencies.device,
         )
 
     def handle_model_changed(self, model, obj, index):
@@ -83,7 +84,7 @@ class JC69(SubstitutionModel):
         return cls(data['id'])
 
 
-class SymmetricSubstitutionModel(SubstitutionModel):
+class SymmetricSubstitutionModel(SubstitutionModel, ABC):
     def __init__(self, id_: ID, frequencies: Parameter):
         super().__init__(id_, frequencies)
 
@@ -116,7 +117,7 @@ class SymmetricSubstitutionModel(SubstitutionModel):
     @property
     def sample_shape(self) -> torch.Size:
         return max(
-            [parameter.shape[:-1] for parameter in self._parameters.values()],
+            [parameter.shape[:-1] for parameter in self.params()],
             key=len,
         )
 
@@ -204,22 +205,26 @@ class HKY(SymmetricSubstitutionModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
-    def p_t2(self, branch_lengths: torch.Tensor) -> torch.Tensor:
+    def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
         d = torch.unsqueeze(branch_lengths, -1)
-        pi = self.frequencies
-        R = pi[0] + pi[2]
-        Y = pi[3] + pi[1]
-        kappa = self.kappa[0]
+        if len(self.frequencies.shape) == 1:
+            pi = self.frequencies.unsqueeze(0)
+            kappa = self.kappa.unsqueeze(0)
+        else:
+            pi = self.frequencies.unsqueeze(-2).unsqueeze(-2)
+            kappa = self.kappa.unsqueeze(-1)
+        R = pi[..., 0] + pi[..., 2]
+        Y = pi[..., 3] + pi[..., 1]
         k1 = kappa * Y + R
         k2 = kappa * R + Y
         r = 1.0 / (
             2.0
             * (
-                pi[0] * pi[1]
-                + pi[1] * pi[2]
-                + pi[0] * pi[3]
-                + pi[2] * pi[3]
-                + kappa * (pi[1] * pi[3] + pi[0] * pi[2])
+                pi[..., 0] * pi[..., 1]
+                + pi[..., 1] * pi[..., 2]
+                + pi[..., 0] * pi[..., 3]
+                + pi[..., 2] * pi[..., 3]
+                + kappa * (pi[..., 1] * pi[..., 3] + pi[..., 0] * pi[..., 2])
             )
         )
 
@@ -228,49 +233,25 @@ class HKY(SymmetricSubstitutionModel):
         exp21 = torch.exp(-k1 * d * r)
         return torch.cat(
             (
-                pi[0] * (1.0 + (Y / R) * exp1) + (pi[2] / R) * exp22,
-                pi[1] * (1.0 - exp1),
-                pi[2] * (1.0 + (Y / R) * exp1) - (pi[2] / R) * exp22,
-                pi[3] * (1.0 - exp1),
-                pi[0] * (1.0 - exp1),
-                pi[1] * (1.0 + (R / Y) * exp1) + (pi[3] / Y) * exp21,
-                pi[2] * (1.0 - exp1),
-                pi[3] * (1.0 + (R / Y) * exp1) - (pi[3] / Y) * exp21,
-                pi[0] * (1.0 + (Y / R) * exp1) - (pi[0] / R) * exp22,
-                pi[1] * (1.0 - exp1),
-                pi[2] * (1.0 + (Y / R) * exp1) + (pi[0] / R) * exp22,
-                pi[3] * (1.0 - exp1),
-                pi[0] * (1.0 - exp1),
-                pi[1] * (1.0 + (R / Y) * exp1) - (pi[1] / Y) * exp21,
-                pi[2] * (1.0 - exp1),
-                pi[3] * (1.0 + (R / Y) * exp1) + (pi[1] / Y) * exp21,
+                pi[..., 0] * (1.0 + (Y / R) * exp1) + (pi[..., 2] / R) * exp22,
+                pi[..., 1] * (1.0 - exp1),
+                pi[..., 2] * (1.0 + (Y / R) * exp1) - (pi[..., 2] / R) * exp22,
+                pi[..., 3] * (1.0 - exp1),
+                pi[..., 0] * (1.0 - exp1),
+                pi[..., 1] * (1.0 + (R / Y) * exp1) + (pi[..., 3] / Y) * exp21,
+                pi[..., 2] * (1.0 - exp1),
+                pi[..., 3] * (1.0 + (R / Y) * exp1) - (pi[..., 3] / Y) * exp21,
+                pi[..., 0] * (1.0 + (Y / R) * exp1) - (pi[..., 0] / R) * exp22,
+                pi[..., 1] * (1.0 - exp1),
+                pi[..., 2] * (1.0 + (Y / R) * exp1) + (pi[..., 0] / R) * exp22,
+                pi[..., 3] * (1.0 - exp1),
+                pi[..., 0] * (1.0 - exp1),
+                pi[..., 1] * (1.0 + (R / Y) * exp1) - (pi[..., 1] / Y) * exp21,
+                pi[..., 2] * (1.0 - exp1),
+                pi[..., 3] * (1.0 + (R / Y) * exp1) + (pi[..., 1] / Y) * exp21,
             ),
             -1,
-        ).reshape(d.shape[0], d.shape[1], 4, 4)
-
-    def q2(self) -> torch.Tensor:
-        pi = self.frequencies.unsqueeze(-1)
-        return torch.cat(
-            (
-                -(pi[1] + self.kappa * pi[2] + pi[3]),
-                pi[1],
-                self.kappa * pi[2],
-                pi[3],
-                pi[0],
-                -(pi[0] + pi[2] + self.kappa * pi[3]),
-                pi[2],
-                self.kappa * pi[3],
-                self.kappa * pi[0],
-                pi[1],
-                -(self.kappa * pi[0] + pi[1] + pi[3]),
-                pi[3],
-                pi[0],
-                self.kappa * pi[1],
-                pi[2],
-                -(pi[0] + self.kappa * pi[1] + pi[2]),
-            ),
-            0,
-        ).reshape((4, 4))
+        ).reshape(branch_lengths.shape + (4, 4))
 
     def q(self) -> torch.Tensor:
         if len(self.frequencies.shape) == 1:

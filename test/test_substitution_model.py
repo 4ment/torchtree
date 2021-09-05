@@ -160,6 +160,9 @@ def test_HKY(hky_fixture):
     P = subst_model.p_t(branch_lengths)
     assert torch.allclose(P.squeeze(), hky_P_expected, atol=1e-06)
 
+    P = super(type(subst_model), subst_model).p_t(branch_lengths)
+    assert torch.allclose(P.squeeze(), hky_P_expected, atol=1e-06)
+
 
 def test_HKY_json(hky_fixture):
     kappa, pi, hky_P_expected, branch_lengths = hky_fixture
