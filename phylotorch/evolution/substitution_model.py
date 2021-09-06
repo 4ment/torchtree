@@ -4,7 +4,9 @@ from typing import Optional, Union
 import torch
 import torch.linalg
 
-from ..core.model import Model, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import Model
+from ..core.parameter import Parameter
 from ..core.utils import process_object
 from ..typing import ID
 
@@ -12,7 +14,7 @@ from ..typing import ID
 class SubstitutionModel(Model):
     _tag = 'substitution_model'
 
-    def __init__(self, id_: ID, frequencies: Parameter) -> None:
+    def __init__(self, id_: ID, frequencies: AbstractParameter) -> None:
         super().__init__(id_)
         self._frequencies = frequencies
 
@@ -85,7 +87,7 @@ class JC69(SubstitutionModel):
 
 
 class SymmetricSubstitutionModel(SubstitutionModel, ABC):
-    def __init__(self, id_: ID, frequencies: Parameter):
+    def __init__(self, id_: ID, frequencies: AbstractParameter):
         super().__init__(id_, frequencies)
 
     def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
@@ -123,7 +125,9 @@ class SymmetricSubstitutionModel(SubstitutionModel, ABC):
 
 
 class GTR(SymmetricSubstitutionModel):
-    def __init__(self, id_: ID, rates: Parameter, frequencies: Parameter):
+    def __init__(
+        self, id_: ID, rates: AbstractParameter, frequencies: AbstractParameter
+    ):
         super().__init__(id_, frequencies)
         self._rates = rates
 
@@ -191,7 +195,9 @@ class GTR(SymmetricSubstitutionModel):
 
 
 class HKY(SymmetricSubstitutionModel):
-    def __init__(self, id_: ID, kappa: Parameter, frequencies: Parameter) -> None:
+    def __init__(
+        self, id_: ID, kappa: AbstractParameter, frequencies: AbstractParameter
+    ) -> None:
         super().__init__(id_, frequencies)
         self._kappa = kappa
 
@@ -291,7 +297,11 @@ class HKY(SymmetricSubstitutionModel):
 
 class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
     def __init__(
-        self, id_: ID, mapping: Parameter, rates: Parameter, frequencies: Parameter
+        self,
+        id_: ID,
+        mapping: AbstractParameter,
+        rates: AbstractParameter,
+        frequencies: AbstractParameter,
     ) -> None:
         super().__init__(id_, frequencies)
         self._rates = rates

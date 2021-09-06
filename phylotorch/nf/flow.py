@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple, Union
 import torch.nn
 from torch import Size, Tensor, nn
 
-from ..core.model import Parameter
+from ..core.abstractparameter import AbstractParameter
 from ..core.utils import get_class, process_object, process_objects
 from ..distributions.distributions import Distribution, DistributionModel
 from ..nn.module import Module
@@ -25,7 +25,7 @@ class NormalizingFlow(DistributionModel):
     def __init__(
         self,
         id_: str,
-        x: Union[Parameter, List[Parameter]],
+        x: Union[AbstractParameter, List[AbstractParameter]],
         base: Distribution,
         modules: List[Module],
         dtype=None,
@@ -74,7 +74,9 @@ class NormalizingFlow(DistributionModel):
         self.base.rsample(sample_shape)
         self.apply_flow(sample_shape)
 
-    def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> Tensor:
+    def log_prob(
+        self, x: Union[List[AbstractParameter], AbstractParameter] = None
+    ) -> Tensor:
         return self.base() - self.sum_log_abs_det_jacobians
 
     def _call(self, *args, **kwargs) -> Tensor:
@@ -84,7 +86,7 @@ class NormalizingFlow(DistributionModel):
     def sample_shape(self) -> torch.Size:
         return self.base.sample_shape
 
-    def parameters(self) -> List[Parameter]:
+    def parameters(self) -> List[AbstractParameter]:
         parameters = []
         for module in self.modules:
             parameters.extend(module.parameters())

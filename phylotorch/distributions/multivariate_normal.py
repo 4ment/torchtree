@@ -2,7 +2,9 @@ import torch
 import torch.distributions
 
 from .. import Parameter
-from ..core.model import AbstractParameter, CatParameter, Model
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import Model
+from ..core.parameter import CatParameter
 from ..core.utils import process_object, process_objects
 from ..distributions.distributions import DistributionModel
 from ..typing import ID

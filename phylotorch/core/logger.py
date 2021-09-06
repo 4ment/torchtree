@@ -7,7 +7,8 @@ from typing import List, Union
 import torch
 
 from ..evolution.tree_model import TreeModel
-from .model import CallableModel, Parameter
+from .abstractparameter import AbstractParameter
+from .model import CallableModel
 from .parameter_encoder import ParameterEncoder
 from .runnable import Runnable
 from .serializable import JSONSerializable
@@ -44,7 +45,9 @@ class Logger(LoggerInterface):
     :param kwargs: optionals
     """
 
-    def __init__(self, objs: List[Union[Parameter, CallableModel]], **kwargs) -> None:
+    def __init__(
+        self, objs: List[Union[AbstractParameter, CallableModel]], **kwargs
+    ) -> None:
         if 'file_name' in kwargs:
             self.file_name = kwargs['file_name']
             del kwargs['file_name']
@@ -64,7 +67,7 @@ class Logger(LoggerInterface):
         self.writer = csv.writer(self.f, **self.kwargs)
         header = ['sample']
         for obj in self.objs:
-            if isinstance(obj, Parameter):
+            if isinstance(obj, AbstractParameter):
                 header.extend(['{}.{}'.format(obj.id, i) for i in range(obj.shape[-1])])
 
             else:
@@ -74,7 +77,7 @@ class Logger(LoggerInterface):
     def log(self, *args, **kwargs) -> None:
         row = [self.sample]
         for obj in self.objs:
-            if isinstance(obj, Parameter):
+            if isinstance(obj, AbstractParameter):
                 row.extend(obj.tensor.detach().cpu().tolist())
             else:
                 row.append(obj().item())
@@ -184,7 +187,7 @@ class CSV(JSONSerializable, Runnable):
     :type objs: list[Parameter]
     """
 
-    def __init__(self, objs: List[Parameter], **kwargs) -> None:
+    def __init__(self, objs: List[AbstractParameter], **kwargs) -> None:
         self.objs = objs
         self.file_name = kwargs.get('file_name', None)
         self.kwargs = kwargs
@@ -232,7 +235,7 @@ class Dumper(JSONSerializable, Runnable):
     :type parameters: list[Parameter]
     """
 
-    def __init__(self, parameters: List[Parameter], **kwargs) -> None:
+    def __init__(self, parameters: List[AbstractParameter], **kwargs) -> None:
         if 'file_name' in kwargs:
             self.file_name = kwargs['file_name']
             del kwargs['file_name']

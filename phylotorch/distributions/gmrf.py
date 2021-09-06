@@ -1,7 +1,9 @@
 import torch
 import torch.distributions.normal
 
-from ..core.model import CallableModel, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import CallableModel
+from ..core.parameter import Parameter
 from ..core.utils import process_object
 from ..evolution.tree_model import TimeTreeModel, TreeModel
 from ..typing import ID
@@ -11,8 +13,8 @@ class GMRF(CallableModel):
     def __init__(
         self,
         id_: ID,
-        field: Parameter,
-        precision: Parameter,
+        field: AbstractParameter,
+        precision: AbstractParameter,
         tree_model: TimeTreeModel = None,
         weights: torch.Tensor = None,
         rescale: bool = True,
@@ -87,10 +89,10 @@ class GMRFCovariate(CallableModel):
     def __init__(
         self,
         id_: ID,
-        field: Parameter,
-        precision: Parameter,
-        covariates: Parameter,
-        beta: Parameter,
+        field: AbstractParameter,
+        precision: AbstractParameter,
+        covariates: AbstractParameter,
+        beta: AbstractParameter,
     ) -> None:
         super().__init__(id_)
         self.field = field

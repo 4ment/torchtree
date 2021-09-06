@@ -2,7 +2,8 @@ import math
 
 import torch
 
-from ..core.model import CallableModel, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import CallableModel
 from ..core.utils import get_class, process_object
 from ..typing import ID
 
@@ -20,7 +21,9 @@ def w3(z):
 
 
 class EnergyFunctionModel(CallableModel):
-    def __init__(self, id_: ID, x: Parameter, desc: str, dtype=None, device=None):
+    def __init__(
+        self, id_: ID, x: AbstractParameter, desc: str, dtype=None, device=None
+    ):
         super().__init__(id_)
         self.x = x
         self.desc = desc

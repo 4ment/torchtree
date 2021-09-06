@@ -3,7 +3,8 @@ from typing import List, Union
 import torch.distributions
 
 from .. import Parameter
-from ..core.model import Container, Model
+from ..core.container import Container
+from ..core.model import Model
 from ..core.utils import process_object
 from ..typing import ID
 from .distributions import DistributionModel
@@ -23,7 +24,7 @@ class JointDistributionModel(DistributionModel):
 
     def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> torch.Tensor:
         log_p = []
-        for distr in self._distributions.models():
+        for distr in self._distributions.callables():
             lp = distr()
             sample_shape = distr.sample_shape
             if lp.shape == sample_shape:

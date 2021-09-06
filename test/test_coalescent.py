@@ -32,18 +32,18 @@ def ratios_list():
 def node_heights_transformed(ratios_list):
     node_heights = {
         'id': 'node_heights',
-        'type': 'phylotorch.core.model.TransformedParameter',
+        'type': 'phylotorch.TransformedParameter',
         'transform': 'phylotorch.evolution.tree_model.GeneralNodeHeightTransform',
         'parameters': {'tree': 'tree'},
         'x': [
             {
                 'id': 'ratios',
-                'type': 'phylotorch.core.model.Parameter',
+                'type': 'phylotorch.Parameter',
                 'tensor': ratios_list[:-1],
             },
             {
                 'id': 'root_height',
-                'type': 'phylotorch.core.model.Parameter',
+                'type': 'phylotorch.Parameter',
                 'tensor': ratios_list[-1:],
             },
         ],
@@ -91,7 +91,7 @@ def test_constant_json(tree_model_node_heights_transformed):
         'type': 'phylotorch.evolution.coalescent.ConstantCoalescentModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.core.model.Parameter',
+            'type': 'phylotorch.Parameter',
             'tensor': [3.0],
         },
         'tree_model': tree_model_node_heights_transformed,
@@ -140,7 +140,7 @@ def test_skyride_json(tree_model_node_heights_transformed):
         'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.core.model.Parameter',
+            'type': 'phylotorch.Parameter',
             'tensor': [3.0, 10.0, 4.0],
         },
         'tree_model': tree_model_node_heights_transformed,
@@ -155,7 +155,7 @@ def test_skygride_data_json():
         'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.core.model.Parameter',
+            'type': 'phylotorch.Parameter',
             'tensor': [3.0, 10.0, 4.0],
         },
         'events': [0] * 3 + [1] * 4,
@@ -182,7 +182,7 @@ def test_skygrid_json(tree_model_node_heights_transformed):
         'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentGridModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.core.model.Parameter',
+            'type': 'phylotorch.Parameter',
             'tensor': [3.0, 10.0, 4.0, 2.0, 3.0],
         },
         'tree_model': tree_model_node_heights_transformed,
@@ -296,7 +296,7 @@ def test_skygrid_data_json():
         'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentGridModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.core.model.Parameter',
+            'type': 'phylotorch.Parameter',
             'tensor': torch.tensor([1.0, 3.0, 6.0, 8.0, 9.0]).exp().tolist(),
         },
         'events': [1] * 5 + [0] * 4,
@@ -308,7 +308,7 @@ def test_skygrid_data_json():
         'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentGridModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.core.model.Parameter',
+            'type': 'phylotorch.Parameter',
             'tensor': torch.tensor([1.0, 3.0, 6.0, 8.0, 9.0]).exp().tolist(),
         },
         'events': [1] * 5 + [0] * 4,

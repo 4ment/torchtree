@@ -8,13 +8,13 @@ def node_heights_difference_transform(
 ) -> dict:
     node_heights = {
         'id': id_,
-        'type': 'phylotorch.core.model.TransformedParameter',
+        'type': 'phylotorch.TransformedParameter',
         'transform': 'phylotorch.evolution.tree_height_transform.'
         'DifferenceNodeHeightTransform',
         'parameters': {'tree': tree_id},
         'x': {
             'id': 'differences',
-            'type': 'phylotorch.core.model.Parameter',
+            'type': 'phylotorch.Parameter',
             'tensor': differences,
         },
     }

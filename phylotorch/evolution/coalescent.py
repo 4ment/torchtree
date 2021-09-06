@@ -2,7 +2,9 @@ import torch
 from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
 
-from ..core.model import CallableModel, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import CallableModel
+from ..core.parameter import Parameter
 from ..core.utils import process_object, process_objects
 from ..typing import ID
 from .tree_model import TimeTreeModel, TreeModel
@@ -12,7 +14,7 @@ class ConstantCoalescentModel(CallableModel):
     def __init__(
         self,
         id_: ID,
-        theta: Parameter,
+        theta: AbstractParameter,
         tree_model: TimeTreeModel = None,
     ) -> None:
         super().__init__(id_)
@@ -221,8 +223,8 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
     def __init__(
         self,
         id_: ID,
-        theta: Parameter,
-        grid: Parameter,
+        theta: AbstractParameter,
+        grid: AbstractParameter,
         tree_model: TimeTreeModel = None,
     ) -> None:
         super().__init__(id_)
@@ -289,7 +291,7 @@ class FakeTreeModel:
         return self._node_heights.tensor
 
 
-def process_data_coalesent(data, dtype: torch.dtype) -> Parameter:
+def process_data_coalesent(data, dtype: torch.dtype) -> AbstractParameter:
     if 'times' in data:
         times = torch.tensor(data['times'], dtype=dtype)
     else:

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import torch
 
-from phylotorch.core.model import Parameter
+from phylotorch import Parameter
 from phylotorch.evolution.substitution_model import (
     GTR,
     HKY,
@@ -68,13 +68,13 @@ def test_GTR():
             'type': 'phylotorch.evolution.substitution_model.GTR',
             'rates': {
                 'id': 'rates',
-                'type': 'phylotorch.core.model.Parameter',
+                'type': 'phylotorch.Parameter',
                 'tensor': [0.060602, 0.402732, 0.028230, 0.047910, 0.407249, 0.053277],
                 'dtype': 'torch.float64',
             },
             'frequencies': {
                 'id': 'pi',
-                'type': 'phylotorch.core.model.Parameter',
+                'type': 'phylotorch.Parameter',
                 'tensor': [0.479367, 0.172572, 0.140933, 0.207128],
                 'dtype': 'torch.float64',
             },
@@ -173,12 +173,12 @@ def test_HKY_json(hky_fixture):
             'type': 'phylotorch.evolution.substitution_model.HKY',
             'kappa': {
                 'id': 'kappa',
-                'type': 'phylotorch.core.model.Parameter',
+                'type': 'phylotorch.Parameter',
                 'tensor': kappa.tolist(),
             },
             'frequencies': {
                 'id': 'pi',
-                'type': 'phylotorch.core.model.Parameter',
+                'type': 'phylotorch.Parameter',
                 'tensor': pi.tolist(),
             },
         },

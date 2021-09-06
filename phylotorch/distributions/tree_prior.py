@@ -1,11 +1,12 @@
 import torch
 from torch import Tensor
 
-from phylotorch import Parameter
-from phylotorch.core.model import CallableModel
-from phylotorch.core.utils import process_object
-from phylotorch.evolution.tree_model import UnRootedTreeModel
-from phylotorch.typing import ID
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import CallableModel
+from ..core.parameter import Parameter
+from ..core.utils import process_object
+from ..evolution.tree_model import UnRootedTreeModel
+from ..typing import ID
 
 
 class CompoundGammaDirichletPrior(CallableModel):
@@ -13,10 +14,10 @@ class CompoundGammaDirichletPrior(CallableModel):
 
     :param id_: ID of object
     :param UnRootedTreeModel tree_model: unrooted tree model
-    :param Parameter alpha: concentration parameter of Dirichlet distribution
-    :param Parameter c: ratio of the mean internal/external branch lengths
-    :param Parameter shape: shape parameter of the gamma distribution
-    :param Parameter rate: rate parameter of the gamma distribution
+    :param AbstractParameter alpha: concentration parameter of Dirichlet distribution
+    :param AbstractParameter c: ratio of the mean internal/external branch lengths
+    :param AbstractParameter shape: shape parameter of the gamma distribution
+    :param AbstractParameter rate: rate parameter of the gamma distribution
 
     .. [rannala2011]  Rannala, Zhu, and Ziheng Yang. Tail Paradox, Partial
      Identifiability, and Influential Priors in Bayesian Branch Length Inference. 2011
@@ -26,10 +27,10 @@ class CompoundGammaDirichletPrior(CallableModel):
         self,
         id_: ID,
         tree_model: UnRootedTreeModel,
-        alpha: Parameter,
-        c: Parameter,
-        shape: Parameter,
-        rate: Parameter,
+        alpha: AbstractParameter,
+        c: AbstractParameter,
+        shape: AbstractParameter,
+        rate: AbstractParameter,
     ):
         super().__init__(id_)
         self.tree_model = tree_model

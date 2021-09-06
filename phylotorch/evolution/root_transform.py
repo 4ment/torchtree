@@ -3,7 +3,9 @@ from typing import List
 import torch
 from torch import Tensor
 
-from ..core.model import AbstractParameter, CallableModel, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import CallableModel
+from ..core.parameter import Parameter
 from ..core.utils import process_object
 from ..typing import ID
 

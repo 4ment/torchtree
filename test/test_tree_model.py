@@ -9,18 +9,18 @@ def node_heights_general_transform(
 ) -> dict:
     node_heights = {
         'id': id_,
-        'type': 'phylotorch.core.model.TransformedParameter',
+        'type': 'phylotorch.TransformedParameter',
         'transform': 'phylotorch.evolution.tree_model.GeneralNodeHeightTransform',
         'parameters': {'tree': tree_id},
         'x': [
             {
                 'id': 'ratios',
-                'type': 'phylotorch.core.model.Parameter',
+                'type': 'phylotorch.Parameter',
                 'tensor': ratios,
             },
             {
                 'id': 'root_height',
-                'type': 'phylotorch.core.model.Parameter',
+                'type': 'phylotorch.Parameter',
                 'tensor': root_height,
             },
         ],

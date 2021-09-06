@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from phylotorch.core.model import Parameter
+from phylotorch import Parameter
 from phylotorch.distributions.gmrf import GMRF, GMRFCovariate
 from phylotorch.evolution.tree_model import TimeTreeModel
 

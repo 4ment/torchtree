@@ -4,7 +4,9 @@ from typing import Optional, Union
 import torch
 from torch.distributions import LogNormal
 
-from ..core.model import Model, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import Model
+from ..core.parameter import Parameter
 from ..core.utils import process_object
 from ..typing import ID
 
@@ -22,7 +24,7 @@ class SiteModel(Model):
 
 
 class ConstantSiteModel(SiteModel):
-    def __init__(self, id_: ID, mu: Parameter = None) -> None:
+    def __init__(self, id_: ID, mu: AbstractParameter = None) -> None:
         super().__init__(id_)
         self._rate = mu if mu is not None else Parameter(None, torch.ones((1,)))
         self._probability = torch.ones_like(self._rate.tensor)
@@ -61,7 +63,9 @@ class ConstantSiteModel(SiteModel):
 
 
 class InvariantSiteModel(SiteModel):
-    def __init__(self, id_: ID, invariant: Parameter, mu: Parameter = None) -> None:
+    def __init__(
+        self, id_: ID, invariant: AbstractParameter, mu: AbstractParameter = None
+    ) -> None:
         super().__init__(id_)
         self._invariant = invariant
         self._mu = mu
@@ -123,10 +127,10 @@ class WeibullSiteModel(SiteModel):
     def __init__(
         self,
         id_: ID,
-        shape: Parameter,
+        shape: AbstractParameter,
         categories: int,
-        invariant: Parameter = None,
-        mu: Parameter = None,
+        invariant: AbstractParameter = None,
+        mu: AbstractParameter = None,
     ) -> None:
         super().__init__(id_)
         self._shape = shape
@@ -225,7 +229,7 @@ class WeibullSiteModel(SiteModel):
 
 
 class LogNormalSiteModel(SiteModel):
-    def __init__(self, id_: ID, scale: Parameter, categories: int = 4) -> None:
+    def __init__(self, id_: ID, scale: AbstractParameter, categories: int = 4) -> None:
         super().__init__(id_)
         self._scale = scale
         self.categories = categories

@@ -1,13 +1,8 @@
 import torch
 import torch.distributions
 
-from phylotorch.core.model import (
-    CatParameter,
-    Parameter,
-    ParameterListener,
-    TransformedParameter,
-    ViewParameter,
-)
+from phylotorch import CatParameter, Parameter, TransformedParameter, ViewParameter
+from phylotorch.core.parametric import ParameterListener
 
 
 def test_parameter_repr():

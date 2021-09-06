@@ -6,7 +6,8 @@ from typing import Dict, Tuple, Union
 
 from torch.optim import Optimizer as TorchOptimizer
 
-from ..core.model import CallableModel, Parameter, Parametric
+from .. import Parameter
+from ..core.model import CallableModel, Parametric
 from ..core.parameter_encoder import ParameterEncoder
 from ..core.runnable import Runnable
 from ..core.serializable import JSONSerializable

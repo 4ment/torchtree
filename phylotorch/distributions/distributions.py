@@ -8,13 +8,10 @@ import torch
 import torch.distributions
 
 from .. import Parameter
-from ..core.model import (
-    AbstractParameter,
-    CallableModel,
-    CatParameter,
-    Container,
-    Model,
-)
+from ..core.abstractparameter import AbstractParameter
+from ..core.container import Container
+from ..core.model import CallableModel, Model
+from ..core.parameter import CatParameter
 from ..core.utils import get_class, process_object, process_objects
 
 
@@ -84,7 +81,9 @@ class Distribution(DistributionModel):
     def handle_model_changed(self, model: Model, obj, index) -> None:
         pass
 
-    def handle_parameter_changed(self, variable: Parameter, index, event) -> None:
+    def handle_parameter_changed(
+        self, variable: AbstractParameter, index, event
+    ) -> None:
         pass
 
     def _call(self, *args, **kwargs) -> torch.Tensor:

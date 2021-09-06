@@ -10,7 +10,7 @@ except ImportError:
     OrderedDictType = MutableMapping
 import torch
 
-from .core.model import Parameter
+from . import Parameter
 
 ListTensor = List[torch.tensor]
 ListParameter = List[Parameter]

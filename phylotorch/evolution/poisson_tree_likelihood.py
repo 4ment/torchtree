@@ -1,7 +1,9 @@
 import torch
 import torch.distributions
 
-from ..core.model import CallableModel, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import CallableModel
+from ..core.parameter import Parameter
 from ..core.utils import process_object
 from ..evolution.branch_model import BranchModel
 from ..evolution.tree_model import TimeTreeModel, TreeModel
@@ -24,7 +26,7 @@ class PoissonTreeLikelihood(CallableModel):
         id_: ID,
         tree_model: TimeTreeModel,
         clock_model: BranchModel,
-        edge_lengths: Parameter,
+        edge_lengths: AbstractParameter,
     ) -> None:
         super().__init__(id_)
         self.tree_model = tree_model

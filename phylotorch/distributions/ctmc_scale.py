@@ -2,7 +2,8 @@ from typing import Optional, Union
 
 import torch
 
-from ..core.model import CallableModel, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import CallableModel
 from ..core.utils import process_object
 from ..evolution.tree_model import TreeModel
 from ..typing import ID
@@ -25,7 +26,7 @@ class CTMCScale(CallableModel):
     shape = torch.tensor([0.5])
     log_gamma_one_half = torch.lgamma(shape)
 
-    def __init__(self, id_: ID, x: Parameter, tree_model: TreeModel) -> None:
+    def __init__(self, id_: ID, x: AbstractParameter, tree_model: TreeModel) -> None:
         super(CTMCScale, self).__init__(id_)
         self.x = x
         self.tree_model = tree_model

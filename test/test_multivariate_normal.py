@@ -2,7 +2,7 @@ import pytest
 import torch
 import torch.distributions.multivariate_normal
 
-from phylotorch.core.model import Parameter
+from phylotorch import Parameter
 from phylotorch.distributions.multivariate_normal import MultivariateNormal
 
 

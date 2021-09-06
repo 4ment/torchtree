@@ -7,7 +7,9 @@ from typing import Optional, Union
 import torch
 from torch import Tensor, nn
 
-from ..core.model import CallableModel, Container, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.container import Container
+from ..core.model import CallableModel
 from ..core.utils import get_class, process_objects
 from ..typing import ID, OrderedDictType
 
@@ -23,7 +25,10 @@ class Module(CallableModel):
     """
 
     def __init__(
-        self, id_: ID, module: nn.Module, parameters: OrderedDictType[str, Parameter]
+        self,
+        id_: ID,
+        module: nn.Module,
+        parameters: OrderedDictType[str, AbstractParameter],
     ) -> None:
         super().__init__(id_)
         self._module = module
@@ -72,7 +77,7 @@ class Module(CallableModel):
         """
         klass = get_class(data['module'])
         signature_params = list(inspect.signature(klass.__init__).parameters)
-        params: OrderedDict[str, Parameter] = collections.OrderedDict()
+        params: OrderedDict[str, AbstractParameter] = collections.OrderedDict()
 
         data_dist = data['parameters']
         for arg in signature_params[1:]:

@@ -23,7 +23,7 @@ def as_tensor(dct, dtype=torch.float64):
     return dct
 
 
-def tensor_rand(distribution, shape, dtype=None, device=None):
+def tensor_rand(distribution, shape, dtype=None, device=None, requires_grad=False):
     """Create a tensor with the given dtype and shape and initialize it using a
     distribution.
 
@@ -74,6 +74,8 @@ def tensor_rand(distribution, shape, dtype=None, device=None):
                 name, distribution
             )
         )
+    if requires_grad:
+        tensor.requires_grad_(True)
     return tensor
 
 
@@ -261,9 +263,8 @@ def update_parameters(json_object, parameters) -> None:
             update_parameters(element, parameters)
     elif isinstance(json_object, dict):
         if 'type' in json_object and json_object['type'] in (
-            'phylotorch.core.model.Parameter',
+            'phylotorch.core.parameter.Parameter',
             'phylotorch.Parameter',
-            'Parameter',
         ):
             if json_object['id'] in parameters:
                 # get rid of full, full_like, tensor...

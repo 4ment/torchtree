@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 
 import torch
 
-from ..core.model import Model, Parameter
+from ..core.abstractparameter import AbstractParameter
+from ..core.model import Model
 from ..core.utils import process_object
 from ..typing import ID
 from .tree_model import TreeModel
@@ -18,7 +19,7 @@ class BranchModel(Model):
 
 
 class AbstractClockModel(BranchModel, ABC):
-    def __init__(self, id_: ID, rates: Parameter, tree: TreeModel) -> None:
+    def __init__(self, id_: ID, rates: AbstractParameter, tree: TreeModel) -> None:
         super().__init__(id_)
         self._rates = rates
         self.tree = tree
@@ -35,7 +36,7 @@ class AbstractClockModel(BranchModel, ABC):
 
 
 class StrictClockModel(AbstractClockModel):
-    def __init__(self, id_: ID, rates: Parameter, tree: TreeModel) -> None:
+    def __init__(self, id_: ID, rates: AbstractParameter, tree: TreeModel) -> None:
         super().__init__(id_, rates, tree)
         self.branch_count = tree.taxa_count * 2 - 2
 

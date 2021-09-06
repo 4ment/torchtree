@@ -31,7 +31,7 @@ def test_poisson_json():
             'tree_model': 'tree',
             'rate': {
                 'id': 'rate',
-                'type': 'phylotorch.core.model.Parameter',
+                'type': 'phylotorch.Parameter',
                 'tensor': [0.01],
             },
         },
