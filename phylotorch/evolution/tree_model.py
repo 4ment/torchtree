@@ -8,9 +8,10 @@ import torch
 from dendropy import TaxonNamespace, Tree
 from torch.distributions.transforms import Transform
 
+from .. import CatParameter
 from ..core.abstractparameter import AbstractParameter
-from ..core.model import Model
-from ..core.utils import JSONParseError, process_object
+from ..core.model import CallableModel, Model
+from ..core.utils import process_object
 from ..typing import ID
 from .taxa import Taxa
 
@@ -392,10 +393,8 @@ class TimeTreeModel(AbstractTreeModel):
         super().__init__(id_, tree, taxa)
         self._internal_heights = internal_heights
         self.taxa_count = len(tree.taxon_namespace)
-        self.bounds = None
         self.sampling_times = None
         self.update_leaf_heights()
-        self.update_bounds()
         self._branch_lengths = None  # tensor
         self._node_heights = None  # tensor
         self.branch_lengths_need_update = True
@@ -417,28 +416,6 @@ class TimeTreeModel(AbstractTreeModel):
                 leaf_heights[idx] = max_date - taxon['date']
 
         self.sampling_times = torch.tensor(leaf_heights)
-
-    def update_bounds(self) -> None:
-        taxa_count = self.taxa_count
-        internal_heights = [None] * (taxa_count - 1)
-        for node, left, right in self.postorder:
-            left_height = (
-                self.sampling_times[left]
-                if left < taxa_count
-                else internal_heights[left - taxa_count]
-            )
-            right_height = (
-                self.sampling_times[right]
-                if right < taxa_count
-                else internal_heights[right - taxa_count]
-            )
-
-            internal_heights[node - taxa_count] = (
-                left_height if left_height > right_height else right_height
-            )
-        self.bounds = torch.cat(
-            (self.sampling_times, torch.stack(internal_heights)), -1
-        )
 
     def update_traversals(self):
         super().update_traversals()
@@ -576,110 +553,175 @@ class TimeTreeModel(AbstractTreeModel):
         taxa = process_object(data['taxa'], dic)
         tree = parse_tree(taxa, data)
         initialize_dates_from_taxa(tree, taxa)
-
-        # TODO: tree_model and internal_heights may have circular references to each
-        #       other when internal_heights is a transformed Parameter requiring
-        #       the tree_model
-        if id_ in dic:
-            raise JSONParseError('Object with ID `{}\' already exists'.format(id_))
-        tree_model = cls(id_, tree, taxa, None)
-        dic[id_] = tree_model
-        tree_model._internal_heights = process_object(data['internal_heights'], dic)
+        internal_heights = process_object(data['internal_heights'], dic)
 
         if data.get('keep_branch_lengths', False):
-            tree_model._internal_heights.tensor = torch.tensor(
+            internal_heights.tensor = torch.tensor(
                 heights_from_branch_lengths(tree),
-                dtype=tree_model._internal_heights.dtype,
+                dtype=internal_heights.dtype,
             )
+
+        return cls(id_, tree, taxa, internal_heights)
+
+
+class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
+    def __init__(
+        self, id_: ID, tree, taxa: Taxa, ratios_root_heights: AbstractParameter
+    ) -> None:
+        CallableModel.__init__(self, id_)
+        TimeTreeModel.__init__(self, id_, tree, taxa, ratios_root_heights)
+        self.bounds = None
+        self.update_bounds()
+        self._heights = None
+        self.transform = GeneralNodeHeightTransform(self)
+
+    def update_bounds(self) -> None:
+        taxa_count = self.taxa_count
+        internal_heights = [None] * (taxa_count - 1)
+        for node, left, right in self.postorder:
+            left_height = (
+                self.sampling_times[left]
+                if left < taxa_count
+                else internal_heights[left - taxa_count]
+            )
+            right_height = (
+                self.sampling_times[right]
+                if right < taxa_count
+                else internal_heights[right - taxa_count]
+            )
+
+            internal_heights[node - taxa_count] = (
+                left_height if left_height > right_height else right_height
+            )
+        self.bounds = torch.cat(
+            (self.sampling_times, torch.stack(internal_heights)), -1
+        )
+
+    def update_node_heights(self) -> None:
+        self._heights = self.transform(self._internal_heights.tensor)
+        self._node_heights = torch.cat(
+            (
+                self.sampling_times.expand(
+                    self._internal_heights.tensor.shape[:-1] + (-1,)
+                ),
+                self._heights,
+            ),
+            -1,
+        )
+
+    @property
+    def node_heights(self) -> torch.Tensor:
+        if self.heights_need_update:
+            self.update_node_heights()
+            self.heights_need_update = False
+        return self._node_heights
+
+    def _call(self, *args, **kwargs) -> torch.Tensor:
+        if self.heights_need_update:
+            self.update_node_heights()
+        return self.transform.log_abs_det_jacobian(
+            self._internal_heights.tensor, self._heights
+        )
+
+    @staticmethod
+    def json_factory(
+        id_: str,
+        newick: str,
+        ratios: Union[dict, list, str],
+        root_height: Union[dict, list, str],
+        taxa: Union[dict, list, str],
+        **kwargs
+    ):
+        r"""
+        Factory for creating tree models in JSON format.
+
+        :param id_: ID of the tree model
+        :param newick: tree in newick format
+        :param taxa: dictionary of taxa with attributes or str reference
+
+
+        :key internal_heights_id:  ID of internal_heights
+        :key internal_heights: internal node heights. Can be a list of floats,
+        a dictionary corresponding to a transformed parameter, or a str corresponding
+        to a reference
+
+        :return: tree model in JSON format compatible with from_json class method
+        """
+
+        tree_model = {
+            'id': id_,
+            'type': 'phylotorch.evolution.tree_model.ReparameterizedTimeTreeModel',
+            'newick': newick,
+        }
+        if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
+            tree_model['keep_branch_lengths'] = kwargs['keep_branch_lengths']
+
+        ratios_id = kwargs.get('ratios_id', None)
+        root_height_id = kwargs.get('root_height_id', None)
+
+        if isinstance(ratios, list):
+            tree_model['ratios'] = {
+                "id": ratios_id,
+                "type": "phylotorch.Parameter",
+                "tensor": ratios,
+            }
+        elif isinstance(ratios, (dict, str)):
+            tree_model['ratios'] = ratios
+
+        if isinstance(root_height, list):
+            tree_model['root_height'] = {
+                "id": root_height_id,
+                "type": "phylotorch.Parameter",
+                "tensor": root_height,
+            }
+        elif isinstance(root_height, (dict, str)):
+            tree_model['root_height'] = root_height
+
+        if isinstance(taxa, dict):
+            taxon_list = []
+            for taxon in taxa.keys():
+                taxon_list.append(
+                    {
+                        "id": taxon,
+                        "type": "phylotorch.evolution.taxa.Taxon",
+                        "attributes": {"date": taxa[taxon]},
+                    }
+                )
+            tree_model['taxa'] = {
+                'id': kwargs.get('taxa_id', 'taxa'),
+                'type': 'phylotorch.evolution.taxa.Taxa',
+                'taxa': taxon_list,
+            }
+        elif isinstance(taxa, list):
+            tree_model['taxa'] = {
+                'id': kwargs.get('taxa_id', 'taxa'),
+                'type': 'phylotorch.evolution.taxa.Taxa',
+                'taxa': taxa,
+            }
+        else:
+            tree_model['taxa'] = taxa
 
         return tree_model
 
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        taxa = process_object(data['taxa'], dic)
+        tree = parse_tree(taxa, data)
+        initialize_dates_from_taxa(tree, taxa)
 
-#
-# class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
-#     def __init__(
-#         self, id_: ID, tree, taxa: Taxa, ratios_root_heights: AbstractParameter
-#     ) -> None:
-#         CallableModel.__init__(self, id_)
-#         TimeTreeModel.__init__(self, id_, tree, taxa, ratios_root_heights)
-#         # self.bounds = None
-#         # self.update_bounds()
-#         self._heights = None
-#         self.transform = GeneralNodeHeightTransform(self)
-#
-#     # def update_bounds(self) -> None:
-#     #     taxa_count = self.taxa_count
-#     #     internal_heights = [None] * (taxa_count - 1)
-#     #     for node, left, right in self.postorder:
-#     #         left_height = (
-#     #             self.sampling_times[left]
-#     #             if left < taxa_count
-#     #             else internal_heights[left - taxa_count]
-#     #         )
-#     #         right_height = (
-#     #             self.sampling_times[right]
-#     #             if right < taxa_count
-#     #             else internal_heights[right - taxa_count]
-#     #         )
-#     #
-#     #         internal_heights[node - taxa_count] = (
-#     #             left_height if left_height > right_height else right_height
-#     #         )
-#     #     self.bounds = torch.cat(
-#     #         (self.sampling_times, torch.stack(internal_heights)), -1
-#     #     )
-#
-#     def update_node_heights(self) -> None:
-#         self._heights = self.transform(self._internal_heights.tensor)
-#         self._node_heights = torch.cat(
-#             (
-#                 self.sampling_times.expand(
-#                     self._internal_heights.tensor.shape[:-1] + (-1,)
-#                 ),
-#                 self._heights,
-#             ),
-#             -1,
-#         )
-#
-#     @property
-#     def node_heights(self) -> torch.Tensor:
-#         if self.heights_need_update:
-#             self.update_node_heights()
-#             self.heights_need_update = False
-#         return self._node_heights
-#
-#     # def update_traversals(self):
-#     #     super().update_traversals()
-#     #     # preoder indexing to go from ratios to heights
-#     #     self.preorder = np.array(
-#     #         [
-#     #             (node.parent_node.index, node.index)
-#     #             for node in self.tree.preorder_node_iter()
-#     #             if node != self.tree.seed_node
-#     #         ]
-#     #     )
-#
-#     def _call(self, *args, **kwargs) -> Tensor:
-#         if self.heights_need_update:
-#             self.update_node_heights()
-#         return self.transform.log_abs_det_jacobian(
-#             self._internal_heights.tensor, self._heights
-#         )
-#
-#     @classmethod
-#     def from_json(cls, data, dic):
-#         id_ = data['id']
-#         taxa = process_object(data['taxa'], dic)
-#         tree = parse_tree(taxa, data)
-#         initialize_dates_from_taxa(tree, taxa)
-#
-#         root_height = process_object(data['root_height'], dic)
-#         ratios = process_object(data['ratios'], dic)
-#         ratios_root_height = CatParameter(None, [ratios, root_height], dim=-1)
-#
-#         if data.get('keep_branch_lengths', False):
-#             ratios_root_height.tensor = torch.tensor(
-#                 heights_from_branch_lengths(tree),
-#                 dtype=ratios_root_height.dtype,
-#             )
-#         return cls(id_, tree, taxa, ratios_root_height)
+        root_height = process_object(data['root_height'], dic)
+        ratios = process_object(data['ratios'], dic)
+        ratios_root_height = CatParameter(None, [ratios, root_height], dim=-1)
+
+        tree_model = cls(id_, tree, taxa, ratios_root_height)
+
+        if data.get('keep_branch_lengths', False):
+            ratios_root_height.tensor = tree_model.transform.inv(
+                torch.tensor(
+                    heights_from_branch_lengths(tree),
+                    dtype=ratios_root_height.dtype,
+                    device=ratios_root_height.device,
+                )
+            )
+        return tree_model

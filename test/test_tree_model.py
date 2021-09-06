@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from phylotorch.evolution.tree_model import TimeTreeModel
+from phylotorch.evolution.tree_model import ReparameterizedTimeTreeModel
 
 
 def node_heights_general_transform(
@@ -32,46 +32,44 @@ def node_heights_general_transform(
     "ratios,root_height", [([2.0 / 6.0, 6.0 / 12.0], [12]), ([0.8, 0.2], [100])]
 )
 def test_general_node_height_transform(ratios, root_height):
-    node_heights = node_heights_general_transform(
-        'internal_heights', 'tree', ratios, root_height
-    )
     dic = {}
-    tree_model = TimeTreeModel.from_json(
-        TimeTreeModel.json_factory(
+    tree_model = ReparameterizedTimeTreeModel.from_json(
+        ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
-            node_heights,
+            ratios,
+            root_height,
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
+            **{'ratios_id': 'ratios', 'root_height_id': 'root_height'}
         ),
         dic,
     )
     expected = torch.log(
         tree_model.node_heights[-2] * tree_model.node_heights[-1]
     ).item()
-    assert dic['internal_heights']().item() == pytest.approx(expected, 0.0001)
+    assert tree_model().item() == pytest.approx(expected, 0.0001)
 
 
 @pytest.mark.parametrize(
     "ratios,root_height", [([2.0 / 6.0, 6.0 / 12.0], [12.0]), ([0.8, 0.2], [100.0])]
 )
 def test_general_node_height_transform_hetero(ratios, root_height):
-    node_heights = node_heights_general_transform(
-        'internal_heights', 'tree', ratios, root_height
-    )
     dic = {}
-    tree_model = TimeTreeModel.from_json(
-        TimeTreeModel.json_factory(
+    tree_model = ReparameterizedTimeTreeModel.from_json(
+        ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
-            node_heights,
+            ratios,
+            root_height,
             dict(zip('ABCD', [0.0, 1.0, 4.0, 5.0])),
+            **{'ratios_id': 'ratios', 'root_height_id': 'root_height'}
         ),
         dic,
     )
     expected = torch.log(
         (tree_model.node_heights[-2] - 1.0) * (tree_model.node_heights[-1] - 4.0)
     ).item()
-    assert dic['internal_heights']().item() == pytest.approx(expected, 0.0001)
+    assert tree_model().item() == pytest.approx(expected, 0.0001)
 
 
 @pytest.mark.parametrize(
@@ -84,19 +82,19 @@ def test_general_node_height_transform_hetero(ratios, root_height):
 def test_general_node_height_transform_hetero_all(
     ratios, root_height, keep, expected_ratios_root
 ):
-    ratios_root = torch.tensor(expected_ratios_root)
-    node_heights = node_heights_general_transform(
-        'internal_heights', 'tree', ratios, root_height
-    )
-
     dic = {}
-    tree_model = TimeTreeModel.from_json(
-        TimeTreeModel.json_factory(
+    tree_model = ReparameterizedTimeTreeModel.from_json(
+        ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(A:2,(B:1.5,(C:2,D:1):2.5):2.5);',
-            node_heights,
+            ratios,
+            root_height,
             dict(zip('ABCD', [5.0, 3.0, 0.0, 1.0])),
-            **{'keep_branch_lengths': keep}
+            **{
+                'keep_branch_lengths': keep,
+                'ratios_id': 'ratios',
+                'root_height_id': 'root_height',
+            }
         ),
         dic,
     )
@@ -107,28 +105,26 @@ def test_general_node_height_transform_hetero_all(
         expected[6] - expected_bounds[5]
     )
     assert torch.allclose(
-        ratios_root,
+        torch.tensor(expected_ratios_root),
         torch.cat((dic['ratios'].tensor, dic['root_height'].tensor)),
     )
     assert torch.allclose(expected, tree_model.node_heights)
     assert torch.allclose(expected_bounds, tree_model.bounds)
     assert torch.allclose(expected_branch_lengths, tree_model.branch_lengths())
-    assert torch.allclose(dic['internal_heights'](), log_det_jacobian)
+    assert torch.allclose(tree_model(), log_det_jacobian)
 
 
 def test_general_node_height_transform_hetero_7():
     taxa = dict(zip('ABCDEFG', [5.0, 3.0, 0.0, 1.0, 0.0, 5.0, 6.0]))
-    node_heights = node_heights_general_transform(
-        'internal_heights', 'tree', [0.5] * (len(taxa) - 2), [10.0]
-    )
-
     dic = {}
-    tree_model = TimeTreeModel.from_json(
-        TimeTreeModel.json_factory(
+    tree_model = ReparameterizedTimeTreeModel.from_json(
+        ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(A,(B,(C,(D,(E,(F,G))))));',
-            node_heights,
+            [0.5] * (len(taxa) - 2),
+            [10.0],
             taxa,
+            **{'ratios_id': 'ratios', 'root_height_id': 'root_height'}
         ),
         dic,
     )
@@ -137,29 +133,25 @@ def test_general_node_height_transform_hetero_7():
         log_det_jacobian += (
             tree_model.node_heights[i + 1] - tree_model.bounds[i]
         ).log()
-    print(dic)
-    assert torch.allclose(dic['internal_heights'](), log_det_jacobian)
+    assert torch.allclose(tree_model(), log_det_jacobian)
 
 
 @pytest.mark.parametrize(
     "ratios,root_height", [([2.0 / 6.0, 6.0 / 12.0], [12]), ([0.8, 0.2], [100])]
 )
 def test_general_node_height_heights_to_ratios(ratios, root_height):
-    node_heights = node_heights_general_transform(
-        'node_heights', 'tree', ratios, root_height
-    )
-    tree_model = TimeTreeModel.from_json(
-        TimeTreeModel.json_factory(
+    tree_model = ReparameterizedTimeTreeModel.from_json(
+        ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
-            node_heights,
+            ratios,
+            root_height,
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
+            **{'ratios_id': 'ratios', 'root_height_id': 'root_height'}
         ),
         {},
     )
-    ratios_heights = tree_model._internal_heights.transform.inv(
-        tree_model._internal_heights.tensor
-    )
+    ratios_heights = tree_model.transform.inv(tree_model.node_heights[4:])
     assert torch.allclose(
         ratios_heights,
         torch.tensor(ratios + root_height, dtype=ratios_heights.dtype),
@@ -168,13 +160,18 @@ def test_general_node_height_heights_to_ratios(ratios, root_height):
 
 def test_keep_branch_lengths_heights():
     dic = {}
-    tree_model = TimeTreeModel.from_json(
-        TimeTreeModel.json_factory(
+    tree_model = ReparameterizedTimeTreeModel.from_json(
+        ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '((((A_0:1.5,B_1:0.5):2.5,C_2:2):2,D_3:3):10,E_12:4);',
-            [0.0] * 4,
+            [0.0] * 3,
+            [0.0],
             dict(zip(['A_0', 'B_1', 'C_2', 'D_3', 'E_12'], [0.0, 1.0, 2.0, 3.0, 12.0])),
-            **{'keep_branch_lengths': True}
+            **{
+                'keep_branch_lengths': True,
+                'ratios_id': 'ratios',
+                'root_height_id': 'root_height',
+            }
         ),
         dic,
     )

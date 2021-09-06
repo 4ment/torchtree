@@ -4,7 +4,7 @@
     "type": "phylotorch.nf.energy_functions.EnergyFunctionModel",
     "x": {
       "id": "z",
-      "type": "phylotorch.core.model.Parameter",
+      "type": "phylotorch.Parameter",
       "zeros": [
         128,
         2
@@ -42,7 +42,7 @@
               "parameters": {
                 "u": {
                   "id": "flow.u.*",
-                  "type": "phylotorch.core.model.Parameter",
+                  "type": "phylotorch.Parameter",
                   "full": [
                     1,
                     2
@@ -52,7 +52,7 @@
                 },
                 "w": {
                   "id": "flow.w.*",
-                  "type": "phylotorch.core.model.Parameter",
+                  "type": "phylotorch.Parameter",
                   "full": [
                     1,
                     2
@@ -62,7 +62,7 @@
                 },
                 "b": {
                   "id": "flow.b.*",
-                  "type": "phylotorch.core.model.Parameter",
+                  "type": "phylotorch.Parameter",
                   "full": [
                     1
                   ],
@@ -79,12 +79,12 @@
           "parameters": {
             "loc": {
               "id": "base.loc",
-              "type": "phylotorch.core.model.Parameter",
+              "type": "phylotorch.Parameter",
               "zeros": 2
             },
             "covariance_matrix": {
               "id": "base.scale",
-              "type": "phylotorch.core.model.Parameter",
+              "type": "phylotorch.Parameter",
               "tensor": [
                 [
                   1.0,
@@ -99,7 +99,7 @@
           },
           "x": {
             "id": "flow.z",
-            "type": "phylotorch.core.model.Parameter",
+            "type": "phylotorch.Parameter",
             "zeros": [
               2
             ]
