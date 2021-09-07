@@ -2,20 +2,22 @@ import torch
 import torch.distributions
 
 from phylotorch.evolution.poisson_tree_likelihood import PoissonTreeLikelihood
-from phylotorch.evolution.tree_model import TimeTreeModel
+from phylotorch.evolution.tree_model import ReparameterizedTimeTreeModel
 
 
 def test_poisson_json():
     dic = {}
-    tree_model = TimeTreeModel.from_json(
-        TimeTreeModel.json_factory(
+    tree_model = ReparameterizedTimeTreeModel.from_json(
+        ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
-            [10.0, 20.0, 30.0],
+            [10 / 20, 20 / 30],
+            [30.0],
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
         ),
         dic,
     )
+    dic['tree'] = tree_model
 
     distances = tree_model.branch_lengths()
     noisy_distances = torch.clamp(distances * torch.rand(1), min=0.0).long()

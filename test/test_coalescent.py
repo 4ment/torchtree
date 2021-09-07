@@ -12,7 +12,7 @@ from phylotorch.evolution.coalescent import (
     PiecewiseConstantCoalescentGridModel,
     PiecewiseConstantCoalescentModel,
 )
-from phylotorch.evolution.tree_model import TimeTreeModel
+from phylotorch.evolution.tree_model import ReparameterizedTimeTreeModel
 
 
 def inverse_transform_homochronous(ratios):
@@ -29,34 +29,12 @@ def ratios_list():
 
 
 @pytest.fixture
-def node_heights_transformed(ratios_list):
-    node_heights = {
-        'id': 'node_heights',
-        'type': 'phylotorch.TransformedParameter',
-        'transform': 'phylotorch.evolution.tree_model.GeneralNodeHeightTransform',
-        'parameters': {'tree': 'tree'},
-        'x': [
-            {
-                'id': 'ratios',
-                'type': 'phylotorch.Parameter',
-                'tensor': ratios_list[:-1],
-            },
-            {
-                'id': 'root_height',
-                'type': 'phylotorch.Parameter',
-                'tensor': ratios_list[-1:],
-            },
-        ],
-    }
-    return node_heights
-
-
-@pytest.fixture
-def tree_model_node_heights_transformed(node_heights_transformed):
-    tree_model = TimeTreeModel.json_factory(
+def tree_model_node_heights_transformed(ratios_list):
+    tree_model = ReparameterizedTimeTreeModel.json_factory(
         'tree',
         '(((A,B),C),D);',
-        node_heights_transformed,
+        ratios_list[:-1],
+        ratios_list[-1:],
         dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
     )
     return tree_model
