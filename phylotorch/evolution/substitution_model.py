@@ -212,7 +212,6 @@ class HKY(SymmetricSubstitutionModel):
         self.fire_model_changed()
 
     def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
-        d = torch.unsqueeze(branch_lengths, -1)
         if len(self.frequencies.shape) == 1:
             pi = self.frequencies.unsqueeze(0)
             kappa = self.kappa.unsqueeze(0)
@@ -234,9 +233,9 @@ class HKY(SymmetricSubstitutionModel):
             )
         )
 
-        exp1 = torch.exp(-d * r)
-        exp22 = torch.exp(-k2 * d * r)
-        exp21 = torch.exp(-k1 * d * r)
+        exp1 = torch.exp(-branch_lengths * r)
+        exp22 = torch.exp(-k2 * branch_lengths * r)
+        exp21 = torch.exp(-k1 * branch_lengths * r)
         return torch.cat(
             (
                 pi[..., 0] * (1.0 + (Y / R) * exp1) + (pi[..., 2] / R) * exp22,

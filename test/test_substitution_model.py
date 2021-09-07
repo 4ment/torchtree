@@ -133,7 +133,7 @@ def test_GTR_batch():
 def hky_fixture():
     kappa = torch.tensor([3.0])
     pi = torch.tensor([0.479367, 0.172572, 0.140933, 0.207128])
-    branch_lengths = torch.tensor([0.1, 0.001])
+    branch_lengths = torch.tensor([[0.1], [0.001]])
     P_expected = torch.tensor(
         [
             [
@@ -149,7 +149,7 @@ def hky_fixture():
                 [0.0004392323, 0.0004741156, 0.0001291335, 0.9989575186],
             ],
         ]
-    )
+    ).unsqueeze(1)
     return kappa, pi, P_expected, branch_lengths
 
 
@@ -158,10 +158,10 @@ def test_HKY(hky_fixture):
     kappa, pi, hky_P_expected, branch_lengths = hky_fixture
     subst_model = HKY('hky', Parameter('kappa', kappa), Parameter('pi', pi))
     P = subst_model.p_t(branch_lengths)
-    assert torch.allclose(P.squeeze(), hky_P_expected, atol=1e-06)
+    assert torch.allclose(P, hky_P_expected, atol=1e-06)
 
     P = super(type(subst_model), subst_model).p_t(branch_lengths)
-    assert torch.allclose(P.squeeze(), hky_P_expected, atol=1e-06)
+    assert torch.allclose(P, hky_P_expected, atol=1e-06)
 
 
 def test_HKY_json(hky_fixture):
@@ -199,7 +199,9 @@ def test_HKY_batch(hky_fixture):
     )
     hky = HKY('hky', kappa, frequencies)
     probs = hky.p_t(
-        torch.tensor([[5, 10.0, 20.0], [0.5, 0.1, 0.001]], dtype=kappa.dtype)
+        torch.tensor([[5, 10.0, 20.0], [0.5, 0.1, 0.001]], dtype=kappa.dtype).unsqueeze(
+            -1
+        )
     )
     assert torch.allclose(probs[1, 1:3], hky_P_expected, atol=1e-06)
 
