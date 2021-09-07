@@ -3,11 +3,12 @@ import math
 import torch
 
 from ..core.model import CallableModel
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..distributions.distributions import DistributionModel
 from ..typing import ID
 
 
+@register_class
 class VR(CallableModel):
     r"""
     Class representing the variational Renyi bound (VR) [#Li2016]_.

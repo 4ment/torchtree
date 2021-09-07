@@ -4,10 +4,11 @@ from typing import List, Optional, Tuple, Union
 import torch
 
 from ..core.model import Model
-from ..core.utils import process_object, string_to_list_index
+from ..core.utils import process_object, register_class, string_to_list_index
 from .alignment import Alignment
 
 
+@register_class
 class SitePattern(Model):
     _tag = 'site_pattern'
 

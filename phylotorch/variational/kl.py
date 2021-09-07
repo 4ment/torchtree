@@ -1,11 +1,12 @@
 import torch
 
 from ..core.model import CallableModel
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..distributions.distributions import DistributionModel
 from ..typing import ID
 
 
+@register_class
 class ELBO(CallableModel):
     r"""
     Class representing the evidence lower bound (ELBO) objective.
@@ -63,6 +64,7 @@ class ELBO(CallableModel):
         return _from_json(cls, data, dic)
 
 
+@register_class
 class KLpq(CallableModel):
     r"""
     Calculate inclusive Kullback-Leibler divergence from q to p :math:`KL(p\|q)`
@@ -109,6 +111,7 @@ class KLpq(CallableModel):
         return _from_json(cls, data, dic)
 
 
+@register_class
 class KLpqImportance(CallableModel):
     r"""
     Class for minimizing inclusive Kullback-Leibler divergence

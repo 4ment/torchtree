@@ -3,6 +3,7 @@ import abc
 import numpy as np
 
 from ..core.model import Identifiable
+from ..core.utils import register_class
 from ..typing import ID
 
 
@@ -21,6 +22,7 @@ class DataType(abc.ABC):
         pass
 
 
+@register_class
 class NucleotideDataType(DataType):
     NUCLEOTIDES = "ACGTUKMRSWYBDHVN?-"
     # fmt: off
@@ -79,6 +81,7 @@ class NucleotideDataType(DataType):
         )
 
 
+@register_class
 class GeneralDataType(Identifiable, DataType):
     def __init__(self, id_: ID, codes: dict, ambiguities: dict):
         super().__init__(id_)

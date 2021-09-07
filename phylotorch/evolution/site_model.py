@@ -7,7 +7,7 @@ from torch.distributions import LogNormal
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import Model
 from ..core.parameter import Parameter
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..typing import ID
 
 
@@ -23,6 +23,7 @@ class SiteModel(Model):
         pass
 
 
+@register_class
 class ConstantSiteModel(SiteModel):
     def __init__(self, id_: ID, mu: AbstractParameter = None) -> None:
         super().__init__(id_)
@@ -62,6 +63,7 @@ class ConstantSiteModel(SiteModel):
         return cls(data['id'], mu)
 
 
+@register_class
 class InvariantSiteModel(SiteModel):
     def __init__(
         self, id_: ID, invariant: AbstractParameter, mu: AbstractParameter = None
@@ -123,6 +125,7 @@ class InvariantSiteModel(SiteModel):
         return cls(id_, invariant, mu)
 
 
+@register_class
 class WeibullSiteModel(SiteModel):
     def __init__(
         self,

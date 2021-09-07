@@ -11,10 +11,17 @@ from ..core.model import CallableModel, Parametric
 from ..core.parameter_encoder import ParameterEncoder
 from ..core.runnable import Runnable
 from ..core.serializable import JSONSerializable
-from ..core.utils import JSONParseError, SignalHandler, get_class, process_objects
+from ..core.utils import (
+    JSONParseError,
+    SignalHandler,
+    get_class,
+    process_objects,
+    register_class,
+)
 from ..typing import ListParameter, ListTensor
 
 
+@register_class
 class Optimizer(JSONSerializable, Runnable):
     """A wrapper for torch.optim.Optimizer objects.
 

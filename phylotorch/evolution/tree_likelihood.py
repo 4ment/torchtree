@@ -2,7 +2,7 @@ import torch
 import torch.distributions
 
 from ..core.model import CallableModel
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..typing import ID
 from .branch_model import BranchModel
 from .site_model import SiteModel
@@ -102,6 +102,7 @@ def calculate_treelikelihood_discrete_rescaled(
     )
 
 
+@register_class
 class TreeLikelihoodModel(CallableModel):
     def __init__(
         self,

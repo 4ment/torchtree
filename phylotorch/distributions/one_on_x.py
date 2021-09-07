@@ -1,7 +1,10 @@
 import torch.distributions
 import torch.distributions.constraints
 
+from ..core.utils import register_class
 
+
+@register_class
 class OneOnX(torch.distributions.Distribution):
     arg_constraints = {}
     support = torch.distributions.constraints.positive

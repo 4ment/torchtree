@@ -2,7 +2,7 @@ import collections
 from typing import List
 
 from ..core.model import Identifiable
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..typing import ID
 from .datatype import DataType, NucleotideDataType
 from .taxa import Taxa
@@ -10,6 +10,7 @@ from .taxa import Taxa
 Sequence = collections.namedtuple('Sequence', ['taxon', 'sequence'])
 
 
+@register_class
 class Alignment(Identifiable, collections.UserList):
     """Sequence alignment.
 

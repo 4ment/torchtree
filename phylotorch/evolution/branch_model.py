@@ -4,7 +4,7 @@ import torch
 
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import Model
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..typing import ID
 from .tree_model import TreeModel
 
@@ -35,6 +35,7 @@ class AbstractClockModel(BranchModel, ABC):
         return self._rates.shape[:-1]
 
 
+@register_class
 class StrictClockModel(AbstractClockModel):
     def __init__(self, id_: ID, rates: AbstractParameter, tree: TreeModel) -> None:
         super().__init__(id_, rates, tree)
@@ -54,6 +55,7 @@ class StrictClockModel(AbstractClockModel):
         return cls(id_, rate, tree_model)
 
 
+@register_class
 class SimpleClockModel(AbstractClockModel):
     @property
     def rates(self) -> torch.Tensor:

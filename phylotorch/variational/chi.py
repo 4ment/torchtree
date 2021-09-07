@@ -1,11 +1,12 @@
 import torch
 
 from ..core.model import CallableModel
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..distributions.distributions import DistributionModel
 from ..typing import ID
 
 
+@register_class
 class CUBO(CallableModel):
     r"""
     Class representing the :math:`\chi`-upper bound (CUBO) objective [#Dieng2017]_.

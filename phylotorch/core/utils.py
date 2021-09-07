@@ -85,6 +85,9 @@ def tensor_rand(distribution, shape, dtype=None, device=None, requires_grad=Fals
 
 
 def get_class(full_name: str) -> any:
+    if full_name in REGISTERED_CLASSES:
+        return REGISTERED_CLASSES[full_name]
+
     a = full_name.split('.')
     class_name = a[-1]
     module_name = '.'.join(a[:-1])
@@ -129,10 +132,7 @@ def process_object(data, dic):
             )
 
         try:
-            if data['type'] in REGISTERED_CLASSES:
-                klass = REGISTERED_CLASSES[data['type']]
-            else:
-                klass = get_class(data['type'])
+            klass = get_class(data['type'])
         except ModuleNotFoundError as e:
             raise JSONParseError(
                 str(e) + " in object with ID '" + data['id'] + "'"

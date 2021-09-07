@@ -2,7 +2,10 @@ import torch
 from torch import Tensor, nn
 from torch.nn import Parameter
 
+from phylotorch.core.utils import register_class
 
+
+@register_class
 class PlanarTransform(nn.Module):
     r"""
     Implementation of the transformation used in planar flow:

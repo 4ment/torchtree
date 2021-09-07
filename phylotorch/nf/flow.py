@@ -4,11 +4,12 @@ import torch.nn
 from torch import Size, Tensor, nn
 
 from ..core.abstractparameter import AbstractParameter
-from ..core.utils import get_class, process_object, process_objects
+from ..core.utils import get_class, process_object, process_objects, register_class
 from ..distributions.distributions import Distribution, DistributionModel
 from ..nn.module import Module
 
 
+@register_class
 class NormalizingFlow(DistributionModel):
     r"""
     Class for normalizing flows.

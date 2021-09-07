@@ -11,7 +11,7 @@ from torch.distributions.transforms import Transform
 from .. import CatParameter
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel, Model
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..typing import ID
 from .taxa import Taxa
 
@@ -280,6 +280,7 @@ class AbstractTreeModel(TreeModel, ABC):
             steam.write(';')
 
 
+@register_class
 class UnRootedTreeModel(AbstractTreeModel):
     def __init__(
         self, id_: ID, tree, taxa: Taxa, branch_lengths: AbstractParameter
@@ -386,6 +387,7 @@ class UnRootedTreeModel(AbstractTreeModel):
         return cls(id_, tree, taxa, branch_lengths)
 
 
+@register_class
 class TimeTreeModel(AbstractTreeModel):
     def __init__(
         self, id_: ID, tree, taxa: Taxa, internal_heights: AbstractParameter
@@ -512,7 +514,7 @@ class TimeTreeModel(AbstractTreeModel):
             tree_model['keep_branch_lengths'] = kwargs['keep_branch_lengths']
 
         node_heights_id = kwargs.get('internal_heights_id', None)
-        if isinstance(internal_heights, list):
+        if isinstance(internal_heights, (list, tuple)):
             tree_model['internal_heights'] = {
                 "id": node_heights_id,
                 "type": "phylotorch.Parameter",
@@ -564,6 +566,7 @@ class TimeTreeModel(AbstractTreeModel):
         return cls(id_, tree, taxa, internal_heights)
 
 
+@register_class
 class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
     def __init__(
         self, id_: ID, tree, taxa: Taxa, ratios_root_heights: AbstractParameter
@@ -656,10 +659,10 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
         if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
             tree_model['keep_branch_lengths'] = kwargs['keep_branch_lengths']
 
-        ratios_id = kwargs.get('ratios_id', None)
-        root_height_id = kwargs.get('root_height_id', None)
+        ratios_id = kwargs.get('ratios_id', 'ratios')
+        root_height_id = kwargs.get('root_height_id', 'root_height')
 
-        if isinstance(ratios, list):
+        if isinstance(ratios, (list, tuple)):
             tree_model['ratios'] = {
                 "id": ratios_id,
                 "type": "phylotorch.Parameter",
@@ -668,7 +671,7 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
         elif isinstance(ratios, (dict, str)):
             tree_model['ratios'] = ratios
 
-        if isinstance(root_height, list):
+        if isinstance(root_height, (list, tuple)):
             tree_model['root_height'] = {
                 "id": root_height_id,
                 "type": "phylotorch.Parameter",

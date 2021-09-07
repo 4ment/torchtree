@@ -4,11 +4,12 @@ import torch.distributions.normal
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel
 from ..core.parameter import Parameter
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..evolution.tree_model import TimeTreeModel, TreeModel
 from ..typing import ID
 
 
+@register_class
 class GMRF(CallableModel):
     def __init__(
         self,
@@ -85,6 +86,7 @@ class GMRF(CallableModel):
         return cls(id_, field, precision, tree_model, weights, rescale)
 
 
+@register_class
 class GMRFCovariate(CallableModel):
     def __init__(
         self,

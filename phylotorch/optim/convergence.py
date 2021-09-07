@@ -9,7 +9,7 @@ import torch
 
 from ..core.model import CallableModel
 from ..core.serializable import JSONSerializable
-from ..core.utils import JSONParseError, process_objects
+from ..core.utils import JSONParseError, process_objects, register_class
 
 
 class BaseConvergence(JSONSerializable):
@@ -20,6 +20,7 @@ class BaseConvergence(JSONSerializable):
         pass
 
 
+@register_class
 class VariationalConvergence(BaseConvergence):
     """Class that does not check for convergence but output ELBO.
 
@@ -77,6 +78,7 @@ class VariationalConvergence(BaseConvergence):
         return cls(loss, every, samples, start, **optionals)
 
 
+@register_class
 class StanVariationalConvergence(VariationalConvergence):
     """Class for checking SGD convergence using Stan's algorithm.
 

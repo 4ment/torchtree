@@ -7,7 +7,7 @@ import torch.linalg
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import Model
 from ..core.parameter import Parameter
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..typing import ID
 
 
@@ -35,6 +35,7 @@ class SubstitutionModel(Model):
         return -torch.sum(torch.diagonal(Q, dim1=-2, dim2=-1) * frequencies, -1)
 
 
+@register_class
 class JC69(SubstitutionModel):
     def __init__(self, id_: ID) -> None:
         frequencies = Parameter(None, torch.full((4,), 0.25))
@@ -124,6 +125,7 @@ class SymmetricSubstitutionModel(SubstitutionModel, ABC):
         )
 
 
+@register_class
 class GTR(SymmetricSubstitutionModel):
     def __init__(
         self, id_: ID, rates: AbstractParameter, frequencies: AbstractParameter
@@ -194,6 +196,7 @@ class GTR(SymmetricSubstitutionModel):
         return cls(id_, rates, frequencies)
 
 
+@register_class
 class HKY(SymmetricSubstitutionModel):
     def __init__(
         self, id_: ID, kappa: AbstractParameter, frequencies: AbstractParameter

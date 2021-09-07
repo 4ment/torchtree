@@ -12,7 +12,7 @@ from ..core.abstractparameter import AbstractParameter
 from ..core.container import Container
 from ..core.model import CallableModel, Model
 from ..core.parameter import CatParameter
-from ..core.utils import get_class, process_object, process_objects
+from ..core.utils import get_class, process_object, process_objects, register_class
 
 
 class DistributionModel(CallableModel):
@@ -29,6 +29,7 @@ class DistributionModel(CallableModel):
         ...
 
 
+@register_class
 class Distribution(DistributionModel):
     """Wrapper for torch Distribution.
 

@@ -4,11 +4,12 @@ from torch import Tensor
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel
 from ..core.parameter import Parameter
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..evolution.tree_model import UnRootedTreeModel
 from ..typing import ID
 
 
+@register_class
 class CompoundGammaDirichletPrior(CallableModel):
     """Compound gamma-Dirichlet prior on an unrooted tree [rannala2011]_
 

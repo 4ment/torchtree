@@ -1,9 +1,10 @@
 import collections
 
 from ..core.model import Identifiable
-from ..core.utils import process_objects
+from ..core.utils import process_objects, register_class
 
 
+@register_class
 class Taxon(Identifiable, collections.UserDict):
     def __init__(self, id_, attributes):
         Identifiable.__init__(self, id_)
@@ -22,6 +23,7 @@ class Taxon(Identifiable, collections.UserDict):
         return cls(id_, attributes)
 
 
+@register_class
 class Taxa(Identifiable, collections.UserList):
     def __init__(self, id_, taxa):
         Identifiable.__init__(self, id_)

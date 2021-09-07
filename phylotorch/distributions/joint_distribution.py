@@ -5,11 +5,12 @@ import torch.distributions
 from .. import Parameter
 from ..core.container import Container
 from ..core.model import Model
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..typing import ID
 from .distributions import DistributionModel
 
 
+@register_class
 class JointDistributionModel(DistributionModel):
     """Joint distribution of independent distributions.
 

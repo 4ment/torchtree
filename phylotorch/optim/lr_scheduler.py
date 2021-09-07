@@ -4,9 +4,10 @@ from typing import Dict
 from torch.optim.lr_scheduler import _LRScheduler as TorchScheduler
 
 from ..core.serializable import JSONSerializable
-from ..core.utils import get_class
+from ..core.utils import get_class, register_class
 
 
+@register_class
 class Scheduler(JSONSerializable):
     """A wrapper for :class:`~torch.optim.lr_scheduler` objects.
 

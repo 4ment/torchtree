@@ -10,10 +10,11 @@ from torch import Tensor, nn
 from ..core.abstractparameter import AbstractParameter
 from ..core.container import Container
 from ..core.model import CallableModel
-from ..core.utils import get_class, process_objects
+from ..core.utils import get_class, process_objects, register_class
 from ..typing import ID, OrderedDictType
 
 
+@register_class
 class Module(CallableModel):
     r"""Wrapper class for torch.nn.Module.
 

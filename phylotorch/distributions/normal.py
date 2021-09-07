@@ -5,7 +5,10 @@ from typing import Union
 import torch.distributions.normal
 from torch import Tensor
 
+from ..core.utils import register_class
 
+
+@register_class
 class Normal(torch.distributions.Normal):
     """
     Creates a normal distribution parameterized by :attr:`loc` and

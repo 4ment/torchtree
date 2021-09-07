@@ -4,13 +4,14 @@ import torch
 
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..evolution.tree_model import TreeModel
 from ..typing import ID
 
 
 # Code adapted from
 # github.com/beast-dev/beast-mcmc/blob/master/src/dr/evomodel/tree/CTMCScalePrior.java
+@register_class
 class CTMCScale(CallableModel):
     """Class implementing the CTMC scale prior [#ferreira2008]_
 

@@ -12,7 +12,7 @@ from .model import CallableModel
 from .parameter_encoder import ParameterEncoder
 from .runnable import Runnable
 from .serializable import JSONSerializable
-from .utils import process_object, process_objects
+from .utils import process_object, process_objects, register_class
 
 
 class LoggerInterface(JSONSerializable, Runnable):
@@ -36,6 +36,7 @@ class LoggerInterface(JSONSerializable, Runnable):
         self.close()
 
 
+@register_class
 class Logger(LoggerInterface):
     r"""
     Class for logging Parameter objects to a file.
@@ -109,6 +110,7 @@ class Logger(LoggerInterface):
         return cls(params, **kwargs)
 
 
+@register_class
 class TreeLogger(LoggerInterface):
     """Class for logging trees to a file.
 
