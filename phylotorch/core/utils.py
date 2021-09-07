@@ -2,12 +2,17 @@ import copy
 import functools
 import importlib
 import json
+import logging
 import numbers
+import os
 import re
 import signal
+from pathlib import Path
 from typing import Union
 
 import torch
+
+REGISTERED_CLASSES = {}
 
 
 class TensorEncoder(json.JSONEncoder):
@@ -124,7 +129,10 @@ def process_object(data, dic):
             )
 
         try:
-            klass = get_class(data['type'])
+            if data['type'] in REGISTERED_CLASSES:
+                klass = REGISTERED_CLASSES[data['type']]
+            else:
+                klass = get_class(data['type'])
         except ModuleNotFoundError as e:
             raise JSONParseError(
                 str(e) + " in object with ID '" + data['id'] + "'"
@@ -265,6 +273,7 @@ def update_parameters(json_object, parameters) -> None:
         if 'type' in json_object and json_object['type'] in (
             'phylotorch.core.parameter.Parameter',
             'phylotorch.Parameter',
+            'Parameter',
         ):
             if json_object['id'] in parameters:
                 # get rid of full, full_like, tensor...
@@ -331,3 +340,36 @@ def string_to_list_index(index_str) -> Union[int, slice]:
                 step = int(slice_indexes_str[2])
         index = slice(start, end_excluded, step)
     return index
+
+
+def package_contents(package_name):
+    import importlib.util
+
+    spec = importlib.util.find_spec(package_name)
+    # origin is None for namespace packages (no __init__.py)
+    if spec is None or spec.origin is None:
+        return set()
+
+    pathname = Path(spec.origin).parent
+    ret = set()
+    with os.scandir(pathname) as entries:
+        for entry in entries:
+            if entry.name.startswith('_'):
+                continue
+            current = '.'.join((package_name, entry.name.partition('.')[0]))
+            if entry.is_file():
+                if entry.name.endswith('.py'):
+                    ret.add(current)
+            elif entry.is_dir():
+                ret.add(current)
+                ret |= package_contents(current)
+    return ret
+
+
+def register_class(_cls, name=None):
+    logging.info('register_class: {}'.format(_cls))
+    if name is not None:
+        REGISTERED_CLASSES[name] = _cls
+    else:
+        REGISTERED_CLASSES[_cls.__name__] = _cls
+    return _cls

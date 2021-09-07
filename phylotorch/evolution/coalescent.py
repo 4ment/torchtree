@@ -5,11 +5,12 @@ from torch.distributions.distribution import Distribution
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel
 from ..core.parameter import Parameter
-from ..core.utils import process_object, process_objects
+from ..core.utils import process_object, process_objects, register_class
 from ..typing import ID
 from .tree_model import TimeTreeModel, TreeModel
 
 
+@register_class
 class ConstantCoalescentModel(CallableModel):
     def __init__(
         self,
@@ -135,6 +136,7 @@ class PiecewiseConstantCoalescent(ConstantCoalescent):
         ) - self.theta.log().sum(-1, keepdim=True)
 
 
+@register_class
 class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
     def _call(self, *args, **kwargs) -> torch.Tensor:
         pwc = PiecewiseConstantCoalescent(self.theta.tensor)
@@ -219,6 +221,7 @@ class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
         )
 
 
+@register_class
 class PiecewiseConstantCoalescentGridModel(CallableModel):
     def __init__(
         self,

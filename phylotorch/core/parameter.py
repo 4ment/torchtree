@@ -15,10 +15,12 @@ from .utils import (
     get_class,
     process_object,
     process_objects,
+    register_class,
     tensor_rand,
 )
 
 
+@register_class
 class Parameter(AbstractParameter):
     def __init__(self, id_: Optional[str], tensor: Tensor) -> None:
         super().__init__(id_)
@@ -172,6 +174,7 @@ class Parameter(AbstractParameter):
         return cls(data['id'], t)
 
 
+@register_class
 class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callable):
     def __init__(
         self,
@@ -286,6 +289,7 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
         return cls(data['id'], x, transform)
 
 
+@register_class
 class ViewParameter(AbstractParameter, ParameterListener):
     def __init__(
         self,
@@ -443,6 +447,7 @@ class ViewParameter(AbstractParameter, ParameterListener):
         return cls(data['id'], parameter, indices)
 
 
+@register_class
 class CatParameter(AbstractParameter, ParameterListener):
     """Class for concatenating parameters.
 

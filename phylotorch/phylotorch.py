@@ -1,4 +1,5 @@
 import argparse
+import importlib
 import json
 import logging
 
@@ -9,6 +10,7 @@ from .core.utils import (
     JSONParseError,
     expand_plates,
     get_class,
+    package_contents,
     process_objects,
     remove_comments,
     update_parameters,
@@ -48,6 +50,8 @@ def main():
     )
     arg = parser.parse_args()
 
+    logging.basicConfig(format='%(levelname)s: %(message)s')
+
     if arg.seed is not None:
         torch.manual_seed(arg.seed)
     print('SEED: {}'.format(torch.initial_seed()))
@@ -58,7 +62,10 @@ def main():
 
     print()
 
-    logging.basicConfig(format='%(levelname)s: %(message)s')
+    # register classes that do not require module specification
+    for module in package_contents(__name__.split('.')[0]):
+        importlib.import_module(module)
+
     with open(arg.file) as file_pointer:
         # data = json.load(fp, object_pairs_hook=collections.OrderedDict)
         data = json.load(file_pointer)
