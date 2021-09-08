@@ -1,7 +1,91 @@
 import torch
 from torch.distributions import Transform
 
-from .tree_model import TimeTreeModel
+
+class GeneralNodeHeightTransform(Transform):
+    r"""Transform from ratios to node heights."""
+    bijective = True
+    sign = +1
+
+    def __init__(self, tree: 'TimeTreeModel', cache_size=0) -> None:  # noqa: F821
+        super().__init__(cache_size=cache_size)
+        self.tree = tree
+        self.taxa_count = self.tree.taxa_count
+        self._indices = None
+        self._bounds = None
+        self.update_bounds()
+        self.update_preorder_indices()
+
+    def update_preorder_indices(self):
+        self._indices = (
+            self.tree.preorder[torch.argsort(self.tree.preorder[:, 1])].t()[
+                0, self.taxa_count :
+            ]
+            - self.taxa_count
+        )
+
+    def update_bounds(self) -> None:
+        """Called when topology changes."""
+        taxa_count = self.taxa_count
+        internal_heights = [None] * (taxa_count - 1)
+        for node, left, right in self.tree.postorder:
+            left_height = (
+                self.tree.sampling_times[left]
+                if left < taxa_count
+                else internal_heights[left - taxa_count]
+            )
+            right_height = (
+                self.tree.sampling_times[right]
+                if right < taxa_count
+                else internal_heights[right - taxa_count]
+            )
+
+            internal_heights[node - taxa_count] = (
+                left_height if left_height > right_height else right_height
+            )
+        self._bounds = torch.cat(
+            (self.tree.sampling_times, torch.stack(internal_heights)), -1
+        )
+
+    def _call(self, x: torch.Tensor) -> torch.Tensor:
+        """Transform node ratios and root height to internal node heights."""
+        heights = x.clone()
+        for parent_id, id_ in self.tree.preorder:
+            if id_ >= self.taxa_count:
+                heights[..., id_ - self.taxa_count] = self._bounds[id_] + x[
+                    ..., id_ - self.taxa_count
+                ] * (heights[..., parent_id - self.taxa_count] - self._bounds[id_])
+        return heights
+
+    def _inverse(self, y: torch.Tensor) -> torch.Tensor:
+        """Transform internal node heights to ratios/root height."""
+        # indices = self.tree.preorder[np.argsort(self.tree.preorder[:, 1])].transpose()
+        indices = self.tree.preorder[torch.argsort(self.tree.preorder[:, 1])].t()
+        bounds = self._bounds[indices[1, self.taxa_count :]]
+        return torch.cat(
+            (
+                (
+                    y[
+                        ...,
+                        indices[1, self.taxa_count :] - self.taxa_count,
+                    ]
+                    - bounds
+                )
+                / (
+                    y[
+                        ...,
+                        indices[0, self.taxa_count :] - self.taxa_count,
+                    ]
+                    - bounds
+                ),
+                y[..., -1:],
+            )
+        )
+
+    def log_abs_det_jacobian(self, x, y):
+        return torch.log(
+            y[..., self._indices] - self._bounds[self.taxa_count : -1]
+        ).sum(-1)
 
 
 class DifferenceNodeHeightTransform(Transform):
@@ -19,7 +103,7 @@ class DifferenceNodeHeightTransform(Transform):
     bijective = True
     sign = +1
 
-    def __init__(self, tree: TimeTreeModel, cache_size=0) -> None:
+    def __init__(self, tree: 'TimeTreeModel', cache_size=0) -> None:  # noqa: F821
         super().__init__(cache_size=cache_size)
         self.tree = tree
         self.taxa_count = self.tree.taxa_count

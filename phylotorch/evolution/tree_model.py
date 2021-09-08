@@ -3,10 +3,8 @@ from abc import ABC
 from io import StringIO
 from typing import List, Optional, Union
 
-import numpy as np
 import torch
 from dendropy import TaxonNamespace, Tree
-from torch.distributions.transforms import Transform
 
 from .. import CatParameter
 from ..core.abstractparameter import AbstractParameter
@@ -14,69 +12,12 @@ from ..core.model import CallableModel, Model
 from ..core.utils import process_object, register_class
 from ..typing import ID
 from .taxa import Taxa
-
-
-class GeneralNodeHeightTransform(Transform):
-    r"""
-    Transform from ratios to node heights.
-    """
-    bijective = True
-    sign = +1
-
-    def __init__(self, tree: 'TimeTreeModel', cache_size=0) -> None:
-        super().__init__(cache_size=cache_size)
-        self.tree = tree
-        self.taxa_count = self.tree.taxa_count
-        self.indices = (
-            self.tree.preorder[np.argsort(self.tree.preorder[:, 1])].transpose()[
-                0, self.taxa_count :
-            ]
-            - self.taxa_count
-        )
-
-    def _call(self, x: torch.Tensor) -> torch.Tensor:
-        """Transform node ratios and root height to internal node heights."""
-        heights = x.clone()
-        for parent_id, id_ in self.tree.preorder:
-            if id_ >= self.taxa_count:
-                heights[..., id_ - self.taxa_count] = self.tree.bounds[id_] + x[
-                    ..., id_ - self.taxa_count
-                ] * (heights[..., parent_id - self.taxa_count] - self.tree.bounds[id_])
-        return heights
-
-    def _inverse(self, y: torch.Tensor) -> torch.Tensor:
-        """Transform internal node heights to ratios/root height."""
-        indices = self.tree.preorder[np.argsort(self.tree.preorder[:, 1])].transpose()
-        bounds = self.tree.bounds[indices[1, self.taxa_count :]]
-        return torch.cat(
-            (
-                (
-                    y[
-                        ...,
-                        indices[1, self.taxa_count :] - self.taxa_count,
-                    ]
-                    - bounds
-                )
-                / (
-                    y[
-                        ...,
-                        indices[0, self.taxa_count :] - self.taxa_count,
-                    ]
-                    - bounds
-                ),
-                y[..., -1:],
-            )
-        )
-
-    def log_abs_det_jacobian(self, x, y):
-        return torch.log(
-            y[..., self.indices] - self.tree.bounds[self.taxa_count : -1]
-        ).sum(-1)
+from .tree_height_transform import GeneralNodeHeightTransform
 
 
 def heights_to_branch_lengths(node_heights, bounds, indexing):
     taxa_count = int((bounds.shape[0] + 1) / 2)
-    indices_sorted = indexing[np.argsort(indexing[:, 1])].transpose()
+    indices_sorted = indexing[torch.argsort(indexing[:, 1])].t()
     return torch.cat(
         (
             node_heights[..., indices_sorted[0, :taxa_count] - taxa_count]
@@ -88,19 +29,23 @@ def heights_to_branch_lengths(node_heights, bounds, indexing):
     )
 
 
-def setup_indexes(tree):
+def setup_indexes(tree, indices_postorder=False):
     for node in tree.postorder_node_iter():
         node.index = -1
         node.annotations.add_bound_attribute("index")
 
     indexer = iter(range(len(tree.taxon_namespace), len(tree.taxon_namespace) * 2 - 1))
     taxa_dict = {taxon.label: idx for idx, taxon in enumerate(tree.taxon_namespace)}
+    indexer_taxa = iter(range(len(tree.taxon_namespace)))
 
     for node in tree.postorder_node_iter():
         if not node.is_leaf():
             node.index = next(indexer)
         else:
-            node.index = taxa_dict[node.taxon.label]
+            if indices_postorder:
+                node.index = next(indexer_taxa)
+            else:
+                node.index = taxa_dict[node.taxon.label]
 
 
 def setup_dates(tree, heterochronous=False):
@@ -158,7 +103,7 @@ def initialize_dates_from_taxa(tree, taxa, tag='date'):
 
 
 def heights_from_branch_lengths(tree):
-    heights = np.empty(2 * len(tree.taxon_namespace) - 1)
+    heights = torch.empty(2 * len(tree.taxon_namespace) - 1)
     for node in tree.postorder_node_iter():
         if node.is_leaf():
             heights[node.index] = node.date
@@ -194,7 +139,8 @@ def parse_tree(taxa, data):
             'Some taxon names in the tree do not match those in the Taxa object'
         )
     tree.resolve_polytomies(update_bipartitions=True)
-    setup_indexes(tree)
+    use_postorder_indices = data.get('use_postorder_indices', False)
+    setup_indexes(tree, use_postorder_indices)
     return tree
 
 
@@ -422,7 +368,7 @@ class TimeTreeModel(AbstractTreeModel):
     def update_traversals(self):
         super().update_traversals()
         # preoder indexing to go from ratios to heights
-        self.preorder = np.array(
+        self.preorder = torch.tensor(
             [
                 (node.parent_node.index, node.index)
                 for node in self.tree.preorder_node_iter()
@@ -456,7 +402,7 @@ class TimeTreeModel(AbstractTreeModel):
         :rtype: torch.Tensor
         """
         if self.branch_lengths_need_update:
-            indices_sorted = self.preorder[np.argsort(self.preorder[:, 1])].transpose()
+            indices_sorted = self.preorder[torch.argsort(self.preorder[:, 1])].t()
             heights = self.node_heights
             self._branch_lengths = (
                 heights[..., indices_sorted[0]] - heights[..., indices_sorted[1]]
@@ -475,11 +421,11 @@ class TimeTreeModel(AbstractTreeModel):
 
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
         super().cuda(device)
-        self.bounds.cuda(device)
+        self.sampling_times = self.sampling_times.cuda(device)
 
     def cpu(self) -> None:
         super().cpu()
-        self.bounds.cpu()
+        self.sampling_times = self.sampling_times.cpu()
 
     @staticmethod
     def json_factory(
@@ -558,9 +504,8 @@ class TimeTreeModel(AbstractTreeModel):
         internal_heights = process_object(data['internal_heights'], dic)
 
         if data.get('keep_branch_lengths', False):
-            internal_heights.tensor = torch.tensor(
-                heights_from_branch_lengths(tree),
-                dtype=internal_heights.dtype,
+            internal_heights.tensor = heights_from_branch_lengths(tree).to(
+                dtype=internal_heights.dtype, device=internal_heights.device
             )
 
         return cls(id_, tree, taxa, internal_heights)
@@ -573,32 +518,8 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
     ) -> None:
         CallableModel.__init__(self, id_)
         TimeTreeModel.__init__(self, id_, tree, taxa, ratios_root_heights)
-        self.bounds = None
-        self.update_bounds()
         self._heights = None
         self.transform = GeneralNodeHeightTransform(self)
-
-    def update_bounds(self) -> None:
-        taxa_count = self.taxa_count
-        internal_heights = [None] * (taxa_count - 1)
-        for node, left, right in self.postorder:
-            left_height = (
-                self.sampling_times[left]
-                if left < taxa_count
-                else internal_heights[left - taxa_count]
-            )
-            right_height = (
-                self.sampling_times[right]
-                if right < taxa_count
-                else internal_heights[right - taxa_count]
-            )
-
-            internal_heights[node - taxa_count] = (
-                left_height if left_height > right_height else right_height
-            )
-        self.bounds = torch.cat(
-            (self.sampling_times, torch.stack(internal_heights)), -1
-        )
 
     def update_node_heights(self) -> None:
         self._heights = self.transform(self._internal_heights.tensor)
@@ -625,6 +546,14 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
         return self.transform.log_abs_det_jacobian(
             self._internal_heights.tensor, self._heights
         )
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        super().cuda(device)
+        self.transform = GeneralNodeHeightTransform(self)
+
+    def cpu(self) -> None:
+        super().cpu()
+        self.transform = GeneralNodeHeightTransform(self)
 
     @staticmethod
     def json_factory(
@@ -721,8 +650,7 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
 
         if data.get('keep_branch_lengths', False):
             ratios_root_height.tensor = tree_model.transform.inv(
-                torch.tensor(
-                    heights_from_branch_lengths(tree),
+                heights_from_branch_lengths(tree).to(
                     dtype=ratios_root_height.dtype,
                     device=ratios_root_height.device,
                 )

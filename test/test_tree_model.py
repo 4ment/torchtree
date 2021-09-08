@@ -109,7 +109,7 @@ def test_general_node_height_transform_hetero_all(
         torch.cat((dic['ratios'].tensor, dic['root_height'].tensor)),
     )
     assert torch.allclose(expected, tree_model.node_heights)
-    assert torch.allclose(expected_bounds, tree_model.bounds)
+    assert torch.allclose(expected_bounds, tree_model.transform._bounds)
     assert torch.allclose(expected_branch_lengths, tree_model.branch_lengths())
     assert torch.allclose(tree_model(), log_det_jacobian)
 
@@ -131,7 +131,7 @@ def test_general_node_height_transform_hetero_7():
     log_det_jacobian = torch.tensor([0.0])
     for i in range(len(taxa), 2 * len(taxa) - 2):
         log_det_jacobian += (
-            tree_model.node_heights[i + 1] - tree_model.bounds[i]
+            tree_model.node_heights[i + 1] - tree_model.transform._bounds[i]
         ).log()
     assert torch.allclose(tree_model(), log_det_jacobian)
 
