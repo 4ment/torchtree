@@ -51,6 +51,12 @@ class JointDistributionModel(DistributionModel):
         for distr in self._distributions.models():
             distr.sample(sample_shape)
 
+    def entropy(self) -> torch.Tensor:
+        entropies = []
+        for distr in self._distributions.models():
+            entropies.append(distr.entropy())
+        return torch.cat(entropies, 0).sum()
+
     def handle_model_changed(self, model: Model, obj, index) -> None:
         self.fire_model_changed()
 

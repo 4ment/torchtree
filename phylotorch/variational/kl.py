@@ -23,15 +23,23 @@ class ELBO(CallableModel):
     :param DistributionModel q: variational distribution.
     :param CallableModel p: joint distribution.
     :param torch.Size samples: number of samples.
+    :param bool entropy: use entropy instead of Monte Carlo approximation
+    for variational distribution
     """
 
     def __init__(
-        self, id_: ID, q: DistributionModel, p: CallableModel, samples: torch.Size
+        self,
+        id_: ID,
+        q: DistributionModel,
+        p: CallableModel,
+        samples: torch.Size,
+        entropy=False,
     ) -> None:
         super().__init__(id_)
         self.q = q
         self.p = p
         self.samples = samples
+        self.entropy = entropy
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
@@ -46,7 +54,11 @@ class ELBO(CallableModel):
             ).mean()
         else:
             self.q.rsample(samples)
-            lp = (self.p() - self.q()).mean()
+
+            if self.entropy:
+                lp = self.p().mean() + self.q.entropy()
+            else:
+                lp = (self.p() - self.q()).mean()
         return lp
 
     def handle_model_changed(self, model, obj, index):

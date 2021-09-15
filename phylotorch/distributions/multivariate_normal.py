@@ -75,6 +75,12 @@ class MultivariateNormal(DistributionModel):
             self.loc.tensor, **kwargs
         ).log_prob(x.tensor)
 
+    def entropy(self) -> torch.Tensor:
+        kwargs = {self.parameterization: self.parameter.tensor}
+        return torch.distributions.MultivariateNormal(
+            self.loc.tensor, **kwargs
+        ).entropy()
+
     def handle_model_changed(self, model: Model, obj, index) -> None:
         pass
 

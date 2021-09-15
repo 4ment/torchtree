@@ -28,6 +28,10 @@ class DistributionModel(CallableModel):
     def log_prob(self, x: AbstractParameter = None) -> torch.Tensor:
         ...
 
+    @abc.abstractmethod
+    def entropy(self) -> torch.Tensor:
+        ...
+
 
 @register_class
 class Distribution(DistributionModel):
@@ -78,6 +82,11 @@ class Distribution(DistributionModel):
         return self.dist(
             *[arg.tensor for arg in self.args.values()], **self.kwargs
         ).log_prob(x.tensor)
+
+    def entropy(self) -> torch.Tensor:
+        return self.dist(
+            *[arg.tensor for arg in self.args.values()], **self.kwargs
+        ).entropy()
 
     def handle_model_changed(self, model: Model, obj, index) -> None:
         pass

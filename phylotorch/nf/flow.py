@@ -80,6 +80,9 @@ class NormalizingFlow(DistributionModel):
     ) -> Tensor:
         return self.base() - self.sum_log_abs_det_jacobians
 
+    def entropy(self) -> torch.Tensor:
+        raise RuntimeError('Cannot use entropy with NormalizingFlow class')
+
     def _call(self, *args, **kwargs) -> Tensor:
         return self.log_prob()
 
