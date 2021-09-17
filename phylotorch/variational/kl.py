@@ -1,7 +1,10 @@
+from typing import List
+
 import torch
 
+from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel
-from ..core.utils import process_object, register_class
+from ..core.utils import process_object, process_objects, register_class
 from ..distributions.distributions import DistributionModel
 from ..typing import ID
 
@@ -186,3 +189,94 @@ def _from_json(cls, data, dic):
     joint_desc = data['joint']
     joint = process_object(joint_desc, dic)
     return cls(data['id'], var, joint, samples)
+
+
+@register_class
+class SELBO(CallableModel):
+    r"""
+    Class representing the stratified evidence lower bound (SELBO) objective.
+    Maximizing the SELBO is equivalent to minimizing exclusive Kullback-Leibler
+    divergence from p to q :math:`KL(q\|p)` where :math:`q=\sum_i \alpha_i q_i`.
+
+    The shape of ``samples`` is at most 2 dimensional.
+
+    - 0 or 1 dimension N or [N]: standard ELBO.
+    - 2 dimensions [N,K]: multi sample ELBO.
+
+    :param id_: ID of KLqp object.
+    :type id_: str or None
+    :param DistributionModel components: list of distribution.
+    :param AbstractParameter weights:
+    :param CallableModel p: joint distribution.
+    :param torch.Size samples: number of samples.
+    :param bool entropy: use entropy instead of Monte Carlo approximation
+    for variational distribution
+    """
+
+    def __init__(
+        self,
+        id_: ID,
+        components: List[DistributionModel],
+        weights: AbstractParameter,
+        p: CallableModel,
+        samples: torch.Size,
+        entropy=False,
+    ) -> None:
+        super().__init__(id_)
+        self.components = components
+        self.p = p
+        self.weights = weights
+        self.samples = samples
+        self.entropy = entropy
+
+    def _call(self, *args, **kwargs) -> torch.Tensor:
+        samples = kwargs.get('samples', self.samples)
+        # Multi sample
+        if len(samples) == 2:
+            log_q = []
+            for q in self.components:
+                q.rsample(samples)
+                log_q.append(q())
+            log_q = torch.cat(log_q)
+            log_p = self.p()
+            log_weights = self.weights.tensor.log()
+            lp = (
+                torch.logsumexp(log_p - log_q + log_weights, -1)
+                - torch.tensor(float(log_p.shape[-1])).log()
+            ).mean()
+        else:
+            log_probs = []
+
+            for q in self.components:
+                q.rsample(samples)
+
+                if self.entropy:
+                    log_probs.append(self.p().mean() + q.entropy())
+                else:
+                    log_probs.append((self.p() - q().sum(-1)).mean().unsqueeze(0))
+            lp = (self.weights.tensor * torch.cat(log_probs)).sum()
+        return lp
+
+    def handle_model_changed(self, model, obj, index):
+        self.fire_model_changed()
+
+    def handle_parameter_changed(self, variable, index, event):
+        pass
+
+    @property
+    def sample_shape(self) -> torch.Size:
+        return self.q.sample_shape
+
+    @classmethod
+    def from_json(cls, data, dic):
+        samples = data.get('samples', 1)
+        if isinstance(samples, list):
+            samples = torch.Size(samples)
+        else:
+            samples = torch.Size((samples,))
+
+        components = process_objects(data['components'], dic)
+        weights = process_object(data['weights'], dic)
+        joint = process_object(data['joint'], dic)
+        print(components)
+        return cls(data['id'], components, weights, joint, samples)
