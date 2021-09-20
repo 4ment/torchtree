@@ -59,7 +59,7 @@ class ELBO(CallableModel):
             self.q.rsample(samples)
 
             if self.entropy:
-                lp = self.p().mean() + self.q.entropy()
+                lp = self.p().mean() + self.q.entropy().sum()
             else:
                 lp = (self.p() - self.q()).mean()
         return lp
@@ -188,7 +188,8 @@ def _from_json(cls, data, dic):
 
     joint_desc = data['joint']
     joint = process_object(joint_desc, dic)
-    return cls(data['id'], var, joint, samples)
+    entropy = data.get('entropy', False)
+    return cls(data['id'], var, joint, samples, entropy)
 
 
 @register_class
