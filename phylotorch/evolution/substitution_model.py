@@ -214,7 +214,9 @@ class HKY(SymmetricSubstitutionModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
-    def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
+    def p_t_analytical(self, branch_lengths: torch.Tensor) -> torch.Tensor:
+        # FIXME: does not work with K>1 rate categories
+        raise NotImplementedError
         if len(self.frequencies.shape) == 1:
             pi = self.frequencies.unsqueeze(0)
             kappa = self.kappa.unsqueeze(0)
