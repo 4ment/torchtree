@@ -12,13 +12,19 @@ class GeneralNodeHeightTransform(Transform):
         self.tree = tree
         self.taxa_count = self.tree.taxa_count
         self._indices = None
+        self._det_indices = None
+        self._forward_indices = None
         self._bounds = None
         self.update_bounds()
-        self.update_preorder_indices()
+        self.sort_indices()
 
-    def update_preorder_indices(self):
-        self._indices = (
-            self.tree.preorder[torch.argsort(self.tree.preorder[:, 1])].t()[
+    def sort_indices(self):
+        self._forward_indices = (
+            self.tree.preorder[self.tree.preorder[..., 1] >= self.taxa_count, :]
+            - self.taxa_count
+        )
+        self._det_indices = (
+            self.tree.preorder[torch.argsort(self.tree.preorder[..., 1])].t()[
                 0, self.taxa_count :
             ]
             - self.taxa_count
@@ -50,16 +56,15 @@ class GeneralNodeHeightTransform(Transform):
     def _call(self, x: torch.Tensor) -> torch.Tensor:
         """Transform node ratios and root height to internal node heights."""
         heights = x.clone()
-        for parent_id, id_ in self.tree.preorder:
-            if id_ >= self.taxa_count:
-                heights[..., id_ - self.taxa_count] = self._bounds[id_] + x[
-                    ..., id_ - self.taxa_count
-                ] * (heights[..., parent_id - self.taxa_count] - self._bounds[id_])
+        bounds = self._bounds[self.taxa_count :]
+        for parent_id, id_ in self._forward_indices:
+            heights[..., id_] = bounds[id_] + x[..., id_] * (
+                heights[..., parent_id] - bounds[id_]
+            )
         return heights
 
     def _inverse(self, y: torch.Tensor) -> torch.Tensor:
         """Transform internal node heights to ratios/root height."""
-        # indices = self.tree.preorder[np.argsort(self.tree.preorder[:, 1])].transpose()
         indices = self.tree.preorder[torch.argsort(self.tree.preorder[:, 1])].t()
         bounds = self._bounds[indices[1, self.taxa_count :]]
         return torch.cat(
@@ -84,7 +89,7 @@ class GeneralNodeHeightTransform(Transform):
 
     def log_abs_det_jacobian(self, x, y):
         return torch.log(
-            y[..., self._indices] - self._bounds[self.taxa_count : -1]
+            y[..., self._det_indices] - self._bounds[self.taxa_count : -1]
         ).sum(-1)
 
 

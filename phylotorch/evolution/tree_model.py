@@ -53,11 +53,11 @@ def setup_dates(tree, heterochronous=False):
     if heterochronous:
         dates = {}
         for node in tree.leaf_node_iter():
-            dates[str(node.taxon)] = float(str(node.taxon).rsplit('_', 1)[:-1])
+            node_taxon = str(node.taxon).strip("'").strip('"')
+            dates[str(node.taxon)] = float(node_taxon.rsplit('_', 1)[-1])
 
         max_date = max(dates.values())
         min_date = min(dates.values())
-        print(min_date, max_date)
 
         # time starts at 0
         if min_date == 0:
@@ -375,6 +375,7 @@ class TimeTreeModel(AbstractTreeModel):
                 if node != self.tree.seed_node
             ]
         )
+        self.indices_sorted = self.preorder[torch.argsort(self.preorder[:, 1])].t()
 
     @property
     def node_heights(self) -> torch.Tensor:
@@ -402,10 +403,10 @@ class TimeTreeModel(AbstractTreeModel):
         :rtype: torch.Tensor
         """
         if self.branch_lengths_need_update:
-            indices_sorted = self.preorder[torch.argsort(self.preorder[:, 1])].t()
             heights = self.node_heights
             self._branch_lengths = (
-                heights[..., indices_sorted[0]] - heights[..., indices_sorted[1]]
+                heights[..., self.indices_sorted[0]]
+                - heights[..., self.indices_sorted[1]]
             )
             self.branch_lengths_need_update = False
         return self._branch_lengths
