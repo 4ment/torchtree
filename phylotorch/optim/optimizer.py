@@ -4,6 +4,7 @@ import json
 import os
 from typing import Dict, Tuple, Union
 
+import torch
 from torch.optim import Optimizer as TorchOptimizer
 
 from .. import Parameter
@@ -38,7 +39,7 @@ class Optimizer(JSONSerializable, Runnable):
         loss: CallableModel,
         optimizer: TorchOptimizer,
         iterations: int,
-        **kwargs
+        **kwargs,
     ) -> None:
         self.parameters = parameters
         self.loss = loss
@@ -51,7 +52,51 @@ class Optimizer(JSONSerializable, Runnable):
         self.checkpoint = kwargs.get('checkpoint', None)
         self.checkpoint_frequency = kwargs.get('checkpoint_frequency', 1000)
 
-    def run(self) -> None:
+    def update_checkpoint(self):
+        if not os.path.lexists(self.checkpoint):
+            # for var_name in self.optimizer.state_dict():
+            #     print(var_name, "\t", self.optimizer.state_dict()[var_name])
+            # torch.save(self.optimizer.state_dict(), 'checkpoint.json')
+            with open(self.checkpoint, 'w') as fp:
+                json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
+        else:
+            # torch.save(self.optimizer.state_dict(), 'checkpoint-new.json')
+            with open(self.checkpoint + '.new', 'w') as fp:
+                json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
+            os.rename(self.checkpoint, self.checkpoint + '.old')
+            os.rename(self.checkpoint + '.new', self.checkpoint)
+            os.remove(self.checkpoint + '.old')
+
+    def _run_closure(self) -> None:
+        def closure():
+            for p in self.parameters:
+                p.fire_parameter_changed()
+            loss = -self.loss() if self.maximize else self.loss()
+            self.optimizer.zero_grad()
+            loss.backward()
+            return loss
+
+        handler = SignalHandler()
+
+        for p in self.parameters:
+            p.requires_grad = True
+
+        for epoch in range(self.iterations):
+            if handler.stop:
+                break
+            self.optimizer.step(closure)
+            state = self.optimizer.state_dict()['state'][0]
+
+            with torch.no_grad():
+                loss = self.loss()
+
+            func_evals = state["func_evals"]
+            n_iter = state["n_iter"]
+            print(f'{n_iter:>4} {loss} evaluations: {func_evals}')
+
+            self.update_checkpoint()
+
+    def _run(self) -> None:
         for logger in self.loggers:
             if hasattr(logger, 'init'):
                 logger.init()
@@ -89,23 +134,17 @@ class Optimizer(JSONSerializable, Runnable):
                     break
 
             if self.checkpoint is not None and epoch % 1000 == 0:
-                if not os.path.lexists(self.checkpoint):
-                    # for var_name in self.optimizer.state_dict():
-                    #     print(var_name, "\t", self.optimizer.state_dict()[var_name])
-                    # torch.save(self.optimizer.state_dict(), 'checkpoint.json')
-                    with open(self.checkpoint, 'w') as fp:
-                        json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
-                else:
-                    # torch.save(self.optimizer.state_dict(), 'checkpoint-new.json')
-                    with open(self.checkpoint + '.new', 'w') as fp:
-                        json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
-                    os.rename(self.checkpoint, self.checkpoint + '.old')
-                    os.rename(self.checkpoint + '.new', self.checkpoint)
-                    os.remove(self.checkpoint + '.old')
+                self.update_checkpoint()
 
         for logger in self.loggers:
             if hasattr(logger, 'finalize'):
                 logger.finalize()
+
+    def run(self) -> None:
+        if isinstance(self.optimizer, torch.optim.LBFGS):
+            self._run_closure()
+        else:
+            self._run()
 
     @staticmethod
     def parse_params(
