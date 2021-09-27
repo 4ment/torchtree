@@ -69,6 +69,15 @@ class CTMCScale(CallableModel):
         self.shape = self.shape.cpu()
         self.log_gamma_one_half = self.log_gamma_one_half.cpu()
 
+    @staticmethod
+    def json_factory(id_: str, rate: [str, dict], tree: [str, dict]) -> dict:
+        return {
+            'id': id_,
+            'type': 'CTMCScale',
+            'x': rate,
+            'tree_model': tree,
+        }
+
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']

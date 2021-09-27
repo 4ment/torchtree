@@ -3,10 +3,11 @@ from typing import List
 from ..core.logger import LoggerInterface
 from ..core.runnable import Runnable
 from ..core.serializable import JSONSerializable
-from ..core.utils import process_object, process_objects
+from ..core.utils import process_object, process_objects, register_class
 from ..distributions.distributions import DistributionModel
 
 
+@register_class
 class Sampler(JSONSerializable, Runnable):
     r"""
     Class for sampling a distribution and optionally logging things.

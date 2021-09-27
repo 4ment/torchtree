@@ -116,6 +116,23 @@ class Distribution(DistributionModel):
         offset = 1 if len(self.batch_shape) == 0 else len(self.batch_shape)
         return self.x.tensor.shape[:-offset]
 
+    @staticmethod
+    def json_factory(
+        id_: str,
+        distribution: str,
+        x: Union[str, dict],
+        parameters: Union[str, dict] = None,
+    ) -> dict:
+        distr = {
+            'id': id_,
+            'type': 'Distribution',
+            'distribution': distribution,
+            'x': x,
+        }
+        if parameters is not None:
+            distr['parameters'] = parameters
+        return distr
+
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']

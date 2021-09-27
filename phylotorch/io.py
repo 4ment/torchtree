@@ -8,8 +8,7 @@ from dendropy import DnaCharacterMatrix, Tree
 from .evolution.tree_model import setup_dates, setup_indexes
 
 
-def read_tree_and_alignment(tree, alignment, dated=True, heterochornous=True):
-    # tree
+def read_tree(tree, dated=True, heterochornous=True):
     taxa = dendropy.TaxonNamespace()
     tree_format = 'newick'
     with open(tree) as fp:
@@ -29,13 +28,20 @@ def read_tree_and_alignment(tree, alignment, dated=True, heterochornous=True):
     setup_indexes(tree)
     if dated:
         setup_dates(tree, heterochornous)
+    return tree
+
+
+def read_tree_and_alignment(tree, alignment, dated=True, heterochornous=True):
+    tree = read_tree(tree, dated, heterochornous)
 
     # alignment
     seqs_args = dict(schema='nexus', preserve_underscores=True)
     with open(alignment) as fp:
         if next(fp).startswith('>'):
             seqs_args = dict(schema='fasta')
-    dna = DnaCharacterMatrix.get(path=alignment, taxon_namespace=taxa, **seqs_args)
+    dna = DnaCharacterMatrix.get(
+        path=alignment, taxon_namespace=tree.taxon_namespace, **seqs_args
+    )
     sequence_count = len(dna)
     if sequence_count != len(dna.taxon_namespace):
         sys.stderr.write('taxon names in trees and alignment are different')

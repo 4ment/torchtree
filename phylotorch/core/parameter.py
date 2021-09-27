@@ -117,6 +117,37 @@ class Parameter(AbstractParameter):
         else:
             self._tensor = self._tensor.to(args[0])
 
+    @staticmethod
+    def json_factory(id_: str, **kwargs):
+        parameter = {
+            'id': id_,
+            'type': 'Parameter',
+        }
+        if 'full_like' in kwargs:
+            parameter['full_like'] = kwargs['full_like']
+            parameter['tensor'] = kwargs['tensor']
+        elif 'full' in kwargs:
+            parameter['full'] = kwargs['full']
+            parameter['tensor'] = kwargs['tensor']
+        elif 'zeros_like' in kwargs:
+            parameter['zeros_like'] = kwargs['zeros_like']
+        elif 'zeros' in kwargs:
+            parameter['zeros'] = kwargs['zeros']
+        elif 'ones_like' in kwargs:
+            parameter['ones_like'] = kwargs['ones_like']
+        elif 'ones' in kwargs:
+            parameter['ones'] = kwargs['ones']
+        elif 'eye' in kwargs:
+            parameter['eye'] = kwargs['eye']
+        elif 'tensor' in kwargs:
+            parameter['tensor'] = kwargs['tensor']
+
+        if 'dtype' in kwargs:
+            parameter['dtype'] = kwargs['dtype']
+        if 'device' in kwargs:
+            parameter['device'] = kwargs['device']
+        return parameter
+
     @classmethod
     def from_json(cls, data, dic):
         dtype = get_class(data['dtype']) if 'dtype' in data else None
