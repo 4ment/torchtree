@@ -3,6 +3,7 @@ from typing import List, Tuple
 import torch
 
 from phylotorch.cli.evolution import (
+    create_alignment,
     create_evolution_joint,
     create_evolution_parser,
     create_taxa,
@@ -209,7 +210,10 @@ def build_optimizer(arg):
     taxa = create_taxa('taxa', arg)
     json_list.append(taxa)
 
-    joint_dic = create_evolution_joint(taxa, arg)
+    alignment = create_alignment('alignment', 'taxa', arg)
+    json_list.append(alignment)
+
+    joint_dic = create_evolution_joint(taxa, 'alignment', arg)
 
     json_list.append(joint_dic)
 

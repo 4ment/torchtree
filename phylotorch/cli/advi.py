@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 from phylotorch import Parameter
 from phylotorch.cli.evolution import (
+    create_alignment,
     create_evolution_joint,
     create_evolution_parser,
     create_taxa,
@@ -97,7 +98,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
 
                     loc = Parameter.json_factory(
                         var_id + '.' + json_object['id'] + '.loc',
-                        **{'full_like': json_object['id'], 'tensor': 0.5}
+                        **{'full_like': json_object['id'], 'tensor': 0.5},
                     )
 
                     scale = {
@@ -106,7 +107,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                         'transform': 'torch.distributions.ExpTransform',
                         'x': Parameter.json_factory(
                             var_id + '.' + json_object['id'] + '.scale.unres',
-                            **{'full_like': json_object['id'], 'tensor': -1.89712}
+                            **{'full_like': json_object['id'], 'tensor': -1.89712},
                         ),
                     }
                     distr = Distribution.json_factory(
@@ -139,7 +140,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                 # )
                 loc = Parameter.json_factory(
                     var_id + '.' + x_ref + '.loc',
-                    **{'full_like': json_object['id'], 'tensor': 0.5}
+                    **{'full_like': json_object['id'], 'tensor': 0.5},
                 )
 
                 scale = {
@@ -148,7 +149,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                     'transform': 'torch.distributions.ExpTransform',
                     'x': Parameter.json_factory(
                         var_id + '.' + x_ref + '.scale.unres',
-                        **{'full_like': json_object['id'], 'tensor': -1.89712}
+                        **{'full_like': json_object['id'], 'tensor': -1.89712},
                     ),
                 }
                 distr = Distribution.json_factory(
@@ -177,7 +178,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                 # )
                 loc = Parameter.json_factory(
                     var_id + '.' + x_ref + '.loc',
-                    **{'full_like': json_object['id'] + '.unres', 'tensor': 0.5}
+                    **{'full_like': json_object['id'] + '.unres', 'tensor': 0.5},
                 )
 
                 scale = {
@@ -189,7 +190,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                         **{
                             'full_like': json_object['id'] + '.unres',
                             'tensor': -1.89712,
-                        }
+                        },
                     ),
                 }
                 distr = Distribution.json_factory(
@@ -209,7 +210,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                 # )
                 loc = Parameter.json_factory(
                     var_id + '.' + json_object['id'] + '.loc',
-                    **{'full_like': json_object['id'], 'tensor': 0.5}
+                    **{'full_like': json_object['id'], 'tensor': 0.5},
                 )
 
                 scale = {
@@ -218,7 +219,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                     'transform': 'torch.distributions.ExpTransform',
                     'x': Parameter.json_factory(
                         var_id + '.' + json_object['id'] + '.scale.unres',
-                        **{'full_like': json_object['id'], 'tensor': -1.89712}
+                        **{'full_like': json_object['id'], 'tensor': -1.89712},
                     ),
                 }
                 distr = Distribution.json_factory(
@@ -310,15 +311,22 @@ def build_advi(arg):
     taxa = create_taxa('taxa', arg)
     json_list.append(taxa)
 
+    alignment = create_alignment('alignment', 'taxa', arg)
+    json_list.append(alignment)
+
     jacobians_list = []
     if arg.clock is not None:
         jacobians_list.extend(['tree', 'tree.ratios'])
-    if arg.model == 'HKY' or arg.model == 'GTR':
+
+    if arg.model == 'SRD06':
+        for tag in ('12', '3'):
+            jacobians_list.append(f'substmodel.{tag}' + '.frequencies')
+    elif arg.model == 'HKY' or arg.model == 'GTR':
         jacobians_list.append('substmodel' + '.frequencies')
         if arg.model == 'GTR':
             jacobians_list.append('substmodel' + '.rates')
 
-    joint_dic = create_evolution_joint(taxa, arg)
+    joint_dic = create_evolution_joint(taxa, 'alignment', arg)
     joint_dic['distributions'].extend(jacobians_list)
 
     json_list.append(joint_dic)
@@ -337,13 +345,26 @@ def build_advi(arg):
     if arg.coalescent is not None:
         parameters.append("coalescent.theta")
 
-    if arg.model == 'GTR':
+    if arg.model == 'SRD06':
+        for tag in ('12', '3'):
+            parameters.extend(
+                [f"substmodel.{tag}.kappa", f"substmodel.{tag}.frequencies"]
+            )
+    elif arg.model == 'GTR':
         parameters.extend(["substmodel.rates", "substmodel.frequencies"])
     elif arg.model == 'HKY':
         parameters.extend(["substmodel.kappa", "substmodel.frequencies"])
 
+    if arg.model == 'SRD06':
+        for tag in ('12', '3'):
+            parameters.append(f"sitemodel.{tag}.mu")
+
     if arg.categories > 1:
-        parameters.append("sitemodel.shape")
+        if arg.model == 'SRD06':
+            for tag in ('12', '3'):
+                parameters.append(f"sitemodel.{tag}.shape")
+        else:
+            parameters.append("sitemodel.shape")
 
     json_list.append(create_sampler('sampler', 'var', parameters, arg))
     return json_list

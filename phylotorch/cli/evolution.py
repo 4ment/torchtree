@@ -17,7 +17,7 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '-m',
         '--model',
-        choices=['JC69', 'HKY', 'GTR'],
+        choices=['JC69', 'HKY', 'GTR', 'SRD06'],
         default='JC69',
         help="""substitution model [default: %(default)s]""",
     )
@@ -125,10 +125,61 @@ def create_tree_model(id_: str, taxa: dict, arg):
     return tree_model
 
 
-def create_tree_likelihood(id_, taxa, arg):
-    site_pattern = create_site_pattern('patterns', arg)
+def create_tree_likelihood_single(
+    id_, tree_model, branch_model, substitution_model, site_model, site_pattern
+):
+
+    treelikelihood_model = {
+        'id': id_,
+        'type': 'TreeLikelihoodModel',
+        'tree_model': tree_model,
+        'site_model': site_model,
+        'substitution_model': substitution_model,
+        'site_pattern': site_pattern,
+    }
+    if branch_model is not None:
+        treelikelihood_model['branch_model'] = branch_model
+
+    return treelikelihood_model
+
+
+def create_tree_likelihood(id_, taxa, alignment, arg):
+    if arg.model == 'SRD06':
+        branch_model = None
+        branch_model_id = None
+        tree_id = 'tree'
+        tree_model = create_tree_model(tree_id, taxa, arg)
+        if arg.clock is not None:
+            branch_model_id = 'branchmodel'
+            branch_model = create_branch_model(branch_model_id, tree_id, arg)
+
+        like_list = []
+        for tag, indices, t, b, w in zip(
+            ('12', '3'),
+            ('::3,1::3', '2::3'),
+            (tree_model, tree_id),
+            (branch_model, branch_model_id),
+            (1.0, 1.0),
+        ):
+            substitution_model = create_substitution_model(f'substmodel.{tag}', 'HKY')
+            site_model = create_site_model(f'sitemodel.{tag}', arg, w)
+            site_pattern = create_site_pattern(f'patterns.{tag}', alignment, indices)
+            like_list.append(
+                create_tree_likelihood_single(
+                    f'{id_}.{tag}', t, b, substitution_model, site_model, site_pattern
+                )
+            )
+
+        joint_like = {
+            'id': 'like',
+            'type': 'JointDistributionModel',
+            'distributions': like_list,
+        }
+        return joint_like
+
+    site_pattern = create_site_pattern('patterns', alignment)
     site_model = create_site_model('sitemodel', arg)
-    substitution_model = create_substitution_model('substmodel', arg)
+    substitution_model = create_substitution_model('substmodel', arg.model)
     tree_id = 'tree'
     tree_model = create_tree_model(tree_id, taxa, arg)
 
@@ -147,18 +198,25 @@ def create_tree_likelihood(id_, taxa, arg):
     return treelikelihood_model
 
 
-def create_site_model(id_, arg):
+def create_site_model(id_, arg, w=1.0):
     if arg.categories == 1:
-        return {'id': id_, 'type': 'ConstantSiteModel'}
+        site_model = {'id': id_, 'type': 'ConstantSiteModel'}
     else:
         shape = Parameter.json_factory(f'{id_}.shape', **{'tensor': [0.1]})
         shape['lower'] = 0.0
-        return {
+        site_model = {
             'id': id_,
             'type': 'WeibullSiteModel',
             'categories': arg.categories,
             'shape': shape,
         }
+
+    if arg.model == 'SRD06':
+        # TODO: mu is fixed for now
+        site_model['mu'] = Parameter.json_factory(f'{id_}.mu', **{'tensor': [w]})
+        site_model['mu']['lower'] = w
+        site_model['mu']['upper'] = w
+    return site_model
 
 
 def create_branch_model(id_, tree_id, arg):
@@ -177,17 +235,17 @@ def create_branch_model(id_, tree_id, arg):
     }
 
 
-def create_substitution_model(id_, arg):
-    if arg.model == 'JC69':
+def create_substitution_model(id_, model):
+    if model == 'JC69':
         return {'id': id_, 'type': 'JC69'}
-    elif arg.model == 'HKY' or arg.model == 'GTR':
+    elif model == 'HKY' or model == 'GTR':
         frequencies = Parameter.json_factory(
             f'{id_}.frequencies', **{'tensor': 0.25, 'full': [4]}
         )
         frequencies['simplex'] = True
 
-        if arg.model == 'HKY':
-            kappa = Parameter.json_factory(f'{id_}.kappa', **{'tensor': [1.0]})
+        if model == 'HKY':
+            kappa = Parameter.json_factory(f'{id_}.kappa', **{'tensor': [3.0]})
             kappa['lower'] = 0.0
 
             return {
@@ -209,22 +267,23 @@ def create_substitution_model(id_, arg):
             }
 
 
-def create_site_pattern(id_, arg):
-    alignment = create_alignment(arg)
+def create_site_pattern(id_, alignment, indices=None):
     site_pattern = {'id': id_, 'type': 'SitePattern', 'alignment': alignment}
+    if indices is not None:
+        site_pattern['indices'] = indices
     return site_pattern
 
 
-def create_alignment(arg):
+def create_alignment(id_, taxa, arg):
     sequences = read_fasta_sequences(arg.input)
     sequence_list = []
     for sequence in sequences:
         sequence_list.append({'taxon': sequence.taxon, 'sequence': sequence.sequence})
     alignment = {
-        'id': 'alignment',
+        'id': id_,
         'type': 'Alignment',
         'datatype': 'nucleotide',
-        'taxa': 'taxa',
+        'taxa': taxa,
         'sequences': sequence_list,
     }
     return alignment
@@ -261,6 +320,39 @@ def create_coalesent(id_, tree_id, theta_id, arg):
     return coalescent
 
 
+def create_substitution_model_priors(substmodel_id, model):
+    joint_list = []
+    if model == 'HKY' or model == 'GTR':
+        joint_list.append(
+            Distribution.json_factory(
+                f'{substmodel_id}.frequencies.prior',
+                'torch.distributions.Dirichlet',
+                f'{substmodel_id}.frequencies',
+                {'concentration': [1.0] * 4},
+            )
+        )
+
+        if model == 'GTR':
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{substmodel_id}.rates.prior',
+                    'torch.distributions.Dirichlet',
+                    f'{substmodel_id}.rates',
+                    {'concentration': [1.0] * 6},
+                )
+            )
+        else:
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{substmodel_id}.kappa.prior',
+                    'torch.distributions.LogNormal',
+                    f'{substmodel_id}.kappa',
+                    {'loc': 1.0, 'scale': 1.25},
+                )
+            )
+    return joint_list
+
+
 def create_evolution_priors(arg):
     joint_list = []
     if arg.clock is not None:
@@ -279,53 +371,41 @@ def create_evolution_priors(arg):
                     f'{coalescent_id}.theta.prior', f'{coalescent_id}.theta'
                 )
             )
-
-    if arg.model == 'HKY' or arg.model == 'GTR':
-        substmodel_id = 'substmodel'
-        joint_list.append(
-            Distribution.json_factory(
-                f'{substmodel_id}.frequencies.prior',
-                'torch.distributions.Dirichlet',
-                f'{substmodel_id}.frequencies',
-                {'concentration': [1.0] * 4},
+    if arg.model == 'SRD06':
+        for tag in ('12', '3'):
+            joint_list.extend(
+                create_substitution_model_priors(f'substmodel.{tag}', 'HKY')
             )
-        )
-
-        if arg.model == 'GTR':
-            joint_list.append(
-                Distribution.json_factory(
-                    f'{substmodel_id}.rates.prior',
-                    'torch.distributions.Dirichlet',
-                    f'{substmodel_id}.rates',
-                    {'concentration': [1.0] * 6},
-                )
-            )
-        else:
-            joint_list.append(
-                Distribution.json_factory(
-                    f'{substmodel_id}.kappa.prior',
-                    'torch.distributions.LogNormal',
-                    f'{substmodel_id}.kappa',
-                    {'loc': 1.0, 'scale': 1.25},
-                )
-            )
+    else:
+        joint_list.extend(create_substitution_model_priors('substmodel', arg.model))
 
     if arg.categories > 1:
         sitemodel_id = 'sitemodel'
-        joint_list.append(
-            Distribution.json_factory(
-                f'{sitemodel_id}.shape.prior',
-                'torch.distributions.Exponential',
-                f'{sitemodel_id}.shape',
-                {'rate': 2.0},
+        if arg.model == 'SRD06':
+            for tag in ('12', '3'):
+                joint_list.append(
+                    Distribution.json_factory(
+                        f'{sitemodel_id}.{tag}.shape.prior',
+                        'torch.distributions.Exponential',
+                        f'{sitemodel_id}.{tag}.shape',
+                        {'rate': 2.0},
+                    )
+                )
+        else:
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{sitemodel_id}.shape.prior',
+                    'torch.distributions.Exponential',
+                    f'{sitemodel_id}.shape',
+                    {'rate': 2.0},
+                )
             )
-        )
     return joint_list
 
 
-def create_evolution_joint(taxa, arg):
+def create_evolution_joint(taxa, alignment, arg):
     joint_list = []
-    joint_list.append(create_tree_likelihood('like', taxa, arg))
+    joint_list.append(create_tree_likelihood('like', taxa, alignment, arg))
     joint_approx_dic = joint_list.copy()
 
     if arg.coalescent is not None:
