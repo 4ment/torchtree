@@ -307,6 +307,10 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
                 if arg in data['parameters']:
                     if isinstance(data['parameters'][arg], numbers.Number):
                         params.append(data['parameters'][arg])
+                    elif isinstance(data['parameters'][arg], list):
+                        params.append(
+                            Parameter(None, torch.tensor(data['parameters'][arg]))
+                        )
                     else:
                         params.append(process_object(data['parameters'][arg], dic))
         transform = klass(*params)
@@ -427,6 +431,10 @@ class ViewParameter(AbstractParameter, ParameterListener):
 
     def cpu(self) -> None:
         self.parameter.cpu()
+
+    @staticmethod
+    def json_factory(id_: str, x, indices):
+        return {'id': id_, 'type': 'ViewParameter', 'parameter': x, 'indices': indices}
 
     @classmethod
     def from_json(cls, data, dic):

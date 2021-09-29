@@ -6,6 +6,7 @@ from phylotorch.cli.evolution import (
     create_alignment,
     create_evolution_joint,
     create_evolution_parser,
+    create_site_model_srd06_mus,
     create_taxa,
 )
 
@@ -157,7 +158,9 @@ def make_unconstrained(json_object: dict) -> Tuple[List[str], List[str]]:
                         torch.full(json_object['full'], json_object['tensor'])
                     ).tolist()
                 else:
-                    tensor_unres = transform.inv(json_object['tensor']).tolist()
+                    tensor_unres = transform.inv(
+                        torch.tensor(json_object['tensor'])
+                    ).tolist()
 
                 json_object['x'] = {
                     'id': json_object['id'] + '.unres',
@@ -213,11 +216,14 @@ def build_optimizer(arg):
     alignment = create_alignment('alignment', 'taxa', arg)
     json_list.append(alignment)
 
+    if arg.model == 'SRD06':
+        json_list.append(create_site_model_srd06_mus('srd06.mus'))
+
     joint_dic = create_evolution_joint(taxa, 'alignment', arg)
 
     json_list.append(joint_dic)
 
-    parameters_unres, parameters = make_unconstrained(joint_dic)
+    parameters_unres, parameters = make_unconstrained(json_list)
 
     opt_dict = create_optimizer('joint', parameters_unres, arg)
     json_list.append(opt_dict)

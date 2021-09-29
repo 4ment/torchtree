@@ -5,6 +5,7 @@ from phylotorch.cli.evolution import (
     create_alignment,
     create_evolution_joint,
     create_evolution_parser,
+    create_site_model_srd06_mus,
     create_taxa,
 )
 from phylotorch.distributions import Distribution
@@ -135,9 +136,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                     }
                     del json_object['tensor']
                     x_ref += '.unshifted'
-                # distr, params = create_normal(
-                #     var_id + '.' + json_object['id'], x_ref, 'LogNormal'
-                # )
+
                 loc = Parameter.json_factory(
                     var_id + '.' + x_ref + '.loc',
                     **{'full_like': json_object['id'], 'tensor': 0.5},
@@ -164,18 +163,24 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
             elif 'simplex' in json_object and json_object['simplex']:
                 json_object['type'] = 'TransformedParameter'
                 json_object['transform'] = 'torch.distributions.StickBreakingTransform'
-                json_object['x'] = {
-                    'id': json_object['id'] + '.unres',
-                    'type': 'Parameter',
-                    'tensor': 0.0,
-                    'full': [json_object['full'][0] - 1],
-                }
+                if 'full' in json_object:
+                    json_object['x'] = {
+                        'id': json_object['id'] + '.unres',
+                        'type': 'Parameter',
+                        'tensor': 0.0,
+                        'full': [json_object['full'][0] - 1],
+                    }
+                    del json_object['full']
+                else:
+                    json_object['x'] = {
+                        'id': json_object['id'] + '.unres',
+                        'type': 'Parameter',
+                        'tensor': 0.0,
+                        'full': [len(json_object['tensor']) - 1],
+                    }
                 del json_object['tensor']
-                del json_object['full']
                 x_ref = json_object['id'] + '.unres'
-                # distr, params = create_normal(
-                #     var_id + '.' + json_object['id'], x_ref, 'Normal'
-                # )
+
                 loc = Parameter.json_factory(
                     var_id + '.' + x_ref + '.loc',
                     **{'full_like': json_object['id'] + '.unres', 'tensor': 0.5},
@@ -203,11 +208,6 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                 var_parameters.extend((loc['id'], scale['x']['id']))
                 parameters.append(json_object['id'])
             else:
-                # distr, params = create_normal(
-                #     var_id + '.' + json_object['id'],
-                #     json_object['id'] + '.unres',
-                #     'Normal',
-                # )
                 loc = Parameter.json_factory(
                     var_id + '.' + json_object['id'] + '.loc',
                     **{'full_like': json_object['id'], 'tensor': 0.5},
@@ -319,6 +319,8 @@ def build_advi(arg):
         jacobians_list.extend(['tree', 'tree.ratios'])
 
     if arg.model == 'SRD06':
+        json_list.append(create_site_model_srd06_mus('srd06.mus'))
+
         for tag in ('12', '3'):
             jacobians_list.append(f'substmodel.{tag}' + '.frequencies')
     elif arg.model == 'HKY' or arg.model == 'GTR':
@@ -331,7 +333,7 @@ def build_advi(arg):
 
     json_list.append(joint_dic)
 
-    var_dic, var_parameters = create_variational_model('var', joint_dic, arg)
+    var_dic, var_parameters = create_variational_model('var', json_list, arg)
     json_list.append(var_dic)
 
     advi_dic = create_advi('joint', 'var', var_parameters, arg)
@@ -356,8 +358,7 @@ def build_advi(arg):
         parameters.extend(["substmodel.kappa", "substmodel.frequencies"])
 
     if arg.model == 'SRD06':
-        for tag in ('12', '3'):
-            parameters.append(f"sitemodel.{tag}.mu")
+        parameters.append("srd06.mus")
 
     if arg.categories > 1:
         if arg.model == 'SRD06':

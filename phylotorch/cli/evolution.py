@@ -1,6 +1,6 @@
 import re
 
-from phylotorch import Parameter
+from phylotorch import Parameter, ViewParameter
 from phylotorch.cli.priors import create_one_on_x_prior
 from phylotorch.distributions import Distribution
 from phylotorch.distributions.ctmc_scale import CTMCScale
@@ -159,10 +159,14 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
             ('::3,1::3', '2::3'),
             (tree_model, tree_id),
             (branch_model, branch_model_id),
-            (1.0, 1.0),
+            ('0:1', '1:2'),
         ):
             substitution_model = create_substitution_model(f'substmodel.{tag}', 'HKY')
-            site_model = create_site_model(f'sitemodel.{tag}', arg, w)
+            site_model = create_site_model(
+                f'sitemodel.{tag}',
+                arg,
+                ViewParameter.json_factory(f'sitemodel.{tag}.mu', 'srd06.mus', w),
+            )
             site_pattern = create_site_pattern(f'patterns.{tag}', alignment, indices)
             like_list.append(
                 create_tree_likelihood_single(
@@ -198,7 +202,7 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
     return treelikelihood_model
 
 
-def create_site_model(id_, arg, w=1.0):
+def create_site_model(id_, arg, w=None):
     if arg.categories == 1:
         site_model = {'id': id_, 'type': 'ConstantSiteModel'}
     else:
@@ -212,11 +216,22 @@ def create_site_model(id_, arg, w=1.0):
         }
 
     if arg.model == 'SRD06':
-        # TODO: mu is fixed for now
-        site_model['mu'] = Parameter.json_factory(f'{id_}.mu', **{'tensor': [w]})
-        site_model['mu']['lower'] = w
-        site_model['mu']['upper'] = w
+        site_model['mu'] = w
     return site_model
+
+
+def create_site_model_srd06_mus(id_):
+    weights = [2 / 3, 1 / 3]
+    y = Parameter.json_factory('srd06.mu', **{'tensor': [0.5, 0.5]})
+    y['simplex'] = True
+    mus = {
+        'id': id_,
+        'type': 'TransformedParameter',
+        'transform': 'ConvexCombinationTransform',
+        'x': y,
+        'parameters': {'weights': weights},
+    }
+    return mus
 
 
 def create_branch_model(id_, tree_id, arg):

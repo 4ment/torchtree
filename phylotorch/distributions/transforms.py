@@ -3,6 +3,9 @@ import math
 import torch
 from torch.distributions import Transform, constraints
 
+from phylotorch.core.abstractparameter import AbstractParameter
+from phylotorch.core.utils import register_class
+
 
 class TrilExpDiagonalTransform(Transform):
     r"""
@@ -99,3 +102,29 @@ class CumSumSoftPlusTransform(Transform):
 
     def log_abs_det_jacobian(self, x, y):
         return torch.zeros(x.shape[:-1])
+
+
+@register_class
+class ConvexCombinationTransform(Transform):
+    r"""Transform from unconstrained space to constrained space via
+    :math:`y = \frac{x}{\sum_{i=1}^K \alpha_i x_i}` in order to satisfy
+    :math:`\sum_{i=1}^K \alpha_i y_i = 1` where :math:`\alpha_i \geq 0` and
+    :math:`\sum_{i=1}^K \alpha_i = 1`.
+
+    :param weights: weights (sum to 1)
+    """
+    domain = constraints.positive
+    codomain = constraints.positive
+
+    def __init__(self, weights: AbstractParameter, cache_size=0) -> None:
+        super(ConvexCombinationTransform, self).__init__(cache_size=cache_size)
+        self._weights = weights
+
+    def _call(self, x):
+        return x / (x * self._weights.tensor).sum(axis=-1, keepdims=True)
+
+    def _inverse(self, y):
+        raise NotImplementedError
+
+    def log_abs_det_jacobian(self, x, y):
+        return torch.tensor(0.0)
