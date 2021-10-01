@@ -61,6 +61,15 @@ class SimpleClockModel(AbstractClockModel):
     def rates(self) -> torch.Tensor:
         return self._rates.tensor
 
+    @staticmethod
+    def json_factory(id_: str, tree_model, rate):
+        return {
+            'id': id_,
+            'type': 'SimpleClockModel',
+            TreeModel.tag: tree_model,
+            'rate': rate,
+        }
+
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']

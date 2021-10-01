@@ -4,6 +4,7 @@ from phylotorch import Parameter, ViewParameter
 from phylotorch.cli.priors import create_one_on_x_prior
 from phylotorch.distributions import Distribution
 from phylotorch.distributions.ctmc_scale import CTMCScale
+from phylotorch.distributions.scale_mixture import ScaleMixtureNormal
 from phylotorch.evolution.alignment import read_fasta_sequences
 from phylotorch.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
@@ -40,9 +41,7 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '--clock',
         required=False,
-        choices=[
-            'strict',
-        ],
+        choices=['strict', 'horseshoe'],
         default=None,
         help="""type of clock""",
     )
@@ -151,7 +150,9 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
         tree_model = create_tree_model(tree_id, taxa, arg)
         if arg.clock is not None:
             branch_model_id = 'branchmodel'
-            branch_model = create_branch_model(branch_model_id, tree_id, arg)
+            branch_model = create_branch_model(
+                branch_model_id, tree_id, len(taxa['taxa']), arg
+            )
 
         like_list = []
         for tag, indices, t, b, w in zip(
@@ -197,7 +198,7 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
     }
     if arg.clock is not None:
         treelikelihood_model['branch_model'] = create_branch_model(
-            'branchmodel', tree_id, arg
+            'branchmodel', tree_id, len(taxa['taxa']), arg
         )
     return treelikelihood_model
 
@@ -234,20 +235,41 @@ def create_site_model_srd06_mus(id_):
     return mus
 
 
-def create_branch_model(id_, tree_id, arg):
+def create_branch_model(id_, tree_id, taxa_count, arg):
     if arg.rate is not None:
         rate = [arg.rate]
     else:
         rate = [0.001]
     rate_parameter = Parameter.json_factory(f'{id_}.rate', **{'tensor': rate})
     rate_parameter['lower'] = 0.0
-
-    return {
-        'id': id_,
-        'type': 'StrictClockModel',
-        'tree_model': tree_id,
-        'rate': rate_parameter,
-    }
+    if arg.clock == 'strict':
+        return {
+            'id': id_,
+            'type': 'StrictClockModel',
+            'tree_model': tree_id,
+            'rate': rate_parameter,
+        }
+    elif arg.clock == 'horseshoe':
+        rates = Parameter.json_factory(
+            f'{id_}.rates.unscaled', **{'tensor': 1.0, 'full': [2 * taxa_count - 2]}
+        )
+        rates['lower'] = 0.0
+        rescaled_rates = {
+            'id': f'{id_}.rates',
+            'type': 'TransformedParameter',
+            'transform': 'RescaledRateTransform',
+            'x': rates,
+            'parameters': {
+                'tree_model': tree_id,
+                'rate': rate_parameter,
+            },
+        }
+        return {
+            'id': f'{id_}.simple',
+            'type': 'SimpleClockModel',
+            'tree_model': tree_id,
+            'rate': rescaled_rates,
+        }
 
 
 def create_substitution_model(id_, model):
@@ -371,13 +393,54 @@ def create_substitution_model_priors(substmodel_id, model):
 def create_evolution_priors(arg):
     joint_list = []
     if arg.clock is not None:
+        branch_model_id = 'branchmodel'
         if arg.clock == 'strict':
-            branch_model_id = 'branchmodel'
             joint_list.append(
                 CTMCScale.json_factory(
                     f'{branch_model_id}.rate.prior', f'{branch_model_id}.rate', 'tree'
                 )
             )
+        elif arg.clock == 'horseshoe':
+            tree_id = 'tree'
+            log_diff = {
+                'id': f'{branch_model_id}.rates.logdiff',
+                'type': 'TransformedParameter',
+                'transform': 'LogDifferenceRateTransform',
+                'x': f'{branch_model_id}.rates.unscaled',
+                'parameters': {'tree_model': tree_id},
+            }
+            global_scale = Parameter.json_factory(
+                f'{branch_model_id}.global.scale', **{'tensor': [1.0]}
+            )
+            local_scale = Parameter.json_factory(
+                f'{branch_model_id}.local.scales',
+                **{'tensor': 1.0, 'full_like': f'{branch_model_id}.rates.unscaled'},
+            )
+            global_scale['lower'] = 0.0
+            local_scale['lower'] = 0.0
+            joint_list.append(
+                ScaleMixtureNormal.json_factory(
+                    f'{branch_model_id}.scale.mixture.prior',
+                    log_diff,
+                    0.0,
+                    global_scale,
+                    local_scale,
+                )
+            )
+            joint_list.append(
+                CTMCScale.json_factory(
+                    f'{branch_model_id}.rate.prior', f'{branch_model_id}.rate', 'tree'
+                )
+            )
+            for p in ('global.scale', 'local.scales'):
+                joint_list.append(
+                    Distribution.json_factory(
+                        f'{branch_model_id}.{p}.prior',
+                        'torch.distributions.Cauchy',
+                        f'{branch_model_id}.{p}',
+                        {'loc': 0.0, 'scale': 1.0},
+                    )
+                )
 
         if arg.coalescent == 'constant':
             coalescent_id = 'coalescent'

@@ -5,10 +5,11 @@ from torch.distributions import Normal
 
 from phylotorch.core.abstractparameter import AbstractParameter
 from phylotorch.core.model import CallableModel
-from phylotorch.core.utils import process_object
+from phylotorch.core.utils import process_object, register_class
 from phylotorch.typing import ID
 
 
+@register_class
 class ScaleMixtureNormal(CallableModel):
     """Scale mixture of Normal distributions.
 
@@ -69,6 +70,20 @@ class ScaleMixtureNormal(CallableModel):
         self, variable: AbstractParameter, index, event
     ) -> None:
         self.fire_model_changed()
+
+    @staticmethod
+    def json_factory(id_: str, x, loc, global_scale, local_scale, slab=None):
+        model = {
+            'id': id_,
+            'type': 'ScaleMixtureNormal',
+            'x': x,
+            'loc': loc,
+            'global_scale': global_scale,
+            'local_scale': local_scale,
+        }
+        if slab is not None:
+            model['slab'] = slab
+        return model
 
     @classmethod
     def from_json(cls, data, dic):

@@ -328,6 +328,10 @@ def build_advi(arg):
         if arg.model == 'GTR':
             jacobians_list.append('substmodel' + '.rates')
 
+    if arg.clock == 'horseshoe':
+        branch_model_id = 'branchmodel'
+        jacobians_list.append(f'{branch_model_id}.rates.logdiff')
+
     joint_dic = create_evolution_joint(taxa, 'alignment', arg)
     joint_dic['distributions'].extend(jacobians_list)
 
@@ -340,7 +344,10 @@ def build_advi(arg):
     json_list.append(advi_dic)
 
     if arg.clock is not None:
-        parameters = ["tree.ratios", "tree.root_height", "branchmodel.rate"]
+        branch_model_id = 'branchmodel'
+        parameters = ["tree.ratios", "tree.root_height", f"{branch_model_id}.rate"]
+        if arg.clock == 'horseshoe':
+            parameters.append(f'{branch_model_id}.rates')
     else:
         parameters = ['tree.blens']
 

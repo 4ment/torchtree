@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import torch
 
@@ -63,7 +63,7 @@ def create_map_parser(subprasers):
     return parser
 
 
-def make_unconstrained(json_object: dict) -> Tuple[List[str], List[str]]:
+def make_unconstrained(json_object: Union[dict, list]) -> Tuple[List[str], List[str]]:
     parameters = []
     parameters_unres = []
     if isinstance(json_object, list):
@@ -135,16 +135,29 @@ def make_unconstrained(json_object: dict) -> Tuple[List[str], List[str]]:
                     json_object['type'] = 'TransformedParameter'
                     json_object['transform'] = 'torch.distributions.ExpTransform'
 
-                    transform = torch.distributions.ExpTransform()
-                    new_value = transform.inv(
-                        torch.tensor(json_object['tensor'])
-                    ).tolist()
-
                     json_object['x'] = {
                         'id': json_object['id'] + '.unres',
                         'type': 'Parameter',
-                        'tensor': new_value,
                     }
+                    transform = torch.distributions.ExpTransform()
+
+                    if 'full' in json_object:
+                        json_object['x']['tensor'] = transform.inv(
+                            torch.tensor(json_object['tensor'])
+                        ).item()
+                        json_object['x']['full'] = json_object['full']
+                        del json_object['full']
+                    elif 'full_like' in json_object:
+                        json_object['x']['tensor'] = transform.inv(
+                            torch.tensor(json_object['tensor'])
+                        ).item()
+                        json_object['x']['full_like'] = json_object['full_like']
+                        del json_object['full_like']
+                    else:
+                        json_object['x']['tensor'] = transform.inv(
+                            torch.tensor(json_object['tensor'])
+                        ).tolist()
+
                     del json_object['tensor']
 
                     parameters.append(json_object['id'])
