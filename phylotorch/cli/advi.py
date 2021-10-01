@@ -345,8 +345,19 @@ def build_advi(arg):
 
     if arg.clock is not None:
         branch_model_id = 'branchmodel'
-        parameters = ["tree.ratios", "tree.root_height", f"{branch_model_id}.rate"]
-        if arg.clock == 'horseshoe':
+        parameters = ["tree.ratios", "tree.root_height"]
+
+        if arg.clock == 'ucln':
+            parameters.extend(
+                (
+                    f'{branch_model_id}.rates.prior.mean',
+                    f'{branch_model_id}.rates.prior.scale',
+                )
+            )
+        else:
+            parameters.append(f"{branch_model_id}.rate")
+
+        if arg.clock == 'horseshoe' or arg.clock == 'ucln':
             parameters.append(f'{branch_model_id}.rates')
     else:
         parameters = ['tree.blens']

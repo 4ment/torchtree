@@ -41,7 +41,7 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '--clock',
         required=False,
-        choices=['strict', 'horseshoe'],
+        choices=['strict', 'ucln', 'horseshoe'],
         default=None,
         help="""type of clock""",
     )
@@ -270,6 +270,17 @@ def create_branch_model(id_, tree_id, taxa_count, arg):
             'tree_model': tree_id,
             'rate': rescaled_rates,
         }
+    elif arg.clock == 'ucln':
+        rate = Parameter.json_factory(
+            f'{id_}.rates', **{'tensor': 0.001, 'full': [2 * taxa_count - 2]}
+        )
+        rate['lower'] = 0.0
+        return {
+            'id': id_,
+            'type': 'SimpleClockModel',
+            'tree_model': tree_id,
+            'rate': rate,
+        }
 
 
 def create_substitution_model(id_, model):
@@ -390,6 +401,48 @@ def create_substitution_model_priors(substmodel_id, model):
     return joint_list
 
 
+def create_ucln_prior(branch_model_id):
+    joint_list = []
+    mean = Parameter.json_factory(
+        f'{branch_model_id}.rates.prior.mean', **{'tensor': [0.001]}
+    )
+    scale = Parameter.json_factory(
+        f'{branch_model_id}.rates.prior.scale', **{'tensor': [1.0]}
+    )
+    mean['lower'] = 0.0
+    scale['lower'] = 0.0
+    joint_list.append(
+        Distribution.json_factory(
+            f'{branch_model_id}.rates.prior',
+            'LogNormal',
+            f'{branch_model_id}.rates',
+            {
+                'mean': mean,
+                'scale': scale,
+            },
+        )
+    )
+    joint_list.append(
+        CTMCScale.json_factory(
+            f'{branch_model_id}.mean.prior',
+            f'{branch_model_id}.rates.prior.mean',
+            'tree',
+        )
+    )
+    joint_list.append(
+        Distribution.json_factory(
+            f'{branch_model_id}.rates.scale.prior',
+            'torch.distributions.Gamma',
+            f'{branch_model_id}.rates.prior.scale',
+            {
+                'concentration': 0.5396,
+                'rate': 2.6184,
+            },
+        )
+    )
+    return joint_list
+
+
 def create_evolution_priors(arg):
     joint_list = []
     if arg.clock is not None:
@@ -400,6 +453,8 @@ def create_evolution_priors(arg):
                     f'{branch_model_id}.rate.prior', f'{branch_model_id}.rate', 'tree'
                 )
             )
+        elif arg.clock == 'ucln':
+            joint_list.extend(create_ucln_prior(branch_model_id))
         elif arg.clock == 'horseshoe':
             tree_id = 'tree'
             log_diff = {
