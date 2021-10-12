@@ -68,17 +68,15 @@ def add_coalescent(parser):
         '--coalescent',
         choices=['constant', 'skyride', 'skygrid'],
         default=None,
-        help="""type of coalescent (constant or skyride)""",
+        help="""type of coalescent""",
     )
     parser.add_argument(
         '--grid',
-        metavar='I',
         type=int,
-        help="""Number of grid points in skygrid""",
+        help="""number of grid points (number of segments) for skygrid""",
     )
     parser.add_argument(
         '--cutoff',
-        metavar='G',
         type=float,
         help="""a cutoff for skygrid""",
     )
@@ -108,8 +106,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
             f'{id_}.root_height', **{'tensor': [offset + 1.0]}
         )
 
-        if offset != 0.0:
-            root_height['lower'] = offset
+        root_height['lower'] = offset
         tree_model = ReparameterizedTimeTreeModel.json_factory(
             id_, newick, ratios, root_height, 'taxa', **kwargs
         )
@@ -242,6 +239,10 @@ def create_branch_model(id_, tree_id, taxa_count, arg):
         rate = [0.001]
     rate_parameter = Parameter.json_factory(f'{id_}.rate', **{'tensor': rate})
     rate_parameter['lower'] = 0.0
+
+    if arg.clock is not None:
+        rate_parameter['lower'] = rate_parameter['upper'] = arg.rate
+
     if arg.clock == 'strict':
         return {
             'id': id_,
@@ -362,6 +363,21 @@ def create_coalesent(id_, tree_id, theta_id, arg):
         coalescent = {
             'id': id_,
             'type': 'ConstantCoalescentModel',
+            'theta': theta_id,
+            'tree_model': tree_id,
+        }
+    elif arg.coalescent == 'skygrid':
+        coalescent = {
+            'id': id_,
+            'type': 'PiecewiseConstantCoalescentGridModel',
+            'theta': theta_id,
+            'tree_model': tree_id,
+            'cutoff': arg.cutoff,
+        }
+    elif arg.coalescent == 'skyride':
+        coalescent = {
+            'id': id_,
+            'type': 'PiecewiseConstantCoalescentModel',
             'theta': theta_id,
             'tree_model': tree_id,
         }
@@ -497,13 +513,37 @@ def create_evolution_priors(arg):
                     )
                 )
 
+        coalescent_id = 'coalescent'
         if arg.coalescent == 'constant':
-            coalescent_id = 'coalescent'
             joint_list.append(
                 create_one_on_x_prior(
                     f'{coalescent_id}.theta.prior', f'{coalescent_id}.theta'
                 )
             )
+        elif arg.coalescent in ('skygrid', 'skyride'):
+            gmrf = {
+                'id': 'gmrf',
+                'type': 'GMRF',
+                'x': f'{coalescent_id}.theta.log',
+                'precision': Parameter.json_factory(
+                    'gmrf.precision',
+                    **{'tensor': [0.1]},
+                ),
+            }
+            gmrf['precision']['lower'] = 0.0
+            joint_list.append(gmrf)
+            joint_list.append(
+                Distribution.json_factory(
+                    'gmrf.precision.prior',
+                    'torch.distributions.Gamma',
+                    'gmrf.precision',
+                    {
+                        'concentration': 0.0010,
+                        'rate': 0.0010,
+                    },
+                )
+            )
+
     if arg.model == 'SRD06':
         for tag in ('12', '3'):
             joint_list.extend(
@@ -543,8 +583,31 @@ def create_evolution_joint(taxa, alignment, arg):
 
     if arg.coalescent is not None:
         coalescent_id = 'coalescent'
-        theta = Parameter.json_factory(f'{coalescent_id}.theta', **{'tensor': [3.0]})
-        theta['lower'] = 0
+        if arg.coalescent == 'constant':
+            theta = Parameter.json_factory(
+                f'{coalescent_id}.theta', **{'tensor': [3.0]}
+            )
+        elif arg.coalescent == 'skygrid':
+            theta_log = Parameter.json_factory(
+                f'{coalescent_id}.theta.log', **{'tensor': 3.0, 'full': [arg.grid]}
+            )
+            theta = {
+                'id': f'{coalescent_id}.theta',
+                'type': 'TransformedParameter',
+                'transform': 'torch.distributions.ExpTransform',
+                'x': theta_log,
+            }
+        elif arg.coalescent == 'skyride':
+            theta_log = Parameter.json_factory(
+                f'{coalescent_id}.theta.log',
+                **{'tensor': 3.0, 'full': [len(taxa['taxa']) - 1]},
+            )
+            theta = {
+                'id': f'{coalescent_id}.theta',
+                'type': 'TransformedParameter',
+                'transform': 'torch.distributions.ExpTransform',
+                'x': theta_log,
+            }
         joint_list.append(create_coalesent(f'{coalescent_id}', 'tree', theta, arg))
         joint_approx_dic.append(joint_list[-1])
 

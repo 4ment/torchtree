@@ -62,17 +62,32 @@ def create_variational_parser(subprasers):
         help="""convergence tolerance on the relative norm of the objective
          (defaults: 0.001)""",
     )
+    parser.add_argument(
+        '--entropy',
+        required=False,
+        action='store_true',
+        help="""use entropy instead of log Q in ELBO""",
+    )
+    parser.add_argument(
+        '--distribution',
+        required=False,
+        choices=['Normal', 'LogNormal', 'Gamma'],
+        default='Normal',
+        help="""distribution for positive variable""",
+    )
     parser.set_defaults(func=build_advi)
     return parser
 
 
-def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[str]]:
+def create_meanfield(
+    var_id: str, json_object: dict, distribution: str
+) -> Tuple[List[str], List[str]]:
     distributions = []
     var_parameters = []
     parameters = []
     if isinstance(json_object, list):
         for element in json_object:
-            distrs, params = create_meanfield(var_id, element)
+            distrs, params = create_meanfield(var_id, element, distribution)
             distributions.extend(distrs)
             var_parameters.extend(params)
     elif isinstance(json_object, dict):
@@ -136,6 +151,16 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                     }
                     del json_object['tensor']
                     x_ref += '.unshifted'
+                elif distribution == 'Normal':
+                    json_object['type'] = 'TransformedParameter'
+                    json_object['transform'] = 'torch.distributions.ExpTransform'
+                    json_object['x'] = {
+                        'id': json_object['id'] + '.unres',
+                        'type': 'Parameter',
+                        'tensor': [0.5],
+                    }
+                    del json_object['tensor']
+                    x_ref += '.unres'
 
                 loc = Parameter.json_factory(
                     var_id + '.' + x_ref + '.loc',
@@ -153,7 +178,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
                 }
                 distr = Distribution.json_factory(
                     var_id + '.' + json_object['id'],
-                    'torch.distributions.LogNormal',
+                    f'torch.distributions.{distribution}',
                     x_ref,
                     {'loc': loc, 'scale': scale},
                 )
@@ -233,7 +258,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
 
         else:
             for value in json_object.values():
-                distrs, params = create_meanfield(var_id, value)
+                distrs, params = create_meanfield(var_id, value, distribution)
                 distributions.extend(distrs)
                 var_parameters.extend(params)
     return distributions, var_parameters
@@ -241,7 +266,7 @@ def create_meanfield(var_id: str, json_object: dict) -> Tuple[List[str], List[st
 
 def create_variational_model(id_, joint, arg) -> Tuple[dict, List[str]]:
     variational = {'id': id_, 'type': 'JointDistributionModel'}
-    distributions, parameters = create_meanfield(id_, joint)
+    distributions, parameters = create_meanfield(id_, joint, arg.distribution)
     variational['distributions'] = distributions
     return variational, parameters
 
@@ -316,6 +341,8 @@ def build_advi(arg):
 
     jacobians_list = []
     if arg.clock is not None:
+        if arg.distribution == 'Normal':
+            jacobians_list.append('tree.root_height')
         jacobians_list.extend(['tree', 'tree.ratios'])
 
     if arg.model == 'SRD06':
@@ -331,6 +358,12 @@ def build_advi(arg):
     if arg.clock == 'horseshoe':
         branch_model_id = 'branchmodel'
         jacobians_list.append(f'{branch_model_id}.rates.logdiff')
+    if arg.categories > 1:
+        if arg.distribution == 'Normal':
+            jacobians_list.append('sitemodel.shape')
+    if arg.coalescent in ('skyride', 'skygrid'):
+        if arg.distribution == 'Normal':
+            jacobians_list.append('gmrf.precision')
 
     joint_dic = create_evolution_joint(taxa, 'alignment', arg)
     joint_dic['distributions'].extend(jacobians_list)
@@ -364,6 +397,8 @@ def build_advi(arg):
 
     if arg.coalescent is not None:
         parameters.append("coalescent.theta")
+        if arg.coalescent in ('skygrid', 'skyride'):
+            parameters.append('gmrf.precision')
 
     if arg.model == 'SRD06':
         for tag in ('12', '3'):
