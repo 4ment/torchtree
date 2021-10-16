@@ -1,68 +1,140 @@
-import torch
-import numpy as np
-from phylotorch.evolution.bdsk import BDSKY
 import pytest
+import torch
+
+from phylotorch.evolution.bdsk import PiecewiseConstantBirthDeath
 
 
-def etest_BDSKY():
-    # sampling_times = torch.tensor(np.array([0., 1., 2.5, 3.5]))
-    # heights = torch.tensor(np.array([2., 4., 5.]))
-    sampling_times = torch.tensor(np.array([0., 1., 6., 7]))
-    heights = torch.tensor(np.array([6., 9., 10.]))
-    times = torch.arange(0, 11) * 2.0
-    death = np.arange(1, 11)[::-1]
-    birth = np.full(10, 1.0)
-    psi = 0.5
-    rho = torch.full((10,), 0.0)
+def epidemio_to_bd(R, delta, s):
+    r"""Convert epidemiology to birth death parameters
 
-    R = torch.tensor(birth/(death+psi))
-    delta = torch.tensor(death+psi)
-    s = torch.tensor(psi/(death+psi))
+    :param R: effective reproductive number
+    :param delta: total rate of becoming non infectious
+    :param s: probability of an individual being sampled
+    :return: lambda, mu, psi
+    """
+    lambda_ = R * delta
+    mu = delta - s * delta
+    psi = s * delta
+    return lambda_, mu, psi
 
-    origin = torch.tensor([0.5])
-
-    bdsky = BDSKY(R, delta, s, rho, sampling_times, origin, times=times)
-    log_p = bdsky.log_prob(heights)
-    print(log_p)
-    exit(2)
-    # a = ConstantCoalescent(torch.zeros((2, 4), dtype=torch.float64),
-    #                                              torch.tensor(np.array([[2.], [30.]])))
-    # samples = a.rsample()
-    # print('samples', samples)
-    # print('prob', a.log_prob(samples))
-    # exit(2)
-    # assert -13.295836866 == pytest.approx(log_p.item(), 0.0001)
 
 def test_1rho():
-    sampling_times = torch.tensor(np.array([0., 0., 0.]))
-    heights = torch.tensor(np.array([4.5, 5.5]))
+    sampling_times = torch.zeros(3)
+    heights = torch.tensor([4.5, 5.5])
 
-    R = torch.tensor(np.array([1.5]))  # effective reproductive number
-    delta = torch.tensor(np.array([1.5]))  # total rate of becoming non infectious
-    s = torch.zeros(1)  # probability of an individual being sampled
-    rho = torch.tensor(np.array([0.01]))
+    R = torch.tensor([1.5])
+    delta = torch.tensor([1.5])
+    s = torch.zeros(1)
 
-    origin = torch.tensor([10.])
+    lambda_, mu, psi = epidemio_to_bd(R, delta, s)
+    rho = torch.tensor([0.01])
 
-    bdsky = BDSKY(R, delta, s, rho, sampling_times, origin)
-    log_p = bdsky.log_prob(heights)
+    origin = torch.tensor([10.0])
+
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -8.520565 == pytest.approx(log_p.item(), 0.0001)
-    print(log_p)
-    # exit(2)
 
-@pytest.mark.skip
+
 def test_1rho2times():
-    sampling_times = torch.tensor(np.array([0., 0., 0.]))
-    heights = torch.tensor(np.array([4.5, 5.5]))
+    sampling_times = torch.zeros(3)
+    heights = torch.tensor([4.5, 5.5])
 
-    R = torch.tensor(np.array([1.5, 4.]))  # effective reproductive number
-    delta = torch.tensor(np.array([1.5, 2.]))  # total rate of becoming non infectious
-    s = torch.zeros(2)  # probability of an individual being sampled
-    rho = torch.tensor(np.array([0., 0.01]))
+    R = torch.tensor([1.5, 4.0])
+    delta = torch.tensor([1.5, 2.0])
+    s = torch.zeros(2)
 
-    origin = torch.tensor([10.])
+    lambda_, mu, psi = epidemio_to_bd(R, delta, s)
+    rho = torch.tensor([0.0, 0.01])
 
-    bdsky = BDSKY(R, delta, s, rho, sampling_times, origin)
-    log_p = bdsky.log_prob(heights)
+    origin = torch.tensor([10.0])
+
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -78.4006528776 == pytest.approx(log_p.item(), 0.0001)
-    print(log_p)
+
+
+def test_1rho2times_grid():
+    sampling_times = torch.zeros(3)
+    heights = torch.tensor([4.5, 5.5])
+
+    R = torch.tensor([1.5, 4.0])
+    delta = torch.tensor([1.5, 2.0])
+    s = torch.zeros(2)
+
+    lambda_, mu, psi = epidemio_to_bd(R, delta, s)
+    rho = torch.tensor([0.0, 0.01])
+
+    origin = torch.tensor([10.0])
+
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
+    assert -78.4006528776 == pytest.approx(log_p.item(), 0.0001)
+
+
+def test_1rho3times():
+    sampling_times = torch.zeros(3)
+    heights = torch.tensor([4.5, 5.5])
+
+    R = torch.tensor([1.5, 4.0, 5.0])
+    delta = torch.tensor([1.5, 2.0, 1.0])
+    s = torch.zeros(3)
+
+    lambda_, mu, psi = epidemio_to_bd(R, delta, s)
+    rho = torch.tensor([0.0, 0.0, 0.01])
+
+    origin = torch.tensor([10.0])
+
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
+    assert -67.780094538296 == pytest.approx(log_p.item(), 0.0001)
+
+
+def test_serial_1rho():
+    sampling_times = torch.tensor([0.0, 1.0, 2.5, 3.5])
+    heights = torch.tensor([2.0, 4.0, 5.0])
+
+    lambda_ = torch.tensor([2.0])
+    mu = torch.tensor([1.0])
+    psi = torch.tensor([0.5])
+    rho = torch.tensor([0.0])
+
+    origin = torch.tensor([6.0])
+
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
+    assert -19.0198 == pytest.approx(log_p.item(), 0.0001)
+
+
+def test_serial_2rho():
+    sampling_times = torch.tensor([0.0, 1.0, 2.5, 3.5])
+    heights = torch.tensor([2.0, 4.0, 5.0])
+
+    lambda_ = torch.tensor([3.0, 2.0])
+    mu = torch.tensor([2.5, 1.0])
+    psi = torch.tensor([2.0, 0.5])
+    rho = torch.zeros(2)
+
+    origin = torch.tensor([6.0])
+    times = torch.cat((torch.tensor([0.0, 3.0]), origin))
+
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, times=times)
+    log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
+    assert -33.7573 == pytest.approx(log_p.item(), 0.0001)
+
+
+def test_serial_3rho():
+    sampling_times = torch.tensor([0.0, 1.0, 2.5, 3.5])
+    heights = torch.tensor([2.0, 4.0, 5.0])
+
+    lambda_ = torch.tensor([3.0, 2.0, 4.0])
+    mu = torch.tensor([2.5, 1.0, 0.5])
+    psi = torch.tensor([2.0, 0.5, 1.0])
+    rho = torch.zeros(3)
+
+    origin = torch.tensor([6.0])
+    times = torch.cat((torch.tensor([0.0, 3.0, 4.5]), origin))
+
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, times=times)
+    log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
+    assert -37.8056 == pytest.approx(log_p.item(), 0.0001)

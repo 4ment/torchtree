@@ -1,41 +1,87 @@
 import torch
+from torch import Tensor
+from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
+
+from .. import Parameter
+from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel
-from phylotorch.core.utils import process_object
+from ..core.utils import process_object
+from ..typing import ID
+from .tree_model import TimeTreeModel
 
 
 class BDSKModel(CallableModel):
+    r"""Birth–death skyline plot as a model for transmission
 
-    def __init__(self, id_, tree, R, delta, s, rho, origin, times=None, survival=None):
-        self.tree = tree
+    Effective population size :math:`R=\frac{\lambda}{\mu + \psi}`
+
+    Total rate of becoming infectious :math:`\delta = \mu + \psi`
+
+    Probability of being sampled :math:`s = \frac{\psi}{\mu + \psi}`
+
+    :param R: effective reproductive number
+    :param delta: total rate of becoming non infectious
+    :param s: probability of an individual being sampled
+    :param rho: probability of an individual being sampled at present
+    :param origin: time at which the process starts (i.e. t_0)
+    :param times: times of rate shift events
+    :param relative_times: times are relative to origin
+    :param survival: condition on observing at least one sample
+    :param validate_args:
+    """
+
+    def __init__(
+        self,
+        id_: ID,
+        tree_model: TimeTreeModel,
+        R: AbstractParameter,
+        delta: AbstractParameter,
+        s: AbstractParameter,
+        rho: AbstractParameter,
+        origin: AbstractParameter,
+        times: AbstractParameter = None,
+        relative_times: bool = False,
+        survival: bool = None,
+    ):
+        super().__init__(id_)
+        self.tree_model = tree_model
         self.R = R
         self.delta = delta
         self.s = s
         self.rho = rho
         self.origin = origin
         self.times = times
+        self.relative_times = relative_times
         self.survival = survival
-        # self.add_parameter(theta)
-        super(BDSKModel, self).__init__(id_)
-
-    def update(self, value):
-        pass
 
     def handle_model_changed(self, model, obj, index):
         pass
 
     def handle_parameter_changed(self, variable, index, event):
-        self.fire_model_changed(variable, index, event)
+        self.fire_model_changed(variable, index)
 
     def _call(self):
-        bdsk = BDSKY(self.R, self.delta, self.s, self.rho, self.tree.sampling_times, self.origin, self.times,
-                     self.survival)
+        lambda_ = self.R.tensor * self.delta.tensor
+        mu = self.delta.tensor - self.s.tensor * self.delta.tensor
+        psi = self.s.tensor * self.delta.tensor
+
+        bdsk = PiecewiseConstantBirthDeath(
+            lambda_,
+            mu,
+            psi,
+            self.rho.tensor,
+            self.origin.tensor,
+            times=None if self.times is None else self.times.tensor,
+            relative_times=self.relative_times,
+            survival=self.survival,
+        )
         return bdsk.log_prob(self.tree.node_heights)
 
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        tree = process_object(data['tree'], dic)
+        tree = process_object(TimeTreeModel.tag, dic)
         R = process_object(data['R'], dic)
         delta = process_object(data['delta'], dic)
         s = process_object(data['s'], dic)
@@ -44,112 +90,171 @@ class BDSKModel(CallableModel):
 
         optionals = {}
         if 'times' in data:
-            optionals['times'] = process_object(data['times'], dic)
-        if 'survival' in data:
-            optionals['survival'] = process_object(data['survival'], dic)
+            if isinstance(data['times'], list):
+                optionals['times'] = Parameter(None, data['times'])
+            else:
+                optionals['times'] = process_object(data['times'], dic)
+        optionals['survival'] = data.get('survival', False)
+        optionals['relative_times'] = data.get('relative_times', False)
 
         return cls(id_, tree, R, delta, s, rho, origin, **optionals)
 
 
-class BDSKY(Distribution):
+class PiecewiseConstantBirthDeath(Distribution):
+    r"""Piecewise constant birth death model
 
-    def __init__(self, R, delta, s, rho, sampling_times, origin, times=None, survival=False, validate_args=None):
-        """
+    :param lambda_: birth rates
+    :param mu: death rates
+    :param psi: sampling rates
+    :param rho: sampling effort
+    :param origin: time at which the process starts (i.e. t_0)
+    :param times: times of rate shift events
+    :param relative_times: times are relative to origin
+    :param survival: condition on observing at least one sample
+    :param validate_args:
+    """
+    arg_constraints = {
+        'lambda_': constraints.greater_than_eq(0.0),
+        'mu': constraints.positive,
+        'psi': constraints.greater_than_eq(0.0),
+        'rho': constraints.unit_interval,
+    }
 
-        :param R: effective reproductive number
-        :param delta: total rate of becoming non infectious
-        :param s: probability of an individual being sampled
-        :param rho: probability of an individual being sampled at present
-        :param sampling_times:
-        :param times:
-        :param origin:
-        :param survival:
-        :param validate_args:
-        """
-        self.R = R
-        self.delta = delta
-        self.s = s
+    def __init__(
+        self,
+        lambda_: Tensor,
+        mu: Tensor,
+        psi: Tensor,
+        rho: Tensor,
+        origin: Tensor,
+        times: Tensor = None,
+        relative_times=False,
+        survival: bool = False,
+        validate_args=None,
+    ):
+        self.lambda_ = lambda_
+        self.mu = mu
+        self.psi = psi
         self.rho = rho
         self.times = times
         self.origin = origin
-        self.sampling_times = sampling_times
-        self.taxon_count = sampling_times.shape
+        self.relative_times = relative_times
         self.survival = survival
-        batch_shape, event_shape = self.delta.shape[:-1], self.delta.shape[-1:]
-        super(BDSKY, self).__init__(batch_shape, event_shape, validate_args=validate_args)
+        batch_shape, event_shape = self.mu.shape[:-1], self.mu.shape[-1:]
+        super().__init__(batch_shape, event_shape, validate_args=validate_args)
 
-    def log_prob(self, heights):
+    def log_prob(self, node_heights: torch.Tensor):
+        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
+        tip_heights = node_heights[..., : taxa_shape[-1]]
+        serially_sampled = torch.any(tip_heights > 0.0)
 
-        lamb = self.R * self.delta
-        psi = self.s * self.delta
-        mu = self.delta - psi
-        m = mu.shape[0]
+        lambda_ = self.lambda_
+        mu = self.mu
+        psi = self.psi
 
-        A = torch.sqrt(torch.pow(lamb - mu - psi, 2.0) + 4.0 * lamb * psi)
-        B = torch.zeros_like(mu)
-        p = torch.ones(m + 1, dtype=mu.dtype)
+        m = mu.shape[-1]
 
-        sum_term = lamb + mu + psi
+        A = torch.sqrt(torch.pow(lambda_ - mu - psi, 2.0) + 4.0 * lambda_ * psi)
+        B = torch.zeros_like(mu, dtype=mu.dtype)
+        p = torch.ones(mu.shape[:-1] + (m + 1,), dtype=mu.dtype)
+
+        sum_term = lambda_ + mu + psi
 
         if self.times is None:
-            dtimes = (self.origin[0] / self.R.shape[0]).repeat(self.R.shape[0])
-            self.times = torch.cat((torch.zeros(1, dtype=dtimes.dtype), dtimes)).cumsum(0)
+            dtimes = (self.origin / m).repeat(m)
+            times = torch.cat((torch.zeros(1, dtype=dtimes.dtype), dtimes)).cumsum(0)
         else:
-            dtimes = self.times[1:] - self.times[:-1]  # t_{i+1} - t_i
-        times = self.times[1:]  # does not include 0
+            times = self.times
+            dtimes = times[1:] - times[:-1]
 
-        exp_A_term = torch.exp(A * dtimes)
-        inv_2lambda = 1.0 / (2. * lamb)
-
-        for i in torch.arange(m - 1, -1, step=-1):
-            B[i] += (((1. - 2. * (1. - self.rho[i]) * p[i + 1].clone()) * lamb[i] + mu[i] + psi[i]) / A[i])
-            term = exp_A_term[i] * (1. + B[i])
-            one_minus_Bi = 1. - B[i]
-            p[i] *= ((sum_term[i] - A[i] * (term - one_minus_Bi) / (term + one_minus_Bi)) * inv_2lambda[i])
+        if self.relative_times:
+            times = times * self.origin
 
         # heights are backward and x should be forward in time (i.e. t_0=0)
-        x = self.times[-1] - heights
-        y = self.times[-1] - self.sampling_times
+        x = times[-1] - node_heights[..., taxa_shape[-1] :]
+        exp_A_term = torch.exp(A * dtimes)
+        inv_2lambda = 1.0 / (2.0 * lambda_)
+
+        for i in torch.arange(m - 1, -1, step=-1):
+            B[..., i] += (
+                (1.0 - 2.0 * (1.0 - self.rho[..., i]) * p[..., i + 1].clone())
+                * lambda_[..., i]
+                + mu[..., i]
+                + psi[..., i]
+            ) / A[..., i]
+            term = exp_A_term[..., i] * (1.0 + B[..., i])
+            one_minus_Bi = 1.0 - B[..., i]
+            p[..., i] *= (
+                sum_term[..., i]
+                - A[..., i] * (term - one_minus_Bi) / (term + one_minus_Bi)
+            ) * inv_2lambda[..., i]
 
         # first term
-        index = torch.min(self.times > self.origin[0] + heights[-1], 0)[1]
-        e = torch.exp(A[0] * dtimes[0])
-        q0 = 4. * e / torch.pow(e * (1. + B[0]) + (1. - B[0]), 2)
+        e = torch.exp(-A[..., 0] * times[..., 1])
+        q0 = 4.0 * e / torch.pow(e * (1.0 - B[..., 0]) + (1.0 + B[..., 0]), 2)
 
+        log_p = torch.log(q0)
         # condition on sampling at least one individual
         if self.survival:
-            term1 = torch.log(q0 / (1. - p[0]))
-        else:
-            term1 = torch.log(q0)
+            log_p -= torch.log(1.0 - p[..., 0])
 
-        indices_x = torch.clamp(torch.min(self.times > x.unsqueeze(-1), 1)[1], max=lamb.shape[0] - 1)
-        e = torch.exp(-A[indices_x] * (x - times[indices_x]))
-        term2 = torch.log(lamb[indices_x]) + torch.log(
-            4. * e / torch.pow(e * (1. + B[indices_x]) + (1. - B[indices_x]), 2))
+        # calculate l(x) with l(t)=1 iff t_{i-1} <= t < t_i
+        indices_x = torch.min(times < x.unsqueeze(-1), dim=-1)[1] - 1
+        e = torch.exp(A[indices_x] * (x - times[indices_x + 1]))
+        log_p += (
+            torch.log(lambda_[indices_x])
+            + torch.log(
+                4.0 * e / torch.pow(e * (1.0 - B[indices_x]) + (1.0 + B[indices_x]), 2)
+            )
+        ).sum(-1)
 
-        # serially sampled term
-        if torch.all(self.s != 0.):
-            indices_y = torch.clamp(torch.min(self.times > y.unsqueeze(-1), 1)[1], max=lamb.shape[0] - 1)
-            e = torch.exp(-A[indices_y] * (y - self.times[indices_y]))
-            term3 = torch.log(psi[indices_y]) - torch.log(
-                4. * e / torch.pow(e * (1. + B[indices_y]) + (1. - B[indices_y]), 2))
-        else:
-            term3 = torch.zeros(1)
+        if serially_sampled:
+            y = times[-1] - tip_heights
+            indices_y = torch.min(times < y.unsqueeze(-1), dim=-1)[1] - 1
+            e = torch.exp(A[indices_y] * (y - times[indices_y + 1]))
+            log_p += (
+                torch.log(psi[indices_y])
+                - torch.log(
+                    4.0
+                    * e
+                    / torch.pow(e * (1.0 - B[indices_y]) + (1.0 + B[indices_y]), 2)
+                )
+            ).sum(-1)
 
         # last term
-        # n = torch.stack([torch.sum(x > times[i]) - torch.sum(y >= times[i]) for i in range(m)])
-        if m == 1:
-            n = torch.zeros(1, dtype=torch.int64)
-        else:
-            n = torch.cat([torch.zeros(1, dtype=torch.int64),
-                           1 + torch.stack([torch.sum(heights > (self.times[-1] - self.times[i])) - torch.sum(
-                               self.sampling_times >= (self.times[-1] - self.times[i])) for i in range(1, m)])])
+        if m > 1:
+            # number of degree 2 vertices
+            ni = (
+                torch.stack(
+                    [
+                        torch.sum(x < times[i + 1])
+                        - torch.sum(
+                            (times[-1] - node_heights[: taxa_shape[-1]]) <= times[i + 1]
+                        )
+                        for i in range(m - 1)
+                    ]
+                )
+                + 1.0
+            )
 
-        # contemporenaous term
-        if torch.all(self.s == 0.):
-            term4 = (n * torch.log(4. * exp_A_term / torch.pow(exp_A_term * (1 + B) + (1 - B), 2))).sum() + \
-                    self.sampling_times.shape[0] * torch.log(self.rho[-1:])[0]
-            # torch.where(self.rho > 0., self.sampling_times.shape[0] * torch.log(self.rho), self.rho)
-        else:
-            term4 = torch.zeros(1)
-        return term1 + term2.sum() + term3.sum() + term4
+            # contemporenaous term
+            exp_A_term = torch.exp(-A[..., 1:] * dtimes[..., 1:])
+
+            log_p += (
+                ni
+                * torch.log(
+                    4.0
+                    * exp_A_term
+                    / torch.pow(exp_A_term * (1 - B[..., 1:]) + (1 + B[..., 1:]), 2)
+                    * (1.0 - self.rho[..., :-1])
+                )
+            ).sum(-1)
+
+        N = torch.sum(times[1:] == torch.unsqueeze(times[-1] - tip_heights, -1), -2)
+        mask = (N > 0).logical_and(self.rho > 0.0)
+        if torch.any(mask):
+            log_p += (
+                torch.masked_select(N, mask) * torch.masked_select(self.rho, mask).log()
+            ).sum(-1)
+
+        return log_p
