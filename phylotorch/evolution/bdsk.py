@@ -143,44 +143,40 @@ class PiecewiseConstantBirthDeath(Distribution):
         batch_shape, event_shape = self.mu.shape[:-1], self.mu.shape[-1:]
         super().__init__(batch_shape, event_shape, validate_args=validate_args)
 
-    def log_prob(self, node_heights: torch.Tensor):
-        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
-        tip_heights = node_heights[..., : taxa_shape[-1]]
-        serially_sampled = torch.any(tip_heights > 0.0)
+    def log_q(self, A, B, t, t_i):
+        """Probability density of lineage alive between time t and t_i gives
+        rise to observed clade."""
+        e = torch.exp(-A * (t - t_i))
+        return torch.log(
+            4.0
+            * e
+            / torch.pow(
+                e * (1.0 + B) + (1.0 - B),
+                2,
+            )
+        )
 
-        lambda_ = self.lambda_
-        mu = self.mu
-        psi = self.psi
+    def log_p(self, t, t_i):
+        """Probability density of lineage alive between time t and t_i has no
+        descendant at time t_m."""
+        sum_term = self.lambda_ + self.mu + self.psi
+        m = self.mu.shape[-1]
 
-        m = mu.shape[-1]
-
-        A = torch.sqrt(torch.pow(lambda_ - mu - psi, 2.0) + 4.0 * lambda_ * psi)
-        B = torch.zeros_like(mu, dtype=mu.dtype)
-        p = torch.ones(mu.shape[:-1] + (m + 1,), dtype=mu.dtype)
-
-        sum_term = lambda_ + mu + psi
-
-        if self.times is None:
-            dtimes = (self.origin / m).repeat(m)
-            times = torch.cat((torch.zeros(1, dtype=dtimes.dtype), dtimes)).cumsum(0)
-        else:
-            times = self.times
-            dtimes = times[1:] - times[:-1]
-
-        if self.relative_times:
-            times = times * self.origin
-
-        # heights are backward and x should be forward in time (i.e. t_0=0)
-        x = times[-1] - node_heights[..., taxa_shape[-1] :]
-        exp_A_term = torch.exp(A * dtimes)
-        inv_2lambda = 1.0 / (2.0 * lambda_)
+        A = torch.sqrt(
+            torch.pow(self.lambda_ - self.mu - self.psi, 2.0)
+            + 4.0 * self.lambda_ * self.psi
+        )
+        B = torch.zeros_like(self.mu, dtype=self.mu.dtype)
+        p = torch.ones(self.mu.shape[:-1] + (m + 1,), dtype=self.mu.dtype)
+        exp_A_term = torch.exp(A * (t - t_i))
+        inv_2lambda = 1.0 / (2.0 * self.lambda_)
 
         for i in torch.arange(m - 1, -1, step=-1):
             B[..., i] += (
                 (1.0 - 2.0 * (1.0 - self.rho[..., i]) * p[..., i + 1].clone())
-                * lambda_[..., i]
-                + mu[..., i]
-                + psi[..., i]
+                * self.lambda_[..., i]
+                + self.mu[..., i]
+                + self.psi[..., i]
             ) / A[..., i]
             term = exp_A_term[..., i] * (1.0 + B[..., i])
             one_minus_Bi = 1.0 - B[..., i]
@@ -188,6 +184,27 @@ class PiecewiseConstantBirthDeath(Distribution):
                 sum_term[..., i]
                 - A[..., i] * (term - one_minus_Bi) / (term + one_minus_Bi)
             ) * inv_2lambda[..., i]
+        return p, A, B
+
+    def log_prob(self, node_heights: torch.Tensor):
+        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
+        tip_heights = node_heights[..., : taxa_shape[-1]]
+        serially_sampled = torch.any(tip_heights > 0.0)
+
+        m = self.mu.shape[-1]
+
+        if self.times is None:
+            dtimes = (self.origin / m).repeat(m)
+            times = torch.cat((torch.zeros(1, dtype=dtimes.dtype), dtimes)).cumsum(0)
+        else:
+            times = self.times
+
+        times = torch.broadcast_to(times, self.mu.shape[:-1] + times.shape[-1:])
+
+        if self.relative_times:
+            times = times * self.origin
+
+        p, A, B = self.log_p(times[..., 1:], times[..., :-1])
 
         # first term
         e = torch.exp(-A[..., 0] * times[..., 1])
@@ -199,25 +216,28 @@ class PiecewiseConstantBirthDeath(Distribution):
             log_p -= torch.log(1.0 - p[..., 0])
 
         # calculate l(x) with l(t)=1 iff t_{i-1} <= t < t_i
-        indices_x = torch.min(times < x.unsqueeze(-1), dim=-1)[1] - 1
-        e = torch.exp(A[indices_x] * (x - times[indices_x + 1]))
+        x = times[..., -1:] - node_heights[..., taxa_shape[-1] :]
+        indices_x = torch.max(times.unsqueeze(-2) >= x.unsqueeze(-1), dim=-1)[1] - 1
         log_p += (
-            torch.log(lambda_[indices_x])
-            + torch.log(
-                4.0 * e / torch.pow(e * (1.0 - B[indices_x]) + (1.0 + B[indices_x]), 2)
+            torch.log(self.lambda_.gather(-1, indices_x))
+            + self.log_q(
+                A.gather(-1, indices_x),
+                B.gather(-1, indices_x),
+                x,
+                torch.gather(times[..., 1:], -1, indices_x),
             )
         ).sum(-1)
 
         if serially_sampled:
-            y = times[-1] - tip_heights
-            indices_y = torch.min(times < y.unsqueeze(-1), dim=-1)[1] - 1
-            e = torch.exp(A[indices_y] * (y - times[indices_y + 1]))
+            y = times[..., -1:] - tip_heights
+            indices_y = torch.max(times.unsqueeze(-2) >= y.unsqueeze(-1), dim=-1)[1] - 1
             log_p += (
-                torch.log(psi[indices_y])
-                - torch.log(
-                    4.0
-                    * e
-                    / torch.pow(e * (1.0 - B[indices_y]) + (1.0 + B[indices_y]), 2)
+                torch.log(self.psi.gather(-1, indices_y))
+                - self.log_q(
+                    A.gather(-1, indices_y),
+                    B.gather(-1, indices_y),
+                    y,
+                    times.gather(-1, indices_y + 1),
                 )
             ).sum(-1)
 
@@ -227,30 +247,32 @@ class PiecewiseConstantBirthDeath(Distribution):
             ni = (
                 torch.stack(
                     [
-                        torch.sum(x < times[i + 1])
+                        torch.sum(x < times[..., i : i + 1], -1)
                         - torch.sum(
-                            (times[-1] - node_heights[: taxa_shape[-1]]) <= times[i + 1]
+                            (times[..., -1:] - node_heights[..., : taxa_shape[-1]])
+                            <= times[..., i : i + 1],
+                            -1,
                         )
-                        for i in range(m - 1)
+                        for i in range(1, m)
                     ]
                 )
                 + 1.0
             )
 
             # contemporenaous term
-            exp_A_term = torch.exp(-A[..., 1:] * dtimes[..., 1:])
-
             log_p += (
                 ni
-                * torch.log(
-                    4.0
-                    * exp_A_term
-                    / torch.pow(exp_A_term * (1 - B[..., 1:]) + (1 + B[..., 1:]), 2)
-                    * (1.0 - self.rho[..., :-1])
+                * (
+                    self.log_q(A[..., 1:], B[..., 1:], times[..., 1:-1], times[..., 2:])
+                    + torch.log(1.0 - self.rho[..., :-1])
                 )
             ).sum(-1)
 
-        N = torch.sum(times[1:] == torch.unsqueeze(times[-1] - tip_heights, -1), -2)
+        N = torch.sum(
+            times[..., 1:].unsqueeze(-2)
+            == torch.unsqueeze(times[..., -1:] - tip_heights, -1),
+            -2,
+        )
         mask = (N > 0).logical_and(self.rho > 0.0)
         if torch.any(mask):
             log_p += (

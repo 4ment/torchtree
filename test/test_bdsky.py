@@ -138,3 +138,20 @@ def test_serial_3rho():
     bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, times=times)
     log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -37.8056 == pytest.approx(log_p.item(), 0.0001)
+
+
+def test_serial_3rho_batch():
+    sampling_times = torch.tensor([0.0, 1.0, 2.5, 3.5])
+    heights = torch.tensor([2.0, 4.0, 5.0])
+
+    lambda_ = torch.tensor([[3.0, 2.0, 4.0], [13.0, 12.0, 14.0]])
+    mu = torch.tensor([[2.5, 1.0, 0.5], [12.5, 11.0, 10.5]])
+    psi = torch.tensor([[2.0, 0.5, 1.0], [2.0, 0.5, 1.0]])
+    rho = torch.zeros((2, 3))
+
+    origin = torch.tensor([6.0])
+    times = torch.cat((torch.tensor([0.0, 3.0, 4.5]), origin))
+
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, times=times)
+    log_p = bdsky.log_prob(torch.cat((sampling_times, heights)).repeat(2, 1))
+    assert torch.allclose(log_p, torch.tensor([-37.8056, -75.5726318359375]))
