@@ -2,6 +2,7 @@ import pytest
 import torch
 
 from phylotorch.evolution.tree_model import TimeTreeModel
+from phylotorch.evolution.tree_model_flexible import FlexibleTimeTreeModel
 
 
 def node_heights_difference_transform(
@@ -12,7 +13,7 @@ def node_heights_difference_transform(
         'type': 'phylotorch.TransformedParameter',
         'transform': 'phylotorch.evolution.tree_height_transform.'
         'DifferenceNodeHeightTransform',
-        'parameters': {'tree': tree_id},
+        'parameters': {'tree_model': tree_id},
         'x': {
             'id': 'differences',
             'type': 'phylotorch.Parameter',
@@ -22,16 +23,18 @@ def node_heights_difference_transform(
     return node_heights
 
 
-@pytest.mark.skip
-def test_difference_height_transform_hetero():
+@pytest.mark.parametrize(
+    "differences",
+    [torch.tensor([2.0] * 6), torch.arange(1.0, 7.0)],
+)
+def test_difference_height_transform_hetero(differences):
     taxa = dict(zip('ABCDEFG', [5.0, 3.0, 0.0, 1.0, 0.0, 5.0, 6.0]))
-    differences = torch.tensor([2.0] * (len(taxa) - 1))
     node_heights = node_heights_difference_transform(
         'internal_heights', 'tree', differences.tolist()
     )
 
     dic = {}
-    tree_model = TimeTreeModel.from_json(
+    tree_model = FlexibleTimeTreeModel.from_json(
         TimeTreeModel.json_factory(
             'tree',
             '(A,(B,(C,(D,(E,(F,G))))));',
@@ -51,6 +54,8 @@ def test_difference_height_transform_hetero():
     )
 
     assert torch.allclose(
+        torch.autograd.functional.jacobian(internal_heights.transform, differences)
+        .det()
+        .log(),
         internal_heights(),
-        differences.sum(0),
     )

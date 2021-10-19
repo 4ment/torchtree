@@ -100,29 +100,38 @@ class DifferenceNodeHeightTransform(Transform):
 
     .. math::
 
-      x_i = \max(x_{c(i,0)}, x_{c(i,1)}) + \exp(y_i)
+      x_i = \max(x_{c(i,0)}, x_{c(i,1)}) + y_i
 
     where :math:`x_c(i,j)` is the height of the jth child of node :math:`i` and
-    :math:`y_i \in \mathbb{R}`.
+    :math:`y_i \in \mathbb{R}^+`. Function max is approximated using logsumexp in order
+    to propagate the gradient.
     """
     bijective = True
     sign = +1
 
-    def __init__(self, tree: 'TimeTreeModel', cache_size=0) -> None:  # noqa: F821
+    def __init__(
+        self, tree_model: 'TimeTreeModel', k: float = 1.0, cache_size=0  # noqa: F821
+    ) -> None:
         super().__init__(cache_size=cache_size)
-        self.tree = tree
+        self.tree = tree_model
         self.taxa_count = self.tree.taxa_count
+        self.k = k
 
     def _call(self, x: torch.Tensor) -> torch.Tensor:
         """Transform node height differences to internal node heights."""
         heights = list(
             self.tree.sampling_times.expand(x.shape[:-1] + (-1,)).split(1, -1)
         ) + [None] * (self.taxa_count - 1)
-        x_exp = x.exp()
         for node, left, right in self.tree.postorder:
             heights[node] = (
-                torch.max(heights[left], heights[right])
-                + x_exp[..., node - self.taxa_count : (node - self.taxa_count + 1)]
+                # torch.max(heights[left], heights[right])
+                torch.logsumexp(
+                    torch.cat((heights[left] * self.k, heights[right] * self.k), -1),
+                    dim=-1,
+                    keepdim=True,
+                )
+                / self.k
+                + x[..., node - self.taxa_count : (node - self.taxa_count + 1)]
             )
         return torch.cat(heights[self.taxa_count :], -1)
 
@@ -133,10 +142,16 @@ class DifferenceNodeHeightTransform(Transform):
             self.tree.sampling_times.expand(y.shape[:-1] + (-1,)).split(1, -1)
         ) + list(y.split(1, -1))
         for node, left, right in self.tree.postorder:
-            x[node - self.taxa_count] = heights[node] - torch.max(
-                heights[left], heights[right]
-            )
-        return torch.cat(x, -1).log()
+            x[node - self.taxa_count] = (
+                heights[node]
+                - torch.logsumexp(
+                    torch.cat((heights[left] * self.k, heights[right] * self.k), -1),
+                    dim=-1,
+                    keepdim=True,
+                )
+                / self.k
+            )  # - torch.max(heights[left], heights[right])
+        return torch.cat(x, -1)
 
     def log_abs_det_jacobian(self, x, y):
-        return x.sum(-1)
+        return torch.zeros(x.shape[:-1])
