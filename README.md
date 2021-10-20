@@ -1,5 +1,6 @@
 # phylotorch
-[![Build Status](https://travis-ci.org/4ment/phylotorch.svg?branch=master)](https://travis-ci.org/4ment/phylotorch)
+
+[![Python package](https://github.com/4ment/phylotorch/actions/workflows/python-package.yml/badge.svg)](https://github.com/4ment/phylotorch/actions/workflows/python-package.yml)
 
 ## Installation
 
