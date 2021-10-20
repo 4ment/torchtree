@@ -1,5 +1,7 @@
 from typing import List, Tuple
 
+import numpy as np
+
 from phylotorch import Parameter
 from phylotorch.cli.evolution import (
     create_alignment,
@@ -157,9 +159,16 @@ def create_meanfield(
                     json_object['x'] = {
                         'id': json_object['id'] + '.unres',
                         'type': 'Parameter',
-                        'tensor': [0.5],
+                        'tensor': np.log(json_object['tensor']).tolist(),
                     }
+
                     del json_object['tensor']
+                    if 'full' in json_object:
+                        json_object['x']['full'] = json_object['full']
+                        del json_object['full']
+                    elif 'full_like' in json_object:
+                        json_object['x']['full_like'] = json_object['full_like']
+                        del json_object['full_like']
                     x_ref += '.unres'
 
                 loc = Parameter.json_factory(
@@ -341,9 +350,13 @@ def build_advi(arg):
 
     jacobians_list = []
     if arg.clock is not None:
-        if arg.distribution == 'Normal':
-            jacobians_list.append('tree.root_height')
-        jacobians_list.extend(['tree', 'tree.ratios'])
+        if arg.heights == 'ratio':
+            if arg.distribution == 'Normal':
+                jacobians_list.append('tree.root_height')
+            jacobians_list.extend(['tree', 'tree.ratios'])
+        elif arg.heights == 'shift':
+            if arg.distribution == 'Normal':
+                jacobians_list.append('tree.shifts')
 
     if arg.model == 'SRD06':
         json_list.append(create_site_model_srd06_mus('srd06.mus'))
@@ -376,9 +389,13 @@ def build_advi(arg):
     advi_dic = create_advi('joint', 'var', var_parameters, arg)
     json_list.append(advi_dic)
 
+    parameters = []
     if arg.clock is not None:
         branch_model_id = 'branchmodel'
-        parameters = ["tree.ratios", "tree.root_height"]
+        if arg.heights == 'ratio':
+            parameters.extend(["tree.ratios", "tree.root_height"])
+        elif arg.heights == 'shift':
+            parameters.extend(["tree.heights"])
 
         if arg.clock == 'ucln':
             parameters.extend(

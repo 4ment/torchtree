@@ -10,6 +10,7 @@ from phylotorch.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
     UnRootedTreeModel,
 )
+from phylotorch.evolution.tree_model_flexible import FlexibleTimeTreeModel
 
 
 def create_evolution_parser(parser):
@@ -45,7 +46,13 @@ def create_evolution_parser(parser):
         default=None,
         help="""type of clock""",
     )
-
+    parser.add_argument(
+        '--heights',
+        required=False,
+        choices=['ratio', 'shift'],
+        default='ratio',
+        help="""type of node height reparameterization""",
+    )
     parser.add_argument(
         '--rate', required=False, type=float, help="""substitution rate"""
     )
@@ -96,20 +103,37 @@ def create_tree_model(id_: str, taxa: dict, arg):
         dates = [taxon['attributes']['date'] for taxon in taxa['taxa']]
         offset = max(dates) - min(dates)
 
-        ratios = Parameter.json_factory(
-            f'{id_}.ratios', **{'tensor': 0.1, 'full': [len(dates) - 2]}
-        )
-        ratios['lower'] = 0.0
-        ratios['upper'] = 1.0
+        if arg.heights == 'ratio':
+            ratios = Parameter.json_factory(
+                f'{id_}.ratios', **{'tensor': 0.1, 'full': [len(dates) - 2]}
+            )
+            ratios['lower'] = 0.0
+            ratios['upper'] = 1.0
 
-        root_height = Parameter.json_factory(
-            f'{id_}.root_height', **{'tensor': [offset + 1.0]}
-        )
+            root_height = Parameter.json_factory(
+                f'{id_}.root_height', **{'tensor': [offset + 1.0]}
+            )
 
-        root_height['lower'] = offset
-        tree_model = ReparameterizedTimeTreeModel.json_factory(
-            id_, newick, ratios, root_height, 'taxa', **kwargs
-        )
+            root_height['lower'] = offset
+            tree_model = ReparameterizedTimeTreeModel.json_factory(
+                id_, newick, ratios, root_height, 'taxa', **kwargs
+            )
+        elif arg.heights == 'shift':
+            shifts = Parameter.json_factory(
+                f'{id_}.shifts', **{'tensor': 0.1, 'full': [len(dates) - 1]}
+            )
+            shifts['lower'] = 0.0
+            node_heights = {
+                'id': f'{id_}.heights',
+                'type': 'TransformedParameter',
+                'transform': 'phylotorch.evolution.tree_height_transform'
+                '.DifferenceNodeHeightTransform',
+                'x': shifts,
+                'parameters': {'tree_model': id_},
+            }
+            tree_model = FlexibleTimeTreeModel.json_factory(
+                id_, newick, node_heights, 'taxa', **kwargs
+            )
     else:
         branch_lengths = Parameter.json_factory(
             f'{id_}.blens', **{'tensor': 0.1, 'full': [len(taxa['taxa']) * 2 - 3]}
