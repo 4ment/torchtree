@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 from timeit import default_timer as timer
 from typing import List, Tuple
