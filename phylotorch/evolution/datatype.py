@@ -1,4 +1,5 @@
 import abc
+from typing import List
 
 import numpy as np
 
@@ -18,7 +19,7 @@ class DataType(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def partial(self, string: str, use_ambiguities=True) -> np.ndarray:
+    def partial(self, string: str, use_ambiguities=True) -> List[float]:
         pass
 
 
@@ -71,14 +72,12 @@ class NucleotideDataType(DataType):
     def encoding(self, string) -> int:
         return NucleotideDataType.NUCLEOTIDE_STATES[ord(string)]
 
-    def partial(self, string: str, use_ambiguities=True) -> np.ndarray:
+    def partial(self, string: str, use_ambiguities=True) -> List[float]:
         if not use_ambiguities and string not in 'ACTGacgt':
-            return np.array([1.0, 1.0, 1.0, 1.0])
-        return np.array(
-            NucleotideDataType.NUCLEOTIDE_AMBIGUITY_STATES[
-                NucleotideDataType.NUCLEOTIDE_STATES[ord(string)]
-            ]
-        )
+            return [1.0] * 4
+        return NucleotideDataType.NUCLEOTIDE_AMBIGUITY_STATES[
+            NucleotideDataType.NUCLEOTIDE_STATES[ord(string)]
+        ]
 
 
 @register_class
@@ -108,13 +107,13 @@ class GeneralDataType(Identifiable, DataType):
     def encoding(self, string: str) -> int:
         return self._encoding.get(string, self.state_count)
 
-    def partial(self, string: str, use_ambiguities=True) -> np.ndarray:
+    def partial(self, string: str, use_ambiguities=True) -> List[float]:
         if string in self.codes:
             p = np.zeros(self.state_count)
             p[self.codes[string]] = 1.0
         else:
             p = np.ones(self.state_count)
-        return p
+        return list(p)
 
     @classmethod
     def from_json(cls, data, dic):
