@@ -102,14 +102,18 @@ def initialize_dates_from_taxa(tree, taxa, tag='date'):
             node.original_date = 0.0
 
 
-def heights_from_branch_lengths(tree):
+def heights_from_branch_lengths(tree, eps=1.0e-6):
     heights = torch.empty(2 * len(tree.taxon_namespace) - 1)
     for node in tree.postorder_node_iter():
         if node.is_leaf():
             heights[node.index] = node.date
         else:
-            child = next(node.child_node_iter())
-            heights[node.index] = heights[child.index] + float(child.edge_length)
+            heights[node.index] = max(
+                [
+                    heights[c.index] + max(eps, c.edge_length)
+                    for c in node.child_node_iter()
+                ]
+            )
     return heights[len(tree.taxon_namespace) :]
 
 

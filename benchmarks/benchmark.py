@@ -13,7 +13,10 @@ from phylotorch.evolution.datatype import NucleotideDataType
 from phylotorch.evolution.site_pattern import compress_alignment
 from phylotorch.evolution.substitution_model import JC69
 from phylotorch.evolution.taxa import Taxa, Taxon
-from phylotorch.evolution.tree_likelihood import calculate_treelikelihood_discrete
+from phylotorch.evolution.tree_likelihood import (
+    calculate_treelikelihood_discrete,
+    calculate_treelikelihood_discrete_rescaled,
+)
 from phylotorch.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
     heights_from_branch_lengths,
@@ -256,6 +259,22 @@ def fluA_unrooted(args):
         log_prob.backward()
         return log_prob
 
+    @benchmark
+    def fn_rescaled(bls):
+        mats = jc69_model.p_t(bls)
+        return calculate_treelikelihood_discrete_rescaled(
+            partials, weights_tensor, indices, mats, freqs, proportions
+        )
+
+    @benchmark
+    def fn_grad_rescaled(bls):
+        mats = jc69_model.p_t(bls)
+        log_prob = calculate_treelikelihood_discrete_rescaled(
+            partials, weights_tensor, indices, mats, freqs, proportions
+        )
+        log_prob.backward()
+        return log_prob
+
     blens = branch_lengths.unsqueeze(0).unsqueeze(-1)
 
     total_time, log_prob = fn(args.replicates, blens)
@@ -264,6 +283,25 @@ def fluA_unrooted(args):
     blens.requires_grad = True
     grad_total_time, log_prob = fn_grad(args.replicates, blens)
     print(f'  {args.replicates} gradient evaluations: {grad_total_time}')
+
+    if torch.any(torch.isinf(log_prob)):
+        blens.requires_grad = False
+        total_time_r, log_prob_r = fn_rescaled(args.replicates, blens)
+        print(
+            f'  {args.replicates} evaluations rescaled: {total_time_r} ({log_prob_r})'
+        )
+
+        blens.requires_grad = True
+        grad_total_time_r, log_prob_r = fn_grad_rescaled(args.replicates, blens)
+        print(f'  {args.replicates} gradient evaluations rescaled: {grad_total_time_r}')
+
+        if args.output:
+            args.output.write(
+                f"treelikelihood_rescaled,evaluation_,off,{total_time_r}\n"
+            )
+            args.output.write(
+                f"treelikelihood_rescaled,gradient,off,{grad_total_time_r}\n"
+            )
 
     if args.output:
         args.output.write(f"treelikelihood,evaluation,off,{total_time}\n")
@@ -466,8 +504,12 @@ def ratio_transform(args):
     print(f'  {replicates} evaluations: {total_time}')
 
     ratios_root_height.requires_grad = True
-    total_time, heights = fn_grad(args.replicates, ratios_root_height.tensor)
-    print(f'  {replicates} gradient evaluations: {total_time}')
+    grad_total_time, heights = fn_grad(args.replicates, ratios_root_height.tensor)
+    print(f'  {replicates} gradient evaluations: {grad_total_time}')
+
+    if args.output:
+        args.output.write(f"ratio_transform_jacobian,evaluation,off,{total_time}\n")
+        args.output.write(f"ratio_transform_jacobian,gradient,off,{grad_total_time}\n")
 
     print('  JIT off')
 
@@ -730,10 +772,22 @@ parser.add_argument(
     help="""csv output file""",
 )
 parser.add_argument(
+    "-d",
+    "--dtype",
+    choices=('float32', 'float64'),
+    default='float64',
+    help="""double or single precision""",
+)
+parser.add_argument(
     '--debug', required=False, action='store_true', help="""Debug mode"""
 )
 parser.add_argument("--all", required=False, action="store_true", help="""Run all""")
 args = parser.parse_args()
+
+if args.dtype == 'float64':
+    torch.set_default_dtype(torch.float64)
+else:
+    torch.set_default_dtype(torch.float32)
 
 if args.output:
     args.output.write("function,mode,JIT,time\n")
