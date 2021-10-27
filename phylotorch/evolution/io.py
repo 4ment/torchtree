@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from dendropy import DnaCharacterMatrix, Tree
 
-from .evolution.tree_model import setup_dates, setup_indexes
+from .tree_model import setup_dates, setup_indexes
 
 
 def read_tree(tree, dated=True, heterochornous=True):

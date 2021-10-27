@@ -5,12 +5,12 @@ from phylotorch import Parameter
 from phylotorch.evolution.alignment import Alignment, Sequence
 from phylotorch.evolution.branch_model import StrictClockModel
 from phylotorch.evolution.datatype import NucleotideDataType
+from phylotorch.evolution.io import read_tree_and_alignment
 from phylotorch.evolution.site_model import WeibullSiteModel
 from phylotorch.evolution.site_pattern import SitePattern, compress_alignment
 from phylotorch.evolution.substitution_model import JC69
 from phylotorch.evolution.taxa import Taxa, Taxon
-from phylotorch.evolution.tree_model import TimeTreeModel
-from phylotorch.io import read_tree_and_alignment
+from phylotorch.evolution.tree_model import ReparameterizedTimeTreeModel, TimeTreeModel
 
 
 def _prepare_tiny(tiny_newick_file, tiny_fasta_file):
@@ -258,3 +258,75 @@ def test_treelikelihood_batch():
     )
 
     assert like() == like_batch()[1]
+
+
+def test_treelikelihood_weibull(flu_a_tree_file, flu_a_fasta_file):
+    taxa_list = []
+    with open(flu_a_fasta_file) as fp:
+        for line in fp:
+            if line.startswith('>'):
+                taxon = line[1:].strip()
+                date = float(taxon.split('_')[-1])
+                taxa_list.append(Taxon(taxon, {'date': date}))
+    taxa = Taxa('taxa', taxa_list)
+
+    site_pattern = {
+        'id': 'sp',
+        'type': 'phylotorch.evolution.site_pattern.SitePattern',
+        'alignment': {
+            "id": "alignment",
+            "type": "phylotorch.evolution.alignment.Alignment",
+            'datatype': 'nucleotide',
+            'file': flu_a_fasta_file,
+            'taxa': 'taxa',
+        },
+    }
+    subst_model = JC69('jc')
+    site_model = WeibullSiteModel(
+        'site_model', Parameter(None, torch.tensor([[0.1]])), 4
+    )
+    ratios = [0.5] * 67
+    root_height = [20.0]
+    with open(flu_a_tree_file) as fp:
+        newick = fp.read().strip()
+
+    dic = {'taxa': taxa}
+    tree_model = ReparameterizedTimeTreeModel.from_json(
+        ReparameterizedTimeTreeModel.json_factory(
+            'tree_model',
+            newick,
+            ratios,
+            root_height,
+            'taxa',
+            **{'keep_branch_lengths': True}
+        ),
+        dic,
+    )
+    branch_model = StrictClockModel(
+        None, Parameter(None, torch.tensor([[0.001]])), tree_model
+    )
+    dic['tree_model'] = tree_model
+    dic['site_model'] = site_model
+    dic['subst_model'] = subst_model
+    dic['branch_model'] = branch_model
+
+    like = likelihood.TreeLikelihoodModel.from_json(
+        {
+            'id': 'like',
+            'type': 'phylotorch.tree_likelihood.TreeLikelihoodModel',
+            'tree_model': 'tree_model',
+            'site_model': 'site_model',
+            'site_pattern': site_pattern,
+            'substitution_model': 'subst_model',
+            'branch_model': 'branch_model',
+        },
+        dic,
+    )
+    assert torch.allclose(torch.tensor([-4618.2062529058]), like())
+
+    branch_model._rates.tensor = branch_model._rates.tensor.repeat(3, 1)
+    site_model._shape.tensor = site_model._shape.tensor.repeat(3, 1)
+    tree_model._internal_heights.tensor = tree_model._internal_heights.tensor.repeat(
+        3, 68
+    )
+    assert torch.allclose(torch.tensor([[-4618.2062529058] * 3]), like())

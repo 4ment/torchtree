@@ -1,37 +1,14 @@
+import numpy as np
 import torch
 from torch.distributions import Normal
-import numpy as np
-
-# Adaptation p.15 No-U-Turn samplers Algo 5
-def adaptation(rho, t, step_size_init, H_t, eps_bar, desired_accept_rate=0.8):
-    # rho is current acceptance ratio
-    # t is current iteration
-    t = t + 1
-    if util.has_nan_or_inf(torch.tensor([rho])):
-        alpha = 0  # Acceptance rate is zero if nan.
-    else:
-        alpha = min(1., float(torch.exp(torch.FloatTensor([rho]))))
-    mu = float(torch.log(10 * torch.FloatTensor([step_size_init])))
-    gamma = 0.05
-    t0 = 10
-    kappa = 0.75
-    H_t = (1 - (1 / (t + t0))) * H_t + (1 / (t + t0)) * (desired_accept_rate - alpha)
-    x_new = mu - (t ** 0.5) / gamma * H_t
-    step_size = float(torch.exp(torch.FloatTensor([x_new])))
-    x_new_bar = t ** -kappa * x_new + (1 - t ** -kappa) * torch.log(torch.FloatTensor([eps_bar]))
-    eps_bar = float(torch.exp(x_new_bar))
-    # import pdb; pdb.set_trace()
-    # print('rho: ',rho)
-    # print('alpha: ',alpha)
-    # print('step_size: ',step_size)
-    # adapt_stepsize_list.append(torch.exp(x_new_bar))
-    return step_size, eps_bar, H_t
 
 
 def leapfrog(params, func, steps, step_size):
     x0 = params
-    p0 = Normal(torch.zeros(params.size(), requires_grad=False),
-                                    torch.ones(params.size(), requires_grad=False)).sample()
+    p0 = Normal(
+        torch.zeros(params.size(), requires_grad=False),
+        torch.ones(params.size(), requires_grad=False),
+    ).sample()
     params = params.detach().requires_grad_()
     U = func(params)
     U.backward()

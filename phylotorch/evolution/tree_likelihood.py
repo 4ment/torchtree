@@ -45,9 +45,18 @@ def calculate_treelikelihood_discrete(
     freqs: torch.Tensor,
     props: torch.Tensor,
 ) -> torch.Tensor:
-    r"""Calculate log tree likelihood
+    r"""Calculate log tree likelihood with rate categories
 
-    :param partials: list of tensors of partials [S,N] leaves and [...,K,S,N] internals
+    number of tips: T,
+    number of internal nodes: I=T-1,
+    number of branches: B=2T-2,
+    number of states: S,
+    number of sites: N,
+    number of rate categories: K.
+
+    The shape of internal partials after peeling is [...,K,S,N].
+
+    :param partials: list of T tip partial tensors [S,N] and I internals [None]
     :param weights: [N]
     :param post_indexing: list of indexes in postorder
     :param mats: tensor of probability matrices [...,B,K,S,S]
@@ -74,7 +83,7 @@ def calculate_treelikelihood_discrete_rescaled(
     freqs: torch.Tensor,
     props: torch.Tensor,
 ) -> torch.Tensor:
-    r"""Calculate log tree likelihood using rescaling
+    r"""Calculate log tree likelihood with rate categories using rescaling
 
     :param partials: list of tensors of partials [S,N] leaves and [...,K,S,N] internals
     :param weights: [N]
@@ -169,7 +178,7 @@ class TreeLikelihoodModel(CallableModel):
                 self.tree_model.postorder,
                 mats,
                 frequencies.reshape(frequencies.shape[:-1] + (1, -1)),
-                probs,
+                probs.unsqueeze(0),
             )
         return log_p
 

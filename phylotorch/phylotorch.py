@@ -23,7 +23,10 @@ def main():
         prog='phylotorch', description='Phylogenetic inference using pytorch'
     )
     parser.add_argument(
-        'file', metavar='input-file-name', help='JSON configuration file'
+        'file',
+        metavar='input-file-name',
+        type=argparse.FileType('r'),
+        help='JSON configuration file',
     )
     parser.add_argument(
         '-c', '--checkpoint', required=False, default=None, help='JSON checkpoint file'
