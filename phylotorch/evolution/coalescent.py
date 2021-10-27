@@ -67,11 +67,10 @@ class ConstantCoalescent(Distribution):
         taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
         node_mask = torch.cat(
             [
-                torch.full(taxa_shape, False, dtype=torch.bool),
+                torch.full(taxa_shape, 1),
                 torch.full(
                     taxa_shape[:-1] + (taxa_shape[-1] - 1,),
-                    True,
-                    dtype=torch.bool,
+                    -1,
                 ),
             ],
             dim=-1,
@@ -80,11 +79,7 @@ class ConstantCoalescent(Distribution):
         indices = torch.argsort(node_heights, descending=False)
         heights_sorted = torch.gather(node_heights, -1, indices)
         node_mask_sorted = torch.gather(node_mask, -1, indices)
-        lineage_count = torch.where(
-            node_mask_sorted,
-            torch.full_like(self.theta, -1),
-            torch.full_like(self.theta, 1),
-        ).cumsum(-1)[..., :-1]
+        lineage_count = node_mask_sorted.cumsum(-1)[..., :-1]
 
         durations = heights_sorted[..., 1:] - heights_sorted[..., :-1]
         lchoose2 = lineage_count * (lineage_count - 1) / 2.0
