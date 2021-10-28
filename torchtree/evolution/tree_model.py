@@ -274,7 +274,7 @@ class UnRootedTreeModel(AbstractTreeModel):
 
         tree_model = {
             'id': id_,
-            'type': 'phylotorch.evolution.tree_model.UnRootedTreeModel',
+            'type': 'torchtree.evolution.tree_model.UnRootedTreeModel',
             'newick': newick,
         }
         if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
@@ -283,7 +283,7 @@ class UnRootedTreeModel(AbstractTreeModel):
         if isinstance(branch_lengths, list):
             tree_model['branch_lengths'] = {
                 "id": kwargs.get('branch_lengths_id', 'branch_lengths'),
-                "type": "phylotorch.Parameter",
+                "type": "torchtree.Parameter",
                 "tensor": branch_lengths,
             }
         elif isinstance(branch_lengths, (dict, str)):
@@ -293,17 +293,17 @@ class UnRootedTreeModel(AbstractTreeModel):
             taxon_list = []
             for taxon in taxa.keys():
                 taxon_list.append(
-                    {"id": taxon, "type": "phylotorch.evolution.taxa.Taxon"}
+                    {"id": taxon, "type": "torchtree.evolution.taxa.Taxon"}
                 )
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'phylotorch.evolution.taxa.Taxa',
+                'type': 'torchtree.evolution.taxa.Taxa',
                 'taxa': taxon_list,
             }
         elif isinstance(taxa, list):
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'phylotorch.evolution.taxa.Taxa',
+                'type': 'torchtree.evolution.taxa.Taxa',
                 'taxa': taxa,
             }
         else:
@@ -458,7 +458,7 @@ class TimeTreeModel(AbstractTreeModel):
 
         tree_model = {
             'id': id_,
-            'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
+            'type': 'torchtree.evolution.tree_model.TimeTreeModel',
             'newick': newick,
         }
         if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
@@ -468,7 +468,7 @@ class TimeTreeModel(AbstractTreeModel):
         if isinstance(internal_heights, (list, tuple)):
             tree_model['internal_heights'] = {
                 "id": node_heights_id,
-                "type": "phylotorch.Parameter",
+                "type": "torchtree.Parameter",
                 "tensor": internal_heights,
             }
         elif isinstance(internal_heights, (dict, str)):
@@ -480,19 +480,19 @@ class TimeTreeModel(AbstractTreeModel):
                 taxon_list.append(
                     {
                         "id": taxon,
-                        "type": "phylotorch.evolution.taxa.Taxon",
+                        "type": "torchtree.evolution.taxa.Taxon",
                         "attributes": {"date": taxa[taxon]},
                     }
                 )
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'phylotorch.evolution.taxa.Taxa',
+                'type': 'torchtree.evolution.taxa.Taxa',
                 'taxa': taxon_list,
             }
         elif isinstance(taxa, list):
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'phylotorch.evolution.taxa.Taxa',
+                'type': 'torchtree.evolution.taxa.Taxa',
                 'taxa': taxa,
             }
         else:
@@ -587,7 +587,7 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
 
         tree_model = {
             'id': id_,
-            'type': 'phylotorch.evolution.tree_model.ReparameterizedTimeTreeModel',
+            'type': 'torchtree.evolution.tree_model.ReparameterizedTimeTreeModel',
             'newick': newick,
         }
         if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
@@ -599,7 +599,7 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
         if isinstance(ratios, (list, tuple)):
             tree_model['ratios'] = {
                 "id": ratios_id,
-                "type": "phylotorch.Parameter",
+                "type": "torchtree.Parameter",
                 "tensor": ratios,
             }
         elif isinstance(ratios, (dict, str)):
@@ -608,7 +608,7 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
         if isinstance(root_height, (list, tuple)):
             tree_model['root_height'] = {
                 "id": root_height_id,
-                "type": "phylotorch.Parameter",
+                "type": "torchtree.Parameter",
                 "tensor": root_height,
             }
         elif isinstance(root_height, (dict, str)):
@@ -620,19 +620,19 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
                 taxon_list.append(
                     {
                         "id": taxon,
-                        "type": "phylotorch.evolution.taxa.Taxon",
+                        "type": "torchtree.evolution.taxa.Taxon",
                         "attributes": {"date": taxa[taxon]},
                     }
                 )
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'phylotorch.evolution.taxa.Taxa',
+                'type': 'torchtree.evolution.taxa.Taxa',
                 'taxa': taxon_list,
             }
         elif isinstance(taxa, list):
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'phylotorch.evolution.taxa.Taxa',
+                'type': 'torchtree.evolution.taxa.Taxa',
                 'taxa': taxa,
             }
         else:

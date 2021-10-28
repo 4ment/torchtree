@@ -46,7 +46,7 @@ class Sampler(JSONSerializable, Runnable):
         in data.
         :type dic: dict[str,Any]
 
-        :return: a :class:`~phylotorch.inference.sampler.Sampler` object.
+        :return: a :class:`~torchtree.inference.sampler.Sampler` object.
         :rtype: Sampler
         """
         model = process_object(data['model'], dic)

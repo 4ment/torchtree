@@ -6,22 +6,22 @@ from typing import List, Tuple
 
 import torch
 
-from phylotorch import Parameter
-from phylotorch.evolution.alignment import Alignment, Sequence
-from phylotorch.evolution.coalescent import ConstantCoalescent
-from phylotorch.evolution.datatype import NucleotideDataType
-from phylotorch.evolution.site_pattern import compress_alignment
-from phylotorch.evolution.substitution_model import JC69
-from phylotorch.evolution.taxa import Taxa, Taxon
-from phylotorch.evolution.tree_likelihood import (
+from torchtree import Parameter
+from torchtree.evolution.alignment import Alignment, Sequence
+from torchtree.evolution.coalescent import ConstantCoalescent
+from torchtree.evolution.datatype import NucleotideDataType
+from torchtree.evolution.site_pattern import compress_alignment
+from torchtree.evolution.substitution_model import JC69
+from torchtree.evolution.taxa import Taxa, Taxon
+from torchtree.evolution.tree_likelihood import (
     calculate_treelikelihood_discrete,
     calculate_treelikelihood_discrete_rescaled,
 )
-from phylotorch.evolution.tree_model import (
+from torchtree.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
     heights_from_branch_lengths,
 )
-from phylotorch.io import read_tree, read_tree_and_alignment
+from torchtree.io import read_tree, read_tree_and_alignment
 
 
 def benchmark(f):

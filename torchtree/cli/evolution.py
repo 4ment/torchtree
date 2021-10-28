@@ -1,16 +1,16 @@
 import re
 
-from phylotorch import Parameter, ViewParameter
-from phylotorch.cli.priors import create_one_on_x_prior
-from phylotorch.distributions import Distribution
-from phylotorch.distributions.ctmc_scale import CTMCScale
-from phylotorch.distributions.scale_mixture import ScaleMixtureNormal
-from phylotorch.evolution.alignment import read_fasta_sequences
-from phylotorch.evolution.tree_model import (
+from torchtree import Parameter, ViewParameter
+from torchtree.cli.priors import create_one_on_x_prior
+from torchtree.distributions import Distribution
+from torchtree.distributions.ctmc_scale import CTMCScale
+from torchtree.distributions.scale_mixture import ScaleMixtureNormal
+from torchtree.evolution.alignment import read_fasta_sequences
+from torchtree.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
     UnRootedTreeModel,
 )
-from phylotorch.evolution.tree_model_flexible import FlexibleTimeTreeModel
+from torchtree.evolution.tree_model_flexible import FlexibleTimeTreeModel
 
 
 def create_evolution_parser(parser):
@@ -126,7 +126,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
             node_heights = {
                 'id': f'{id_}.heights',
                 'type': 'TransformedParameter',
-                'transform': 'phylotorch.evolution.tree_height_transform'
+                'transform': 'torchtree.evolution.tree_height_transform'
                 '.DifferenceNodeHeightTransform',
                 'x': shifts,
                 'parameters': {'tree_model': id_},

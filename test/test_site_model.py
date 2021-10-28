@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 import torch
 
-from phylotorch import Parameter
-from phylotorch.evolution.site_model import (
+from torchtree import Parameter
+from torchtree.evolution.site_model import (
     ConstantSiteModel,
     InvariantSiteModel,
     WeibullSiteModel,
@@ -111,11 +111,11 @@ def test_weibull_json():
     sitemodel = WeibullSiteModel.from_json(
         {
             'id': 'weibull',
-            'type': 'phylotorch.evolution.sitemodel.WeibullSiteModel',
+            'type': 'torchtree.evolution.sitemodel.WeibullSiteModel',
             'categories': 4,
             'shape': {
                 'id': 'shape',
-                'type': 'phylotorch.Parameter',
+                'type': 'torchtree.Parameter',
                 'tensor': [1.0],
             },
         },

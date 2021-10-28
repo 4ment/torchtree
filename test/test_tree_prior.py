@@ -1,8 +1,8 @@
 import torch
 
-from phylotorch import Parameter
-from phylotorch.distributions.tree_prior import CompoundGammaDirichletPrior
-from phylotorch.evolution.tree_model import UnRootedTreeModel
+from torchtree import Parameter
+from torchtree.distributions.tree_prior import CompoundGammaDirichletPrior
+from torchtree.evolution.tree_model import UnRootedTreeModel
 
 
 def test_prior_mrbayes():

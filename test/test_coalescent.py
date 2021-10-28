@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 import torch
 
-from phylotorch import Parameter
-from phylotorch.evolution.coalescent import (
+from torchtree import Parameter
+from torchtree.evolution.coalescent import (
     ConstantCoalescent,
     ConstantCoalescentModel,
     FakeTreeModel,
@@ -12,7 +12,7 @@ from phylotorch.evolution.coalescent import (
     PiecewiseConstantCoalescentGridModel,
     PiecewiseConstantCoalescentModel,
 )
-from phylotorch.evolution.tree_model import ReparameterizedTimeTreeModel
+from torchtree.evolution.tree_model import ReparameterizedTimeTreeModel
 
 
 def inverse_transform_homochronous(ratios):
@@ -66,10 +66,10 @@ def test_constant_batch(ratios_list):
 def test_constant_json(tree_model_node_heights_transformed):
     example = {
         'id': 'coalescent',
-        'type': 'phylotorch.evolution.coalescent.ConstantCoalescentModel',
+        'type': 'torchtree.evolution.coalescent.ConstantCoalescentModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': [3.0],
         },
         'tree_model': tree_model_node_heights_transformed,
@@ -115,10 +115,10 @@ def test_skyride_heterochronous():
 def test_skyride_json(tree_model_node_heights_transformed):
     example = {
         'id': 'coalescent',
-        'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentModel',
+        'type': 'torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': [3.0, 10.0, 4.0],
         },
         'tree_model': tree_model_node_heights_transformed,
@@ -130,10 +130,10 @@ def test_skyride_json(tree_model_node_heights_transformed):
 def test_skygride_data_json():
     example = {
         'id': 'coalescent',
-        'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentModel',
+        'type': 'torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': [3.0, 10.0, 4.0],
         },
         'events': [0] * 3 + [1] * 4,
@@ -157,10 +157,10 @@ def test_skygrid(ratios_list):
 def test_skygrid_json(tree_model_node_heights_transformed):
     example = {
         'id': 'coalescent',
-        'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentGridModel',
+        'type': 'torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': [3.0, 10.0, 4.0, 2.0, 3.0],
         },
         'tree_model': tree_model_node_heights_transformed,
@@ -271,10 +271,10 @@ def test_skygrid_data_json():
     intervals = torch.tensor(times_list)[1:] - torch.tensor(times_list)[:-1]
     example_times = {
         'id': 'coalescent',
-        'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentGridModel',
+        'type': 'torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': torch.tensor([1.0, 3.0, 6.0, 8.0, 9.0]).exp().tolist(),
         },
         'events': [1] * 5 + [0] * 4,
@@ -283,10 +283,10 @@ def test_skygrid_data_json():
     }
     example_intervals = {
         'id': 'coalescent',
-        'type': 'phylotorch.evolution.coalescent.PiecewiseConstantCoalescentGridModel',
+        'type': 'torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel',
         'theta': {
             'id': 'theta',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': torch.tensor([1.0, 3.0, 6.0, 8.0, 9.0]).exp().tolist(),
         },
         'events': [1] * 5 + [0] * 4,

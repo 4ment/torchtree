@@ -1,9 +1,9 @@
 import pytest
 import torch
 
-from phylotorch import Parameter
-from phylotorch.distributions.gmrf import GMRF, GMRFCovariate
-from phylotorch.evolution.tree_model import TimeTreeModel
+from torchtree import Parameter
+from torchtree.distributions.gmrf import GMRF, GMRFCovariate
+from torchtree.evolution.tree_model import TimeTreeModel
 
 
 @pytest.mark.parametrize(

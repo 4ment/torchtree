@@ -235,7 +235,7 @@ class Optimizer(JSONSerializable, Runnable):
         # an iterable of torch.Tensors or dicts: specifies what Tensors should
         # be optimized
         optimizer_params = []
-        parameters = []  # a list of phylotorch.Parameters
+        parameters = []  # a list of torchtree.Parameters
         if isinstance(data['parameters'][0], dict):
             # [{'params': ['model']},
             #  {'params': ["parameter1", "parameter2"], 'lr': 1e-3}
@@ -267,7 +267,7 @@ class Optimizer(JSONSerializable, Runnable):
                 data['scheduler'], None, optimizer=optimizer
             )
 
-        # instanciate phylotorch.optim.Convergence
+        # instanciate torchtree.optim.Convergence
         if 'convergence' in data:
             klass = get_class(data['convergence']['type'])
             convergence = klass.from_json(data['convergence'], dic)

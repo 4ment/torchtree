@@ -1,8 +1,8 @@
 import torch
 import torch.distributions
 
-from phylotorch.evolution.poisson_tree_likelihood import PoissonTreeLikelihood
-from phylotorch.evolution.tree_model import ReparameterizedTimeTreeModel
+from torchtree.evolution.poisson_tree_likelihood import PoissonTreeLikelihood
+from torchtree.evolution.tree_model import ReparameterizedTimeTreeModel
 
 
 def test_poisson_json():
@@ -24,16 +24,16 @@ def test_poisson_json():
 
     poisson_model = {
         'id': 'a',
-        'type': 'phylotorch.evolution.poisson_tree_likelihood.PoissonTreeLikelihood',
+        'type': 'torchtree.evolution.poisson_tree_likelihood.PoissonTreeLikelihood',
         'tree_model': 'tree',
         'edge_lengths': noisy_distances.tolist(),
         'branch_model': {
             'id': 'clock',
-            'type': 'phylotorch.evolution.branch_model.StrictClockModel',
+            'type': 'torchtree.evolution.branch_model.StrictClockModel',
             'tree_model': 'tree',
             'rate': {
                 'id': 'rate',
-                'type': 'phylotorch.Parameter',
+                'type': 'torchtree.Parameter',
                 'tensor': [0.01],
             },
         },

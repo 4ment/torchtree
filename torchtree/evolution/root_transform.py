@@ -89,7 +89,7 @@ class RootParameter(AbstractParameter, CallableModel):
          in data.
         :type dic: dict[str,Any]
 
-        :return: a :class:`~phylotorch.evolution.root_transform.RootParameter` object.
+        :return: a :class:`~torchtree.evolution.root_transform.RootParameter` object.
         :rtype: RootParameter
         """
         x: Parameter = process_object(data['x'], dic)

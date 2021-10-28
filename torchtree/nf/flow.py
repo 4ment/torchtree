@@ -126,7 +126,7 @@ class NormalizingFlow(DistributionModel):
         :param dic: dictionary containing additional objects that can be
          referenced in data.
 
-        :return: a :class:`~phylotorch.nn.flow.NormalizingFlow` object.
+        :return: a :class:`~torchtree.nn.flow.NormalizingFlow` object.
         :rtype: NormalizingFlow
         """
         id_ = data['id']

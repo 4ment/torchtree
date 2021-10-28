@@ -1,6 +1,6 @@
 import numpy as np
 
-from phylotorch.evolution.datatype import GeneralDataType, NucleotideDataType
+from torchtree.evolution.datatype import GeneralDataType, NucleotideDataType
 
 
 def test_general():

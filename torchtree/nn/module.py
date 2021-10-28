@@ -21,7 +21,7 @@ class Module(CallableModel):
     :param id_: ID of object.
     :type id_: str or None
     :param torch.nn.Module module: a torch.nn.Module object.
-    :param parameters: OrderedDict of :class:`~phylotorch.Parameter` keyed by their ID.
+    :param parameters: OrderedDict of :class:`~torchtree.Parameter` keyed by their ID.
     :type parameters: OrderedDict[str,Parameter]
     """
 
@@ -73,7 +73,7 @@ class Module(CallableModel):
         :param dic: dictionary containing additional objects that can be referenced
          in data.
 
-        :return: a :class:`~phylotorch.nn.module.Module` object.
+        :return: a :class:`~torchtree.nn.module.Module` object.
         :rtype: Module
         """
         klass = get_class(data['module'])
@@ -88,7 +88,7 @@ class Module(CallableModel):
                 else:
                     params[arg] = process_objects(data_dist[arg], dic)
             else:
-                # other parameters that are not phylotorch.Parameters
+                # other parameters that are not torchtree.Parameters
                 pass
         module = klass(*[p.tensor for p in params.values()])
 

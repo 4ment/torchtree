@@ -2,7 +2,7 @@ import torch
 from torch import Tensor, nn
 from torch.nn import Parameter
 
-from phylotorch.core.utils import register_class
+from torchtree.core.utils import register_class
 
 
 @register_class

@@ -1,4 +1,4 @@
-from phylotorch.core.utils import string_to_list_index
+from torchtree.core.utils import string_to_list_index
 
 
 def test_string_to_list_index():

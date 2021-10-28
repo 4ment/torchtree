@@ -2,15 +2,15 @@ from typing import List, Tuple
 
 import numpy as np
 
-from phylotorch import Parameter
-from phylotorch.cli.evolution import (
+from torchtree import Parameter
+from torchtree.cli.evolution import (
     create_alignment,
     create_evolution_joint,
     create_evolution_parser,
     create_site_model_srd06_mus,
     create_taxa,
 )
-from phylotorch.distributions import Distribution
+from torchtree.distributions import Distribution
 
 
 def create_variational_parser(subprasers):
@@ -308,7 +308,7 @@ def create_advi(joint, variational, parameters, arg):
         'tol_rel_obj': arg.tol_rel_obj,
     }
     advi_dic['scheduler'] = {
-        'type': 'phylotorch.optim.Scheduler',
+        'type': 'torchtree.optim.Scheduler',
         'scheduler': 'torch.optim.lr_scheduler.LambdaLR',
         'lr_lambda': 'lambda epoch: 1.0 / (epoch + 1)**0.5',
     }

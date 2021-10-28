@@ -1,10 +1,10 @@
 [
   {
     "id": "energy",
-    "type": "phylotorch.nf.energy_functions.EnergyFunctionModel",
+    "type": "torchtree.nf.energy_functions.EnergyFunctionModel",
     "x": {
       "id": "z",
-      "type": "phylotorch.Parameter",
+      "type": "torchtree.Parameter",
       "zeros": [
         128,
         2
@@ -14,14 +14,14 @@
   },
   {
     "id": "advi",
-    "type": "phylotorch.optim.Optimizer",
+    "type": "torchtree.optim.Optimizer",
     "algorithm": "torch.optim.Adam",
     "maximize": true,
     "lr": 6e-4,
     "iterations": 20000,
     "loss": {
       "id": "elbo",
-      "type": "phylotorch.variational.kl.ELBO",
+      "type": "torchtree.variational.kl.ELBO",
       "samples": [
         128
       ],
@@ -29,20 +29,20 @@
       "_forward": true,
       "variational": {
         "id": "varmodel",
-        "type": "phylotorch.nf.flow.NormalizingFlow",
+        "type": "torchtree.nf.flow.NormalizingFlow",
         "x": "z",
         "layers": [
           {
-            "type": "phylotorch.Plate",
+            "type": "torchtree.Plate",
             "range": "0:32",
             "object": {
               "id": "planar.*",
-              "type": "phylotorch.nn.Module",
-              "module": "phylotorch.nf.planar.PlanarTransform",
+              "type": "torchtree.nn.Module",
+              "module": "torchtree.nf.planar.PlanarTransform",
               "parameters": {
                 "u": {
                   "id": "flow.u.*",
-                  "type": "phylotorch.Parameter",
+                  "type": "torchtree.Parameter",
                   "full": [
                     1,
                     2
@@ -52,7 +52,7 @@
                 },
                 "w": {
                   "id": "flow.w.*",
-                  "type": "phylotorch.Parameter",
+                  "type": "torchtree.Parameter",
                   "full": [
                     1,
                     2
@@ -62,7 +62,7 @@
                 },
                 "b": {
                   "id": "flow.b.*",
-                  "type": "phylotorch.Parameter",
+                  "type": "torchtree.Parameter",
                   "full": [
                     1
                   ],
@@ -75,16 +75,16 @@
         ],
         "base": {
           "id": "base",
-          "type": "phylotorch.distributions.MultivariateNormal",
+          "type": "torchtree.distributions.MultivariateNormal",
           "parameters": {
             "loc": {
               "id": "base.loc",
-              "type": "phylotorch.Parameter",
+              "type": "torchtree.Parameter",
               "zeros": 2
             },
             "covariance_matrix": {
               "id": "base.scale",
-              "type": "phylotorch.Parameter",
+              "type": "torchtree.Parameter",
               "tensor": [
                 [
                   1.0,
@@ -99,7 +99,7 @@
           },
           "x": {
             "id": "flow.z",
-            "type": "phylotorch.Parameter",
+            "type": "torchtree.Parameter",
             "zeros": [
               2
             ]
@@ -116,7 +116,7 @@
       "varmodel"
     ],
     "convergence": {
-      "type": "phylotorch.optim.VariationalConvergence",
+      "type": "torchtree.optim.VariationalConvergence",
       "loss": "elbo",
       "every": 1000,
       "start": 1,
@@ -125,13 +125,13 @@
   },
   {
     "id": "sampler",
-    "type": "phylotorch.inference.sampler.Sampler",
+    "type": "torchtree.inference.sampler.Sampler",
     "model": "varmodel",
     "samples": 1000,
     "loggers": [
       {
         "id": "logger",
-        "type": "phylotorch.core.logger.Logger",
+        "type": "torchtree.core.logger.Logger",
         "file_name": "samples.csv",
         "parameters": [
           "energy",

@@ -1,4 +1,4 @@
-name: phylotorch
+name: treetorch
 channels:
   - pytorch
 dependencies:

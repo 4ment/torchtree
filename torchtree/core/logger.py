@@ -99,7 +99,7 @@ class Logger(LoggerInterface):
          in data.
         :type dic: dict[str,Any]
 
-        :return: a :class:`~phylotorch.core.logger.Logger` object.
+        :return: a :class:`~torchtree.core.logger.Logger` object.
         :rtype: Logger
         """
         params = process_objects(data['parameters'], dic)
@@ -170,7 +170,7 @@ class TreeLogger(LoggerInterface):
          in data.
         :type dic: dict[str,Any]
 
-        :return: a :class:`~phylotorch.core.logger.TreeLogger` object.
+        :return: a :class:`~torchtree.core.logger.TreeLogger` object.
         :rtype: TreeLogger
         """
         tree = process_object(data['tree_model'], dic)
@@ -218,7 +218,7 @@ class CSV(JSONSerializable, Runnable):
          in data.
         :type dic: dict[str,Any]
 
-        :return: a :class:`~phylotorch.core.logger.CSV` object.
+        :return: a :class:`~torchtree.core.logger.CSV` object.
         :rtype: CSV
         """
         params = process_objects(data['parameters'], dic)
@@ -265,7 +265,7 @@ class Dumper(JSONSerializable, Runnable):
          in data.
         :type dic: dict[str,Any]
 
-        :return: a :class:`~phylotorch.core.logger.Dumper` object.
+        :return: a :class:`~torchtree.core.logger.Dumper` object.
         :rtype: Dumper
         """
         parameters = process_objects(data['parameters'], dic)

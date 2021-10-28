@@ -12,7 +12,7 @@ class ParameterEncoder(json.JSONEncoder):
         elif isinstance(obj, Parameter):
             return {
                 'id': obj.id,
-                'type': 'phylotorch.Parameter',
+                'type': 'torchtree.Parameter',
                 'tensor': obj.tensor.tolist(),
                 'dtype': str(obj.tensor.dtype),
                 'nn': isinstance(obj.tensor, torch.nn.Parameter),

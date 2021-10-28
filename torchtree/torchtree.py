@@ -18,14 +18,13 @@ from .core.utils import (
 
 
 def main():
-    """Main function to run phylotorch."""
+    """Main function to run torchtree."""
     parser = argparse.ArgumentParser(
-        prog='phylotorch', description='Phylogenetic inference using pytorch'
+        prog='torchtree', description='Phylogenetic inference using pytorch'
     )
     parser.add_argument(
         'file',
         metavar='input-file-name',
-        type=argparse.FileType('r'),
         help='JSON configuration file',
     )
     parser.add_argument(

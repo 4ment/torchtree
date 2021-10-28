@@ -49,7 +49,7 @@ class FlexibleTimeTreeModel(TimeTreeModel):
         if isinstance(internal_heights, list):
             tree_model['internal_heights'] = {
                 "id": node_heights_id,
-                "type": "phylotorch.Parameter",
+                "type": "torchtree.Parameter",
                 "tensor": internal_heights,
             }
         elif isinstance(internal_heights, (dict, str)):
@@ -61,19 +61,19 @@ class FlexibleTimeTreeModel(TimeTreeModel):
                 taxon_list.append(
                     {
                         "id": taxon,
-                        "type": "phylotorch.evolution.taxa.Taxon",
+                        "type": "torchtree.evolution.taxa.Taxon",
                         "attributes": {"date": taxa[taxon]},
                     }
                 )
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'phylotorch.evolution.taxa.Taxa',
+                'type': 'torchtree.evolution.taxa.Taxa',
                 'taxa': taxon_list,
             }
         elif isinstance(taxa, list):
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'phylotorch.evolution.taxa.Taxa',
+                'type': 'torchtree.evolution.taxa.Taxa',
                 'taxa': taxa,
             }
         else:

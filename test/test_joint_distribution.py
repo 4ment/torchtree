@@ -4,9 +4,9 @@ import pytest
 import torch
 import torch.distributions
 
-from phylotorch import Parameter
-from phylotorch.distributions.distributions import Distribution
-from phylotorch.distributions.joint_distribution import JointDistributionModel
+from torchtree import Parameter
+from torchtree.distributions.distributions import Distribution
+from torchtree.distributions.joint_distribution import JointDistributionModel
 
 
 def test_simple():

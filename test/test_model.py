@@ -1,8 +1,8 @@
 import torch
 import torch.distributions
 
-from phylotorch import CatParameter, Parameter, TransformedParameter, ViewParameter
-from phylotorch.core.parametric import ParameterListener
+from torchtree import CatParameter, Parameter, TransformedParameter, ViewParameter
+from torchtree.core.parametric import ParameterListener
 
 
 def test_parameter_repr():
@@ -63,7 +63,7 @@ def test_view_parameter():
     p1 = ViewParameter.from_json(
         {
             'id': 'a',
-            'type': 'phylotorch.ViewParameter',
+            'type': 'torchtree.ViewParameter',
             'parameter': 'param',
             'indices': 3,
         },
@@ -74,7 +74,7 @@ def test_view_parameter():
     p1 = ViewParameter.from_json(
         {
             'id': 'a',
-            'type': 'phylotorch.ViewParameter',
+            'type': 'torchtree.ViewParameter',
             'parameter': 'param',
             'indices': ':3',
         },
@@ -85,7 +85,7 @@ def test_view_parameter():
     p1 = ViewParameter.from_json(
         {
             'id': 'a',
-            'type': 'phylotorch.ViewParameter',
+            'type': 'torchtree.ViewParameter',
             'parameter': 'param',
             'indices': '2:',
         },
@@ -96,7 +96,7 @@ def test_view_parameter():
     p1 = ViewParameter.from_json(
         {
             'id': 'a',
-            'type': 'phylotorch.ViewParameter',
+            'type': 'torchtree.ViewParameter',
             'parameter': 'param',
             'indices': '1:3',
         },
@@ -107,7 +107,7 @@ def test_view_parameter():
     p1 = ViewParameter.from_json(
         {
             'id': 'a',
-            'type': 'phylotorch.ViewParameter',
+            'type': 'torchtree.ViewParameter',
             'parameter': 'param',
             'indices': '1:4:2',
         },
@@ -118,7 +118,7 @@ def test_view_parameter():
     p1 = ViewParameter.from_json(
         {
             'id': 'a',
-            'type': 'phylotorch.ViewParameter',
+            'type': 'torchtree.ViewParameter',
             'parameter': 'param',
             'indices': '::-1',
         },
@@ -129,7 +129,7 @@ def test_view_parameter():
     p1 = ViewParameter.from_json(
         {
             'id': 'a',
-            'type': 'phylotorch.ViewParameter',
+            'type': 'torchtree.ViewParameter',
             'parameter': 'param',
             'indices': '2::-1',
         },
@@ -140,7 +140,7 @@ def test_view_parameter():
     p1 = ViewParameter.from_json(
         {
             'id': 'a',
-            'type': 'phylotorch.ViewParameter',
+            'type': 'torchtree.ViewParameter',
             'parameter': 'param',
             'indices': ':0:-1',
         },
@@ -151,7 +151,7 @@ def test_view_parameter():
     p1 = ViewParameter.from_json(
         {
             'id': 'a',
-            'type': 'phylotorch.ViewParameter',
+            'type': 'torchtree.ViewParameter',
             'parameter': 'param',
             'indices': '2:0:-1',
         },

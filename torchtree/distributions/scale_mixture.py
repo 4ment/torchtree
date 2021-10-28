@@ -3,10 +3,10 @@ from typing import Union
 from torch import Size, Tensor
 from torch.distributions import Normal
 
-from phylotorch.core.abstractparameter import AbstractParameter
-from phylotorch.core.model import CallableModel
-from phylotorch.core.utils import process_object, register_class
-from phylotorch.typing import ID
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.model import CallableModel
+from torchtree.core.utils import process_object, register_class
+from torchtree.typing import ID
 
 
 @register_class

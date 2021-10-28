@@ -1,9 +1,9 @@
 import pytest
 import torch
 
-from phylotorch import Parameter
-from phylotorch.distributions.ctmc_scale import CTMCScale
-from phylotorch.evolution.tree_model import TimeTreeModel
+from torchtree import Parameter
+from torchtree.distributions.ctmc_scale import CTMCScale
+from torchtree.evolution.tree_model import TimeTreeModel
 
 
 @pytest.fixture

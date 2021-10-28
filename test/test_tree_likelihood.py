@@ -1,16 +1,16 @@
 import torch
 
-import phylotorch.evolution.tree_likelihood as likelihood
-from phylotorch import Parameter
-from phylotorch.evolution.alignment import Alignment, Sequence
-from phylotorch.evolution.branch_model import StrictClockModel
-from phylotorch.evolution.datatype import NucleotideDataType
-from phylotorch.evolution.io import read_tree_and_alignment
-from phylotorch.evolution.site_model import WeibullSiteModel
-from phylotorch.evolution.site_pattern import SitePattern, compress_alignment
-from phylotorch.evolution.substitution_model import JC69
-from phylotorch.evolution.taxa import Taxa, Taxon
-from phylotorch.evolution.tree_model import ReparameterizedTimeTreeModel, TimeTreeModel
+import torchtree.evolution.tree_likelihood as likelihood
+from torchtree import Parameter
+from torchtree.evolution.alignment import Alignment, Sequence
+from torchtree.evolution.branch_model import StrictClockModel
+from torchtree.evolution.datatype import NucleotideDataType
+from torchtree.evolution.io import read_tree_and_alignment
+from torchtree.evolution.site_model import WeibullSiteModel
+from torchtree.evolution.site_pattern import SitePattern, compress_alignment
+from torchtree.evolution.substitution_model import JC69
+from torchtree.evolution.taxa import Taxa, Taxon
+from torchtree.evolution.tree_model import ReparameterizedTimeTreeModel, TimeTreeModel
 
 
 def _prepare_tiny(tiny_newick_file, tiny_fasta_file):
@@ -72,82 +72,82 @@ def test_calculate_pytorch_rescaled(tiny_newick_file, tiny_fasta_file, jc69_mode
 def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
     site_pattern = {
         'id': 'sp',
-        'type': 'phylotorch.evolution.site_pattern.SitePattern',
+        'type': 'torchtree.evolution.site_pattern.SitePattern',
         'alignment': {
             "id": "alignment",
-            "type": "phylotorch.evolution.alignment.Alignment",
+            "type": "torchtree.evolution.alignment.Alignment",
             'datatype': 'nucleotide',
             'file': tiny_fasta_file,
             'taxa': 'taxa',
         },
     }
-    subst_model = {'id': 'm', 'type': 'phylotorch.evolution.substitution_model.JC69'}
+    subst_model = {'id': 'm', 'type': 'torchtree.evolution.substitution_model.JC69'}
     site_model = {
         'id': 'sm',
-        'type': 'phylotorch.evolution.site_model.ConstantSiteModel',
+        'type': 'torchtree.evolution.site_model.ConstantSiteModel',
     }
     tree_model = {
         'id': 'tree',
-        'type': 'phylotorch.evolution.tree_model.UnRootedTreeModel',
+        'type': 'torchtree.evolution.tree_model.UnRootedTreeModel',
         'file': tiny_newick_file,
         'branch_lengths': {
             'id': 'branches',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': [0.0],
         },
         'keep_branch_lengths': True,
         'taxa': {
             'id': 'taxa',
-            'type': 'phylotorch.evolution.taxa.Taxa',
+            'type': 'torchtree.evolution.taxa.Taxa',
             'taxa': [
                 {
                     "id": "A_Belgium_2_1981",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1981},
                 },
                 {
                     "id": "A_ChristHospital_231_1982",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1982},
                 },
                 {
                     "id": "A_Philippines_2_1982",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1982},
                 },
                 {
                     "id": "A_Baylor1B_1983",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1983},
                 },
                 {
                     "id": "A_Oita_3_1983",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1983},
                 },
                 {
                     "id": "A_Texas_12764_1983",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1983},
                 },
                 {
                     "id": "A_Alaska_8_1984",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1984},
                 },
                 {
                     "id": "A_Caen_1_1984",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1984},
                 },
                 {
                     "id": "A_Texas_17988_1984",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1984},
                 },
                 {
                     "id": "A_Colorado_2_1987",
-                    "type": "phylotorch.evolution.taxa.Taxon",
+                    "type": "torchtree.evolution.taxa.Taxon",
                     "attributes": {"date": 1987},
                 },
             ],
@@ -155,7 +155,7 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
     }
     tree_likelihood = {
         'id': 'like',
-        'type': 'phylotorch.tree_likelihood.TreeLikelihoodModel',
+        'type': 'torchtree.tree_likelihood.TreeLikelihoodModel',
         'tree_model': tree_model,
         'site_model': site_model,
         'site_pattern': site_pattern,
@@ -169,58 +169,58 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
 def test_treelikelihood_batch():
     taxa_dict = {
         'id': 'taxa',
-        'type': 'phylotorch.evolution.taxa.Taxa',
+        'type': 'torchtree.evolution.taxa.Taxa',
         'taxa': [
             {
                 "id": "A",
-                "type": "phylotorch.evolution.taxa.Taxon",
+                "type": "torchtree.evolution.taxa.Taxon",
                 "attributes": {"date": 0.0},
             },
             {
                 "id": "B",
-                "type": "phylotorch.evolution.taxa.Taxon",
+                "type": "torchtree.evolution.taxa.Taxon",
                 "attributes": {"date": 1.0},
             },
             {
                 "id": "C",
-                "type": "phylotorch.evolution.taxa.Taxon",
+                "type": "torchtree.evolution.taxa.Taxon",
                 "attributes": {"date": 4.0},
             },
             {
                 "id": "D",
-                "type": "phylotorch.evolution.taxa.Taxon",
+                "type": "torchtree.evolution.taxa.Taxon",
                 "attributes": {"date": 5.0},
             },
         ],
     }
     tree_model_dict = {
         'id': 'tree',
-        'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
+        'type': 'torchtree.evolution.tree_model.TimeTreeModel',
         'newick': '(((A,B),C),D);',
         'internal_heights': {
             'id': 'heights',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': [[10.0, 20.0, 30.0], [100.0, 200.0, 300.0]],
         },
         'taxa': taxa_dict,
     }
     tree_model_dict2 = {
         'id': 'tree',
-        'type': 'phylotorch.evolution.tree_model.TimeTreeModel',
+        'type': 'torchtree.evolution.tree_model.TimeTreeModel',
         'newick': '(((A,B),C),D);',
         'internal_heights': {
             'id': 'heights',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': [100.0, 200.0, 300.0],
         },
         'taxa': taxa_dict,
     }
     site_pattern_dict = {
         "id": "sites",
-        "type": "phylotorch.evolution.site_pattern.SitePattern",
+        "type": "torchtree.evolution.site_pattern.SitePattern",
         "alignment": {
             "id": "alignment",
-            "type": "phylotorch.evolution.alignment.Alignment",
+            "type": "torchtree.evolution.alignment.Alignment",
             'datatype': 'nucleotide',
             "taxa": 'taxa',
             "sequences": [
@@ -272,10 +272,10 @@ def test_treelikelihood_weibull(flu_a_tree_file, flu_a_fasta_file):
 
     site_pattern = {
         'id': 'sp',
-        'type': 'phylotorch.evolution.site_pattern.SitePattern',
+        'type': 'torchtree.evolution.site_pattern.SitePattern',
         'alignment': {
             "id": "alignment",
-            "type": "phylotorch.evolution.alignment.Alignment",
+            "type": "torchtree.evolution.alignment.Alignment",
             'datatype': 'nucleotide',
             'file': flu_a_fasta_file,
             'taxa': 'taxa',
@@ -313,7 +313,7 @@ def test_treelikelihood_weibull(flu_a_tree_file, flu_a_fasta_file):
     like = likelihood.TreeLikelihoodModel.from_json(
         {
             'id': 'like',
-            'type': 'phylotorch.tree_likelihood.TreeLikelihoodModel',
+            'type': 'torchtree.tree_likelihood.TreeLikelihoodModel',
             'tree_model': 'tree_model',
             'site_model': 'site_model',
             'site_pattern': site_pattern,

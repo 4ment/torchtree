@@ -1,9 +1,9 @@
 import torch
 
-from phylotorch.evolution.alignment import Alignment, Sequence
-from phylotorch.evolution.datatype import NucleotideDataType
-from phylotorch.evolution.site_pattern import SitePattern, compress_alignment
-from phylotorch.evolution.taxa import Taxa, Taxon
+from torchtree.evolution.alignment import Alignment, Sequence
+from torchtree.evolution.datatype import NucleotideDataType
+from torchtree.evolution.site_pattern import SitePattern, compress_alignment
+from torchtree.evolution.taxa import Taxa, Taxon
 
 
 def test_site_pattern():

@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from phylotorch.evolution.bdsk import PiecewiseConstantBirthDeath
+from torchtree.evolution.bdsk import PiecewiseConstantBirthDeath
 
 
 def epidemio_to_bd(R, delta, s):

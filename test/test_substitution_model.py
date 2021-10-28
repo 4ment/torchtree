@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 import torch
 
-from phylotorch import Parameter
-from phylotorch.evolution.substitution_model import (
+from torchtree import Parameter
+from torchtree.evolution.substitution_model import (
     GTR,
     HKY,
     JC69,
@@ -65,16 +65,16 @@ def test_GTR():
     subst_model = GTR.from_json(
         {
             'id': 'gtr',
-            'type': 'phylotorch.evolution.substitution_model.GTR',
+            'type': 'torchtree.evolution.substitution_model.GTR',
             'rates': {
                 'id': 'rates',
-                'type': 'phylotorch.Parameter',
+                'type': 'torchtree.Parameter',
                 'tensor': [0.060602, 0.402732, 0.028230, 0.047910, 0.407249, 0.053277],
                 'dtype': 'torch.float64',
             },
             'frequencies': {
                 'id': 'pi',
-                'type': 'phylotorch.Parameter',
+                'type': 'torchtree.Parameter',
                 'tensor': [0.479367, 0.172572, 0.140933, 0.207128],
                 'dtype': 'torch.float64',
             },
@@ -170,15 +170,15 @@ def test_HKY_json(hky_fixture):
     subst_model = HKY.from_json(
         {
             'id': 'hky',
-            'type': 'phylotorch.evolution.substitution_model.HKY',
+            'type': 'torchtree.evolution.substitution_model.HKY',
             'kappa': {
                 'id': 'kappa',
-                'type': 'phylotorch.Parameter',
+                'type': 'torchtree.Parameter',
                 'tensor': kappa.tolist(),
             },
             'frequencies': {
                 'id': 'pi',
-                'type': 'phylotorch.Parameter',
+                'type': 'torchtree.Parameter',
                 'tensor': pi.tolist(),
             },
         },
@@ -216,7 +216,7 @@ def test_JC69(t):
     assert ij == pytest.approx(P[0, 1].item(), 1.0e-6)
 
     subst_model = JC69.from_json(
-        {'id': 'jc', 'type': 'phylotorch.substitution_model.JC69'}, {}
+        {'id': 'jc', 'type': 'torchtree.substitution_model.JC69'}, {}
     )
     P = torch.squeeze(subst_model.p_t(torch.tensor(np.array([t]))))
     assert ii == pytest.approx(P[0, 0].item(), 1.0e-6)

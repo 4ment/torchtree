@@ -271,8 +271,8 @@ def update_parameters(json_object, parameters) -> None:
             update_parameters(element, parameters)
     elif isinstance(json_object, dict):
         if 'type' in json_object and json_object['type'] in (
-            'phylotorch.core.parameter.Parameter',
-            'phylotorch.Parameter',
+            'torchtree.core.parameter.Parameter',
+            'torchtree.Parameter',
             'Parameter',
         ):
             if json_object['id'] in parameters:

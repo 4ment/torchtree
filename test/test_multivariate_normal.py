@@ -2,8 +2,8 @@ import pytest
 import torch
 import torch.distributions.multivariate_normal
 
-from phylotorch import Parameter
-from phylotorch.distributions.multivariate_normal import MultivariateNormal
+from torchtree import Parameter
+from torchtree.distributions.multivariate_normal import MultivariateNormal
 
 
 @pytest.mark.parametrize(

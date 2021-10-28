@@ -1,8 +1,8 @@
 import pytest
 import torch
 
-from phylotorch.evolution.tree_model import TimeTreeModel
-from phylotorch.evolution.tree_model_flexible import FlexibleTimeTreeModel
+from torchtree.evolution.tree_model import TimeTreeModel
+from torchtree.evolution.tree_model_flexible import FlexibleTimeTreeModel
 
 
 def node_heights_difference_transform(
@@ -10,13 +10,13 @@ def node_heights_difference_transform(
 ) -> dict:
     node_heights = {
         'id': id_,
-        'type': 'phylotorch.TransformedParameter',
-        'transform': 'phylotorch.evolution.tree_height_transform.'
+        'type': 'torchtree.TransformedParameter',
+        'transform': 'torchtree.evolution.tree_height_transform.'
         'DifferenceNodeHeightTransform',
         'parameters': {'tree_model': tree_id},
         'x': {
             'id': 'differences',
-            'type': 'phylotorch.Parameter',
+            'type': 'torchtree.Parameter',
             'tensor': differences,
         },
     }

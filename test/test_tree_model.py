@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from phylotorch.evolution.tree_model import ReparameterizedTimeTreeModel
+from torchtree.evolution.tree_model import ReparameterizedTimeTreeModel
 
 
 def node_heights_general_transform(
@@ -9,18 +9,18 @@ def node_heights_general_transform(
 ) -> dict:
     node_heights = {
         'id': id_,
-        'type': 'phylotorch.TransformedParameter',
-        'transform': 'phylotorch.evolution.tree_model.GeneralNodeHeightTransform',
+        'type': 'torchtree.TransformedParameter',
+        'transform': 'torchtree.evolution.tree_model.GeneralNodeHeightTransform',
         'parameters': {'tree': tree_id},
         'x': [
             {
                 'id': 'ratios',
-                'type': 'phylotorch.Parameter',
+                'type': 'torchtree.Parameter',
                 'tensor': ratios,
             },
             {
                 'id': 'root_height',
-                'type': 'phylotorch.Parameter',
+                'type': 'torchtree.Parameter',
                 'tensor': root_height,
             },
         ],

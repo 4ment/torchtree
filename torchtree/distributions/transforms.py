@@ -3,8 +3,8 @@ import math
 import torch
 from torch.distributions import Transform, constraints
 
-from phylotorch.core.abstractparameter import AbstractParameter
-from phylotorch.core.utils import register_class
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.utils import register_class
 
 
 class TrilExpDiagonalTransform(Transform):

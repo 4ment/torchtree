@@ -2,7 +2,7 @@ from typing import List, Tuple, Union
 
 import torch
 
-from phylotorch.cli.evolution import (
+from torchtree.cli.evolution import (
     create_alignment,
     create_evolution_joint,
     create_evolution_parser,
