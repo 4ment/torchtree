@@ -10,6 +10,7 @@ from torchtree import Parameter
 from torchtree.evolution.alignment import Alignment, Sequence
 from torchtree.evolution.coalescent import ConstantCoalescent
 from torchtree.evolution.datatype import NucleotideDataType
+from torchtree.evolution.io import read_tree, read_tree_and_alignment
 from torchtree.evolution.site_pattern import compress_alignment
 from torchtree.evolution.substitution_model import JC69
 from torchtree.evolution.taxa import Taxa, Taxon
@@ -21,7 +22,6 @@ from torchtree.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
     heights_from_branch_lengths,
 )
-from torchtree.io import read_tree, read_tree_and_alignment
 
 
 def benchmark(f):
@@ -473,10 +473,13 @@ def ratio_transform_jacobian(args):
 def ratio_transform(args):
     replicates = args.replicates
     tree = read_tree(args.tree, True, True)
+    taxa_count = len(tree.taxon_namespace)
     taxa = []
     for node in tree.leaf_node_iter():
         taxa.append(Taxon(node.label, {'date': node.date}))
-    ratios_root_height = Parameter("internal_heights", torch.tensor([0.5] * 67 + [10]))
+    ratios_root_height = Parameter(
+        "internal_heights", torch.tensor([0.5] * (taxa_count - 2) + [10])
+    )
     tree_model = ReparameterizedTimeTreeModel(
         "tree", tree, Taxa('taxa', taxa), ratios_root_height
     )
@@ -632,11 +635,12 @@ def ratio_transform(args):
 
 def constant_coalescent(args):
     tree = read_tree(args.tree, True, True)
+    taxa_count = len(tree.taxon_namespace)
     taxa = []
     for node in tree.leaf_node_iter():
         taxa.append(Taxon(node.label, {'date': node.date}))
     ratios_root_height = Parameter(
-        "internal_heights", torch.tensor([0.5] * 67 + [20.0])
+        "internal_heights", torch.tensor([0.5] * (taxa_count - 2) + [20.0])
     )
     tree_model = ReparameterizedTimeTreeModel(
         "tree", tree, Taxa('taxa', taxa), ratios_root_height
@@ -743,7 +747,7 @@ def constant_coalescent(args):
             return log_p
 
         x, counts = torch.unique(tree_model.sampling_times, return_counts=True)
-        counts = torch.cat((counts, torch.tensor([-1] * 68)))
+        counts = torch.cat((counts, torch.tensor([-1] * (taxa_count - 1))))
 
         with torch.no_grad():
             total_time, log_p = fn3(args.replicates, tree_model, pop_size)
