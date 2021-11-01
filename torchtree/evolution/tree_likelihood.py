@@ -75,6 +75,55 @@ def calculate_treelikelihood_discrete(
     )
 
 
+def calculate_treelikelihood_discrete_safe(
+    partials: list,
+    weights: torch.Tensor,
+    post_indexing: list,
+    mats: torch.Tensor,
+    freqs: torch.Tensor,
+    props: torch.Tensor,
+    threshold: float,
+) -> torch.Tensor:
+    r"""Calculate log tree likelihood with rate categories using rescaling.
+
+    This function is used when an underflow is detected for the first time (i.e. inf)
+    since it is not recalculating partials that are above the threshold.
+
+    :param partials: list of tensors of partials [S,N] leaves and [...,K,S,N] internals
+    :param weights: [N]
+    :param post_indexing:
+    :param mats: tensor of matrices [...,B,K,S,S]
+    :param freqs: tensor of frequencies [...,1,S]
+    :param props: tensor of proportions [...,K,1,1]
+    :param threshold: threshold for rescaling
+    :return: tree log likelihood [batch]
+    """
+    scalers = []
+    rescaled = [False] * (post_indexing[-1][0] + 1)
+    for node, left, right in post_indexing:
+        if (
+            rescaled[left]
+            or rescaled[right]
+            or torch.any(torch.max(partials[node], -2, keepdim=True)[0] < threshold)
+        ):
+            partial = (mats[..., left, :, :, :] @ partials[left]) * (
+                mats[..., right, :, :, :] @ partials[right]
+            )
+            scaler, _ = torch.max(partial, -2, keepdim=True)
+            scalers.append(scaler)
+            partials[node] = partial / scaler
+            rescaled[node] = True
+
+    return torch.sum(
+        (
+            torch.log(freqs @ torch.sum(props * partials[post_indexing[-1][0]], dim=-3))
+            + torch.sum(torch.cat(scalers, -2).log(), dim=-2)
+        )
+        * weights,
+        dim=-1,
+    )
+
+
 def calculate_treelikelihood_discrete_rescaled(
     partials: list,
     weights: torch.Tensor,
@@ -98,7 +147,7 @@ def calculate_treelikelihood_discrete_rescaled(
         partial = (mats[..., left, :, :, :] @ partials[left]) * (
             mats[..., right, :, :, :] @ partials[right]
         )
-        scaler, _ = torch.max(partial, -2)
+        scaler, _ = torch.max(partial, -2, keepdim=True)
         scalers.append(scaler)
         partials[node] = partial / scaler
     return torch.sum(
@@ -129,6 +178,9 @@ class TreeLikelihoodModel(CallableModel):
         self.site_model = site_model
         self.clock_model = clock_model
         self.rescale = False
+        self.threshold = (
+            1.0e-20 if subst_model.frequencies.dtype == torch.float32 else 1.0e-40
+        )
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         branch_lengths = self.tree_model.branch_lengths()
@@ -161,15 +213,18 @@ class TreeLikelihoodModel(CallableModel):
                 bls = self.clock_model.rates * branch_lengths
 
         mats = self.subst_model.p_t(bls.reshape(sample_shape + (-1, 1)) * rates)
-        frequencies = self.subst_model.frequencies
+        frequencies = self.subst_model.frequencies.reshape(
+            self.subst_model.frequencies.shape[:-1] + (1, -1)
+        )
+
         if self.rescale:
             log_p = calculate_treelikelihood_discrete_rescaled(
                 self.site_pattern.partials,
                 self.site_pattern.weights,
                 self.tree_model.postorder,
                 mats,
-                frequencies.reshape(frequencies.shape[:-1] + (1, -1)),
-                probs,
+                frequencies,
+                probs.unsqueeze(0),
             )
         else:
             log_p = calculate_treelikelihood_discrete(
@@ -177,9 +232,21 @@ class TreeLikelihoodModel(CallableModel):
                 self.site_pattern.weights,
                 self.tree_model.postorder,
                 mats,
-                frequencies.reshape(frequencies.shape[:-1] + (1, -1)),
+                frequencies,
                 probs.unsqueeze(0),
             )
+
+            if torch.any(torch.isinf(log_p)):
+                self.rescale = True
+                log_p = calculate_treelikelihood_discrete_safe(
+                    self.site_pattern.partials,
+                    self.site_pattern.weights,
+                    self.tree_model.postorder,
+                    mats,
+                    frequencies,
+                    probs.unsqueeze(0),
+                    self.threshold,
+                )
         return log_p
 
     def handle_model_changed(self, model, obj, index):

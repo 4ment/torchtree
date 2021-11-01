@@ -83,6 +83,25 @@ def log_prob(node_heights: torch.Tensor, theta: torch.Tensor) -> torch.Tensor:
     ) * torch.log(theta)
 
 
+def calculate_treelikelihood_discrete_safe(
+    partials: list,
+    weights: torch.Tensor,
+    post_indexing: list,
+    mats: torch.Tensor,
+    freqs: torch.Tensor,
+    props: torch.Tensor,
+    threshold: float,
+) -> torch.Tensor:
+    log_p = calculate_treelikelihood_discrete(
+        partials, weights, post_indexing, mats, freqs, props
+    )
+    if torch.any(torch.isinf(log_p)):
+        log_p = calculate_treelikelihood_discrete_rescaled(
+            partials, weights, post_indexing, mats, freqs, props
+        )
+    return log_p
+
+
 def calculate_treelikelihood_discrete_split(
     tip_partials: torch.Tensor,
     weights: torch.Tensor,
@@ -218,12 +237,13 @@ def fluA_unrooted(args):
     tree, dna = read_tree_and_alignment(args.tree, args.input, True, True)
     branch_lengths = torch.tensor(
         [
-            float(node.edge_length) * 0.001
+            float(node.edge_length) * args.scaler
             for node in sorted(
                 list(tree.postorder_node_iter())[:-1], key=lambda x: x.index
             )
         ],
     )
+    branch_lengths = torch.clamp(branch_lengths, min=1.0e-6)
     indices = []
     for node in tree.postorder_internal_node_iter():
         indices.append([node.index] + [child.index for child in node.child_nodes()])
@@ -240,72 +260,45 @@ def fluA_unrooted(args):
     jc69_model = JC69('jc')
     freqs = torch.tensor([[0.25, 0.25, 0.25, 0.25]])
     proportions = torch.tensor([[[1.0]]])
+    threshold = 1.0e-20 if args.dtype == 'float32' else 1.0e-40
 
     print('treelikelihood v1')
 
     @benchmark
-    def fn(bls):
+    def fn_safe(bls):
         mats = jc69_model.p_t(bls)
-        return calculate_treelikelihood_discrete(
-            partials, weights_tensor, indices, mats, freqs, proportions
+        return calculate_treelikelihood_discrete_safe(
+            partials, weights_tensor, indices, mats, freqs, proportions, threshold
         )
 
     @benchmark
-    def fn_grad(bls):
+    def fn_safe_grad(bls):
         mats = jc69_model.p_t(bls)
-        log_prob = calculate_treelikelihood_discrete(
-            partials, weights_tensor, indices, mats, freqs, proportions
-        )
-        log_prob.backward()
-        return log_prob
-
-    @benchmark
-    def fn_rescaled(bls):
-        mats = jc69_model.p_t(bls)
-        return calculate_treelikelihood_discrete_rescaled(
-            partials, weights_tensor, indices, mats, freqs, proportions
-        )
-
-    @benchmark
-    def fn_grad_rescaled(bls):
-        mats = jc69_model.p_t(bls)
-        log_prob = calculate_treelikelihood_discrete_rescaled(
-            partials, weights_tensor, indices, mats, freqs, proportions
+        log_prob = calculate_treelikelihood_discrete_safe(
+            partials, weights_tensor, indices, mats, freqs, proportions, threshold
         )
         log_prob.backward()
         return log_prob
 
     blens = branch_lengths.unsqueeze(0).unsqueeze(-1)
 
-    total_time, log_prob = fn(args.replicates, blens)
+    total_time, log_prob = fn_safe(args.replicates, blens)
     print(f'  {args.replicates} evaluations: {total_time} ({log_prob})')
 
     blens.requires_grad = True
-    grad_total_time, log_prob = fn_grad(args.replicates, blens)
-    print(f'  {args.replicates} gradient evaluations: {grad_total_time}')
-
-    if torch.any(torch.isinf(log_prob)):
-        blens.requires_grad = False
-        total_time_r, log_prob_r = fn_rescaled(args.replicates, blens)
-        print(
-            f'  {args.replicates} evaluations rescaled: {total_time_r} ({log_prob_r})'
-        )
-
-        blens.requires_grad = True
-        grad_total_time_r, log_prob_r = fn_grad_rescaled(args.replicates, blens)
-        print(f'  {args.replicates} gradient evaluations rescaled: {grad_total_time_r}')
-
-        if args.output:
-            args.output.write(
-                f"treelikelihood_rescaled,evaluation_,off,{total_time_r}\n"
-            )
-            args.output.write(
-                f"treelikelihood_rescaled,gradient,off,{grad_total_time_r}\n"
-            )
+    grad_total_time, grad_log_prob = fn_safe_grad(args.replicates, blens)
+    print(
+        f'  {args.replicates} gradient evaluations: {grad_total_time} ({grad_log_prob}'
+    )
 
     if args.output:
-        args.output.write(f"treelikelihood,evaluation,off,{total_time}\n")
-        args.output.write(f"treelikelihood,gradient,off,{grad_total_time}\n")
+        args.output.write(
+            f"treelikelihood,evaluation,off,{total_time},{log_prob.squeeze().item()}\n"
+        )
+        args.output.write(
+            f"treelikelihood,gradient,off,{grad_total_time},"
+            f"{grad_log_prob.squeeze().item()}\n"
+        )
 
     if args.all:
         tip_partials = torch.stack(partials[: len(sequences)])
@@ -452,14 +445,23 @@ def ratio_transform_jacobian(args):
     print(f'  {args.replicates} evaluations: {total_time} ({log_det_jac})')
 
     ratios_root_height.requires_grad = True
-    grad_total_time, log_det_jac = fn_grad(args.replicates, ratios_root_height.tensor)
+    grad_total_time, grad_log_det_jac = fn_grad(
+        args.replicates, ratios_root_height.tensor
+    )
     print(
-        f'  {args.replicates} gradient evaluations: {grad_total_time} ({log_det_jac})'
+        f'  {args.replicates} gradient evaluations: {grad_total_time}'
+        f' ({grad_log_det_jac})'
     )
 
     if args.output:
-        args.output.write(f"ratio_transform_jacobian,evaluation,off,{total_time}\n")
-        args.output.write(f"ratio_transform_jacobian,gradient,off,{grad_total_time}\n")
+        args.output.write(
+            f"ratio_transform_jacobian,evaluation,off,{total_time},"
+            f"{log_det_jac.squeeze().item()}\n"
+        )
+        args.output.write(
+            f"ratio_transform_jacobian,gradient,off,{grad_total_time},"
+            f"{grad_log_det_jac.squeeze().item()}\n"
+        )
 
     if args.debug:
         internal_heights = tree_model.transform(ratios_root_height.tensor)
@@ -511,8 +513,8 @@ def ratio_transform(args):
     print(f'  {replicates} gradient evaluations: {grad_total_time}')
 
     if args.output:
-        args.output.write(f"ratio_transform_jacobian,evaluation,off,{total_time}\n")
-        args.output.write(f"ratio_transform_jacobian,gradient,off,{grad_total_time}\n")
+        args.output.write(f"ratio_transform,evaluation,off,{total_time},\n")
+        args.output.write(f"ratio_transform,gradient,off,{grad_total_time},\n")
 
     print('  JIT off')
 
@@ -672,12 +674,16 @@ def constant_coalescent(args):
 
     ratios_root_height.requires_grad = True
     pop_size.requires_grad_(True)
-    grad_total_time, log_p = fn(args.replicates, tree_model, pop_size)
+    grad_total_time, grad_log_p = fn(args.replicates, tree_model, pop_size)
     print(f'  {args.replicates} gradient evaluations: {grad_total_time}')
 
     if args.output:
-        args.output.write(f"coalescent,evaluation,off,{total_time}\n")
-        args.output.write(f"coalescent,gradient,off,{grad_total_time}\n")
+        args.output.write(
+            f"coalescent,evaluation,off,{total_time},{log_p.squeeze().item()}\n"
+        )
+        args.output.write(
+            f"coalescent,gradient,off,{grad_total_time},{grad_log_p.squeeze().item()}\n"
+        )
 
     if args.debug:
         tree_model.heights_need_update = True
@@ -712,12 +718,16 @@ def constant_coalescent(args):
 
     ratios_root_height.requires_grad = True
     pop_size.requires_grad_(True)
-    grad_total_time, log_p = fn_grad_jit(args.replicates, tree_model, pop_size)
+    grad_total_time, grad_log_p = fn_grad_jit(args.replicates, tree_model, pop_size)
     print(f'  {args.replicates} gradient evaluations: {grad_total_time}')
 
     if args.output:
-        args.output.write(f"coalescent,evaluation,on,{total_time}\n")
-        args.output.write(f"coalescent,gradient,on,{grad_total_time}\n")
+        args.output.write(
+            f"coalescent,evaluation,on,{total_time},{log_p.squeeze().item()}\n"
+        )
+        args.output.write(
+            f"coalescent,gradient,on,{grad_total_time},{grad_log_p.squeeze().item()}\n"
+        )
 
     if args.all:
         print('make sampling times unique and count them:')
@@ -763,6 +773,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', required=True, help="""Alignment file""")
 parser.add_argument('-t', '--tree', required=True, help="""Tree file""")
 parser.add_argument(
+    '-r',
     '--replicates',
     required=True,
     type=int,
@@ -783,6 +794,13 @@ parser.add_argument(
     help="""double or single precision""",
 )
 parser.add_argument(
+    "-s",
+    "--scaler",
+    type=float,
+    default=1.0,
+    help="""scale branch lengths""",
+)
+parser.add_argument(
     '--debug', required=False, action='store_true', help="""Debug mode"""
 )
 parser.add_argument("--all", required=False, action="store_true", help="""Run all""")
@@ -794,7 +812,7 @@ else:
     torch.set_default_dtype(torch.float32)
 
 if args.output:
-    args.output.write("function,mode,JIT,time\n")
+    args.output.write("function,mode,JIT,time,logprob\n")
 
 print('Tree likelihood unrooted:')
 fluA_unrooted(args)
