@@ -6,6 +6,7 @@ from torchtree import Parameter
 from torchtree.evolution.coalescent import (
     ConstantCoalescent,
     ConstantCoalescentModel,
+    ExponentialCoalescent,
     FakeTreeModel,
     PiecewiseConstantCoalescent,
     PiecewiseConstantCoalescentGrid,
@@ -76,6 +77,17 @@ def test_constant_json(tree_model_node_heights_transformed):
     }
     constant = ConstantCoalescentModel.from_json(example, {})
     assert -13.295836866 == pytest.approx(constant().item(), 0.0001)
+
+
+def test_exponential(ratios_list):
+    sampling_times = torch.tensor(np.array([0.0, 0.0, 0.0, 0.0]))
+    ratios = torch.tensor(np.array(ratios_list), requires_grad=True)
+    theta0 = torch.tensor(np.array([3.0]), requires_grad=True)
+    growth = torch.tensor(np.array([1.0e-8]), requires_grad=True)
+    heights = inverse_transform_homochronous(ratios)
+    constant = ExponentialCoalescent(theta0, growth)
+    log_p = constant.log_prob(torch.cat((sampling_times, heights), -1))
+    assert torch.allclose(torch.tensor([-13.295836866], dtype=log_p.dtype), log_p)
 
 
 def test_skyride(ratios_list):

@@ -96,6 +96,97 @@ class ConstantCoalescent(Distribution):
         ).rsample(sample_shape)
 
 
+@register_class
+class ExponentialCoalescentModel(CallableModel):
+    def __init__(
+        self,
+        id_: ID,
+        theta: AbstractParameter,
+        growth: AbstractParameter,
+        tree_model: TimeTreeModel = None,
+    ) -> None:
+        super().__init__(id_)
+        self.theta = theta
+        self.growth = growth
+        self.tree_model = tree_model
+
+    def handle_model_changed(self, model, obj, index):
+        self.fire_model_changed()
+
+    def handle_parameter_changed(self, variable, index, event):
+        self.fire_model_changed()
+
+    def _call(self, *args, **kwargs) -> torch.Tensor:
+        coalescent = ExponentialCoalescent(self.theta.tensor, self.growth.tensor)
+        return coalescent.log_prob(self.tree_model.node_heights)
+
+    @property
+    def sample_shape(self) -> torch.Size:
+        return max(
+            self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
+        )
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        theta = process_object(data['theta'], dic)
+        growth = process_object(data['growth'], dic)
+        if TreeModel.tag in data:
+            tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
+            return cls(id_, theta, growth, tree_model=tree_model)
+        else:
+            node_heights = process_data_coalesent(data, theta.dtype)
+            return cls(id_, theta, growth, FakeTreeModel(node_heights))
+
+
+class ExponentialCoalescent(Distribution):
+
+    arg_constraints = {
+        'theta': constraints.positive,
+        'growth': constraints.real,
+    }
+    support = constraints.positive
+    has_rsample = False
+
+    def __init__(
+        self, theta: torch.Tensor, growth: torch.Tensor, validate_args=None
+    ) -> None:
+        self.theta = theta
+        self.growth = growth
+        batch_shape, event_shape = self.theta.shape[:-1], self.theta.shape[-1:]
+        super().__init__(batch_shape, event_shape, validate_args=validate_args)
+
+    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
+        node_mask = torch.cat(
+            [
+                torch.full(taxa_shape, 1),
+                torch.full(
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
+                    -1,
+                ),
+            ],
+            dim=-1,
+        )
+
+        indices = torch.argsort(node_heights, descending=False)
+        heights_sorted = torch.gather(node_heights, -1, indices)
+        node_mask_sorted = torch.gather(node_mask, -1, indices)
+        lineage_count = node_mask_sorted.cumsum(-1)[..., :-1]
+        # TODO: deal with growth==0
+        height_growth_exp = torch.exp(heights_sorted * self.growth)
+        integral = (height_growth_exp[..., 1:] - height_growth_exp[..., :-1]) / (
+            self.theta * self.growth
+        )
+        lchoose2 = lineage_count * (lineage_count - 1) / 2.0
+        log_thetas = torch.where(
+            node_mask_sorted == -1,
+            torch.log(self.theta * torch.exp(-heights_sorted * self.growth)),
+            torch.zeros(1, dtype=heights_sorted.dtype),
+        )
+        return torch.sum(-lchoose2 * integral - log_thetas[..., 1:], -1, keepdim=True)
+
+
 class PiecewiseConstantCoalescent(ConstantCoalescent):
     def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
         taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
