@@ -20,6 +20,7 @@ from torchtree.evolution.tree_likelihood import (
 )
 from torchtree.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
+    TimeTreeModel,
     heights_from_branch_lengths,
 )
 
@@ -644,25 +645,18 @@ def constant_coalescent(args):
     ratios_root_height = Parameter(
         "internal_heights", torch.tensor([0.5] * (taxa_count - 2) + [20.0])
     )
-    tree_model = ReparameterizedTimeTreeModel(
-        "tree", tree, Taxa('taxa', taxa), ratios_root_height
-    )
-
-    ratios_root_height.tensor = tree_model.transform.inv(
-        heights_from_branch_lengths(tree)
-    )
+    tree_model = TimeTreeModel("tree", tree, Taxa('taxa', taxa), ratios_root_height)
+    tree_model._internal_heights.tensor = heights_from_branch_lengths(tree)
     pop_size = torch.tensor([4.0])
 
     print('JIT off')
 
     @benchmark
     def fn(tree_model, pop_size):
-        tree_model.heights_need_update = True
         return ConstantCoalescent(pop_size).log_prob(tree_model.node_heights)
 
     @benchmark
     def fn_grad(tree_model, pop_size):
-        tree_model.heights_need_update = True
         log_p = ConstantCoalescent(pop_size).log_prob(tree_model.node_heights)
         log_p.backward()
         ratios_root_height.tensor.grad.data.zero_()
@@ -674,7 +668,7 @@ def constant_coalescent(args):
 
     ratios_root_height.requires_grad = True
     pop_size.requires_grad_(True)
-    grad_total_time, grad_log_p = fn(args.replicates, tree_model, pop_size)
+    grad_total_time, grad_log_p = fn_grad(args.replicates, tree_model, pop_size)
     print(f'  {args.replicates} gradient evaluations: {grad_total_time}')
 
     if args.output:
@@ -699,12 +693,10 @@ def constant_coalescent(args):
 
     @benchmark
     def fn_jit(tree_model, pop_size):
-        tree_model.heights_need_update = True
         return log_prob_script(tree_model.node_heights, pop_size)
 
     @benchmark
     def fn_grad_jit(tree_model, pop_size):
-        tree_model.heights_need_update = True
         log_p = log_prob_script(tree_model.node_heights, pop_size)
         log_p.backward()
         ratios_root_height.tensor.grad.data.zero_()
