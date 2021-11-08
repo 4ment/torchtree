@@ -71,3 +71,10 @@ class AbstractParameter(Identifiable, Device, abc.ABC):
     @abc.abstractmethod
     def fire_parameter_changed(self, index=None, event=None) -> None:
         ...
+
+    @classmethod
+    def __torch_function__(cls, func, types, args=(), kwargs=None):
+        if kwargs is None:
+            kwargs = {}
+        args = [a.tensor if hasattr(a, 'tensor') else a for a in args]
+        return func(*args, **kwargs)

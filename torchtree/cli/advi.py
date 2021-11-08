@@ -416,6 +416,13 @@ def build_advi(arg):
         parameters.append("coalescent.theta")
         if arg.coalescent in ('skygrid', 'skyride'):
             parameters.append('gmrf.precision')
+        elif arg.coalescent == 'exponential':
+            parameters.append('coalescent.growth')
+    elif arg.birth_death is not None:
+        parameters.append("bdsk.R")
+        parameters.append("bdsk.delta")
+        parameters.append("bdsk.rho")
+        parameters.append("bdsk.origin")
 
     if arg.model == 'SRD06':
         for tag in ('12', '3'):

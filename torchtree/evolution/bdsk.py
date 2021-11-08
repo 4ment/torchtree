@@ -6,11 +6,12 @@ from torch.distributions.distribution import Distribution
 from .. import Parameter
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel
-from ..core.utils import process_object
+from ..core.utils import process_object, register_class
 from ..typing import ID
 from .tree_model import TimeTreeModel
 
 
+@register_class
 class BDSKModel(CallableModel):
     r"""Birth–death skyline plot as a model for transmission
 
@@ -42,7 +43,7 @@ class BDSKModel(CallableModel):
         origin: AbstractParameter,
         times: AbstractParameter = None,
         relative_times: bool = False,
-        survival: bool = None,
+        survival: bool = True,
     ):
         super().__init__(id_)
         self.tree_model = tree_model
@@ -61,27 +62,43 @@ class BDSKModel(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed(variable, index)
 
+    @property
+    def sample_shape(self) -> torch.Size:
+        return max(self.tree_model.node_heights.shape[:-1], self.R.shape[:-1], key=len)
+
     def _call(self):
         lambda_ = self.R.tensor * self.delta.tensor
         mu = self.delta.tensor - self.s.tensor * self.delta.tensor
         psi = self.s.tensor * self.delta.tensor
+        if self.rho.shape[-1] != lambda_.shape[-1]:
+            rho = torch.cat(
+                (
+                    torch.zeros(
+                        self.rho.shape[:-1] + (lambda_.shape[-1] - self.rho.shape[-1],)
+                    ),
+                    self.rho.tensor,
+                ),
+                -1,
+            )
+        else:
+            rho = self.rho.tensor
 
         bdsk = PiecewiseConstantBirthDeath(
             lambda_,
             mu,
             psi,
-            self.rho.tensor,
+            rho,
             self.origin.tensor,
             times=None if self.times is None else self.times.tensor,
             relative_times=self.relative_times,
             survival=self.survival,
         )
-        return bdsk.log_prob(self.tree.node_heights)
+        return bdsk.log_prob(self.tree_model.node_heights)
 
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
-        tree = process_object(TimeTreeModel.tag, dic)
+        tree = process_object(data[TimeTreeModel.tag], dic)
         R = process_object(data['R'], dic)
         delta = process_object(data['delta'], dic)
         s = process_object(data['s'], dic)
@@ -94,7 +111,7 @@ class BDSKModel(CallableModel):
                 optionals['times'] = Parameter(None, data['times'])
             else:
                 optionals['times'] = process_object(data['times'], dic)
-        optionals['survival'] = data.get('survival', False)
+        optionals['survival'] = data.get('survival', True)
         optionals['relative_times'] = data.get('relative_times', False)
 
         return cls(id_, tree, R, delta, s, rho, origin, **optionals)
@@ -129,7 +146,7 @@ class PiecewiseConstantBirthDeath(Distribution):
         origin: Tensor,
         times: Tensor = None,
         relative_times=False,
-        survival: bool = False,
+        survival: bool = True,
         validate_args=None,
     ):
         self.lambda_ = lambda_
@@ -194,14 +211,16 @@ class PiecewiseConstantBirthDeath(Distribution):
         m = self.mu.shape[-1]
 
         if self.times is None:
-            dtimes = (self.origin / m).repeat(m)
-            times = torch.cat((torch.zeros(1, dtype=dtimes.dtype), dtimes)).cumsum(0)
+            dtimes = (self.origin / m).expand(self.origin.shape[:-1] + (m,))
+            times = torch.cat(
+                (torch.zeros(dtimes.shape[:-1] + (1,), dtype=dtimes.dtype), dtimes), -1
+            ).cumsum(-1)
         else:
             times = self.times
 
         times = torch.broadcast_to(times, self.mu.shape[:-1] + times.shape[-1:])
 
-        if self.relative_times:
+        if self.relative_times and self.times is not None:
             times = times * self.origin
 
         p, A, B = self.log_p(times[..., 1:], times[..., :-1])
@@ -244,7 +263,7 @@ class PiecewiseConstantBirthDeath(Distribution):
         # last term
         if m > 1:
             # number of degree 2 vertices
-            ni = (
+            ni = torch.transpose(
                 torch.stack(
                     [
                         torch.sum(x < times[..., i : i + 1], -1)
@@ -256,7 +275,9 @@ class PiecewiseConstantBirthDeath(Distribution):
                         for i in range(1, m)
                     ]
                 )
-                + 1.0
+                + 1.0,
+                -2,
+                -1,
             )
 
             # contemporenaous term

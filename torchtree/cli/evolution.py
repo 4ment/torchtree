@@ -67,20 +67,33 @@ def create_evolution_parser(parser):
 
     parser = add_coalescent(parser)
 
+    parser = add_birth_death(parser)
+
+    parser.add_argument(
+        '--grid',
+        type=int,
+        help="""number of grid points (number of segments) for skygrid and BDSK""",
+    )
+
+    return parser
+
+
+def add_birth_death(parser):
+    parser.add_argument(
+        '--birth-death',
+        choices=['constant', 'bdsk'],
+        default=None,
+        help="""type of birth death model""",
+    )
     return parser
 
 
 def add_coalescent(parser):
     parser.add_argument(
         '--coalescent',
-        choices=['constant', 'skyride', 'skygrid'],
+        choices=['constant', 'exponential', 'skyride', 'skygrid'],
         default=None,
         help="""type of coalescent""",
-    )
-    parser.add_argument(
-        '--grid',
-        type=int,
-        help="""number of grid points (number of segments) for skygrid""",
     )
     parser.add_argument(
         '--cutoff',
@@ -382,12 +395,74 @@ def create_taxa(id_, arg):
     return taxa
 
 
-def create_coalesent(id_, tree_id, theta_id, arg):
+def create_birth_death(birth_death_id, tree_id, arg):
+    R = Parameter.json_factory(
+        f'{birth_death_id}.R',
+        **{'tensor': 3.0, 'full': [arg.grid]},
+    )
+    R['lower'] = 0.0
+    delta = Parameter.json_factory(
+        f'{birth_death_id}.delta',
+        **{'tensor': 3.0, 'full': [arg.grid]},
+    )
+    delta['lower'] = 0.0
+    s = Parameter.json_factory(
+        f'{birth_death_id}.s',
+        **{'tensor': 0.0, 'full': [arg.grid]},
+    )
+    s['lower'] = 0.0
+    s['upper'] = 0.0
+    rho = Parameter.json_factory(
+        f'{birth_death_id}.rho',
+        **{
+            'tensor': [1.0e-6],
+        },
+    )
+    rho['lower'] = 0.0
+    rho['upper'] = 1.0
+
+    origin = {
+        'id': f'{birth_death_id}.origin',
+        'type': 'TransformedParameter',
+        'transform': 'torch.distributions.AffineTransform',
+        'x': {
+            'id': f'{birth_death_id}.origin.unshifted',
+            'type': 'Parameter',
+            'tensor': [1.0],
+            'lower': 0.0,
+        },
+        'parameters': {
+            'loc': f'{tree_id}.root_height',
+            'scale': 1.0,
+        },
+    }
+    bdsk = {
+        'id': birth_death_id,
+        'type': 'BDSKModel',
+        'tree_model': tree_id,
+        'R': R,
+        'delta': delta,
+        's': s,
+        'rho': rho,
+        'origin': origin,
+    }
+    return bdsk
+
+
+def create_coalesent(id_, tree_id, theta_id, arg, **kwargs):
     if arg.coalescent == 'constant':
         coalescent = {
             'id': id_,
             'type': 'ConstantCoalescentModel',
             'theta': theta_id,
+            'tree_model': tree_id,
+        }
+    elif arg.coalescent == 'exponential':
+        coalescent = {
+            'id': id_,
+            'type': 'ExponentialCoalescentModel',
+            'theta': theta_id,
+            'growth': kwargs.get('growth'),
             'tree_model': tree_id,
         }
     elif arg.coalescent == 'skygrid':
@@ -538,10 +613,22 @@ def create_evolution_priors(arg):
                 )
 
         coalescent_id = 'coalescent'
-        if arg.coalescent == 'constant':
+        if arg.coalescent == 'constant' or arg.coalescent == 'exponential':
             joint_list.append(
                 create_one_on_x_prior(
                     f'{coalescent_id}.theta.prior', f'{coalescent_id}.theta'
+                )
+            )
+        if arg.coalescent == 'exponential':
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{coalescent_id}.growth.prior',
+                    'torch.distributions.Laplace',
+                    f'{coalescent_id}.growth',
+                    {
+                        'loc': 0.0,
+                        'scale': 1.0,
+                    },
                 )
             )
         elif arg.coalescent in ('skygrid', 'skyride'):
@@ -566,6 +653,52 @@ def create_evolution_priors(arg):
                         'rate': 0.0010,
                     },
                 )
+            )
+        elif arg.birth_death == 'bdsk':
+            birth_death_id = 'bdsk'
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{birth_death_id}.R.prior',
+                    'torch.distributions.LogNormal',
+                    f'{birth_death_id}.R',
+                    {
+                        'mean': 1.0,
+                        'scale': 1.25,
+                    },
+                ),
+            )
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{birth_death_id}.delta.prior',
+                    'torch.distributions.LogNormal',
+                    f'{birth_death_id}.delta',
+                    {
+                        'mean': 1.0,
+                        'scale': 1.25,
+                    },
+                ),
+            )
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{birth_death_id}.origin.prior',
+                    'torch.distributions.LogNormal',
+                    f'{birth_death_id}.origin.unshifted',
+                    {
+                        'mean': 1.0,
+                        'scale': 1.25,
+                    },
+                ),
+            )
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{birth_death_id}.rho.prior',
+                    'torch.distributions.Beta',
+                    f'{birth_death_id}.rho',
+                    {
+                        'concentration1': 1.0,
+                        'concentration0': 9999.0,
+                    },
+                ),
             )
 
     if arg.model == 'SRD06':
@@ -604,13 +737,20 @@ def create_evolution_joint(taxa, alignment, arg):
     joint_list = []
     joint_list.append(create_tree_likelihood('like', taxa, alignment, arg))
     joint_approx_dic = joint_list.copy()
+    params = {}
 
     if arg.coalescent is not None:
         coalescent_id = 'coalescent'
-        if arg.coalescent == 'constant':
+        if arg.coalescent in ('constant', 'exponential'):
             theta = Parameter.json_factory(
                 f'{coalescent_id}.theta', **{'tensor': [3.0]}
             )
+            theta['lower'] = 0.0
+        if arg.coalescent == 'exponential':
+            growth = Parameter.json_factory(
+                f'{coalescent_id}.growth', **{'tensor': [1.0]}
+            )
+            params['growth'] = growth
         elif arg.coalescent == 'skygrid':
             theta_log = Parameter.json_factory(
                 f'{coalescent_id}.theta.log', **{'tensor': 3.0, 'full': [arg.grid]}
@@ -632,7 +772,11 @@ def create_evolution_joint(taxa, alignment, arg):
                 'transform': 'torch.distributions.ExpTransform',
                 'x': theta_log,
             }
-        joint_list.append(create_coalesent(f'{coalescent_id}', 'tree', theta, arg))
+        joint_list.append(create_coalesent(coalescent_id, 'tree', theta, arg, **params))
+        joint_approx_dic.append(joint_list[-1])
+    elif arg.birth_death is not None:
+        birth_death_id = 'bdsk'
+        joint_list.append(create_birth_death(birth_death_id, 'tree', arg))
         joint_approx_dic.append(joint_list[-1])
 
     prior_list = create_evolution_priors(arg)
