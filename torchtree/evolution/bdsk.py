@@ -247,8 +247,8 @@ class PiecewiseConstantBirthDeath(Distribution):
             )
         ).sum(-1)
 
+        y = times[..., -1:] - tip_heights
         if serially_sampled:
-            y = times[..., -1:] - tip_heights
             indices_y = torch.max(times.unsqueeze(-2) >= y.unsqueeze(-1), dim=-1)[1] - 1
             log_p += (
                 torch.log(self.psi.gather(-1, indices_y))
@@ -264,21 +264,9 @@ class PiecewiseConstantBirthDeath(Distribution):
         if m > 1:
             # number of degree 2 vertices
             ni = (
-                torch.cat(
-                    [
-                        torch.sum(x < times[..., i : i + 1], -1, keepdim=True)
-                        - torch.sum(
-                            (times[..., -1:] - node_heights[..., : taxa_shape[-1]])
-                            <= times[..., i : i + 1],
-                            -1,
-                            keepdim=True,
-                        )
-                        for i in range(1, m)
-                    ],
-                    -1,
-                )
-                + 1.0
-            )
+                torch.sum(x.unsqueeze(-2) < times[..., 1:].unsqueeze(-1), -1)
+                - torch.sum(y.unsqueeze(-2) <= times[..., 1:].unsqueeze(-1), -1)
+            )[..., :-1] + 1.0
 
             # contemporenaous term
             log_p += (
