@@ -31,7 +31,7 @@ def test_1rho():
 
     origin = torch.tensor([10.0])
 
-    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, survival=False)
     log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -8.520565 == pytest.approx(log_p.item(), 0.0001)
 
@@ -49,7 +49,7 @@ def test_1rho2times():
 
     origin = torch.tensor([10.0])
 
-    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, survival=False)
     log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -78.4006528776 == pytest.approx(log_p.item(), 0.0001)
 
@@ -67,7 +67,7 @@ def test_1rho2times_grid():
 
     origin = torch.tensor([10.0])
 
-    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, survival=False)
     log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -78.4006528776 == pytest.approx(log_p.item(), 0.0001)
 
@@ -85,7 +85,7 @@ def test_1rho3times():
 
     origin = torch.tensor([10.0])
 
-    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, survival=False)
     log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -67.780094538296 == pytest.approx(log_p.item(), 0.0001)
 
@@ -101,7 +101,7 @@ def test_serial_1rho():
 
     origin = torch.tensor([6.0])
 
-    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin)
+    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, survival=False)
     log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -19.0198 == pytest.approx(log_p.item(), 0.0001)
 
@@ -118,7 +118,9 @@ def test_serial_2rho():
     origin = torch.tensor([6.0])
     times = torch.cat((torch.tensor([0.0, 3.0]), origin))
 
-    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, times=times)
+    bdsky = PiecewiseConstantBirthDeath(
+        lambda_, mu, psi, rho, origin, times=times, survival=False
+    )
     log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -33.7573 == pytest.approx(log_p.item(), 0.0001)
 
@@ -135,7 +137,9 @@ def test_serial_3rho():
     origin = torch.tensor([6.0])
     times = torch.cat((torch.tensor([0.0, 3.0, 4.5]), origin))
 
-    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, times=times)
+    bdsky = PiecewiseConstantBirthDeath(
+        lambda_, mu, psi, rho, origin, times=times, survival=False
+    )
     log_p = bdsky.log_prob(torch.cat((sampling_times, heights)))
     assert -37.8056 == pytest.approx(log_p.item(), 0.0001)
 
@@ -152,6 +156,8 @@ def test_serial_3rho_batch():
     origin = torch.tensor([6.0])
     times = torch.cat((torch.tensor([0.0, 3.0, 4.5]), origin))
 
-    bdsky = PiecewiseConstantBirthDeath(lambda_, mu, psi, rho, origin, times=times)
+    bdsky = PiecewiseConstantBirthDeath(
+        lambda_, mu, psi, rho, origin, times=times, survival=False
+    )
     log_p = bdsky.log_prob(torch.cat((sampling_times, heights)).repeat(2, 1))
     assert torch.allclose(log_p, torch.tensor([-37.8056, -75.5726318359375]))

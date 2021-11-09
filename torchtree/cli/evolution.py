@@ -54,7 +54,7 @@ def create_evolution_parser(parser):
         help="""type of node height reparameterization""",
     )
     parser.add_argument(
-        '--rate', required=False, type=float, help="""substitution rate"""
+        '--rate', required=False, type=float, help="""fixed substitution rate"""
     )
     parser.add_argument(
         '--dates',
@@ -277,7 +277,7 @@ def create_branch_model(id_, tree_id, taxa_count, arg):
     rate_parameter = Parameter.json_factory(f'{id_}.rate', **{'tensor': rate})
     rate_parameter['lower'] = 0.0
 
-    if arg.clock is not None:
+    if arg.rate is not None:
         rate_parameter['lower'] = rate_parameter['upper'] = arg.rate
 
     if arg.clock == 'strict':
@@ -562,7 +562,7 @@ def create_evolution_priors(arg):
     joint_list = []
     if arg.clock is not None:
         branch_model_id = 'branchmodel'
-        if arg.clock == 'strict':
+        if arg.clock == 'strict' and arg.rate is None:
             joint_list.append(
                 CTMCScale.json_factory(
                     f'{branch_model_id}.rate.prior', f'{branch_model_id}.rate', 'tree'

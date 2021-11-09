@@ -141,6 +141,10 @@ def process_object(data, dic):
             raise JSONParseError(
                 str(e) + " in object with ID '" + data['id'] + "'"
             ) from None
+        except ValueError as e:
+            raise JSONParseError(
+                str(e) + " in object with ID '" + data['id'] + "'"
+            ) from None
 
         obj = klass.from_json_safe(data, dic)
         dic[id_] = obj

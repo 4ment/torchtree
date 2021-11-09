@@ -377,6 +377,10 @@ def build_advi(arg):
     if arg.coalescent in ('skyride', 'skygrid'):
         if arg.distribution == 'Normal':
             jacobians_list.append('gmrf.precision')
+    if arg.birth_death == 'bdsk':
+        jacobians_list.extend(
+            ("bdsk.R", "bdsk.delta", "bdsk.rho", "bdsk.origin.unshifted")
+        )
 
     joint_dic = create_evolution_joint(taxa, 'alignment', arg)
     joint_dic['distributions'].extend(jacobians_list)

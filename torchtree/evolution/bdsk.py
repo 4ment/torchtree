@@ -263,21 +263,21 @@ class PiecewiseConstantBirthDeath(Distribution):
         # last term
         if m > 1:
             # number of degree 2 vertices
-            ni = torch.transpose(
-                torch.stack(
+            ni = (
+                torch.cat(
                     [
-                        torch.sum(x < times[..., i : i + 1], -1)
+                        torch.sum(x < times[..., i : i + 1], -1, keepdim=True)
                         - torch.sum(
                             (times[..., -1:] - node_heights[..., : taxa_shape[-1]])
                             <= times[..., i : i + 1],
                             -1,
+                            keepdim=True,
                         )
                         for i in range(1, m)
-                    ]
+                    ],
+                    -1,
                 )
-                + 1.0,
-                -2,
-                -1,
+                + 1.0
             )
 
             # contemporenaous term
@@ -296,8 +296,6 @@ class PiecewiseConstantBirthDeath(Distribution):
         )
         mask = (N > 0).logical_and(self.rho > 0.0)
         if torch.any(mask):
-            log_p += (
-                torch.masked_select(N, mask) * torch.masked_select(self.rho, mask).log()
-            ).sum(-1)
-
+            p = torch.masked_select(N, mask) * torch.masked_select(self.rho, mask).log()
+            log_p += p.squeeze() if log_p.dim() == 0 else p
         return log_p
