@@ -170,6 +170,7 @@ class TreeLikelihoodModel(CallableModel):
         subst_model: SubstitutionModel,
         site_model: SiteModel,
         clock_model: BranchModel = None,
+        use_ambiguities=False,
     ):
         super().__init__(id_)
         self.site_pattern = site_pattern
@@ -181,6 +182,10 @@ class TreeLikelihoodModel(CallableModel):
         self.threshold = (
             1.0e-20 if subst_model.frequencies.dtype == torch.float32 else 1.0e-40
         )
+        self.partials, self.weights = site_pattern.compute_tips_partials(
+            use_ambiguities
+        )
+        self.partials.extend([None] * (len(tree_model.taxa) - 1))
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         branch_lengths = self.tree_model.branch_lengths()
@@ -219,8 +224,8 @@ class TreeLikelihoodModel(CallableModel):
 
         if self.rescale:
             log_p = calculate_treelikelihood_discrete_rescaled(
-                self.site_pattern.partials,
-                self.site_pattern.weights,
+                self.partials,
+                self.weights,
                 self.tree_model.postorder,
                 mats,
                 frequencies,
@@ -228,8 +233,8 @@ class TreeLikelihoodModel(CallableModel):
             )
         else:
             log_p = calculate_treelikelihood_discrete(
-                self.site_pattern.partials,
-                self.site_pattern.weights,
+                self.partials,
+                self.weights,
                 self.tree_model.postorder,
                 mats,
                 frequencies,
@@ -239,8 +244,8 @@ class TreeLikelihoodModel(CallableModel):
             if torch.any(torch.isinf(log_p)):
                 self.rescale = True
                 log_p = calculate_treelikelihood_discrete_safe(
-                    self.site_pattern.partials,
-                    self.site_pattern.weights,
+                    self.partials,
+                    self.weights,
                     self.tree_model.postorder,
                     mats,
                     frequencies,
@@ -266,7 +271,16 @@ class TreeLikelihoodModel(CallableModel):
         site_model = process_object(data[SiteModel.tag], dic)
         subst_model = process_object(data[SubstitutionModel.tag], dic)
         site_pattern = process_object(data[SitePattern.tag], dic)
+        use_ambiguities = data.get('use_ambiguities', False)
         clock_model = None
         if BranchModel.tag in data:
             clock_model = process_object(data[BranchModel.tag], dic)
-        return cls(id_, site_pattern, tree_model, subst_model, site_model, clock_model)
+        return cls(
+            id_,
+            site_pattern,
+            tree_model,
+            subst_model,
+            site_model,
+            clock_model,
+            use_ambiguities,
+        )

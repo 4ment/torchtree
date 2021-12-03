@@ -13,11 +13,17 @@ class SitePattern(Model):
     _tag = 'site_pattern'
 
     def __init__(
-        self, id_: Optional[str], partials: List[torch.Tensor], weights: torch.Tensor
+        self,
+        id_: Optional[str],
+        alignment: Alignment,
+        indices: List[Union[int, slice]] = None,
     ) -> None:
         super().__init__(id_)
-        self.partials = partials
-        self.weights = weights
+        self.alignment = alignment
+        self.indices = indices
+
+    def compute_tips_partials(self, use_ambiguities=False):
+        return compress_alignment(self.alignment, self.indices, use_ambiguities)
 
     def handle_model_changed(self, model, obj, index):
         pass
@@ -53,14 +59,12 @@ class SitePattern(Model):
             list_of_indices = [
                 string_to_list_index(index_str) for index_str in indices.split(',')
             ]
-        partials, weights = compress_alignment(alignment, list_of_indices)
-
-        return cls(id_, partials, weights)
+        return cls(id_, alignment, list_of_indices)
 
 
 def compress_alignment(
-    alignment: Alignment, indices: List[Union[int, slice]] = None
-) -> Tuple[torch.Tensor, torch.Tensor]:
+    alignment: Alignment, indices: List[Union[int, slice]] = None, use_ambiguities=True
+) -> Tuple[List[torch.Tensor], torch.Tensor]:
     """Compress alignment using data_type.
 
     :param Alignment alignment: sequence alignment
@@ -87,11 +91,11 @@ def compress_alignment(
     for taxon in taxa:
         partials.append(
             torch.tensor(
-                [alignment.data_type.partial(c) for c in patterns[taxon]],
+                [
+                    alignment.data_type.partial(c, use_ambiguities)
+                    for c in patterns[taxon]
+                ],
                 dtype=torch.get_default_dtype(),
             ).t()
         )
-
-    for i in range(len(alignment) - 1):
-        partials.append([None] * len(patterns.keys()))
     return partials, weights

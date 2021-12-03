@@ -73,7 +73,7 @@ class NucleotideDataType(DataType):
         return NucleotideDataType.NUCLEOTIDE_STATES[ord(string)]
 
     def partial(self, string: str, use_ambiguities=True) -> List[float]:
-        if not use_ambiguities and string not in 'ACTGacgt':
+        if not use_ambiguities and string not in 'ACGTUacgtu':
             return [1.0] * 4
         return NucleotideDataType.NUCLEOTIDE_AMBIGUITY_STATES[
             NucleotideDataType.NUCLEOTIDE_STATES[ord(string)]

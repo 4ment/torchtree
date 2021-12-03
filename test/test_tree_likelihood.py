@@ -33,26 +33,27 @@ def _prepare_tiny(tiny_newick_file, tiny_fasta_file):
         sequences.append(Sequence(taxon.label, str(seq)))
         taxa.append(Taxon(taxon.label, None))
 
-    partials_tensor, weights_tensor = compress_alignment(
+    partials, weights_tensor = compress_alignment(
         Alignment(None, sequences, Taxa(None, taxa), NucleotideDataType())
     )
-    return partials_tensor, weights_tensor, indices, branch_lengths
+    partials.extend([None] * (len(dna) - 1))
+    return partials, weights_tensor, indices, branch_lengths
 
 
 def test_calculate_pytorch(tiny_newick_file, tiny_fasta_file, jc69_model):
-    partials_tensor, weights_tensor, indices, branch_lengths = _prepare_tiny(
+    partials, weights_tensor, indices, branch_lengths = _prepare_tiny(
         tiny_newick_file, tiny_fasta_file
     )
     mats = jc69_model.p_t(branch_lengths)
     freqs = jc69_model.frequencies.reshape(jc69_model.frequencies.shape[:-1] + (1, -1))
     log_p = likelihood.calculate_treelikelihood(
-        partials_tensor, weights_tensor, indices, mats, freqs
+        partials, weights_tensor, indices, mats, freqs
     )
     assert torch.allclose(torch.tensor(-83.329016, dtype=log_p.dtype), log_p)
 
 
 def test_calculate_pytorch_rescaled(tiny_newick_file, tiny_fasta_file, jc69_model):
-    partials_tensor, weights_tensor, indices, branch_lengths = _prepare_tiny(
+    partials, weights_tensor, indices, branch_lengths = _prepare_tiny(
         tiny_newick_file, tiny_fasta_file
     )
     mats = jc69_model.p_t(branch_lengths.reshape((-1, 1)))
@@ -60,11 +61,11 @@ def test_calculate_pytorch_rescaled(tiny_newick_file, tiny_fasta_file, jc69_mode
     props = torch.tensor([[[1.0]]])
 
     log_p = likelihood.calculate_treelikelihood_discrete(
-        partials_tensor, weights_tensor, indices, mats, freqs, props
+        partials, weights_tensor, indices, mats, freqs, props
     )
 
     log_p_rescaled = likelihood.calculate_treelikelihood_discrete_rescaled(
-        partials_tensor, weights_tensor, indices, mats, freqs, props
+        partials, weights_tensor, indices, mats, freqs, props
     )
     assert torch.allclose(log_p_rescaled, log_p)
 
