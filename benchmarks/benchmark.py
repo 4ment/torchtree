@@ -258,6 +258,7 @@ def fluA_unrooted(args):
     partials, weights_tensor = compress_alignment(
         Alignment(None, sequences, Taxa(None, taxa), NucleotideDataType())
     )
+    partials.extend([None] * (len(dna) - 1))
     jc69_model = JC69('jc')
     freqs = torch.tensor([[0.25, 0.25, 0.25, 0.25]])
     proportions = torch.tensor([[[1.0]]])
