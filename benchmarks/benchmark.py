@@ -797,12 +797,19 @@ parser.add_argument(
     '--debug', required=False, action='store_true', help="""Debug mode"""
 )
 parser.add_argument("--all", required=False, action="store_true", help="""Run all""")
+parser.add_argument('--cuda', required=False, action='store_true', help="""Use GPU""")
 args = parser.parse_args()
 
 if args.dtype == 'float64':
-    torch.set_default_dtype(torch.float64)
+    if args.cuda:
+        torch.set_default_tensor_type('torch.cuda.DoubleTensor')
+    else:
+        torch.set_default_dtype(torch.float64)
 else:
-    torch.set_default_dtype(torch.float32)
+    if args.cuda:
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
+    else:
+        torch.set_default_dtype(torch.float32)
 
 if args.output:
     args.output.write("function,mode,JIT,time,logprob\n")
