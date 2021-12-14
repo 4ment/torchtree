@@ -3,10 +3,13 @@ import pytest
 import torch
 
 from torchtree import Parameter
+from torchtree.evolution.datatype import CodonDataType
 from torchtree.evolution.substitution_model import (
     GTR,
     HKY,
     JC69,
+    LG,
+    MG94,
     GeneralSymmetricSubstitutionModel,
 )
 
@@ -246,3 +249,33 @@ def test_general_GTR():
     subst_model2 = GTR('gtr', Parameter('rates', rates), Parameter('pi', pi))
     P_expected = subst_model2.p_t(torch.tensor(np.array([[0.1]])))
     np.testing.assert_allclose(P, P_expected, rtol=1e-06)
+
+
+@pytest.mark.parametrize(
+    "input,size",
+    [
+        ([[1.0]], [1, 1, 20, 20]),
+        ([[1.0, 1.0]], [1, 2, 20, 20]),
+        ([[1.0], [1.0]], [2, 1, 20, 20]),
+        ([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0]], [3, 2, 20, 20]),
+    ],
+)
+def test_amino_acid(input, size):
+    subst_model = LG(None)
+    matrices = subst_model.p_t(torch.tensor(input))
+    assert matrices.shape == torch.Size(size)
+
+
+def test_MG94():
+    codon_type = CodonDataType(None, 'Universal')
+    subst_model = MG94(
+        'mg94',
+        codon_type,
+        Parameter('alpha', torch.tensor([[11.0], [1.0]])),
+        Parameter('beta', torch.tensor([[12.0], [1.0]])),
+        Parameter('kappa', torch.tensor([[13.0], [1.0]])),
+        Parameter('frequencies', torch.full((61,), 1.0 / 61)),
+    )
+    Q = subst_model.q()
+    assert torch.allclose(Q[1, 0, 1:], torch.full((60,), 1 / 61))
+    assert torch.allclose(Q[1, range(61), range(61)], torch.full((61,), -60 / 61))

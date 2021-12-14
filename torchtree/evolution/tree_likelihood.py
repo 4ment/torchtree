@@ -7,7 +7,7 @@ from ..typing import ID
 from .branch_model import BranchModel
 from .site_model import SiteModel
 from .site_pattern import SitePattern
-from .substitution_model import SubstitutionModel
+from .substitution_model.abstract import SubstitutionModel
 from .tree_model import TreeModel
 
 

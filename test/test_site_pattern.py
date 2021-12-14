@@ -11,7 +11,7 @@ def test_site_pattern():
     sequences = [
         Sequence(taxon, seq) for taxon, seq in zip('ABCD', ['AAG', 'AAC', 'AAC', 'AAT'])
     ]
-    alignment = Alignment(None, sequences, taxa, NucleotideDataType())
+    alignment = Alignment(None, sequences, taxa, NucleotideDataType(None))
 
     site_pattern = SitePattern(None, alignment)
     partials, weights = site_pattern.compute_tips_partials()

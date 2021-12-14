@@ -1,5 +1,8 @@
 import collections
+import itertools
 from typing import List
+
+import numpy as np
 
 from ..core.model import Identifiable
 from ..core.utils import process_object, register_class
@@ -55,7 +58,12 @@ class Alignment(Identifiable, collections.UserList):
         taxa = process_object(data['taxa'], dic)
 
         if isinstance(data['datatype'], str) and data['datatype'] == 'nucleotide':
-            data_type = NucleotideDataType()
+            if 'nucleotide' in dic and isinstance(
+                dic['nucleotide'], NucleotideDataType
+            ):
+                data_type = process_object(data['datatype'], dic)
+            else:
+                data_type = NucleotideDataType(None)
         else:
             data_type = process_object(data['datatype'], dic)
 
@@ -81,3 +89,51 @@ def read_fasta_sequences(filename: str) -> List[Sequence]:
             else:
                 sequences[taxon] += line
     return [Sequence(taxon, sequence) for taxon, sequence in sequences.items()]
+
+
+def calculate_frequencies(alignment: Alignment):
+    data_type = alignment.data_type
+    frequencies = np.zeros(data_type.state_count)
+    for sequence in alignment:
+        freqs = collections.Counter(
+            map(
+                data_type.encoding,
+                map(''.join, zip(*[iter(sequence.sequence)] * data_type.size)),
+            )
+        )
+        frequencies += np.array(freqs[: data_type.state_count])
+    return (frequencies / frequencies.sum()).list()
+
+
+def calculate_frequencies_per_codon_position(alignment: Alignment):
+    data_type = NucleotideDataType()
+    frequencies = np.zeros(18 * 3)
+    for sequence in alignment:
+        for i in range(3):
+            freqs = collections.Counter(sequence.sequence[i::3])
+            for nuc, count in freqs.items():
+                encoding = data_type.encoding(nuc)
+                frequencies[18 * 3 * i + encoding] += freqs[encoding]
+    return [
+        (
+            frequencies[(i * 18) : (i * 18 + 4)]
+            / frequencies[(i * 18) : (i * 18 + 4)].sum()
+        ).list()
+        for i in range(3)
+    ]
+
+
+def calculate_F3x4_from_nucleotide(data_type, nuc_freq):
+    codon_freqs = np.full(64, 0.0)
+    coding_indices = [i for i, value in enumerate(data_type.table[:64]) if value != '*']
+    for n1, n2, n3 in itertools.product((0, 1, 2, 3), (0, 1, 2, 3), (0, 1, 2, 3)):
+        codon_freqs[n1 * 16 + n2 * 4 + n3] = (
+            nuc_freq[0, n1] * nuc_freq[1, n2] * nuc_freq[2, n3]
+        )
+    codon_freqs = codon_freqs[coding_indices]
+    return (codon_freqs / codon_freqs.sum()).tolist()
+
+
+def calculate_F3x4(alignment):
+    nuc_freq = calculate_frequencies_per_codon_position(alignment)
+    return calculate_F3x4_from_nucleotide(alignment.data_type, nuc_freq)

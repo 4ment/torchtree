@@ -34,7 +34,7 @@ def _prepare_tiny(tiny_newick_file, tiny_fasta_file):
         taxa.append(Taxon(taxon.label, None))
 
     partials, weights_tensor = compress_alignment(
-        Alignment(None, sequences, Taxa(None, taxa), NucleotideDataType())
+        Alignment(None, sequences, Taxa(None, taxa), NucleotideDataType(None))
     )
     partials.extend([None] * (len(dna) - 1))
     return partials, weights_tensor, indices, branch_lengths
