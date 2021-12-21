@@ -234,7 +234,7 @@ def p_t(branch_lengths: torch.Tensor) -> torch.Tensor:
     )
 
 
-def fluA_unrooted(args):
+def unrooted_treelikelihood(args, subst_model):
     tree, dna = read_tree_and_alignment(args.tree, args.input, True, True)
     branch_lengths = torch.tensor(
         [
@@ -256,11 +256,10 @@ def fluA_unrooted(args):
         taxa.append(Taxon(taxon.label, None))
 
     partials, weights_tensor = compress_alignment(
-        Alignment(None, sequences, Taxa(None, taxa), NucleotideDataType())
+        Alignment(None, sequences, Taxa(None, taxa), NucleotideDataType('nuc'))
     )
     partials.extend([None] * (len(dna) - 1))
-    jc69_model = JC69('jc')
-    freqs = torch.tensor([[0.25, 0.25, 0.25, 0.25]])
+    freqs = subst_model.frequencies
     proportions = torch.tensor([[[1.0]]])
     threshold = 1.0e-20 if args.dtype == 'float32' else 1.0e-40
 
@@ -268,14 +267,14 @@ def fluA_unrooted(args):
 
     @benchmark
     def fn_safe(bls):
-        mats = jc69_model.p_t(bls)
+        mats = subst_model.p_t(bls)
         return calculate_treelikelihood_discrete_safe(
             partials, weights_tensor, indices, mats, freqs, proportions, threshold
         )
 
     @benchmark
     def fn_safe_grad(bls):
-        mats = jc69_model.p_t(bls)
+        mats = subst_model.p_t(bls)
         log_prob = calculate_treelikelihood_discrete_safe(
             partials, weights_tensor, indices, mats, freqs, proportions, threshold
         )
@@ -288,21 +287,26 @@ def fluA_unrooted(args):
     print(f'  {args.replicates} evaluations: {total_time} ({log_prob})')
 
     blens.requires_grad = True
+    for p in subst_model.parameters():
+        p.requires_grad = True
+
     grad_total_time, grad_log_prob = fn_safe_grad(args.replicates, blens)
     print(
         f'  {args.replicates} gradient evaluations: {grad_total_time} ({grad_log_prob}'
     )
 
     if args.output:
+        name = '' if isinstance(subst_model, JC69) else type(subst_model).__name__
         args.output.write(
-            f"treelikelihood,evaluation,off,{total_time},{log_prob.squeeze().item()}\n"
+            f"treelikelihood{name},evaluation,off,{total_time},"
+            f"{log_prob.squeeze().item()}\n"
         )
         args.output.write(
-            f"treelikelihood,gradient,off,{grad_total_time},"
+            f"treelikelihood{name},gradient,off,{grad_total_time},"
             f"{grad_log_prob.squeeze().item()}\n"
         )
 
-    if args.all:
+    if args.all and isinstance(subst_model, JC69):
         tip_partials = torch.stack(partials[: len(sequences)])
         indices = torch.tensor(indices)
 
@@ -440,6 +444,7 @@ def ratio_transform_jacobian(args):
             ratios_root_height, internal_heights
         )
         log_det_jac.backward()
+        ratios_root_height.grad.data.zero_()
         return log_det_jac
 
     print('  JIT off')
@@ -815,7 +820,7 @@ if args.output:
     args.output.write("function,mode,JIT,time,logprob\n")
 
 print('Tree likelihood unrooted:')
-fluA_unrooted(args)
+unrooted_treelikelihood(args, JC69('jc'))
 print()
 
 print('Height transform log det Jacobian:')

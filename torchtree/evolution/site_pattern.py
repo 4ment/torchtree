@@ -73,6 +73,10 @@ def compress_alignment(
     :rtype: Tuple[torch.Tensor, torch.Tensor]
     """
     taxa, sequences = zip(*alignment)
+    if alignment.data_type.size > 1:
+        step = alignment.data_type.size
+        sequences = [zip(*[s[i::step] for i in range(step)]) for s in sequences]
+
     if indices is not None:
         sequences_new = [""] * len(sequences)
         for index in indices:

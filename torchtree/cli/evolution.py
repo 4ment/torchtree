@@ -2,10 +2,17 @@ import re
 
 from torchtree import Parameter, ViewParameter
 from torchtree.cli.priors import create_one_on_x_prior
+from torchtree.core.utils import process_object
 from torchtree.distributions import Distribution
 from torchtree.distributions.ctmc_scale import CTMCScale
 from torchtree.distributions.scale_mixture import ScaleMixtureNormal
-from torchtree.evolution.alignment import read_fasta_sequences
+from torchtree.evolution.alignment import (
+    Alignment,
+    calculate_F3x4,
+    read_fasta_sequences,
+)
+from torchtree.evolution.datatype import CodonDataType
+from torchtree.evolution.taxa import Taxa, Taxon
 from torchtree.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
     UnRootedTreeModel,
@@ -19,7 +26,7 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '-m',
         '--model',
-        choices=['JC69', 'HKY', 'GTR', 'SRD06'],
+        choices=['JC69', 'HKY', 'GTR', 'SRD06'] + ['MG94'] + ['LG', 'WAG'],
         default='JC69',
         help="""substitution model [default: %(default)s]""",
     )
@@ -31,6 +38,12 @@ def create_evolution_parser(parser):
         help="""include a proportion of invariant sites""",
     )
     parser.add_argument(
+        '-f',
+        '--frequencies',
+        required=False,
+        help="""frequencies""",
+    )
+    parser.add_argument(
         '-C',
         '--categories',
         metavar='C',
@@ -38,6 +51,13 @@ def create_evolution_parser(parser):
         type=int,
         default=1,
         help="""number of rate categories""",
+    )
+    parser.add_argument(
+        '--brlenspr',
+        required=False,
+        choices=['exponential', 'gammadir'],
+        default='gammadir',
+        help="""prior on branch lengths (unrooted tree)""",
     )
     parser.add_argument(
         '--clock',
@@ -60,6 +80,12 @@ def create_evolution_parser(parser):
         '--dates',
         default=None,
         help="""regular expression to capture sampling date in sequence names""",
+    )
+    parser.add_argument(
+        '--genetic_code',
+        required=False,
+        type=int,
+        help="""index of genetic code""",
     )
     parser.add_argument(
         '--keep', action="store_true", help="""use branch length as starting values"""
@@ -99,6 +125,12 @@ def add_coalescent(parser):
         '--cutoff',
         type=float,
         help="""a cutoff for skygrid""",
+    )
+    parser.add_argument(
+        '--time-aware',
+        required=False,
+        action='store_true',
+        help="""use time aware GMRF""",
     )
     return parser
 
@@ -196,7 +228,9 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
             (branch_model, branch_model_id),
             ('0:1', '1:2'),
         ):
-            substitution_model = create_substitution_model(f'substmodel.{tag}', 'HKY')
+            substitution_model = create_substitution_model(
+                f'substmodel.{tag}', 'HKY', arg
+            )
             site_model = create_site_model(
                 f'sitemodel.{tag}',
                 arg,
@@ -218,7 +252,7 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
 
     site_pattern = create_site_pattern('patterns', alignment)
     site_model = create_site_model('sitemodel', arg)
-    substitution_model = create_substitution_model('substmodel', arg.model)
+    substitution_model = create_substitution_model('substmodel', arg.model, arg)
     tree_id = 'tree'
     tree_model = create_tree_model(tree_id, taxa, arg)
 
@@ -321,14 +355,23 @@ def create_branch_model(id_, tree_id, taxa_count, arg):
         }
 
 
-def create_substitution_model(id_, model):
+def create_substitution_model(id_, model, arg):
     if model == 'JC69':
         return {'id': id_, 'type': 'JC69'}
     elif model == 'HKY' or model == 'GTR':
         frequencies = Parameter.json_factory(
-            f'{id_}.frequencies', **{'tensor': 0.25, 'full': [4]}
+            f'{id_}.frequencies', **{'tensor': [0.25] * 4}
         )
         frequencies['simplex'] = True
+
+        if arg.frequencies is not None and arg.frequencies != 'equal':
+            frequencies['tensor'] = list(map(float, arg.frequencies.split(',')))
+            if len(frequencies['tensor']) != 4:
+                raise ValueError(
+                    f'The dimension of the frequencies parameter '
+                    f'({len(frequencies["tensor"])}) does not match the data type '
+                    f'state count 4'
+                )
 
         if model == 'HKY':
             kappa = Parameter.json_factory(f'{id_}.kappa', **{'tensor': [3.0]})
@@ -342,7 +385,7 @@ def create_substitution_model(id_, model):
             }
         else:
             rates = Parameter.json_factory(
-                f'{id_}.rates', **{'tensor': 1 / 6, 'full': [6], 'simplex': True}
+                f'{id_}.rates', **{'tensor': 1 / 6, 'full': [6]}
             )
             rates['simplex'] = True
             return {
@@ -351,6 +394,55 @@ def create_substitution_model(id_, model):
                 'rates': rates,
                 'frequencies': frequencies,
             }
+    elif model == 'MG94':
+        alpha = Parameter.json_factory(f'{id_}.alpha', **{'tensor': [1.0]})
+        alpha['lower'] = 0.0
+        beta = Parameter.json_factory(f'{id_}.beta', **{'tensor': [1.0]})
+        beta['lower'] = 0.0
+        kappa = Parameter.json_factory(f'{id_}.kappa', **{'tensor': [1.0]})
+        kappa['lower'] = 0.0
+
+        data_type_json = 'data_type'
+        if not hasattr(arg, '_data_type'):
+            arg._data_type = create_data_type('data_type', arg)
+            data_type_json = arg._data_type
+        data_type = process_object(arg._data_type, {})
+        frequencies = Parameter.json_factory(
+            f'{id_}.frequencies',
+            **{'tensor': 1 / data_type.state_count, 'full': [data_type.state_count]},
+        )
+        # it is a simplex but it is fixed
+        frequencies['lower'] = frequencies['upper'] = 1
+
+        if arg.frequencies is not None and arg.frequencies != 'equal':
+            if arg.frequencies == 'F3x4':
+                sequences = read_fasta_sequences(arg.input)
+                taxa = Taxa(
+                    'taxa', [Taxon(sequence.taxon, {}) for sequence in sequences]
+                )
+                alignment = Alignment('alignment', sequences, taxa, data_type)
+                frequencies['tensor'] = calculate_F3x4(alignment)
+            else:
+                frequencies['tensor'] = list(map(float, arg.frequencies.split(',')))
+                if len(frequencies['tensor']) != data_type.state_count:
+                    raise ValueError(
+                        f'The dimension of the frequencies parameter '
+                        f'({len(frequencies["tensor"])}) does not match the data type '
+                        f'state count {data_type.state_count}'
+                    )
+            del frequencies['full']
+
+        return {
+            'id': id_,
+            'type': 'MG94',
+            'alpha': alpha,
+            'beta': beta,
+            'kappa': kappa,
+            'frequencies': frequencies,
+            'data_type': data_type_json,
+        }
+    elif model in ('LG', 'WAG'):
+        return {'id': id_, 'type': model}
 
 
 def create_site_pattern(id_, alignment, indices=None):
@@ -360,15 +452,34 @@ def create_site_pattern(id_, alignment, indices=None):
     return site_pattern
 
 
+def create_data_type(id_, arg):
+    if arg.model == 'MG94':
+        data_type = {
+            'id': id_,
+            'type': 'CodonDataType',
+            'genetic_code': CodonDataType.GENETIC_CODE_NAMES[arg.genetic_code],
+        }
+    elif arg.model in ('LG', 'WAG'):
+        data_type = {'id': id_, 'type': 'AminoAcidDataType'}
+    else:
+        data_type = {'id': id_, 'type': 'NucleotideDataType'}
+    return data_type
+
+
 def create_alignment(id_, taxa, arg):
     sequences = read_fasta_sequences(arg.input)
     sequence_list = []
     for sequence in sequences:
         sequence_list.append({'taxon': sequence.taxon, 'sequence': sequence.sequence})
+    data_type_json = 'data_type'
+    if not hasattr(arg, '_data_type'):
+        arg._data_type = create_data_type('data_type', arg)
+        data_type_json = arg._data_type
+
     alignment = {
         'id': id_,
         'type': 'Alignment',
-        'datatype': 'nucleotide',
+        'datatype': data_type_json,
         'taxa': taxa,
         'sequences': sequence_list,
     }
@@ -381,17 +492,18 @@ def create_taxa(id_, arg):
     for sequence in alignment:
         taxa_list.append({'id': sequence.taxon, 'type': 'Taxon'})
     taxa = {'id': id_, 'type': 'Taxa', 'taxa': taxa_list}
-    if arg.dates is not None and float(arg.dates) == 0:
-        for idx, taxon in enumerate(taxa_list):
-            taxon['attributes'] = {'date': 0.0}
-    elif arg.clock is not None:
-        regex_date = r'_(\d+\.?\d*)$'
-        if arg.dates is not None:
-            regex_date = arg.dates
-        regex = re.compile(regex_date)
-        for idx, taxon in enumerate(taxa_list):
-            res = re.search(regex, taxon['id'])
-            taxon['attributes'] = {'date': float(res.group(1))}
+    if arg.clock is not None:
+        if arg.dates is not None and arg.dates == '0':
+            for idx, taxon in enumerate(taxa_list):
+                taxon['attributes'] = {'date': 0.0}
+        else:
+            regex_date = r'_(\d+\.?\d*)$'
+            if arg.dates is not None:
+                regex_date = arg.dates
+            regex = re.compile(regex_date)
+            for idx, taxon in enumerate(taxa_list):
+                res = re.search(regex, taxon['id'])
+                taxon['attributes'] = {'date': float(res.group(1))}
     return taxa
 
 
@@ -513,6 +625,29 @@ def create_substitution_model_priors(substmodel_id, model):
                     {'loc': 1.0, 'scale': 1.25},
                 )
             )
+    if model == 'MG94':
+        joint_list.extend(
+            (
+                Distribution.json_factory(
+                    f'{substmodel_id}.kappa.prior',
+                    'torch.distributions.LogNormal',
+                    f'{substmodel_id}.kappa',
+                    {'loc': 1.0, 'scale': 1.25},
+                ),
+                Distribution.json_factory(
+                    f'{substmodel_id}.alpha.prior',
+                    'torch.distributions.Gamma',
+                    f'{substmodel_id}.alpha',
+                    {'concentration': 0.001, 'rate': 0.001},
+                ),
+                Distribution.json_factory(
+                    f'{substmodel_id}.beta.prior',
+                    'torch.distributions.Gamma',
+                    f'{substmodel_id}.beta',
+                    {'concentration': 0.001, 'rate': 0.001},
+                ),
+            )
+        )
     return joint_list
 
 
@@ -559,6 +694,7 @@ def create_ucln_prior(branch_model_id):
 
 
 def create_evolution_priors(arg):
+    tree_id = 'tree'
     joint_list = []
     if arg.clock is not None:
         branch_model_id = 'branchmodel'
@@ -571,7 +707,6 @@ def create_evolution_priors(arg):
         elif arg.clock == 'ucln':
             joint_list.extend(create_ucln_prior(branch_model_id))
         elif arg.clock == 'horseshoe':
-            tree_id = 'tree'
             log_diff = {
                 'id': f'{branch_model_id}.rates.logdiff',
                 'type': 'TransformedParameter',
@@ -641,6 +776,8 @@ def create_evolution_priors(arg):
                     **{'tensor': [0.1]},
                 ),
             }
+            if arg.time_aware:
+                gmrf['tree_model'] = tree_id
             gmrf['precision']['lower'] = 0.0
             joint_list.append(gmrf)
             joint_list.append(
@@ -699,6 +836,30 @@ def create_evolution_priors(arg):
                         'concentration0': 9999.0,
                     },
                 ),
+            )
+    else:
+        if arg.brlenspr == 'exponential':
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{tree_id}.blens.prior',
+                    'torch.distributions.Exponential',
+                    f'{tree_id}.blens',
+                    {
+                        'rate': 10.0,
+                    },
+                ),
+            )
+        elif arg.brlenspr == 'gammadir':
+            joint_list.append(
+                {
+                    'id': f'{tree_id}.blens.prior',
+                    'type': 'CompoundGammaDirichletPrior',
+                    'tree_model': tree_id,
+                    'alpha': 1.0,
+                    'c': 0.1,
+                    'shape': 1.0,
+                    'rate': 1.0,
+                }
             )
 
     if arg.model == 'SRD06':

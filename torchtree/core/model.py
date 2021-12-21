@@ -21,8 +21,14 @@ class Model(Parametric, Identifiable, ModelListener, ParameterListener):
     def add_model_listener(self, listener: ModelListener) -> None:
         self.listeners.append(listener)
 
+    def remove_model_listener(self, listener: ModelListener) -> None:
+        self.listeners.remove(listener)
+
     def add_parameter_listener(self, listener: ParameterListener) -> None:
         self.listeners.append(listener)
+
+    def remove_parameter_listener(self, listener: ParameterListener) -> None:
+        self.listeners.remove(listener)
 
     def fire_model_changed(self, obj=None, index=None) -> None:
         for listener in self.listeners:

@@ -106,19 +106,19 @@ def calculate_frequencies(alignment: Alignment):
 
 
 def calculate_frequencies_per_codon_position(alignment: Alignment):
-    data_type = NucleotideDataType()
+    data_type = NucleotideDataType('temp')
     frequencies = np.zeros(18 * 3)
     for sequence in alignment:
         for i in range(3):
             freqs = collections.Counter(sequence.sequence[i::3])
             for nuc, count in freqs.items():
                 encoding = data_type.encoding(nuc)
-                frequencies[18 * 3 * i + encoding] += freqs[encoding]
+                frequencies[18 * i + encoding] += count
     return [
         (
             frequencies[(i * 18) : (i * 18 + 4)]
             / frequencies[(i * 18) : (i * 18 + 4)].sum()
-        ).list()
+        ).tolist()
         for i in range(3)
     ]
 
@@ -128,7 +128,7 @@ def calculate_F3x4_from_nucleotide(data_type, nuc_freq):
     coding_indices = [i for i, value in enumerate(data_type.table[:64]) if value != '*']
     for n1, n2, n3 in itertools.product((0, 1, 2, 3), (0, 1, 2, 3), (0, 1, 2, 3)):
         codon_freqs[n1 * 16 + n2 * 4 + n3] = (
-            nuc_freq[0, n1] * nuc_freq[1, n2] * nuc_freq[2, n3]
+            nuc_freq[0][n1] * nuc_freq[1][n2] * nuc_freq[2][n3]
         )
     codon_freqs = codon_freqs[coding_indices]
     return (codon_freqs / codon_freqs.sum()).tolist()

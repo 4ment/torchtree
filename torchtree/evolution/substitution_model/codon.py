@@ -4,12 +4,13 @@ import numpy
 import torch
 
 from ...core.abstractparameter import AbstractParameter
-from ...core.utils import process_object
+from ...core.utils import process_object, register_class
 from ...typing import ID
 from ..datatype import CodonDataType
 from .abstract import SymmetricSubstitutionModel
 
 
+@register_class
 class MG94(SymmetricSubstitutionModel):
     def __init__(
         self,
@@ -51,12 +52,19 @@ class MG94(SymmetricSubstitutionModel):
 
     def q(self) -> torch.Tensor:
         dim = self.data_type.state_count
-        R = torch.zeros(self.alpha.shape[:-1] + (dim, dim), dtype=self.alpha.dtype)
+        sample_shape = self.sample_shape
+        ones = torch.ones(
+            sample_shape + (1,), dtype=self.kappa.dtype, device=self.kappa.device
+        )
+        kappa, alpha, beta = torch.broadcast_tensors(
+            self.kappa.tensor, self.alpha.tensor, self.beta.tensor
+        )
+        R = torch.zeros(sample_shape + (dim, dim), dtype=self.alpha.dtype)
         triu_indices = torch.triu_indices(row=dim, col=dim, offset=1)
         off_diagonal = (
-            (self.kappa * self.transitions + (1.0 - self.transitions))
-            * (self.alpha * self.synonymous + (1.0 - self.synonymous))
-            * (self.beta * self.non_synonymous + (1.0 - self.non_synonymous))
+            (torch.where(self.transitions == 1.0, kappa, ones))
+            * (torch.where(self.synonymous == 1.0, alpha, ones))
+            * (torch.where(self.non_synonymous == 1.0, beta, ones))
         )
         R[..., triu_indices[0], triu_indices[1]] = off_diagonal
         R[..., triu_indices[1], triu_indices[0]] = off_diagonal
@@ -70,13 +78,13 @@ class MG94(SymmetricSubstitutionModel):
     def handle_parameter_changed(
         self, variable: AbstractParameter, index, event
     ) -> None:
-        pass
+        self.fire_parameter_changed()
 
     @classmethod
     def from_json(cls, data, dic):
-        data_type = process_object('data_type', dic)
-        kappa = process_object('kappa', dic)
-        alpha = process_object('alpha', dic)
-        beta = process_object('beta', dic)
-        frequencies = process_object('frequencies', dic)
+        data_type = process_object(data['data_type'], dic)
+        kappa = process_object(data['kappa'], dic)
+        alpha = process_object(data['alpha'], dic)
+        beta = process_object(data['beta'], dic)
+        frequencies = process_object(data['frequencies'], dic)
         return cls(data['id'], data_type, alpha, beta, kappa, frequencies)

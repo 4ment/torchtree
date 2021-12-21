@@ -151,8 +151,18 @@ def create_meanfield(
                         'type': 'Parameter',
                         'tensor': [0.5],
                     }
+                    json_object['lower'] = 0
                     del json_object['tensor']
-                    x_ref += '.unshifted'
+                    # now id becomes id.unshifted with a lower bound of 0 so another
+                    # round of create_meanfield to create a id.unshifted.unres
+                    # parameter or keep id.unshifted with a lognormal or gamma
+                    # distribution
+                    distrs, params = create_meanfield(
+                        var_id, json_object['x'], distribution
+                    )
+                    distributions.extend(distrs)
+                    var_parameters.extend(params)
+                    return distributions, var_parameters
                 elif distribution == 'Normal':
                     json_object['type'] = 'TransformedParameter'
                     json_object['transform'] = 'torch.distributions.ExpTransform'
@@ -275,7 +285,8 @@ def create_meanfield(
 
 def create_variational_model(id_, joint, arg) -> Tuple[dict, List[str]]:
     variational = {'id': id_, 'type': 'JointDistributionModel'}
-    distributions, parameters = create_meanfield(id_, joint, arg.distribution)
+    if arg.variational == 'meanfield':
+        distributions, parameters = create_meanfield(id_, joint, arg.distribution)
     variational['distributions'] = distributions
     return variational, parameters
 
@@ -326,18 +337,28 @@ def create_sampler(id_, var_id, parameters, arg):
                 "id": "logger",
                 "type": "Logger",
                 "file_name": "samples.csv",
-                "_parameters": [
-                    "joint",
-                    "varmodel",
-                    "likelihood",
-                    "gmrf",
-                    "coalescent",
-                ],
                 "parameters": parameters,
                 "delimiter": "\t",
             }
         ],
     }
+
+
+def create_jacobians(json_object):
+    params = []
+    if isinstance(json_object, list):
+        for element in json_object:
+            params.extend(create_jacobians(element))
+    elif isinstance(json_object, dict):
+        if 'type' in json_object and json_object['type'] == 'TransformedParameter':
+            if not (
+                json_object['transform'] == 'torch.distributions.AffineTransform'
+                and json_object['parameters']['scale'] == 1.0
+            ):
+                params.append(json_object['id'])
+        for value in json_object.values():
+            params.extend(create_jacobians(value))
+    return params
 
 
 def build_advi(arg):
@@ -348,46 +369,23 @@ def build_advi(arg):
     alignment = create_alignment('alignment', 'taxa', arg)
     json_list.append(alignment)
 
-    jacobians_list = []
-    if arg.clock is not None:
-        if arg.heights == 'ratio':
-            if arg.distribution == 'Normal':
-                jacobians_list.append('tree.root_height')
-            jacobians_list.extend(['tree', 'tree.ratios'])
-        elif arg.heights == 'shift':
-            if arg.distribution == 'Normal':
-                jacobians_list.append('tree.shifts')
-
     if arg.model == 'SRD06':
         json_list.append(create_site_model_srd06_mus('srd06.mus'))
 
-        for tag in ('12', '3'):
-            jacobians_list.append(f'substmodel.{tag}' + '.frequencies')
-    elif arg.model == 'HKY' or arg.model == 'GTR':
-        jacobians_list.append('substmodel' + '.frequencies')
-        if arg.model == 'GTR':
-            jacobians_list.append('substmodel' + '.rates')
-
-    if arg.clock == 'horseshoe':
-        branch_model_id = 'branchmodel'
-        jacobians_list.append(f'{branch_model_id}.rates.logdiff')
-    if arg.categories > 1:
-        if arg.distribution == 'Normal':
-            jacobians_list.append('sitemodel.shape')
-    if arg.coalescent in ('skyride', 'skygrid'):
-        if arg.distribution == 'Normal':
-            jacobians_list.append('gmrf.precision')
-    if arg.birth_death == 'bdsk':
-        jacobians_list.extend(
-            ("bdsk.R", "bdsk.delta", "bdsk.rho", "bdsk.origin.unshifted")
-        )
-
     joint_dic = create_evolution_joint(taxa, 'alignment', arg)
-    joint_dic['distributions'].extend(jacobians_list)
-
     json_list.append(joint_dic)
 
+    # convert Parameters with constraints to TransformedParameters
+    # and create variational distribution
     var_dic, var_parameters = create_variational_model('var', json_list, arg)
+
+    # extract references of TransformedParameters but not those coming from the
+    # variational distribution
+    jacobians_list = create_jacobians(json_list)
+    if arg.clock is not None and arg.heights == 'ratio':
+        jacobians_list.append('tree')
+    joint_dic['distributions'].extend(jacobians_list)
+
     json_list.append(var_dic)
 
     advi_dic = create_advi('joint', 'var', var_parameters, arg)
@@ -437,6 +435,8 @@ def build_advi(arg):
         parameters.extend(["substmodel.rates", "substmodel.frequencies"])
     elif arg.model == 'HKY':
         parameters.extend(["substmodel.kappa", "substmodel.frequencies"])
+    elif arg.model == 'MG94':
+        parameters.extend([f"substmodel.{p}" for p in ("kappa", "alpha", "beta")])
 
     if arg.model == 'SRD06':
         parameters.append("srd06.mus")
@@ -448,5 +448,6 @@ def build_advi(arg):
         else:
             parameters.append("sitemodel.shape")
 
-    json_list.append(create_sampler('sampler', 'var', parameters, arg))
+    if arg.samples > 0:
+        json_list.append(create_sampler('sampler', 'var', parameters, arg))
     return json_list

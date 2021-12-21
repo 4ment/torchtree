@@ -27,10 +27,6 @@ class SubstitutionModel(Model):
     def q(self) -> torch.Tensor:
         pass
 
-    @staticmethod
-    def norm(Q, frequencies: torch.Tensor) -> torch.Tensor:
-        return -torch.sum(torch.diagonal(Q, dim1=-2, dim2=-1) * frequencies, -1)
-
 
 class AbstractSubstitutionModel(SubstitutionModel, ABC):
     def __init__(self, id_: ID, frequencies: AbstractParameter) -> None:
@@ -41,6 +37,9 @@ class AbstractSubstitutionModel(SubstitutionModel, ABC):
     def frequencies(self) -> torch.Tensor:
         return self._frequencies.tensor
 
+    def norm(self, Q) -> torch.Tensor:
+        return -torch.sum(torch.diagonal(Q, dim1=-2, dim2=-1) * self.frequencies, -1)
+
 
 class SymmetricSubstitutionModel(AbstractSubstitutionModel, ABC):
     def __init__(self, id_: ID, frequencies: AbstractParameter):
@@ -48,9 +47,7 @@ class SymmetricSubstitutionModel(AbstractSubstitutionModel, ABC):
 
     def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
         Q_unnorm = self.q()
-        Q = Q_unnorm / SubstitutionModel.norm(Q_unnorm, self.frequencies).unsqueeze(
-            -1
-        ).unsqueeze(-1)
+        Q = Q_unnorm / self.norm(Q_unnorm).unsqueeze(-1).unsqueeze(-1)
         sqrt_pi = self.frequencies.sqrt().diag_embed(dim1=-2, dim2=-1)
         sqrt_pi_inv = (1.0 / self.frequencies.sqrt()).diag_embed(dim1=-2, dim2=-1)
         S = sqrt_pi @ Q @ sqrt_pi_inv

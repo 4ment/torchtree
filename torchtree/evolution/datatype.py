@@ -176,6 +176,7 @@ class AminoAcidDataType(AbstractDataType):
         return cls(data['id'])
 
 
+@register_class
 class CodonDataType(AbstractDataType):
     # Taken from BEAST GeneticCode.java
 
@@ -291,7 +292,7 @@ class CodonDataType(AbstractDataType):
 
     @classmethod
     def from_json(cls, data, dic):
-        code = data.get('code')
+        code = data.get('genetic_code')
         return cls(data['id'], code)
 
 
