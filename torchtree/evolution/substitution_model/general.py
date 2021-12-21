@@ -58,9 +58,9 @@ class EmpiricalSubstitutionModel(SubstitutionModel):
         self.Q = self.create_rate_matrix(rates, frequencies)
         self.sqrt_pi = self.frequencies.sqrt().diag_embed(dim1=-2, dim2=-1)
         self.sqrt_pi_inv = (1.0 / self.frequencies.sqrt()).diag_embed(dim1=-2, dim2=-1)
-        Q = self.Q / SubstitutionModel.norm(self.Q, self._frequencies).unsqueeze(
-            -1
-        ).unsqueeze(-1)
+        Q = self.Q / -torch.sum(
+            torch.diagonal(self.Q, dim1=-2, dim2=-1) * self.frequencies, -1
+        ).unsqueeze(-1).unsqueeze(-1)
         self.e, self.v = self.eigen(self.sqrt_pi @ Q @ self.sqrt_pi_inv)
 
     @property
