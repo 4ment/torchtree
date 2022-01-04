@@ -104,6 +104,8 @@ class Optimizer(JSONSerializable, Runnable):
         handler = SignalHandler()
         if self.convergence is not None:
             self.convergence.check(0)
+            for p in self.parameters:
+                p.fire_parameter_changed()
 
         for p in self.parameters:
             p.requires_grad = True
@@ -132,6 +134,9 @@ class Optimizer(JSONSerializable, Runnable):
                 res = self.convergence.check(epoch)
                 if not res:
                     break
+                # x of the variational distribution has changed due to sampling
+                for p in self.parameters:
+                    p.fire_parameter_changed()
 
             if self.checkpoint is not None and epoch % 1000 == 0:
                 self.update_checkpoint()
