@@ -2,6 +2,7 @@ import math
 
 import torch
 from torch.distributions import Transform, constraints
+from torch.nn.functional import softplus
 
 from torchtree.core.abstractparameter import AbstractParameter
 from torchtree.core.utils import register_class
@@ -45,6 +46,25 @@ class TrilExpDiagonalTransform(Transform):
         raise NotImplementedError
 
 
+class CumSumTransform(Transform):
+    r"""
+    Transform via the mapping :math:`y_i = \sum_{j=0}^i x_j`.
+    """
+    domain = constraints.real
+    codomain = constraints.positive
+    bijective = True
+    sign = +1
+
+    def _call(self, x):
+        return x.cumsum(-1)
+
+    def _inverse(self, y):
+        return torch.cat((y[..., :1], y[..., 1:] - y[..., :-1]), -1)
+
+    def log_abs_det_jacobian(self, x, y):
+        return torch.zeros(x.shape[:-1], dtype=x.dtype, device=x.device)
+
+
 class CumSumExpTransform(Transform):
     r"""
     Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.
@@ -62,7 +82,7 @@ class CumSumExpTransform(Transform):
         return torch.cat((y_log[..., :1], y_log[..., 1:] - y_log[..., :-1]), -1)
 
     def log_abs_det_jacobian(self, x, y):
-        return torch.zeros(x.shape[:-1])
+        return torch.zeros(x.shape[:-1], dtype=x.dtype)
 
 
 class SoftPlusTransform(Transform):
@@ -75,13 +95,13 @@ class SoftPlusTransform(Transform):
     sign = +1
 
     def _call(self, x):
-        return torch.log(x.exp() + 1.0)
+        return softplus(x)
 
     def _inverse(self, y):
-        return torch.log(y.exp() - 1.0)
+        return torch.expm1(y).log()
 
     def log_abs_det_jacobian(self, x, y):
-        raise NotImplementedError
+        return -softplus(-x)
 
 
 class CumSumSoftPlusTransform(Transform):

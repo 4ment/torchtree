@@ -81,7 +81,11 @@ class Logger(LoggerInterface):
             if isinstance(obj, AbstractParameter):
                 row.extend(obj.tensor.detach().cpu().tolist())
             else:
-                row.append(obj().item())
+                log_p = obj()
+                if len(log_p.shape) == 0 or log_p.shape[-1] <= 1:
+                    row.append(log_p.item())
+                else:
+                    row.append(log_p.sum(-1).item())
         self.writer.writerow(row)
         self.sample += 1
 
