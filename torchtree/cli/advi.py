@@ -28,7 +28,8 @@ def create_variational_parser(subprasers):
     parser.add_argument(
         '-q',
         '--variational',
-        choices=['meanfield', 'fullrank'],
+        nargs='*',
+        # choices=['meanfield', 'fullrank'],
         default='meanfield',
         help="""variational distribution family""",
     )
@@ -81,6 +82,210 @@ def create_variational_parser(subprasers):
     return parser
 
 
+def _unique_id(id_, dic):
+    index = 0
+    unique_id = id_
+    while unique_id in dic:
+        index += 1
+        unique_id = id_ + '.' + str(index)
+    return unique_id
+
+
+def create_flexible_variational(arg, json_object):
+    group_map = {}
+    parameters = {'UNSPECIFIED': []}
+    for i, distr in enumerate(arg.variational):
+        print(distr, distr.split('('))
+        var_type, rest = distr.split('(')
+        var_id = _unique_id(var_type, group_map)
+        parameters[var_id] = []
+        for id_ in rest.rstrip(')').split(','):
+            group_map[id_] = var_id
+    gather_parameters(json_object, group_map, parameters)
+
+    joint_var = []
+    var_parameters = []
+    for id_, params in parameters.items():
+        if id_.startswith('Fullrank'):
+            res = apply_transforms_for_fullrank(id_, params)
+            distr = {
+                'id': f"var.{id_}",
+                'type': 'MultivariateNormal',
+                'x': list(map(lambda x: x[0], res)),
+                'parameters': {
+                    'loc': id_ + '.' + 'loc',
+                    'scale_tril': id_ + '.' + 'scale_tril',
+                },
+            }
+            var_parameters.extend(
+                (distr['parameters']['loc'], distr['parameters']['scale_tril'])
+            )
+            joint_var.append(distr)
+        elif id_ in ('UNSPECIFIED', 'Normal', 'LogNormal', 'Gamma'):
+            distribution = (
+                _unique_id('Normal', group_map) if id_ == 'UNSPECIFIED' else id_
+            )
+            for param in params:
+                distr, var_params = create_meanfield(
+                    f"var.{distribution}", param, distribution
+                )
+                joint_var.append(distr)
+                var_parameters.extend(var_params)
+    return joint_var, var_parameters
+
+
+def gather_parameters(json_object: dict, group_map: dict, parameters: dict):
+    if isinstance(json_object, list):
+        for element in json_object:
+            gather_parameters(element, group_map, parameters)
+    elif isinstance(json_object, dict):
+        if 'type' in json_object and json_object['type'] == 'Parameter':
+            if (
+                'lower' not in json_object
+                or 'upper' not in json_object
+                or json_object['lower'] != json_object['upper']
+            ):
+                if json_object['id'] in group_map:
+                    parameters[group_map[json_object['id']]].append(json_object)
+                else:
+                    parameters['UNSPECIFIED'].append(json_object)
+        else:
+            for element in json_object.values():
+                gather_parameters(element, group_map, parameters)
+
+
+def apply_sigmoid_transformed(json_object, value=0.0):
+    unres_id = json_object['id'] + '.unres'
+    json_object['type'] = 'TransformedParameter'
+    json_object['transform'] = 'torch.distributions.SigmoidTransform'
+    json_object['x'] = {
+        'id': unres_id,
+        'type': 'Parameter',
+    }
+    if 'tensor' in json_object and isinstance(json_object['tensor'], list):
+        json_object['x']['tensor'] = value
+        json_object['x']['full'] = [len(json_object['tensor'])]
+        del json_object['tensor']
+    elif 'full' in json_object:
+        json_object['x']['tensor'] = value
+        json_object['x']['full'] = json_object['full']
+        del json_object['tensor']
+        del json_object['full']
+    return unres_id
+
+
+def apply_affine_transform(json_object, loc, scale):
+    unshifted_id = json_object['id'] + '.unshifted'
+    json_object['type'] = 'TransformedParameter'
+    json_object['transform'] = 'torch.distributions.AffineTransform'
+    json_object['parameters'] = {
+        'loc': loc,
+        'scale': scale,
+    }
+    json_object['x'] = {
+        'id': unshifted_id,
+        'type': 'Parameter',
+        'tensor': [0.5],
+    }
+    json_object['x']['lower'] = 0
+    del json_object['tensor']
+    return unshifted_id
+
+
+def apply_exp_transform(json_object):
+    unres_id = json_object['id'] + '.unres'
+    json_object['type'] = 'TransformedParameter'
+    json_object['transform'] = 'torch.distributions.ExpTransform'
+    json_object['x'] = {
+        'id': unres_id,
+        'type': 'Parameter',
+        'tensor': np.log(json_object['tensor']).tolist(),
+    }
+    if 'full' in json_object:
+        json_object['x']['full'] = json_object['full']
+        del json_object['full']
+    elif 'full_like' in json_object:
+        json_object['x']['full_like'] = json_object['full_like']
+        del json_object['full_like']
+    del json_object['tensor']
+    return unres_id
+
+
+def apply_simplex_transform(json_object):
+    unres_id = json_object['id'] + '.unres'
+    json_object['type'] = 'TransformedParameter'
+    json_object['transform'] = 'torch.distributions.StickBreakingTransform'
+    if 'full' in json_object:
+        json_object['x'] = {
+            'id': json_object['id'] + '.unres',
+            'type': 'Parameter',
+            'tensor': 0.0,
+            'full': [json_object['full'][0] - 1],
+        }
+        del json_object['full']
+    else:
+        json_object['x'] = {
+            'id': unres_id,
+            'type': 'Parameter',
+            'tensor': 0.0,
+            'full': [len(json_object['tensor']) - 1],
+        }
+    del json_object['tensor']
+    return unres_id
+
+
+def create_normal_distribution(var_id, x_unres, json_object, loc, scale):
+    loc_param = Parameter.json_factory(
+        var_id + '.' + json_object['id'] + '.loc',
+        **{'full_like': x_unres, 'tensor': loc},
+    )
+
+    scale_param = {
+        'id': var_id + '.' + json_object['id'] + '.scale',
+        'type': 'TransformedParameter',
+        'transform': 'torch.distributions.ExpTransform',
+        'x': Parameter.json_factory(
+            var_id + '.' + json_object['id'] + '.scale.unres',
+            **{'full_like': x_unres, 'tensor': scale},
+        ),
+    }
+    distr = Distribution.json_factory(
+        var_id + '.' + json_object['id'],
+        'torch.distributions.Normal',
+        x_unres,
+        {'loc': loc_param, 'scale': scale_param},
+    )
+    return distr, loc_param, scale_param
+
+
+def create_gamma_distribution(var_id, x_unres, json_object, concentration, rate):
+    concentration_param = {
+        'id': var_id + '.' + json_object['id'] + '.concentration',
+        'type': 'TransformedParameter',
+        'transform': 'torch.distributions.ExpTransform',
+        'x': Parameter.json_factory(
+            var_id + '.' + json_object['id'] + '.concentration.unres',
+            **{'full_like': json_object['id'], 'tensor': concentration},
+        ),
+    }
+    rate_param = {
+        'id': var_id + '.' + json_object['id'] + '.rate',
+        'type': 'TransformedParameter',
+        'transform': 'torch.distributions.ExpTransform',
+        'x': Parameter.json_factory(
+            var_id + '.' + json_object['id'] + '.rate.unres',
+            **{'full_like': json_object['id'], 'tensor': rate},
+        ),
+    }
+    distr = Distribution.json_factory(
+        var_id + '.' + json_object['id'],
+        'torch.distributions.Gamma',
+        x_unres,
+        {'concentration': concentration_param, 'rate': rate_param},
+    )
+    return distr, concentration_param, rate_param
+
+
 def create_meanfield(
     var_id: str, json_object: dict, distribution: str
 ) -> Tuple[List[str], List[str]]:
@@ -96,63 +301,17 @@ def create_meanfield(
         if 'type' in json_object and json_object['type'] == 'Parameter':
             if 'lower' in json_object and 'upper' in json_object:
                 if json_object['lower'] != json_object['upper']:
-                    json_object['type'] = 'TransformedParameter'
-                    json_object['transform'] = 'torch.distributions.SigmoidTransform'
-                    json_object['x'] = {
-                        'id': json_object['id'] + '.unres',
-                        'type': 'Parameter',
-                    }
-                    if 'tensor' in json_object and isinstance(
-                        json_object['tensor'], list
-                    ):
-                        json_object['x']['tensor'] = 0.5
-                        json_object['x']['full'] = [len(json_object['tensor'])]
-                        del json_object['tensor']
-                    elif 'full' in json_object:
-                        json_object['x']['tensor'] = 0.5
-                        json_object['x']['full'] = json_object['full']
-                        del json_object['tensor']
-                        del json_object['full']
-
-                    loc = Parameter.json_factory(
-                        var_id + '.' + json_object['id'] + '.loc',
-                        **{'full_like': json_object['id'], 'tensor': 0.5},
-                    )
-
-                    scale = {
-                        'id': var_id + '.' + json_object['id'] + '.scale',
-                        'type': 'TransformedParameter',
-                        'transform': 'torch.distributions.ExpTransform',
-                        'x': Parameter.json_factory(
-                            var_id + '.' + json_object['id'] + '.scale.unres',
-                            **{'full_like': json_object['id'], 'tensor': -1.89712},
-                        ),
-                    }
-                    distr = Distribution.json_factory(
-                        var_id + '.' + json_object['id'],
-                        'torch.distributions.Normal',
-                        json_object['id'] + '.unres',
-                        {'loc': loc, 'scale': scale},
+                    unres_id = apply_sigmoid_transformed(json_object, 0.5)
+                    distr, loc, scale = create_normal_distribution(
+                        var_id, unres_id, json_object, 0.5, -1.89712
                     )
                     distributions.append(distr)
                     var_parameters.extend((loc['id'], scale['x']['id']))
                     parameters.append(json_object['id'])
             elif 'lower' in json_object:
-                x_ref = json_object['id']
                 if json_object['lower'] > 0:
-                    json_object['type'] = 'TransformedParameter'
-                    json_object['transform'] = 'torch.distributions.AffineTransform'
-                    json_object['parameters'] = {
-                        'loc': json_object['lower'],
-                        'scale': 1.0,
-                    }
-                    json_object['x'] = {
-                        'id': json_object['id'] + '.unshifted',
-                        'type': 'Parameter',
-                        'tensor': [0.5],
-                    }
-                    json_object['lower'] = 0
-                    del json_object['tensor']
+                    apply_affine_transform(json_object, json_object['lower'], 1.0)
+
                     # now id becomes id.unshifted with a lower bound of 0 so another
                     # round of create_meanfield to create a id.unshifted.unres
                     # parameter or keep id.unshifted with a lognormal or gamma
@@ -164,113 +323,31 @@ def create_meanfield(
                     var_parameters.extend(params)
                     return distributions, var_parameters
                 elif distribution == 'Normal':
-                    json_object['type'] = 'TransformedParameter'
-                    json_object['transform'] = 'torch.distributions.ExpTransform'
-                    json_object['x'] = {
-                        'id': json_object['id'] + '.unres',
-                        'type': 'Parameter',
-                        'tensor': np.log(json_object['tensor']).tolist(),
-                    }
-
-                    del json_object['tensor']
-                    if 'full' in json_object:
-                        json_object['x']['full'] = json_object['full']
-                        del json_object['full']
-                    elif 'full_like' in json_object:
-                        json_object['x']['full_like'] = json_object['full_like']
-                        del json_object['full_like']
-                    x_ref += '.unres'
-
-                loc = Parameter.json_factory(
-                    var_id + '.' + x_ref + '.loc',
-                    **{'full_like': json_object['id'], 'tensor': 0.5},
-                )
-
-                scale = {
-                    'id': var_id + '.' + x_ref + '.scale',
-                    'type': 'TransformedParameter',
-                    'transform': 'torch.distributions.ExpTransform',
-                    'x': Parameter.json_factory(
-                        var_id + '.' + x_ref + '.scale.unres',
-                        **{'full_like': json_object['id'], 'tensor': -1.89712},
-                    ),
-                }
-                distr = Distribution.json_factory(
-                    var_id + '.' + json_object['id'],
-                    f'torch.distributions.{distribution}',
-                    x_ref,
-                    {'loc': loc, 'scale': scale},
-                )
+                    unres_id = apply_exp_transform(json_object)
+                    distr, loc, scale = create_normal_distribution(
+                        var_id, unres_id, json_object, 0.5, -1.89712
+                    )
+                    var_parameters.extend((loc['id'], scale['x']['id']))
+                elif distribution == 'Gamma':
+                    distr, concentration, rate = create_gamma_distribution(
+                        var_id, json_object['id'], json_object, 0, 2.3
+                    )
+                    var_parameters.extend(
+                        [p['x']['id'] for p in distr['parameters'].values()]
+                    )
                 distributions.append(distr)
-                var_parameters.extend((loc['id'], scale['x']['id']))
                 parameters.append(json_object['id'])
             elif 'simplex' in json_object and json_object['simplex']:
-                json_object['type'] = 'TransformedParameter'
-                json_object['transform'] = 'torch.distributions.StickBreakingTransform'
-                if 'full' in json_object:
-                    json_object['x'] = {
-                        'id': json_object['id'] + '.unres',
-                        'type': 'Parameter',
-                        'tensor': 0.0,
-                        'full': [json_object['full'][0] - 1],
-                    }
-                    del json_object['full']
-                else:
-                    json_object['x'] = {
-                        'id': json_object['id'] + '.unres',
-                        'type': 'Parameter',
-                        'tensor': 0.0,
-                        'full': [len(json_object['tensor']) - 1],
-                    }
-                del json_object['tensor']
-                x_ref = json_object['id'] + '.unres'
-
-                loc = Parameter.json_factory(
-                    var_id + '.' + x_ref + '.loc',
-                    **{'full_like': json_object['id'] + '.unres', 'tensor': 0.5},
-                )
-
-                scale = {
-                    'id': var_id + '.' + x_ref + '.scale',
-                    'type': 'TransformedParameter',
-                    'transform': 'torch.distributions.ExpTransform',
-                    'x': Parameter.json_factory(
-                        var_id + '.' + json_object['id'] + '.scale.unres',
-                        **{
-                            'full_like': json_object['id'] + '.unres',
-                            'tensor': -1.89712,
-                        },
-                    ),
-                }
-                distr = Distribution.json_factory(
-                    var_id + '.' + json_object['id'],
-                    'torch.distributions.Normal',
-                    json_object['id'] + '.unres',
-                    {'loc': loc, 'scale': scale},
+                unres_id = apply_simplex_transform(json_object)
+                distr, loc, scale = create_normal_distribution(
+                    var_id, unres_id, json_object, 0.5, -1.89712
                 )
                 distributions.append(distr)
                 var_parameters.extend((loc['id'], scale['x']['id']))
                 parameters.append(json_object['id'])
             else:
-                loc = Parameter.json_factory(
-                    var_id + '.' + json_object['id'] + '.loc',
-                    **{'full_like': json_object['id'], 'tensor': 0.5},
-                )
-
-                scale = {
-                    'id': var_id + '.' + json_object['id'] + '.scale',
-                    'type': 'TransformedParameter',
-                    'transform': 'torch.distributions.ExpTransform',
-                    'x': Parameter.json_factory(
-                        var_id + '.' + json_object['id'] + '.scale.unres',
-                        **{'full_like': json_object['id'], 'tensor': -1.89712},
-                    ),
-                }
-                distr = Distribution.json_factory(
-                    var_id + '.' + json_object['id'],
-                    'torch.distributions.Normal',
-                    json_object['id'],
-                    {'loc': loc, 'scale': scale},
+                distr, loc, scale = create_normal_distribution(
+                    var_id, json_object['id'], json_object, 0.5, -1.89712
                 )
                 distributions.append(distr)
                 var_parameters.extend((loc['id'], scale['x']['id']))
@@ -283,10 +360,50 @@ def create_meanfield(
     return distributions, var_parameters
 
 
+def apply_transforms_for_fullrank(
+    var_id: str,
+    json_object: [dict, list],
+) -> List[Tuple[str, str, int]]:
+    var_parameters = []
+    if isinstance(json_object, list):
+        for element in json_object:
+            params = apply_transforms_for_fullrank(var_id, element)
+            var_parameters.extend(params)
+    elif isinstance(json_object, dict):
+        if 'type' in json_object and json_object['type'] == 'Parameter':
+            if 'lower' in json_object and 'upper' in json_object:
+                if json_object['lower'] != json_object['upper']:
+                    unres_id = apply_sigmoid_transformed(json_object, 0.5)
+                    var_parameters.append((json_object['id'], unres_id, 1))
+            elif 'lower' in json_object:
+                if json_object['lower'] > 0:
+                    apply_affine_transform(json_object, json_object['lower'], 1.0)
+                    unres_id = apply_exp_transform(json_object['x'])
+                    var_parameters.append((json_object['id'], unres_id, 1))
+                elif json_object['lower'] == 0:
+                    unres_id = apply_exp_transform(json_object)
+                    var_parameters.append((json_object['id'], unres_id, 1))
+                else:
+                    raise NotImplementedError
+            elif 'simplex' in json_object and json_object['simplex']:
+                unres_id = apply_simplex_transform(json_object)
+                var_parameters.append((json_object['id'], unres_id, 1))
+            else:
+                var_parameters.append((json_object['id'], json_object['id'], 1))
+
+        else:
+            for value in json_object.values():
+                params = apply_transforms_for_fullrank(var_id, value)
+                var_parameters.append(params)
+    return var_parameters
+
+
 def create_variational_model(id_, joint, arg) -> Tuple[dict, List[str]]:
     variational = {'id': id_, 'type': 'JointDistributionModel'}
     if arg.variational == 'meanfield':
         distributions, parameters = create_meanfield(id_, joint, arg.distribution)
+    else:
+        distributions, parameters = create_flexible_variational(arg, joint)
     variational['distributions'] = distributions
     return variational, parameters
 
@@ -384,6 +501,8 @@ def build_advi(arg):
     jacobians_list = create_jacobians(json_list)
     if arg.clock is not None and arg.heights == 'ratio':
         jacobians_list.append('tree')
+    if arg.coalescent in ('skygrid', 'skyride'):
+        jacobians_list.remove("coalescent.theta")
     joint_dic['distributions'].extend(jacobians_list)
 
     json_list.append(var_dic)

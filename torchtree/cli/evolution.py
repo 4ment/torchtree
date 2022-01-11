@@ -1,5 +1,7 @@
 import re
 
+from dendropy import Tree
+
 from torchtree import Parameter, ViewParameter
 from torchtree.cli.priors import create_one_on_x_prior
 from torchtree.core.utils import process_object
@@ -90,6 +92,16 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '--keep', action="store_true", help="""use branch length as starting values"""
     )
+    parser.add_argument(
+        '--use_path',
+        action="store_true",
+        help="""specify the alignment path instead of embedding it in the JSON file""",
+    )
+    parser.add_argument(
+        '--use_ambiguities',
+        action="store_true",
+        help="""use nucleotide ambiguity codes""",
+    )
 
     parser = add_coalescent(parser)
 
@@ -136,9 +148,22 @@ def add_coalescent(parser):
 
 
 def create_tree_model(id_: str, taxa: dict, arg):
+    tree_format = 'newick'
     with open(arg.tree) as fp:
-        newick = fp.read()
-        newick = newick.strip()
+        if next(fp).upper().startswith('#NEXUS'):
+            tree_format = 'nexus'
+    if tree_format == 'nexus':
+        tree = Tree.get(
+            path=arg.tree,
+            schema=tree_format,
+            tree_offset=0,
+            preserve_underscores=True,
+        )
+        newick = str(tree) + ';'
+    else:
+        with open(arg.tree) as fp:
+            newick = fp.read()
+            newick = newick.strip()
 
     kwargs = {}
     if arg.keep:
@@ -264,6 +289,9 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
         'substitution_model': substitution_model,
         'site_pattern': site_pattern,
     }
+    if arg.use_ambiguities:
+        treelikelihood_model['use_ambiguities'] = True
+
     if arg.clock is not None:
         treelikelihood_model['branch_model'] = create_branch_model(
             'branchmodel', tree_id, len(taxa['taxa']), arg
@@ -467,22 +495,28 @@ def create_data_type(id_, arg):
 
 
 def create_alignment(id_, taxa, arg):
-    sequences = read_fasta_sequences(arg.input)
-    sequence_list = []
-    for sequence in sequences:
-        sequence_list.append({'taxon': sequence.taxon, 'sequence': sequence.sequence})
     data_type_json = 'data_type'
     if not hasattr(arg, '_data_type'):
         arg._data_type = create_data_type('data_type', arg)
         data_type_json = arg._data_type
-
     alignment = {
         'id': id_,
         'type': 'Alignment',
         'datatype': data_type_json,
         'taxa': taxa,
-        'sequences': sequence_list,
     }
+
+    if arg.use_path:
+        alignment['file'] = arg.input
+    else:
+        sequences = read_fasta_sequences(arg.input)
+        sequence_list = []
+        for sequence in sequences:
+            sequence_list.append(
+                {'taxon': sequence.taxon, 'sequence': sequence.sequence}
+            )
+        alignment['sequences'] = sequence_list
+
     return alignment
 
 
