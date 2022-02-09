@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 ### Install torchtree
 ```bash
-python setup.py install
+python -m pip install .
 ```
 
 ### Check install
