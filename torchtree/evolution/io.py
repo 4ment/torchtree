@@ -1,4 +1,6 @@
+import re
 import sys
+from typing import List
 
 import dendropy
 import numpy as np
@@ -132,3 +134,120 @@ def random_tree_from_heights(sampling: torch.Tensor, heights: torch.Tensor) -> N
         nodes[idx1] = new_node
         del nodes[idx2]
     return nodes[0]
+
+
+def parse_translate(fp):
+    taxa = []
+    for line in fp:
+        if line.strip() == ';':
+            break
+        line2 = line.replace(',', '').replace(';', '').strip()
+        _, taxon = re.search(r"(\d+)\s+([^,]+)[,;]?", line2).groups()
+        taxa.append(taxon)
+        if ';' in line:
+            break
+    return taxa
+
+
+def parse_trees(fp, count=None):
+    trees = []
+    taxa = []
+    for line in fp:
+        line = line.strip()
+        if line.lower().startswith('tree'):
+            chunks = re.split(r"\s+", line)
+            if len(taxa) == 0:
+                newick_split = split_newick(chunks[-1])
+                taxa = filter(lambda x: x[0] not in '[](),;:', newick_split)
+                taxa = list(map(lambda x: x.split(':')[0], taxa))
+            if count == 0:
+                break
+        if line.lower().startswith('translate'):
+            taxa = parse_translate(fp)
+            if count == 0:
+                break
+
+    return taxa, trees
+
+
+def parse_taxa(fp):
+    ntax_regex = re.compile(r"\s*dimensions\s+ntax\s*=\s*(\d+)", re.IGNORECASE)
+    taxlabel_regex = re.compile(r"\s*taxlabels(.*)", re.IGNORECASE)
+    all = ''
+    for line in fp:
+        line = line.strip()
+        ntax_match = ntax_regex.match(line)
+        taxlabel_regex_match = taxlabel_regex.match(line)
+        if ntax_match:
+            ntax = ntax_match.group(1)
+        if taxlabel_regex_match:
+            all += taxlabel_regex_match.group(1)
+            break
+
+    while ';' not in all:
+        all += next(fp).strip()
+    taxa = re.split(r"\s+", all.replace(';', '').strip())
+    assert taxa == ntax
+    return taxa
+
+
+def split_newick(newick: str) -> List[str]:
+    """Split tree in newick format around (),;
+
+    Example:
+
+        >>> newick = '((a:1[&a={1,2}],b:1):1,c:1);'
+        >>> split_newick('((a:1,b:1):1,c:1);')
+        ['(', '(', 'a:1', ',', 'b:1', ')', ':1', ',', 'c:1', ')', ';']
+
+    :param str newick: newick tree
+    :return List[str]: list of strings
+    """
+    chunks = re.split(r"(\[[^\]]+\])", newick)
+    newick_split = []
+    for c in chunks:
+        if c.startswith('['):
+            newick_split.append(c)
+        elif c != '':
+            chunks2 = re.split(r"([\(\),;])", c)
+            newick_split.extend(chunks2)
+    return list(filter(None, newick_split))
+
+
+def extract_taxa(file_name: str) -> List[str]:
+    """Extract taxon list from a nexus file.
+
+    This function will try get the taxon names from the taxa and trees blocks.
+
+    :param str file_name: path to the nexus file
+    :return List[str]: list of taxon names
+    """
+    taxa = None
+    tree_format = 'newick'
+    REGEX_TAXA = re.compile(r"begin\s+taxa;", re.IGNORECASE)
+    REGEX_TREES = re.compile(r"begin\s+trees;", re.IGNORECASE)
+    with open(file_name) as fp:
+        if next(fp).upper().startswith('#NEXUS'):
+            tree_format = 'nexus'
+
+    if tree_format == 'newick':
+        with open(file_name) as fp:
+            newick = next(fp).strip()
+        newick_split = split_newick(newick)
+        taxa = filter(lambda x: x[0] not in '[](),;:', newick_split)
+        taxa = list(map(lambda x: x.split(':')[0], taxa))
+    else:
+        with open(file_name) as fp:
+            for line in fp:
+                line = line.strip()
+                m = REGEX_TAXA.match(line)
+                trees_match = REGEX_TREES.match(line)
+                if m:
+                    taxa = parse_taxa(fp)
+                    break
+
+                if trees_match:
+                    taxa, _ = parse_trees(fp, 0)
+                    break
+
+    return taxa

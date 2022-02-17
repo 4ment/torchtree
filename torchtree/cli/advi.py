@@ -1,12 +1,14 @@
 from typing import List, Tuple
 
 import numpy as np
+import torch
 
 from torchtree import Parameter
 from torchtree.cli.evolution import (
     create_alignment,
     create_evolution_joint,
     create_evolution_parser,
+    create_poisson_evolution_joint,
     create_site_model_srd06_mus,
     create_taxa,
 )
@@ -51,6 +53,12 @@ def create_variational_parser(subprasers):
         type=int,
         default=1,
         help="""number of samples for Monte Carlo estimate of gradients""",
+    )
+    parser.add_argument(
+        '--K_grad_samples',
+        type=int,
+        help="number of samples for Monte Carlo estimate of gradients"
+        " using multisample objective",
     )
     parser.add_argument(
         '--samples',
@@ -185,7 +193,7 @@ def apply_affine_transform(json_object, loc, scale):
     json_object['x'] = {
         'id': unshifted_id,
         'type': 'Parameter',
-        'tensor': [0.5],
+        'tensor': (np.array(json_object['tensor']) - loc).tolist(),
     }
     json_object['x']['lower'] = 0
     del json_object['tensor']
@@ -227,8 +235,9 @@ def apply_simplex_transform(json_object):
         json_object['x'] = {
             'id': unres_id,
             'type': 'Parameter',
-            'tensor': 0.0,
-            'full': [len(json_object['tensor']) - 1],
+            'tensor': torch.distributions.StickBreakingTransform()
+            .inv(torch.tensor(json_object['tensor']))
+            .tolist(),
         }
     del json_object['tensor']
     return unres_id
@@ -240,6 +249,9 @@ def create_normal_distribution(var_id, x_unres, json_object, loc, scale):
         **{'full_like': x_unres, 'tensor': loc},
     )
 
+    if isinstance(loc, list):
+        del loc_param['full_like']
+
     scale_param = {
         'id': var_id + '.' + json_object['id'] + '.scale',
         'type': 'TransformedParameter',
@@ -249,6 +261,9 @@ def create_normal_distribution(var_id, x_unres, json_object, loc, scale):
             **{'full_like': x_unres, 'tensor': scale},
         ),
     }
+    if isinstance(scale, list):
+        del scale_param['x']['full_like']
+
     distr = Distribution.json_factory(
         var_id + '.' + json_object['id'],
         'torch.distributions.Normal',
@@ -323,9 +338,14 @@ def create_meanfield(
                     var_parameters.extend(params)
                     return distributions, var_parameters
                 elif distribution == 'Normal':
+                    tensor = np.array(json_object['tensor'])
+                    loc = np.log(tensor / np.sqrt(1 + 0.001 / tensor ** 2)).tolist()
+                    scale_log = np.log(
+                        np.sqrt(np.log(1 + 0.001 / tensor ** 2))
+                    ).tolist()
                     unres_id = apply_exp_transform(json_object)
                     distr, loc, scale = create_normal_distribution(
-                        var_id, unres_id, json_object, 0.5, -1.89712
+                        var_id, unres_id, json_object, loc, scale_log
                     )
                     var_parameters.extend((loc['id'], scale['x']['id']))
                 elif distribution == 'Gamma':
@@ -346,8 +366,13 @@ def create_meanfield(
                 var_parameters.extend((loc['id'], scale['x']['id']))
                 parameters.append(json_object['id'])
             else:
+                tensor = np.array(json_object['tensor'])
                 distr, loc, scale = create_normal_distribution(
-                    var_id, json_object['id'], json_object, 0.5, -1.89712
+                    var_id,
+                    json_object['id'],
+                    json_object,
+                    json_object['tensor'],
+                    -1.89712,
                 )
                 distributions.append(distr)
                 var_parameters.extend((loc['id'], scale['x']['id']))
@@ -409,18 +434,23 @@ def create_variational_model(id_, joint, arg) -> Tuple[dict, List[str]]:
 
 
 def create_advi(joint, variational, parameters, arg):
+    if arg.K_grad_samples is not None:
+        grad_samples = [arg.grad_samples, arg.K_grad_samples]
+    else:
+        grad_samples = arg.grad_samples
+
     advi_dic = {
         'id': 'advi',
         'type': 'Optimizer',
         'algorithm': 'torch.optim.Adam',
         'maximize': True,
         'lr': arg.eta,
-        '_checkpoint': False,
+        'checkpoint': 'checkpoint.json',
         'iterations': arg.iter,
         'loss': {
             'id': 'elbo',
             'type': 'ELBO',
-            'samples': arg.grad_samples,
+            'samples': grad_samples,
             'joint': joint,
             'variational': variational,
         },
@@ -483,13 +513,17 @@ def build_advi(arg):
     taxa = create_taxa('taxa', arg)
     json_list.append(taxa)
 
-    alignment = create_alignment('alignment', 'taxa', arg)
-    json_list.append(alignment)
+    if not arg.poisson:
+        alignment = create_alignment('alignment', 'taxa', arg)
+        json_list.append(alignment)
 
     if arg.model == 'SRD06':
         json_list.append(create_site_model_srd06_mus('srd06.mus'))
 
-    joint_dic = create_evolution_joint(taxa, 'alignment', arg)
+    if arg.poisson:
+        joint_dic = create_poisson_evolution_joint(taxa, arg)
+    else:
+        joint_dic = create_evolution_joint(taxa, 'alignment', arg)
     json_list.append(joint_dic)
 
     # convert Parameters with constraints to TransformedParameters

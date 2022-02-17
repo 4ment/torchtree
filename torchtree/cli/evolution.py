@@ -1,29 +1,42 @@
 import re
 
-from dendropy import Tree
+import numpy as np
+from dendropy import TaxonNamespace, Tree
 
 from torchtree import Parameter, ViewParameter
-from torchtree.cli.priors import create_one_on_x_prior
+from torchtree.cli.priors import create_clock_horseshoe_prior, create_one_on_x_prior
 from torchtree.core.utils import process_object
 from torchtree.distributions import Distribution
 from torchtree.distributions.ctmc_scale import CTMCScale
-from torchtree.distributions.scale_mixture import ScaleMixtureNormal
 from torchtree.evolution.alignment import (
     Alignment,
     calculate_F3x4,
+    calculate_frequencies,
+    calculate_kappa,
+    calculate_substitutions,
     read_fasta_sequences,
 )
-from torchtree.evolution.datatype import CodonDataType
+from torchtree.evolution.datatype import CodonDataType, NucleotideDataType
+from torchtree.evolution.io import extract_taxa
 from torchtree.evolution.taxa import Taxa, Taxon
 from torchtree.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
     UnRootedTreeModel,
+    initialize_dates_from_taxa,
+    setup_indexes,
 )
 from torchtree.evolution.tree_model_flexible import FlexibleTimeTreeModel
+from torchtree.treeregression import regression
 
 
 def create_evolution_parser(parser):
-    parser.add_argument('-i', '--input', required=True, help="""alignment file""")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-i', '--input', required=False, help="""alignment file""")
+    group.add_argument(
+        '--poisson',
+        action="store_true",
+        help="""use poisson tree likelihood""",
+    )
     parser.add_argument('-t', '--tree', required=True, help="""tree file""")
     parser.add_argument(
         '-m',
@@ -147,6 +160,35 @@ def add_coalescent(parser):
     return parser
 
 
+def run_tree_regression(arg, taxa):
+    taxon_namespace = TaxonNamespace([taxon['id'] for taxon in taxa['taxa']])
+    tree_format = 'newick'
+    with open(arg.tree) as fp:
+        if next(fp).upper().startswith('#NEXUS'):
+            tree_format = 'nexus'
+    if tree_format == 'nexus':
+        tree = Tree.get(
+            path=arg.tree,
+            schema='nexus',
+            tree_offset=0,
+            preserve_underscores=True,
+            taxon_namespace=taxon_namespace,
+        )
+    else:
+        tree = Tree.get(
+            path=arg.tree,
+            schema='newick',
+            tree_offset=0,
+            preserve_underscores=True,
+            taxon_namespace=taxon_namespace,
+        )
+    tree.resolve_polytomies(update_bipartitions=True)
+    setup_indexes(tree, False)
+    taxa2 = [{'date': taxon['attributes']['date']} for taxon in taxa['taxa']]
+    initialize_dates_from_taxa(tree, taxa2)
+    return regression(tree)
+
+
 def create_tree_model(id_: str, taxa: dict, arg):
     tree_format = 'newick'
     with open(arg.tree) as fp:
@@ -183,6 +225,10 @@ def create_tree_model(id_: str, taxa: dict, arg):
             root_height = Parameter.json_factory(
                 f'{id_}.root_height', **{'tensor': [offset + 1.0]}
             )
+            if 'root_height_init' in arg:
+                root_height['tensor'] = [max(dates) - arg.root_height_init]
+            elif arg.coalescent == 'skygrid':
+                root_height['tensor'] = arg.cutoff
 
             root_height['lower'] = offset
             tree_model = ReparameterizedTimeTreeModel.json_factory(
@@ -215,6 +261,21 @@ def create_tree_model(id_: str, taxa: dict, arg):
     return tree_model
 
 
+def create_poisson_tree_likelihood(id_, taxa, arg):
+    tree_id = 'tree'
+    tree_model = create_tree_model(tree_id, taxa, arg)
+    branch_model = create_branch_model('branchmodel', tree_id, len(taxa['taxa']), arg)
+
+    treelikelihood_model = {
+        'id': id_,
+        'type': 'PoissonTreeLikelihood',
+        'tree_model': tree_model,
+        'branch_model': branch_model,
+    }
+
+    return treelikelihood_model
+
+
 def create_tree_likelihood_single(
     id_, tree_model, branch_model, substitution_model, site_model, site_pattern
 ):
@@ -234,6 +295,18 @@ def create_tree_likelihood_single(
 
 
 def create_tree_likelihood(id_, taxa, alignment, arg):
+    if arg.clock is not None and (
+        'rate_init' not in arg or 'root_height_init' not in arg
+    ):
+        dates = [taxon['attributes']['date'] for taxon in taxa['taxa']]
+        # only use regression for heterochronous data
+        if max(dates) != min(dates):
+            rate_init, root_height_init = run_tree_regression(arg, taxa)
+            if 'rate_init' not in arg:
+                arg.rate_init = rate_init
+            if 'root_height_init' not in arg:
+                arg.root_height_init = root_height_init
+
     if arg.model == 'SRD06':
         branch_model = None
         branch_model_id = None
@@ -334,6 +407,8 @@ def create_site_model_srd06_mus(id_):
 def create_branch_model(id_, tree_id, taxa_count, arg):
     if arg.rate is not None:
         rate = [arg.rate]
+    elif 'rate_init' in arg:
+        rate = [arg.rate_init]
     else:
         rate = [0.001]
     rate_parameter = Parameter.json_factory(f'{id_}.rate', **{'tensor': rate})
@@ -383,6 +458,12 @@ def create_branch_model(id_, tree_id, taxa_count, arg):
         }
 
 
+def build_alignment(file_name, data_type):
+    sequences = read_fasta_sequences(file_name)
+    taxa = Taxa('taxa', [Taxon(sequence.taxon, {}) for sequence in sequences])
+    return Alignment('alignment', sequences, taxa, data_type)
+
+
 def create_substitution_model(id_, model, arg):
     if model == 'JC69':
         return {'id': id_, 'type': 'JC69'}
@@ -391,20 +472,26 @@ def create_substitution_model(id_, model, arg):
             f'{id_}.frequencies', **{'tensor': [0.25] * 4}
         )
         frequencies['simplex'] = True
+        alignment = None
 
-        if arg.frequencies is not None and arg.frequencies != 'equal':
-            frequencies['tensor'] = list(map(float, arg.frequencies.split(',')))
-            if len(frequencies['tensor']) != 4:
-                raise ValueError(
-                    f'The dimension of the frequencies parameter '
-                    f'({len(frequencies["tensor"])}) does not match the data type '
-                    f'state count 4'
-                )
+        if arg.frequencies is not None:
+            if arg.frequencies == 'empirical':
+                alignment = build_alignment(arg.input, NucleotideDataType(''))
+                frequencies['tensor'] = calculate_frequencies(alignment)
+            elif arg.frequencies != 'equal':
+                frequencies['tensor'] = list(map(float, arg.frequencies.split(',')))
+                if len(frequencies['tensor']) != 4:
+                    raise ValueError(
+                        f'The dimension of the frequencies parameter '
+                        f'({len(frequencies["tensor"])}) does not match the data type '
+                        f'state count 4'
+                    )
 
         if model == 'HKY':
             kappa = Parameter.json_factory(f'{id_}.kappa', **{'tensor': [3.0]})
             kappa['lower'] = 0.0
-
+            if alignment is not None:
+                kappa['tensor'] = [calculate_kappa(alignment, frequencies['tensor'])]
             return {
                 'id': id_,
                 'type': 'HKY',
@@ -416,6 +503,10 @@ def create_substitution_model(id_, model, arg):
                 f'{id_}.rates', **{'tensor': 1 / 6, 'full': [6]}
             )
             rates['simplex'] = True
+            mapping = ((6, 0, 1, 2), (0, 6, 3, 4), (1, 3, 6, 5), (2, 4, 5, 6))
+            if alignment is not None:
+                rel_rates = np.array(calculate_substitutions(alignment, mapping))
+                rates['tensor'] = (rel_rates[:-1] / rel_rates[:-1].sum()).tolist()
             return {
                 'id': id_,
                 'type': 'GTR',
@@ -444,11 +535,7 @@ def create_substitution_model(id_, model, arg):
 
         if arg.frequencies is not None and arg.frequencies != 'equal':
             if arg.frequencies == 'F3x4':
-                sequences = read_fasta_sequences(arg.input)
-                taxa = Taxa(
-                    'taxa', [Taxon(sequence.taxon, {}) for sequence in sequences]
-                )
-                alignment = Alignment('alignment', sequences, taxa, data_type)
+                alignment = build_alignment(arg.input, data_type)
                 frequencies['tensor'] = calculate_F3x4(alignment)
             else:
                 frequencies['tensor'] = list(map(float, arg.frequencies.split(',')))
@@ -521,10 +608,15 @@ def create_alignment(id_, taxa, arg):
 
 
 def create_taxa(id_, arg):
-    alignment = read_fasta_sequences(arg.input)
-    taxa_list = []
-    for sequence in alignment:
-        taxa_list.append({'id': sequence.taxon, 'type': 'Taxon'})
+    if arg.input is not None:
+        alignment = read_fasta_sequences(arg.input)
+        taxa_list = []
+        for sequence in alignment:
+            taxa_list.append({'id': sequence.taxon, 'type': 'Taxon'})
+    else:
+        taxa = extract_taxa(arg.tree)
+        taxa_list = [{'id': taxon, 'type': 'Taxon'} for taxon in taxa]
+
     taxa = {'id': id_, 'type': 'Taxa', 'taxa': taxa_list}
     if arg.clock is not None:
         if arg.dates is not None and arg.dates == '0':
@@ -727,150 +819,32 @@ def create_ucln_prior(branch_model_id):
     return joint_list
 
 
-def create_evolution_priors(arg):
+def create_clock_prior(arg):
+    branch_model_id = 'branchmodel'
+    tree_id = 'tree'
+    prior_list = []
+    if arg.clock == 'strict' and arg.rate is None:
+        prior_list.append(
+            CTMCScale.json_factory(
+                f'{branch_model_id}.rate.prior', f'{branch_model_id}.rate', tree_id
+            )
+        )
+    elif arg.clock == 'ucln':
+        prior_list.extend(create_ucln_prior(branch_model_id))
+    elif arg.clock == 'horseshoe':
+        prior_list.extend(create_clock_horseshoe_prior(branch_model_id, tree_id))
+    return prior_list
+
+
+def create_evolution_priors(taxa, arg):
     tree_id = 'tree'
     joint_list = []
-    if arg.clock is not None:
-        branch_model_id = 'branchmodel'
-        if arg.clock == 'strict' and arg.rate is None:
-            joint_list.append(
-                CTMCScale.json_factory(
-                    f'{branch_model_id}.rate.prior', f'{branch_model_id}.rate', 'tree'
-                )
-            )
-        elif arg.clock == 'ucln':
-            joint_list.extend(create_ucln_prior(branch_model_id))
-        elif arg.clock == 'horseshoe':
-            log_diff = {
-                'id': f'{branch_model_id}.rates.logdiff',
-                'type': 'TransformedParameter',
-                'transform': 'LogDifferenceRateTransform',
-                'x': f'{branch_model_id}.rates.unscaled',
-                'parameters': {'tree_model': tree_id},
-            }
-            global_scale = Parameter.json_factory(
-                f'{branch_model_id}.global.scale', **{'tensor': [1.0]}
-            )
-            local_scale = Parameter.json_factory(
-                f'{branch_model_id}.local.scales',
-                **{'tensor': 1.0, 'full_like': f'{branch_model_id}.rates.unscaled'},
-            )
-            global_scale['lower'] = 0.0
-            local_scale['lower'] = 0.0
-            joint_list.append(
-                ScaleMixtureNormal.json_factory(
-                    f'{branch_model_id}.scale.mixture.prior',
-                    log_diff,
-                    0.0,
-                    global_scale,
-                    local_scale,
-                )
-            )
-            joint_list.append(
-                CTMCScale.json_factory(
-                    f'{branch_model_id}.rate.prior', f'{branch_model_id}.rate', 'tree'
-                )
-            )
-            for p in ('global.scale', 'local.scales'):
-                joint_list.append(
-                    Distribution.json_factory(
-                        f'{branch_model_id}.{p}.prior',
-                        'torch.distributions.Cauchy',
-                        f'{branch_model_id}.{p}',
-                        {'loc': 0.0, 'scale': 1.0},
-                    )
-                )
 
-        coalescent_id = 'coalescent'
-        if arg.coalescent == 'constant' or arg.coalescent == 'exponential':
-            joint_list.append(
-                create_one_on_x_prior(
-                    f'{coalescent_id}.theta.prior', f'{coalescent_id}.theta'
-                )
-            )
-        if arg.coalescent == 'exponential':
-            joint_list.append(
-                Distribution.json_factory(
-                    f'{coalescent_id}.growth.prior',
-                    'torch.distributions.Laplace',
-                    f'{coalescent_id}.growth',
-                    {
-                        'loc': 0.0,
-                        'scale': 1.0,
-                    },
-                )
-            )
-        elif arg.coalescent in ('skygrid', 'skyride'):
-            gmrf = {
-                'id': 'gmrf',
-                'type': 'GMRF',
-                'x': f'{coalescent_id}.theta.log',
-                'precision': Parameter.json_factory(
-                    'gmrf.precision',
-                    **{'tensor': [0.1]},
-                ),
-            }
-            if arg.time_aware:
-                gmrf['tree_model'] = tree_id
-            gmrf['precision']['lower'] = 0.0
-            joint_list.append(gmrf)
-            joint_list.append(
-                Distribution.json_factory(
-                    'gmrf.precision.prior',
-                    'torch.distributions.Gamma',
-                    'gmrf.precision',
-                    {
-                        'concentration': 0.0010,
-                        'rate': 0.0010,
-                    },
-                )
-            )
-        elif arg.birth_death == 'bdsk':
-            birth_death_id = 'bdsk'
-            joint_list.append(
-                Distribution.json_factory(
-                    f'{birth_death_id}.R.prior',
-                    'torch.distributions.LogNormal',
-                    f'{birth_death_id}.R',
-                    {
-                        'mean': 1.0,
-                        'scale': 1.25,
-                    },
-                ),
-            )
-            joint_list.append(
-                Distribution.json_factory(
-                    f'{birth_death_id}.delta.prior',
-                    'torch.distributions.LogNormal',
-                    f'{birth_death_id}.delta',
-                    {
-                        'mean': 1.0,
-                        'scale': 1.25,
-                    },
-                ),
-            )
-            joint_list.append(
-                Distribution.json_factory(
-                    f'{birth_death_id}.origin.prior',
-                    'torch.distributions.LogNormal',
-                    f'{birth_death_id}.origin.unshifted',
-                    {
-                        'mean': 1.0,
-                        'scale': 1.25,
-                    },
-                ),
-            )
-            joint_list.append(
-                Distribution.json_factory(
-                    f'{birth_death_id}.rho.prior',
-                    'torch.distributions.Beta',
-                    f'{birth_death_id}.rho',
-                    {
-                        'concentration1': 1.0,
-                        'concentration0': 9999.0,
-                    },
-                ),
-            )
+    if arg.coalescent is not None or arg.birth_death is not None:
+        joint_list.extend(create_time_tree_prior(taxa, arg))
+
+    if arg.clock is not None:
+        joint_list.extend(create_clock_prior(arg))
     else:
         if arg.brlenspr == 'exponential':
             joint_list.append(
@@ -928,24 +902,40 @@ def create_evolution_priors(arg):
     return joint_list
 
 
-def create_evolution_joint(taxa, alignment, arg):
+def create_time_tree_prior(taxa, arg):
+    prior = []
     joint_list = []
-    joint_list.append(create_tree_likelihood('like', taxa, alignment, arg))
-    joint_approx_dic = joint_list.copy()
-    params = {}
-
     if arg.coalescent is not None:
+        params = {}
         coalescent_id = 'coalescent'
         if arg.coalescent in ('constant', 'exponential'):
             theta = Parameter.json_factory(
                 f'{coalescent_id}.theta', **{'tensor': [3.0]}
             )
             theta['lower'] = 0.0
+
+            joint_list.append(
+                create_one_on_x_prior(
+                    f'{coalescent_id}.theta.prior', f'{coalescent_id}.theta'
+                )
+            )
         if arg.coalescent == 'exponential':
             growth = Parameter.json_factory(
                 f'{coalescent_id}.growth', **{'tensor': [1.0]}
             )
             params['growth'] = growth
+
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{coalescent_id}.growth.prior',
+                    'torch.distributions.Laplace',
+                    f'{coalescent_id}.growth',
+                    {
+                        'loc': 0.0,
+                        'scale': 1.0,
+                    },
+                )
+            )
         elif arg.coalescent == 'skygrid':
             theta_log = Parameter.json_factory(
                 f'{coalescent_id}.theta.log', **{'tensor': 3.0, 'full': [arg.grid]}
@@ -967,18 +957,109 @@ def create_evolution_joint(taxa, alignment, arg):
                 'transform': 'torch.distributions.ExpTransform',
                 'x': theta_log,
             }
-        joint_list.append(create_coalesent(coalescent_id, 'tree', theta, arg, **params))
-        joint_approx_dic.append(joint_list[-1])
+
+        if arg.coalescent in ('skygrid', 'skyride'):
+            gmrf = {
+                'id': 'gmrf',
+                'type': 'GMRF',
+                'x': f'{coalescent_id}.theta.log',
+                'precision': Parameter.json_factory(
+                    'gmrf.precision',
+                    **{'tensor': [0.1]},
+                ),
+            }
+            if arg.time_aware:
+                gmrf['tree_model'] = 'tree'
+            gmrf['precision']['lower'] = 0.0
+            joint_list.append(gmrf)
+            joint_list.append(
+                Distribution.json_factory(
+                    'gmrf.precision.prior',
+                    'torch.distributions.Gamma',
+                    'gmrf.precision',
+                    {
+                        'concentration': 0.0010,
+                        'rate': 0.0010,
+                    },
+                )
+            )
+        prior = create_coalesent(coalescent_id, 'tree', theta, arg, **params)
     elif arg.birth_death is not None:
         birth_death_id = 'bdsk'
-        joint_list.append(create_birth_death(birth_death_id, 'tree', arg))
-        joint_approx_dic.append(joint_list[-1])
+        joint_list.append(
+            Distribution.json_factory(
+                f'{birth_death_id}.R.prior',
+                'torch.distributions.LogNormal',
+                f'{birth_death_id}.R',
+                {
+                    'mean': 1.0,
+                    'scale': 1.25,
+                },
+            ),
+        )
+        joint_list.append(
+            Distribution.json_factory(
+                f'{birth_death_id}.delta.prior',
+                'torch.distributions.LogNormal',
+                f'{birth_death_id}.delta',
+                {
+                    'mean': 1.0,
+                    'scale': 1.25,
+                },
+            ),
+        )
+        joint_list.append(
+            Distribution.json_factory(
+                f'{birth_death_id}.origin.prior',
+                'torch.distributions.LogNormal',
+                f'{birth_death_id}.origin.unshifted',
+                {
+                    'mean': 1.0,
+                    'scale': 1.25,
+                },
+            ),
+        )
+        joint_list.append(
+            Distribution.json_factory(
+                f'{birth_death_id}.rho.prior',
+                'torch.distributions.Beta',
+                f'{birth_death_id}.rho',
+                {
+                    'concentration1': 1.0,
+                    'concentration0': 9999.0,
+                },
+            ),
+        )
+        prior = create_birth_death(birth_death_id, 'tree', arg)
 
-    prior_list = create_evolution_priors(arg)
+    return [prior] + joint_list
+
+
+def create_poisson_evolution_joint(taxa, arg):
+    joint_list = (
+        [
+            create_poisson_tree_likelihood('like', taxa, arg),
+        ]
+        + create_time_tree_prior(taxa, arg)
+        + create_clock_prior(arg)
+    )
 
     joint_dic = {
         'id': 'joint',
         'type': 'JointDistributionModel',
-        'distributions': joint_list + prior_list,
+        'distributions': joint_list,
+    }
+    return joint_dic
+
+
+def create_evolution_joint(taxa, alignment, arg):
+    joint_list = [
+        create_tree_likelihood('like', taxa, alignment, arg),
+    ] + create_evolution_priors(taxa, arg)
+
+    joint_dic = {
+        'id': 'joint',
+        'type': 'JointDistributionModel',
+        'distributions': joint_list,
     }
     return joint_dic
