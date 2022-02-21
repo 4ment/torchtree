@@ -39,7 +39,7 @@ class PoissonTreeLikelihood(CallableModel):
         return (
             torch.distributions.Poisson(distances)
             .log_prob(self.edge_lengths.tensor)
-            .sum()
+            .sum(-1)
         )
 
     def handle_model_changed(self, model, obj, index):
@@ -50,7 +50,7 @@ class PoissonTreeLikelihood(CallableModel):
 
     @property
     def sample_shape(self) -> torch.Size:
-        return max([model.sample_shape for model in self._models], key=len)
+        return max([model.sample_shape for model in self._models.values()], key=len)
 
     @classmethod
     def from_json(cls, data, dic) -> 'PoissonTreeLikelihood':
@@ -59,9 +59,7 @@ class PoissonTreeLikelihood(CallableModel):
         clock_model = process_object(data[BranchModel.tag], dic)
         if 'edge_lengths' in data:
             if isinstance(data['edge_lengths'], list):
-                edge_lengths = Parameter(
-                    None, torch.tensor(data['edge_lengths'], dtype=torch.long)
-                )
+                edge_lengths = Parameter(None, torch.tensor(data['edge_lengths']))
             else:
                 edge_lengths = process_object(data['edge_lengths'], dic)
         else:
@@ -69,4 +67,5 @@ class PoissonTreeLikelihood(CallableModel):
             edge_lengths = Parameter(None, tree_model.branch_lengths().detach().clone())
         if 'length' in data:
             edge_lengths.tensor = edge_lengths.tensor * data['length']
+        edge_lengths.tensor = edge_lengths.tensor.type(torch.IntTensor)
         return cls(id_, tree_model, clock_model, edge_lengths)

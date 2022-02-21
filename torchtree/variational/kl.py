@@ -76,7 +76,9 @@ class ELBO(CallableModel):
 
     @classmethod
     def from_json(cls, data, dic) -> 'ELBO':
-        return _from_json(cls, data, dic)
+        obj = _from_json(cls, data, dic)
+        obj.entropy = data.get('entropy', False)
+        return obj
 
 
 @register_class
@@ -112,7 +114,7 @@ class KLpq(CallableModel):
         return torch.sum(log_w_norm.exp() * log_w)
 
     def handle_model_changed(self, model, obj, index):
-        pass
+        self.fire_model_changed()
 
     def handle_parameter_changed(self, variable, index, event):
         pass
@@ -188,8 +190,7 @@ def _from_json(cls, data, dic):
 
     joint_desc = data['joint']
     joint = process_object(joint_desc, dic)
-    entropy = data.get('entropy', False)
-    return cls(data['id'], var, joint, samples, entropy)
+    return cls(data['id'], var, joint, samples)
 
 
 @register_class

@@ -93,7 +93,7 @@ def read_fasta_sequences(filename: str) -> List[Sequence]:
 
 def calculate_frequencies(alignment: Alignment):
     data_type = alignment.data_type
-    frequencies = np.zeros(data_type.state_count)
+    frequencies = collections.Counter()
     for sequence in alignment:
         freqs = collections.Counter(
             map(
@@ -101,8 +101,11 @@ def calculate_frequencies(alignment: Alignment):
                 map(''.join, zip(*[iter(sequence.sequence)] * data_type.size)),
             )
         )
-        frequencies += np.array(freqs[: data_type.state_count])
-    return (frequencies / frequencies.sum()).list()
+        frequencies.update(freqs)
+    frequencies = np.array(list(map(lambda x: x[1], sorted(frequencies.items()))))[
+        : data_type.state_count
+    ]
+    return (frequencies / frequencies.sum()).tolist()
 
 
 def calculate_frequencies_per_codon_position(alignment: Alignment):
@@ -137,3 +140,41 @@ def calculate_F3x4_from_nucleotide(data_type, nuc_freq):
 def calculate_F3x4(alignment):
     nuc_freq = calculate_frequencies_per_codon_position(alignment)
     return calculate_F3x4_from_nucleotide(alignment.data_type, nuc_freq)
+
+
+def calculate_substitutions(alignment: Alignment, mapping):
+    counts = [0] * (np.max(mapping) + 1)
+    data_type = NucleotideDataType(None)
+    counter = collections.Counter()
+
+    encoded = [
+        list(
+            map(
+                data_type.encoding,
+                map(''.join, zip(*[iter(s.sequence)] * data_type.size)),
+            )
+        )
+        for s in alignment
+    ]
+
+    for i, a in enumerate(encoded):
+        for j in range(i + 1, len(encoded)):
+            counter.update(collections.Counter(list(zip(a, encoded[j]))))
+
+    for tuple in counter:
+        if tuple[0] < data_type.state_count and tuple[1] < data_type.state_count:
+            counts[mapping[tuple[0]][tuple[1]]] += counter[tuple]
+    return counts
+
+
+def calculate_ts_tv(alignment: Alignment):
+    mapping = ((2, 1, 0, 1), (1, 2, 1, 0), (0, 1, 2, 1), (1, 0, 1, 2))
+    counts = calculate_substitutions(alignment, mapping)
+    return counts[0] / counts[1]
+
+
+def calculate_kappa(alignment, freqs):
+    tstv = calculate_ts_tv(alignment)
+    return (tstv * (freqs[0] + freqs[2]) * (freqs[1] + freqs[3])) / (
+        (freqs[0] * freqs[2]) + (freqs[1] * freqs[3])
+    )
