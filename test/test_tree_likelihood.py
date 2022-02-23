@@ -165,6 +165,8 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
 
     like = likelihood.TreeLikelihoodModel.from_json(tree_likelihood, {})
     assert torch.allclose(torch.tensor([-83.329016]), like())
+    like.rescale = True
+    assert torch.allclose(torch.tensor([-83.329016]), like())
 
 
 def test_treelikelihood_batch():
@@ -259,6 +261,8 @@ def test_treelikelihood_batch():
     )
 
     assert like() == like_batch()[1]
+    like.rescale = True
+    assert like() == like_batch()[1]
 
 
 def test_treelikelihood_weibull(flu_a_tree_file, flu_a_fasta_file):
@@ -324,10 +328,15 @@ def test_treelikelihood_weibull(flu_a_tree_file, flu_a_fasta_file):
         dic,
     )
     assert torch.allclose(torch.tensor([-4618.2062529058]), like())
+    like.rescale = True
+    assert torch.allclose(torch.tensor([-4618.2062529058]), like())
+    like.rescale = False
 
     branch_model._rates.tensor = branch_model._rates.tensor.repeat(3, 1)
     site_model._shape.tensor = site_model._shape.tensor.repeat(3, 1)
     tree_model._internal_heights.tensor = tree_model._internal_heights.tensor.repeat(
         3, 68
     )
+    assert torch.allclose(torch.tensor([[-4618.2062529058] * 3]), like())
+    like.rescale = True
     assert torch.allclose(torch.tensor([[-4618.2062529058] * 3]), like())

@@ -109,15 +109,18 @@ def calculate_treelikelihood_discrete_safe(
             partial = (mats[..., left, :, :, :] @ partials[left]) * (
                 mats[..., right, :, :, :] @ partials[right]
             )
-            scaler, _ = torch.max(partial, -2, keepdim=True)
+            scaler, _ = torch.max(
+                partial.view(*partial.shape[:-3], -1, *partial.shape[-1:]),
+                -2,
+                keepdim=True,
+            )
             scalers.append(scaler)
-            partials[node] = partial / scaler
+            partials[node] = partial / scaler.unsqueeze(-2)
             rescaled[node] = True
-
     return torch.sum(
         (
             torch.log(freqs @ torch.sum(props * partials[post_indexing[-1][0]], dim=-3))
-            + torch.sum(torch.cat(scalers, -2).log(), dim=-2)
+            + torch.cat(scalers, -2).log().sum(dim=-2).unsqueeze(-2)
         )
         * weights,
         dim=-1,
@@ -147,13 +150,15 @@ def calculate_treelikelihood_discrete_rescaled(
         partial = (mats[..., left, :, :, :] @ partials[left]) * (
             mats[..., right, :, :, :] @ partials[right]
         )
-        scaler, _ = torch.max(partial, -2, keepdim=True)
+        scaler, _ = torch.max(
+            partial.view(*partial.shape[:-3], -1, *partial.shape[-1:]), -2, keepdim=True
+        )
         scalers.append(scaler)
-        partials[node] = partial / scaler
+        partials[node] = partial / scaler.unsqueeze(-2)
     return torch.sum(
         (
             torch.log(freqs @ torch.sum(props * partials[post_indexing[-1][0]], dim=-3))
-            + torch.sum(torch.cat(scalers, -2).log(), dim=-2)
+            + torch.cat(scalers, -2).log().sum(dim=-2).unsqueeze(-2)
         )
         * weights,
         dim=-1,
