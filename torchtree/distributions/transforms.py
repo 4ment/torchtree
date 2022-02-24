@@ -8,6 +8,7 @@ from torchtree.core.abstractparameter import AbstractParameter
 from torchtree.core.utils import register_class
 
 
+@register_class
 class TrilExpDiagonalTransform(Transform):
     r"""
     Transform a 1D tensor to a triangular tensor. The diagonal of the triangular matrix

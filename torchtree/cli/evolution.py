@@ -5,6 +5,7 @@ from dendropy import TaxonNamespace, Tree
 
 from torchtree import Parameter, ViewParameter
 from torchtree.cli.priors import create_clock_horseshoe_prior, create_one_on_x_prior
+from torchtree.cli.utils import read_dates_from_csv
 from torchtree.core.utils import process_object
 from torchtree.distributions import Distribution
 from torchtree.distributions.ctmc_scale import CTMCScale
@@ -71,7 +72,7 @@ def create_evolution_parser(parser):
         '--brlenspr',
         required=False,
         choices=['exponential', 'gammadir'],
-        default='gammadir',
+        default='exponential',
         help="""prior on branch lengths (unrooted tree)""",
     )
     parser.add_argument(
@@ -94,7 +95,13 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '--dates',
         default=None,
-        help="""regular expression to capture sampling date in sequence names""",
+        help="""regular expression to capture sampling date in sequence names or
+         a csv file""",
+    )
+    parser.add_argument(
+        '--date_format',
+        default=None,
+        help="""format of the date (yyyy/MM/dd or dd/MM/yyyy)""",
     )
     parser.add_argument(
         '--genetic_code',
@@ -374,7 +381,13 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
 
 def create_site_model(id_, arg, w=None):
     if arg.categories == 1:
-        site_model = {'id': id_, 'type': 'ConstantSiteModel'}
+        if arg.invariant:
+            prop = Parameter.json_factory(f'{id_}.pinv', **{'tensor': [0.1]})
+            prop['lower'] = 0
+            prop['upper'] = 1
+            site_model = {'id': id_, 'type': 'InvariantSiteModel', 'invariant': prop}
+        else:
+            site_model = {'id': id_, 'type': 'ConstantSiteModel'}
     else:
         shape = Parameter.json_factory(f'{id_}.shape', **{'tensor': [0.1]})
         shape['lower'] = 0.0
@@ -619,7 +632,11 @@ def create_taxa(id_, arg):
 
     taxa = {'id': id_, 'type': 'Taxa', 'taxa': taxa_list}
     if arg.clock is not None:
-        if arg.dates is not None and arg.dates == '0':
+        if arg.dates is not None and isinstance(arg.dates, str):
+            dates = read_dates_from_csv(arg.dates, arg.date_format)
+            for taxon in taxa_list:
+                taxon['attributes'] = {'date': dates[taxon['id']]}
+        elif arg.dates is not None and arg.dates == '0':
             for idx, taxon in enumerate(taxa_list):
                 taxon['attributes'] = {'date': 0.0}
         else:
@@ -634,6 +651,67 @@ def create_taxa(id_, arg):
 
 
 def create_birth_death(birth_death_id, tree_id, arg):
+    if arg.birth_death == 'constant':
+        return create_constant_birth_death(birth_death_id, tree_id, arg)
+    elif arg.birth_death == 'bdsk':
+        return create_bdsk(birth_death_id, tree_id, arg)
+
+
+def create_constant_birth_death(birth_death_id, tree_id, arg):
+    lambda_ = Parameter.json_factory(
+        f'{birth_death_id}.lambda',
+        **{'tensor': [3.0]},
+    )
+    lambda_['lower'] = 0.0
+    mu = Parameter.json_factory(
+        f'{birth_death_id}.mu',
+        **{'tensor': [2.0]},
+    )
+    mu['lower'] = 0.0
+    psi = Parameter.json_factory(
+        f'{birth_death_id}.psi',
+        **{'tensor': [1.0]},
+    )
+    psi['lower'] = 0.0
+    rho = Parameter.json_factory(
+        f'{birth_death_id}.rho',
+        **{
+            'tensor': [1.0e-6],
+        },
+    )
+    rho['lower'] = 0.0
+    rho['upper'] = 1.0
+
+    origin = {
+        'id': f'{birth_death_id}.origin',
+        'type': 'TransformedParameter',
+        'transform': 'torch.distributions.AffineTransform',
+        'x': {
+            'id': f'{birth_death_id}.origin.unshifted',
+            'type': 'Parameter',
+            'tensor': [1.0],
+            'lower': 0.0,
+        },
+        'parameters': {
+            'loc': f'{tree_id}.root_height',
+            'scale': 1.0,
+        },
+    }
+
+    bd = {
+        'id': birth_death_id,
+        'type': 'BirthDeathModel',
+        'tree_model': tree_id,
+        'lambda': lambda_,
+        'mu': mu,
+        'psi': psi,
+        'rho': rho,
+        'origin': origin,
+    }
+    return bd
+
+
+def create_bdsk(birth_death_id, tree_id, arg):
     R = Parameter.json_factory(
         f'{birth_death_id}.R',
         **{'tensor': 3.0, 'full': [arg.grid]},
@@ -985,54 +1063,55 @@ def create_time_tree_prior(taxa, arg):
             )
         prior = create_coalesent(coalescent_id, 'tree', theta, arg, **params)
     elif arg.birth_death is not None:
-        birth_death_id = 'bdsk'
-        joint_list.append(
-            Distribution.json_factory(
-                f'{birth_death_id}.R.prior',
-                'torch.distributions.LogNormal',
-                f'{birth_death_id}.R',
-                {
-                    'mean': 1.0,
-                    'scale': 1.25,
-                },
-            ),
-        )
-        joint_list.append(
-            Distribution.json_factory(
-                f'{birth_death_id}.delta.prior',
-                'torch.distributions.LogNormal',
-                f'{birth_death_id}.delta',
-                {
-                    'mean': 1.0,
-                    'scale': 1.25,
-                },
-            ),
-        )
-        joint_list.append(
-            Distribution.json_factory(
-                f'{birth_death_id}.origin.prior',
-                'torch.distributions.LogNormal',
-                f'{birth_death_id}.origin.unshifted',
-                {
-                    'mean': 1.0,
-                    'scale': 1.25,
-                },
-            ),
-        )
-        joint_list.append(
-            Distribution.json_factory(
-                f'{birth_death_id}.rho.prior',
-                'torch.distributions.Beta',
-                f'{birth_death_id}.rho',
-                {
-                    'concentration1': 1.0,
-                    'concentration0': 9999.0,
-                },
-            ),
-        )
-        prior = create_birth_death(birth_death_id, 'tree', arg)
+        if arg.birth_death == 'constant':
+            joint_list = create_constant_bd_prior(arg.birth_death)
+        elif arg.birth_death == 'bdsk':
+            joint_list = create_bdsk_prior(arg.birth_death)
+
+        prior = create_birth_death(arg.birth_death, 'tree', arg)
 
     return [prior] + joint_list
+
+
+def create_bd_prior(id_, parameters):
+    joint_list = []
+    for name, x in parameters:
+        joint_list.append(
+            Distribution.json_factory(
+                f'{id_}.{name}.prior',
+                'torch.distributions.LogNormal',
+                f'{id_}.{x}',
+                {
+                    'mean': 1.0,
+                    'scale': 1.25,
+                },
+            ),
+        )
+    joint_list.append(
+        Distribution.json_factory(
+            f'{id_}.rho.prior',
+            'torch.distributions.Beta',
+            f'{id_}.rho',
+            {
+                'concentration1': 1.0,
+                'concentration0': 9999.0,
+            },
+        ),
+    )
+    return joint_list
+
+
+def create_constant_bd_prior(birth_death_id):
+    return create_bd_prior(
+        birth_death_id,
+        (('lambda', 'lambda'), ('mu', 'mu'), ('origin', 'origin.unshifted')),
+    )
+
+
+def create_bdsk_prior(birth_death_id):
+    return create_bd_prior(
+        birth_death_id, (('R', 'R'), ('delta', 'delta'), ('origin', 'origin.unshifted'))
+    )
 
 
 def create_poisson_evolution_joint(taxa, arg):

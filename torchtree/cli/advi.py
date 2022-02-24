@@ -1,3 +1,4 @@
+import json
 from typing import List, Tuple
 
 import numpy as np
@@ -86,6 +87,16 @@ def create_variational_parser(subprasers):
         default='Normal',
         help="""distribution for positive variable""",
     )
+    parser.add_argument(
+        '--stem',
+        required=False,
+        help="""stem for output file""",
+    )
+    parser.add_argument(
+        '--init_fullrank',
+        required=False,
+        help="""checkpoint file from a meanfield analysis""",
+    )
     parser.set_defaults(func=build_advi)
     return parser
 
@@ -99,22 +110,111 @@ def _unique_id(id_, dic):
     return unique_id
 
 
+def create_tril(scales: torch.Tensor) -> torch.Tensor:
+    """Create a 1 dimentional tensor containing a flatten tridiagonal matrix.
+
+    A covariance matrix is created using scales**2 for variances and the covariances
+    are set to zero. A tridiagonal is created using the cholesky decomposition and the
+    diagonal elements are replaced with their log.
+
+    :param scales: standard deviations
+    :return:
+    """
+    dim = len(scales)
+    cov = torch.full((dim, dim), 0.0)
+    cov[range(dim), range(dim)] = scales * scales
+    tril = torch.linalg.cholesky(cov)
+    indices = torch.tril_indices(row=dim, col=dim, offset=0)
+    tril[range(dim), range(dim)] = tril[range(dim), range(dim)].log()
+    return tril[indices[0], indices[1]]
+
+
+def create_fullrank_from_meanfield(params, path):
+    with open(path) as fp:
+        checkpoint = json.load(fp)
+    locs = []
+    log_scales = []
+    for param in checkpoint:
+        if '.loc' in param['id']:
+            locs.append(param)
+        elif '.scale.unres' in param['id']:
+            log_scales.append(param)
+        else:
+            print(param['id'])
+            exit(2)
+    sorted(
+        locs,
+        key=lambda x: params.index(x['id'].replace('.loc', '').replace('var.', '')),
+    )
+    sorted(
+        log_scales,
+        key=lambda x: params.index(
+            x['id'].replace('.scale.unres', '').replace('var.', '')
+        ),
+    )
+    return locs, log_scales
+
+
+def create_fullrank(var_id, json_object, arg):
+    group_map = {}
+    parameters = {'UNSPECIFIED': []}
+    gather_parameters(json_object, group_map, parameters)
+    res = apply_transforms_for_fullrank(var_id, parameters['UNSPECIFIED'])
+    x = list(map(lambda x: x[1], res))
+
+    if arg.init_fullrank:
+        loc_list, log_scale_list = create_fullrank_from_meanfield(x, arg.init_fullrank)
+        locs = torch.cat([torch.tensor(loc['tensor']) for loc in loc_list])
+        scales = torch.cat(
+            [torch.tensor(log_scale['tensor']).exp() for log_scale in log_scale_list]
+        )
+        tril = create_tril(scales)
+    else:
+        locs = torch.cat(list(map(lambda x: torch.tensor(x[2]), res)))
+        tril = create_tril(torch.full(locs.shape, 0.001))
+
+    distr = {
+        'id': var_id,
+        'type': 'MultivariateNormal',
+        'x': x,
+        'parameters': {
+            'loc': {
+                'id': f"{var_id}.loc",
+                'type': 'Parameter',
+                'tensor': locs.tolist(),
+            },
+            'scale_tril': {
+                'id': f"{var_id}.scale_tril",
+                'type': 'TransformedParameter',
+                'transform': 'TrilExpDiagonalTransform',
+                'x': {
+                    'id': f"{var_id}.scale_tril.unres",
+                    'type': 'Parameter',
+                    'tensor': tril.tolist(),
+                },
+            },
+        },
+    }
+    var_parameters = (f"{var_id}.loc", f"{var_id}.scale_tril.unres")
+    return distr, var_parameters
+
+
 def create_flexible_variational(arg, json_object):
     group_map = {}
     parameters = {'UNSPECIFIED': []}
     for i, distr in enumerate(arg.variational):
-        print(distr, distr.split('('))
-        var_type, rest = distr.split('(')
-        var_id = _unique_id(var_type, group_map)
-        parameters[var_id] = []
-        for id_ in rest.rstrip(')').split(','):
-            group_map[id_] = var_id
+        if '(' in distr:
+            var_type, rest = distr.split('(')
+            var_id = _unique_id(var_type, group_map)
+            parameters[var_id] = []
+            for id_ in rest.rstrip(')').split(','):
+                group_map[id_] = var_id
     gather_parameters(json_object, group_map, parameters)
 
     joint_var = []
     var_parameters = []
     for id_, params in parameters.items():
-        if id_.startswith('Fullrank'):
+        if id_.lower().startswith('fullrank'):
             res = apply_transforms_for_fullrank(id_, params)
             distr = {
                 'id': f"var.{id_}",
@@ -162,7 +262,7 @@ def gather_parameters(json_object: dict, group_map: dict, parameters: dict):
                 gather_parameters(element, group_map, parameters)
 
 
-def apply_sigmoid_transformed(json_object, value=0.0):
+def apply_sigmoid_transformed(json_object, value=None):
     unres_id = json_object['id'] + '.unres'
     json_object['type'] = 'TransformedParameter'
     json_object['transform'] = 'torch.distributions.SigmoidTransform'
@@ -171,14 +271,32 @@ def apply_sigmoid_transformed(json_object, value=0.0):
         'type': 'Parameter',
     }
     if 'tensor' in json_object and isinstance(json_object['tensor'], list):
-        json_object['x']['tensor'] = value
-        json_object['x']['full'] = [len(json_object['tensor'])]
+        if value is None:
+            json_object['x']['tensor'] = (
+                torch.distributions.SigmoidTransform()
+                .inv(torch.tensor(json_object['tensor']))
+                .tolist()
+            )
+        else:
+            json_object['x']['tensor'] = value
+            json_object['x']['full'] = [len(json_object['tensor'])]
         del json_object['tensor']
     elif 'full' in json_object:
-        json_object['x']['tensor'] = value
+        if value is None:
+            json_object['x']['tensor'] = (
+                torch.distributions.SigmoidTransform()
+                .inv(torch.tensor(json_object['tensor']))
+                .tolist()
+            )
+        else:
+            json_object['x']['tensor'] = value
         json_object['x']['full'] = json_object['full']
         del json_object['tensor']
         del json_object['full']
+    else:
+        print('error from apply_sigmoid_transformed')
+        print(json_object)
+        exit(1)
     return unres_id
 
 
@@ -245,7 +363,7 @@ def apply_simplex_transform(json_object):
 
 def create_normal_distribution(var_id, x_unres, json_object, loc, scale):
     loc_param = Parameter.json_factory(
-        var_id + '.' + json_object['id'] + '.loc',
+        var_id + '.' + x_unres + '.loc',
         **{'full_like': x_unres, 'tensor': loc},
     )
 
@@ -253,11 +371,11 @@ def create_normal_distribution(var_id, x_unres, json_object, loc, scale):
         del loc_param['full_like']
 
     scale_param = {
-        'id': var_id + '.' + json_object['id'] + '.scale',
+        'id': var_id + '.' + x_unres + '.scale',
         'type': 'TransformedParameter',
         'transform': 'torch.distributions.ExpTransform',
         'x': Parameter.json_factory(
-            var_id + '.' + json_object['id'] + '.scale.unres',
+            var_id + '.' + x_unres + '.scale.unres',
             **{'full_like': x_unres, 'tensor': scale},
         ),
     }
@@ -316,13 +434,13 @@ def create_meanfield(
         if 'type' in json_object and json_object['type'] == 'Parameter':
             if 'lower' in json_object and 'upper' in json_object:
                 if json_object['lower'] != json_object['upper']:
-                    unres_id = apply_sigmoid_transformed(json_object, 0.5)
-                    distr, loc, scale = create_normal_distribution(
-                        var_id, unres_id, json_object, 0.5, -1.89712
+                    apply_sigmoid_transformed(json_object)
+                    distrs, params = create_meanfield(
+                        var_id, json_object['x'], distribution
                     )
-                    distributions.append(distr)
-                    var_parameters.extend((loc['id'], scale['x']['id']))
-                    parameters.append(json_object['id'])
+                    distributions.extend(distrs)
+                    var_parameters.extend(params)
+                    return distributions, var_parameters
             elif 'lower' in json_object:
                 if json_object['lower'] > 0:
                     apply_affine_transform(json_object, json_object['lower'], 1.0)
@@ -339,9 +457,9 @@ def create_meanfield(
                     return distributions, var_parameters
                 elif distribution == 'Normal':
                     tensor = np.array(json_object['tensor'])
-                    loc = np.log(tensor / np.sqrt(1 + 0.001 / tensor ** 2)).tolist()
+                    loc = np.log(tensor / np.sqrt(1 + 0.001 / tensor**2)).tolist()
                     scale_log = np.log(
-                        np.sqrt(np.log(1 + 0.001 / tensor ** 2))
+                        np.sqrt(np.log(1 + 0.001 / tensor**2))
                     ).tolist()
                     unres_id = apply_exp_transform(json_object)
                     distr, loc, scale = create_normal_distribution(
@@ -388,7 +506,7 @@ def create_meanfield(
 def apply_transforms_for_fullrank(
     var_id: str,
     json_object: [dict, list],
-) -> List[Tuple[str, str, int]]:
+) -> List[Tuple[str, str, list]]:
     var_parameters = []
     if isinstance(json_object, list):
         for element in json_object:
@@ -398,23 +516,48 @@ def apply_transforms_for_fullrank(
         if 'type' in json_object and json_object['type'] == 'Parameter':
             if 'lower' in json_object and 'upper' in json_object:
                 if json_object['lower'] != json_object['upper']:
-                    unres_id = apply_sigmoid_transformed(json_object, 0.5)
-                    var_parameters.append((json_object['id'], unres_id, 1))
+                    unres_id = apply_sigmoid_transformed(json_object)
+                    tensor_list = json_object['x']['tensor']
+                    # full is list representing the shape/length of the tensor
+                    # and tensor is a float
+                    if 'full' in json_object['x']:
+                        tensor_list = (
+                            json_object['x']['full'] * json_object['x']['tensor']
+                        )
+                    var_parameters.append((json_object['id'], unres_id, tensor_list))
             elif 'lower' in json_object:
                 if json_object['lower'] > 0:
                     apply_affine_transform(json_object, json_object['lower'], 1.0)
                     unres_id = apply_exp_transform(json_object['x'])
-                    var_parameters.append((json_object['id'], unres_id, 1))
+                    tensor_list = json_object['x']['x']['tensor']
+                    var_parameters.append((json_object['id'], unres_id, tensor_list))
                 elif json_object['lower'] == 0:
                     unres_id = apply_exp_transform(json_object)
-                    var_parameters.append((json_object['id'], unres_id, 1))
+                    tensor_list = json_object['x']['tensor']
+                    if 'full' in json_object['x']:
+                        tensor_list = torch.full(
+                            json_object['x']['full'], json_object['x']['tensor']
+                        ).tolist()
+                    var_parameters.append((json_object['id'], unres_id, tensor_list))
                 else:
                     raise NotImplementedError
             elif 'simplex' in json_object and json_object['simplex']:
                 unres_id = apply_simplex_transform(json_object)
-                var_parameters.append((json_object['id'], unres_id, 1))
+                tensor_list = json_object['x']['tensor']
+                if 'full' in json_object['x']:
+                    tensor_list = torch.full(
+                        json_object['x']['full'], json_object['x']['tensor']
+                    ).tolist()
+                var_parameters.append((json_object['id'], unres_id, tensor_list))
             else:
-                var_parameters.append((json_object['id'], json_object['id'], 1))
+                tensor_list = json_object['tensor']
+                if 'full' in json_object:
+                    tensor_list = torch.full(
+                        json_object['full'], json_object['tensor']
+                    ).tolist()
+                var_parameters.append(
+                    (json_object['id'], json_object['id'], tensor_list)
+                )
 
         else:
             for value in json_object.values():
@@ -427,6 +570,12 @@ def create_variational_model(id_, joint, arg) -> Tuple[dict, List[str]]:
     variational = {'id': id_, 'type': 'JointDistributionModel'}
     if arg.variational == 'meanfield':
         distributions, parameters = create_meanfield(id_, joint, arg.distribution)
+    elif (
+        arg.variational == 'fullrank'
+        or len(arg.variational) == 1
+        and arg.variational[0] == 'fullrank'
+    ):
+        return create_fullrank(id_, joint, arg)
     else:
         distributions, parameters = create_flexible_variational(arg, joint)
     variational['distributions'] = distributions
@@ -439,13 +588,17 @@ def create_advi(joint, variational, parameters, arg):
     else:
         grad_samples = arg.grad_samples
 
+    if arg.stem:
+        checkpoint = arg.stem + '-checkpoint.json'
+    else:
+        checkpoint = 'checkpoint.json'
     advi_dic = {
         'id': 'advi',
         'type': 'Optimizer',
         'algorithm': 'torch.optim.Adam',
         'maximize': True,
         'lr': arg.eta,
-        'checkpoint': 'checkpoint.json',
+        'checkpoint': checkpoint,
         'iterations': arg.iter,
         'loss': {
             'id': 'elbo',
@@ -474,6 +627,11 @@ def create_advi(joint, variational, parameters, arg):
 
 
 def create_sampler(id_, var_id, parameters, arg):
+    if arg.stem:
+        file_name = arg.stem + '-samples.csv'
+    else:
+        file_name = 'samples.csv'
+
     return {
         "id": id_,
         "type": "Sampler",
@@ -483,7 +641,7 @@ def create_sampler(id_, var_id, parameters, arg):
             {
                 "id": "logger",
                 "type": "Logger",
-                "file_name": "samples.csv",
+                "file_name": file_name,
                 "parameters": parameters,
                 "delimiter": "\t",
             }
