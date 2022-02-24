@@ -201,7 +201,7 @@ class TreeLikelihoodModel(CallableModel):
             rates = rates.expand(sample_shape + (1, -1))
         else:
             rates = rates.reshape(sample_shape + (1, -1))
-        probs = self.site_model.probabilities().reshape((-1, 1, 1))
+        probs = self.site_model.probabilities().unsqueeze(-1).unsqueeze(-1)
         if self.clock_model is None:
             bls = torch.cat(
                 (
@@ -234,7 +234,7 @@ class TreeLikelihoodModel(CallableModel):
                 self.tree_model.postorder,
                 mats,
                 frequencies,
-                probs.unsqueeze(0),
+                probs,
             )
         else:
             log_p = calculate_treelikelihood_discrete(
@@ -243,7 +243,7 @@ class TreeLikelihoodModel(CallableModel):
                 self.tree_model.postorder,
                 mats,
                 frequencies,
-                probs.unsqueeze(0),
+                probs,
             )
 
             if torch.any(torch.isinf(log_p)):
@@ -254,7 +254,7 @@ class TreeLikelihoodModel(CallableModel):
                     self.tree_model.postorder,
                     mats,
                     frequencies,
-                    probs.unsqueeze(0),
+                    probs,
                     self.threshold,
                 )
         return log_p
