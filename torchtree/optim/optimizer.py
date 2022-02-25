@@ -51,6 +51,7 @@ class Optimizer(JSONSerializable, Runnable):
         self.maximize = kwargs.get('maximize', True)
         self.checkpoint = kwargs.get('checkpoint', None)
         self.checkpoint_frequency = kwargs.get('checkpoint_frequency', 1000)
+        self.distributions = kwargs.get('distributions', None)
 
     def update_checkpoint(self):
         if not os.path.lexists(self.checkpoint):
@@ -103,6 +104,9 @@ class Optimizer(JSONSerializable, Runnable):
 
         handler = SignalHandler()
         if self.convergence is not None:
+            if self.distributions:
+                for distr in self.distributions:
+                    distr.sample(self.convergence.samples)
             self.convergence.check(0)
             for p in self.parameters:
                 p.fire_parameter_changed()
@@ -113,6 +117,10 @@ class Optimizer(JSONSerializable, Runnable):
         for epoch in range(1, self.iterations + 1):
             if handler.stop:
                 break
+
+            if self.distributions:
+                for distr in self.distributions:
+                    distr.sample(self.loss.samples)
 
             loss = -self.loss() if self.maximize else self.loss()
 
@@ -131,6 +139,9 @@ class Optimizer(JSONSerializable, Runnable):
                 logger(epoch)
 
             if self.convergence is not None:
+                if self.distributions:
+                    for distr in self.distributions:
+                        distr.sample(self.convergence.samples)
                 res = self.convergence.check(epoch)
                 if not res:
                     break
@@ -277,5 +288,10 @@ class Optimizer(JSONSerializable, Runnable):
             klass = get_class(data['convergence']['type'])
             convergence = klass.from_json(data['convergence'], dic)
             optionals['convergence'] = convergence
+
+        # these distributions will be sampled before the loss is calculated
+        # these distributions are considered to be fixed (no gradient calculation)
+        if 'distributions' in data:
+            optionals['distributions'] = process_objects(data["distributions"], dic)
 
         return cls(parameters, loss, optimizer, iterations, **optionals)

@@ -1,0 +1,18 @@
+name: torchtree
+channels:
+  - pytorch
+  - bioconda
+  - conda-forge
+dependencies:
+  - python>=3.7
+  - numpy>=1.7
+  - dendropy
+  - pytorch>=1.9
+  - pip
+# Dev dependencies
+  - black
+  - docformatter
+  - flake8
+  - isort
+  - pre-commit
+  - pytest

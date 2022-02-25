@@ -45,11 +45,11 @@ class ScaleMixtureNormal(CallableModel):
     def _call(self, *args, **kwargs) -> Tensor:
         if self.slab is not None:
             local_scale = (
-                self.slab.tensor ** 2
-                * self.local_scale.tensor ** 2
+                self.slab.tensor**2
+                * self.local_scale.tensor**2
                 / (
-                    self.slab.tensor ** 2
-                    + self.gobal_scale.tensor ** 2 * self.local_scale.tensor ** 2
+                    self.slab.tensor**2
+                    + self.gobal_scale.tensor**2 * self.local_scale.tensor**2
                 )
             ).sqrt()
 
@@ -90,9 +90,9 @@ class ScaleMixtureNormal(CallableModel):
         id_ = data['id']
         x = process_object(data['x'], dic)
         loc = (
-            data['loc']
-            if isinstance(data['loc'], float)
-            else process_object(data['global_scale'], dic)
+            float(data['loc'])
+            if isinstance(data['loc'], (int, float))
+            else process_object(data['loc'], dic)
         )
         global_scale = process_object(data['global_scale'], dic)
         local_scale = process_object(data['local_scale'], dic)
