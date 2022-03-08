@@ -35,13 +35,14 @@
           {
             "type": "torchtree.Plate",
             "range": "0:32",
+            "var": "i",
             "object": {
-              "id": "planar.*",
+              "id": "planar.${i}",
               "type": "torchtree.nn.Module",
               "module": "torchtree.nf.planar.PlanarTransform",
               "parameters": {
                 "u": {
-                  "id": "flow.u.*",
+                  "id": "flow.u.${i}",
                   "type": "torchtree.Parameter",
                   "full": [
                     1,
@@ -51,7 +52,7 @@
                   "nn": true
                 },
                 "w": {
-                  "id": "flow.w.*",
+                  "id": "flow.w.${i}",
                   "type": "torchtree.Parameter",
                   "full": [
                     1,
@@ -61,7 +62,7 @@
                   "nn": true
                 },
                 "b": {
-                  "id": "flow.b.*",
+                  "id": "flow.b.${i}",
                   "type": "torchtree.Parameter",
                   "full": [
                     1

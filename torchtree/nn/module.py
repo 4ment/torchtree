@@ -85,8 +85,10 @@ class Module(CallableModel):
             if arg in data_dist:
                 if isinstance(data_dist[arg], str):
                     params[arg] = dic[data_dist[arg]]
-                else:
+                elif isinstance(data_dist[arg], dict):
                     params[arg] = process_objects(data_dist[arg], dic)
+                else:
+                    params[arg] = data_dist[arg]
             else:
                 # other parameters that are not torchtree.Parameters
                 pass

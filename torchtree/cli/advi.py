@@ -229,7 +229,7 @@ def create_flexible_variational(arg, json_object):
                 (distr['parameters']['loc'], distr['parameters']['scale_tril'])
             )
             joint_var.append(distr)
-        elif id_ in ('UNSPECIFIED', 'Normal', 'LogNormal', 'Gamma'):
+        elif id_ in ('UNSPECIFIED', 'Normal', 'LogNormal', 'Gamma', 'Weibull'):
             distribution = (
                 _unique_id('Normal', group_map) if id_ == 'UNSPECIFIED' else id_
             )
@@ -237,7 +237,7 @@ def create_flexible_variational(arg, json_object):
                 distr, var_params = create_meanfield(
                     f"var.{distribution}", param, distribution
                 )
-                joint_var.append(distr)
+                joint_var.extend(distr)
                 var_parameters.extend(var_params)
     return joint_var, var_parameters
 
@@ -419,6 +419,34 @@ def create_gamma_distribution(var_id, x_unres, json_object, concentration, rate)
     return distr, concentration_param, rate_param
 
 
+def create_weibull_distribution(var_id, x_unres, json_object, scale, concentration):
+    scale_param = {
+        'id': var_id + '.' + json_object['id'] + '.scale',
+        'type': 'TransformedParameter',
+        'transform': 'torch.distributions.ExpTransform',
+        'x': Parameter.json_factory(
+            var_id + '.' + json_object['id'] + '.scale.unres',
+            **{'full_like': json_object['id'], 'tensor': scale},
+        ),
+    }
+    concentration_param = {
+        'id': var_id + '.' + json_object['id'] + '.concentration',
+        'type': 'TransformedParameter',
+        'transform': 'torch.distributions.ExpTransform',
+        'x': Parameter.json_factory(
+            var_id + '.' + json_object['id'] + '.concentration.unres',
+            **{'full_like': json_object['id'], 'tensor': concentration},
+        ),
+    }
+    distr = Distribution.json_factory(
+        var_id + '.' + json_object['id'],
+        'torch.distributions.Weibull',
+        x_unres,
+        {'scale': scale_param, 'concentration': concentration_param},
+    )
+    return distr, scale_param, concentration_param
+
+
 def create_meanfield(
     var_id: str, json_object: dict, distribution: str
 ) -> Tuple[List[str], List[str]]:
@@ -466,10 +494,15 @@ def create_meanfield(
                         var_id, unres_id, json_object, loc, scale_log
                     )
                     var_parameters.extend((loc['id'], scale['x']['id']))
-                elif distribution == 'Gamma':
-                    distr, concentration, rate = create_gamma_distribution(
-                        var_id, json_object['id'], json_object, 0, 2.3
-                    )
+                elif distribution in ('Gamma', 'Weibull'):
+                    if distribution == 'Gamma':
+                        distr, concentration, rate = create_gamma_distribution(
+                            var_id, json_object['id'], json_object, 0, 2.3
+                        )
+                    elif distribution == 'Weibull':
+                        distr, scale, concentration = create_weibull_distribution(
+                            var_id, json_object['id'], json_object, 0, 2.3
+                        )
                     var_parameters.extend(
                         [p['x']['id'] for p in distr['parameters'].values()]
                     )

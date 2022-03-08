@@ -226,6 +226,17 @@ def remove_comments(obj):
                 del obj[key]
 
 
+def replace_wildcard_with_str(obj, wildcard, value):
+    if isinstance(obj, list):
+        for element in obj:
+            replace_wildcard_with_str(element, wildcard, value)
+    elif isinstance(obj, dict):
+        for key in list(obj.keys()).copy():
+            replace_wildcard_with_str(obj[key], wildcard, value)
+            if key == 'id' and wildcard in obj[key]:
+                obj[key] = obj[key].replace(wildcard, value)
+
+
 def replace_star_with_str(obj, value):
     if isinstance(obj, list):
         for element in obj:
@@ -238,7 +249,6 @@ def replace_star_with_str(obj, value):
 
 
 def expand_plates(obj, parent=None, idx=None):
-    # TODO: expand_plates won't work with nested plates
     if isinstance(obj, list):
         for i, element in enumerate(obj):
             expand_plates(element, obj, i)
@@ -249,7 +259,10 @@ def expand_plates(obj, parent=None, idx=None):
                 objects = []
                 for i in range(*r):
                     clone = copy.deepcopy(obj['object'])
-                    replace_star_with_str(clone, str(i))
+                    if 'var' in obj:
+                        replace_wildcard_with_str(clone, f"${{{obj['var']}}}", str(i))
+                    else:
+                        replace_star_with_str(clone, str(i))
                     objects.append(clone)
                 # replace plate dict with object list in parent list
                 if idx is not None:

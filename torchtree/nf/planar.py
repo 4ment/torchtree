@@ -32,7 +32,7 @@ class PlanarTransform(nn.Module):
         a = torch.tanh(z @ self.w.t() + self.b)
 
         # calculate log det jacobian
-        psi = (1 - a ** 2) @ self.w
+        psi = (1 - a**2) @ self.w
         self._log_det_jacobian = torch.log(
             torch.abs(1 + torch.matmul(psi, u_hat.t()))
         ).squeeze()

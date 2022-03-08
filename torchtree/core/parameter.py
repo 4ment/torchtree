@@ -609,3 +609,86 @@ class CatParameter(AbstractParameter, ParameterListener):
         parameters = process_objects(data['parameters'], dic)
         dim = data.get('dim', 0)
         return cls(data['id'], parameters, dim)
+
+
+@register_class
+class ModuleParameter(AbstractParameter, Parametric):
+    def __init__(
+        self,
+        id_: Optional[str],
+        module,
+    ) -> None:
+        Parametric.__init__(self)
+        AbstractParameter.__init__(self, id_)
+        self.need_update = False
+        self.module = module
+        self._tensor = module()
+        self.listeners = []
+
+    def parameters(self) -> List[AbstractParameter]:
+        return self.module.parameters()
+
+    @property
+    def tensor(self) -> Tensor:
+        if self.need_update:
+            self._tensor = self.module()
+            self.need_update = False
+        return self._tensor
+
+    @tensor.setter
+    def tensor(self, tensor):
+        self.x.tensor = self.transform.inv(tensor)
+
+    @property
+    def requires_grad(self) -> bool:
+        raise Exception('requires_grad getter cannot be called on ModuleParameter')
+
+    @requires_grad.setter
+    def requires_grad(self, requires_grad: bool) -> None:
+        raise Exception('requires_grad setter cannot be called on ModuleParameter')
+
+    @property
+    def shape(self) -> torch.Size:
+        if self.need_update:
+            self._tensor = self.module()
+            self.need_update = False
+        return self._tensor.shape
+
+    def handle_parameter_changed(self, variable, index, event) -> None:
+        self.need_update = True
+        self.fire_parameter_changed()
+
+    def handle_model_changed(self, model, obj, index) -> None:
+        self.need_update = True
+        self.fire_parameter_changed()
+
+    def add_parameter_listener(self, listener) -> None:
+        self.listeners.append(listener)
+
+    def fire_parameter_changed(self, index=None, event=None) -> None:
+        for listener in self.listeners:
+            listener.handle_parameter_changed(self, index, event)
+
+    @property
+    def sample_shape(self) -> torch.Size:
+        if self.need_update:
+            self._tensor = self.module()
+            self.need_update = False
+        return self._tensor.shape[:-1]
+
+    def to(self, *args, **kwargs) -> None:
+        self.module.to(*args, **kwargs)
+        self.need_update = True
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None):
+        self.module.cuda(device)
+        self.need_update = True
+
+    def cpu(self):
+        self.module.cpu()
+        self.need_update = True
+
+    @classmethod
+    def from_json(cls, data, dic):
+        module = process_object(data['module'], dic)
+        return cls(data['id'], module)

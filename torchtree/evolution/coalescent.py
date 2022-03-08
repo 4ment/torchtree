@@ -10,8 +10,7 @@ from ..typing import ID
 from .tree_model import TimeTreeModel, TreeModel
 
 
-@register_class
-class ConstantCoalescentModel(CallableModel):
+class AbstractCoalescentModel(CallableModel):
     def __init__(
         self,
         id_: ID,
@@ -28,15 +27,16 @@ class ConstantCoalescentModel(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
+    @property
+    def sample_shape(self) -> torch.Size:
+        return max(self.tree_model.sample_shape, self.theta.shape[:-1], key=len)
+
+
+@register_class
+class ConstantCoalescentModel(AbstractCoalescentModel):
     def _call(self, *args, **kwargs) -> torch.Tensor:
         coalescent = ConstantCoalescent(self.theta.tensor)
         return coalescent.log_prob(self.tree_model.node_heights)
-
-    @property
-    def sample_shape(self) -> torch.Size:
-        return max(
-            self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
-        )
 
     @classmethod
     def from_json(cls, data, dic):
@@ -97,7 +97,7 @@ class ConstantCoalescent(Distribution):
 
 
 @register_class
-class ExponentialCoalescentModel(CallableModel):
+class ExponentialCoalescentModel(AbstractCoalescentModel):
     def __init__(
         self,
         id_: ID,
@@ -105,10 +105,8 @@ class ExponentialCoalescentModel(CallableModel):
         growth: AbstractParameter,
         tree_model: TimeTreeModel = None,
     ) -> None:
-        super().__init__(id_)
-        self.theta = theta
+        super().__init__(id_, theta, tree_model)
         self.growth = growth
-        self.tree_model = tree_model
 
     def handle_model_changed(self, model, obj, index):
         self.fire_model_changed()
@@ -123,7 +121,10 @@ class ExponentialCoalescentModel(CallableModel):
     @property
     def sample_shape(self) -> torch.Size:
         return max(
-            self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
+            self.tree_model.sample_shape,
+            self.theta.shape[:-1],
+            self.growth.shape[:-1],
+            key=len,
         )
 
     @classmethod
@@ -308,7 +309,7 @@ class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
 
 
 @register_class
-class PiecewiseConstantCoalescentGridModel(CallableModel):
+class PiecewiseConstantCoalescentGridModel(AbstractCoalescentModel):
     def __init__(
         self,
         id_: ID,
@@ -316,9 +317,8 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
         grid: AbstractParameter,
         tree_model: TimeTreeModel = None,
     ) -> None:
-        super().__init__(id_)
+        super().__init__(id_, theta)
         self.grid = grid
-        self.theta = theta
         if isinstance(tree_model, list):
             for tree in tree_model:
                 setattr(self, tree.id, tree)
@@ -334,18 +334,6 @@ class PiecewiseConstantCoalescentGridModel(CallableModel):
         else:
             log_p = pwc.log_prob(self.tree_model.node_heights)
         return log_p
-
-    def handle_model_changed(self, model, obj, index) -> None:
-        self.fire_model_changed()
-
-    def handle_parameter_changed(self, variable, index, event) -> None:
-        self.fire_model_changed()
-
-    @property
-    def sample_shape(self) -> torch.Size:
-        return max(
-            self.tree_model.node_heights.shape[:-1], self.theta.shape[:-1], key=len
-        )
 
     @classmethod
     def from_json(cls, data, dic):

@@ -4,36 +4,37 @@
 
 ## Installation
 
-### Get the torchtree source
-```bash
-git clone https://github.com/4ment/torchtree
-cd torchtree
-```
-
-### Install dependencies
-
-Installing dependencies using Anaconda
+### Use an Anaconda environment (Optional)
 ```bash
 conda env create -f environment.yml
 conda activate torchtree
 ```
 
-or using pip
+### The easy way
+To install the latest stable version, run
 ```bash
-pip install -r requirements.txt
+pip install torchtree
 ```
 
-### Install torchtree
+### Using the source code
 ```bash
-python -m pip install .
+git clone https://github.com/4ment/torchtree
+cd torchtree
+pip install .
 ```
 
-### Check install
+## Check install
 ```bash
 torchtree --help
 ```
 
-### Quick start
+## Quick start
+torchtree will approximate the posterior distribution of an unrooted tree with a JC69 substitution model using variational inference 
 ```bash
 torchtree examples/advi/fluA.json
+```
+
+The JSON file can be generated using the torchtree CLI
+```bash
+torchtree-cli advi -i data/fluA.fa -t data/fluA.tree > fluA.json
 ```

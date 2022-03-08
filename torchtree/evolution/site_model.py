@@ -14,6 +14,10 @@ from ..typing import ID
 class SiteModel(Model):
     _tag = 'site_model'
 
+    def __init__(self, id_: ID, mu: AbstractParameter = None) -> None:
+        super().__init__(id_)
+        self._mu = mu
+
     @abstractmethod
     def rates(self) -> torch.Tensor:
         pass
@@ -26,7 +30,7 @@ class SiteModel(Model):
 @register_class
 class ConstantSiteModel(SiteModel):
     def __init__(self, id_: ID, mu: AbstractParameter = None) -> None:
-        super().__init__(id_)
+        super().__init__(id_, mu)
         self._rate = mu if mu is not None else Parameter(None, torch.ones((1,)))
         self._probability = torch.ones_like(self._rate.tensor)
 
@@ -59,7 +63,7 @@ class ConstantSiteModel(SiteModel):
         if 'mu' in data:
             mu = process_object(data['mu'], dic)
         else:
-            mu = Parameter(None, torch.ones((1,)))
+            mu = None
         return cls(data['id'], mu)
 
 
@@ -68,9 +72,8 @@ class InvariantSiteModel(SiteModel):
     def __init__(
         self, id_: ID, invariant: AbstractParameter, mu: AbstractParameter = None
     ) -> None:
-        super().__init__(id_)
+        super().__init__(id_, mu)
         self._invariant = invariant
-        self._mu = mu
         self._rates = None
         self._probs = None
         self.need_update = True
@@ -135,11 +138,10 @@ class WeibullSiteModel(SiteModel):
         invariant: AbstractParameter = None,
         mu: AbstractParameter = None,
     ) -> None:
-        super().__init__(id_)
+        super().__init__(id_, mu)
         self._shape = shape
         self.categories = categories
         self._invariant = invariant
-        self._mu = mu
         self.probs = torch.full(
             (categories,), 1.0 / categories, dtype=self.shape.dtype, device=shape.device
         )
@@ -232,8 +234,14 @@ class WeibullSiteModel(SiteModel):
 
 
 class LogNormalSiteModel(SiteModel):
-    def __init__(self, id_: ID, scale: AbstractParameter, categories: int = 4) -> None:
-        super().__init__(id_)
+    def __init__(
+        self,
+        id_: ID,
+        scale: AbstractParameter,
+        categories: int = 4,
+        mu: AbstractParameter = None,
+    ) -> None:
+        super().__init__(id_, mu)
         self._scale = scale
         self.categories = categories
         self.probs = torch.full((categories,), 1.0 / categories, dtype=self.scale.dtype)

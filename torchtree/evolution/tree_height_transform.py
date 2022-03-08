@@ -1,6 +1,8 @@
 import torch
 from torch.distributions import Transform
 
+from ..math import soft_max
+
 
 class GeneralNodeHeightTransform(Transform):
     r"""Transform from ratios to node heights."""
@@ -103,8 +105,8 @@ class DifferenceNodeHeightTransform(Transform):
       x_i = \max(x_{c(i,0)}, x_{c(i,1)}) + y_i
 
     where :math:`x_c(i,j)` is the height of the jth child of node :math:`i` and
-    :math:`y_i \in \mathbb{R}^+`. Function max is approximated using logsumexp in order
-    to propagate the gradient.
+    :math:`y_i \in \mathbb{R}^+`. Function max can be approximated using logsumexp
+    in order to propagate the gradient if k > 0.
     """
     bijective = True
     sign = +1
@@ -116,6 +118,10 @@ class DifferenceNodeHeightTransform(Transform):
         self.tree = tree_model
         self.taxa_count = self.tree.taxa_count
         self.k = k
+        if self.k <= 0:
+            self.max = lambda input: torch.max(input, dim=-1, keepdim=True)[0]
+        else:
+            self.max = lambda input: soft_max(input, self.k, dim=-1, keepdim=True)
 
     def _call(self, x: torch.Tensor) -> torch.Tensor:
         """Transform node height differences to internal node heights."""
@@ -124,13 +130,7 @@ class DifferenceNodeHeightTransform(Transform):
         ) + [None] * (self.taxa_count - 1)
         for node, left, right in self.tree.postorder:
             heights[node] = (
-                # torch.max(heights[left], heights[right])
-                torch.logsumexp(
-                    torch.cat((heights[left] * self.k, heights[right] * self.k), -1),
-                    dim=-1,
-                    keepdim=True,
-                )
-                / self.k
+                self.max(torch.cat((heights[left], heights[right]), -1))
                 + x[..., node - self.taxa_count : (node - self.taxa_count + 1)]
             )
         return torch.cat(heights[self.taxa_count :], -1)

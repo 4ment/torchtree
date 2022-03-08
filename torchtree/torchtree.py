@@ -65,7 +65,7 @@ def main():
     print()
 
     # register classes that do not require module specification
-    for module in package_contents(__name__.split('.')[0]):
+    for module in package_contents('torchtree'):
         importlib.import_module(module)
 
     with open(arg.file) as file_pointer:

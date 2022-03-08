@@ -5,14 +5,15 @@ from timeit import default_timer as timer
 from typing import List, Tuple
 
 import torch
+from torch.distributions import StickBreakingTransform
 
-from torchtree import Parameter
+from torchtree import Parameter, TransformedParameter
 from torchtree.evolution.alignment import Alignment, Sequence
 from torchtree.evolution.coalescent import ConstantCoalescent
 from torchtree.evolution.datatype import NucleotideDataType
 from torchtree.evolution.io import read_tree, read_tree_and_alignment
 from torchtree.evolution.site_pattern import compress_alignment
-from torchtree.evolution.substitution_model import JC69
+from torchtree.evolution.substitution_model import GTR, JC69
 from torchtree.evolution.taxa import Taxa, Taxon
 from torchtree.evolution.tree_likelihood import (
     calculate_treelikelihood_discrete,
@@ -801,6 +802,12 @@ parser.add_argument(
 parser.add_argument(
     '--debug', required=False, action='store_true', help="""Debug mode"""
 )
+parser.add_argument(
+    '--gtr',
+    required=False,
+    action='store_true',
+    help="""Include gradient calculation of GTR parameters""",
+)
 parser.add_argument("--all", required=False, action="store_true", help="""Run all""")
 parser.add_argument('--cuda', required=False, action='store_true', help="""Use GPU""")
 args = parser.parse_args()
@@ -822,6 +829,26 @@ if args.output:
 print('Tree likelihood unrooted:')
 unrooted_treelikelihood(args, JC69('jc'))
 print()
+
+if args.gtr:
+    print('Tree likelihood unrooted:')
+    unrooted_treelikelihood(
+        args,
+        GTR(
+            'gtr',
+            TransformedParameter(
+                'rates',
+                Parameter('rates.unres', torch.full((5,), 0.0)),
+                StickBreakingTransform(),
+            ),
+            TransformedParameter(
+                'frequencies',
+                Parameter('frequencies.unres', torch.full((3,), 0.0)),
+                StickBreakingTransform(),
+            ),
+        ),
+    )
+    print()
 
 print('Height transform log det Jacobian:')
 ratio_transform_jacobian(args)
