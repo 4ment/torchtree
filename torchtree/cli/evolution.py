@@ -5,7 +5,7 @@ from dendropy import TaxonNamespace, Tree
 
 from torchtree import Parameter, ViewParameter
 from torchtree.cli.priors import create_clock_horseshoe_prior, create_one_on_x_prior
-from torchtree.cli.utils import read_dates_from_csv
+from torchtree.cli.utils import convert_date_to_real, read_dates_from_csv
 from torchtree.core.utils import process_object
 from torchtree.distributions import Distribution
 from torchtree.distributions.ctmc_scale import CTMCScale
@@ -95,13 +95,17 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '--dates',
         default=None,
-        help="""regular expression to capture sampling date in sequence names or
-         a csv file""",
+        help="""a csv file or 0 for contemporaneous taxa""",
     )
     parser.add_argument(
         '--date_format',
         default=None,
-        help="""format of the date (yyyy/MM/dd or dd/MM/yyyy)""",
+        help="""format of the date (yyyy/MM/dd or dd/MM/yyyy or dd-MM-yyyy)""",
+    )
+    parser.add_argument(
+        '--date_regex',
+        default=None,
+        help="""regular expression to capture sampling date in sequence names""",
     )
     parser.add_argument(
         '--genetic_code',
@@ -641,12 +645,26 @@ def create_taxa(id_, arg):
                 taxon['attributes'] = {'date': 0.0}
         else:
             regex_date = r'_(\d+\.?\d*)$'
-            if arg.dates is not None:
-                regex_date = arg.dates
+            if arg.date_regex is not None:
+                regex_date = arg.date_regex
             regex = re.compile(regex_date)
+
+            if arg.date_format is not None:
+                res = re.split(r"[/-]", arg.date_format)
+                yy = res.index('yyyy') + 1
+                MM = res.index('MM') + 1
+                dd = res.index('dd') + 1
+
             for idx, taxon in enumerate(taxa_list):
                 res = re.search(regex, taxon['id'])
-                taxon['attributes'] = {'date': float(res.group(1))}
+                if len(res.groups()) > 1:
+                    taxon['attributes'] = {
+                        'date': convert_date_to_real(
+                            int(res[dd]), int(res[MM]), int(res[yy])
+                        )
+                    }
+                else:
+                    taxon['attributes'] = {'date': float(res.group(1))}
     return taxa
 
 

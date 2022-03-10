@@ -55,6 +55,19 @@ class Parameter(AbstractParameter):
         self._tensor.requires_grad = requires_grad
         self.fire_parameter_changed()
 
+    def detach(self):
+        return Parameter(self.id, self._tensor.detach())
+
+    @property
+    def grad_fn(self):
+        return self._tensor.grad_fn
+
+    def copy_(self, tensor):
+        self._tensor.copy_(tensor)
+
+    def size(self):
+        return self._tensor.size()
+
     @property
     def grad(self) -> bool:
         return self._tensor.grad

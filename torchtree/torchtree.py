@@ -2,6 +2,7 @@ import argparse
 import importlib
 import json
 import logging
+import sys
 
 import torch
 
@@ -24,7 +25,9 @@ def main():
     )
     parser.add_argument(
         'file',
+        type=argparse.FileType('r'),
         metavar='input-file-name',
+        default=sys.stdin,
         help='JSON configuration file',
     )
     parser.add_argument(
@@ -68,9 +71,7 @@ def main():
     for module in package_contents('torchtree'):
         importlib.import_module(module)
 
-    with open(arg.file) as file_pointer:
-        # data = json.load(fp, object_pairs_hook=collections.OrderedDict)
-        data = json.load(file_pointer)
+    data = json.load(arg.file)
 
     remove_comments(data)
     expand_plates(data)

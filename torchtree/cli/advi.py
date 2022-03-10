@@ -58,6 +58,7 @@ def create_variational_parser(subprasers):
     parser.add_argument(
         '--K_grad_samples',
         type=int,
+        default=1,
         help="number of samples for Monte Carlo estimate of gradients"
         " using multisample objective",
     )
@@ -240,6 +241,45 @@ def create_flexible_variational(arg, json_object):
                 joint_var.extend(distr)
                 var_parameters.extend(var_params)
     return joint_var, var_parameters
+
+
+def create_realnvp(var_id, json_object, arg):
+    group_map = {}
+    parameters = {'UNSPECIFIED': []}
+    gather_parameters(json_object, group_map, parameters)
+    res = apply_transforms_for_fullrank(var_id, parameters['UNSPECIFIED'])
+    x = list(map(lambda x: x[1], res))
+
+    params = torch.cat(list(map(lambda x: torch.tensor(x[2]), res)))
+
+    distr = {
+        "id": var_id,
+        "type": "RealNVP",
+        "x": x,
+        "base": {
+            "id": "base",
+            "type": "Distribution",
+            "distribution": "torchtree.distributions.Normal",
+            "x": {"id": "dummy", "type": "Parameter", "zeros": params.shape[-1]},
+            "parameters": {
+                "loc": {
+                    "id": f"{var_id}.base.loc",
+                    "type": "Parameter",
+                    "zeros": params.shape[-1],
+                },
+                "scale": {
+                    "id": f"{var_id}.base.scale",
+                    "type": "Parameter",
+                    "ones": params.shape[-1],
+                },
+            },
+        },
+        "n_blocks": 2,
+        "hidden_size": 2,
+        "n_hidden": 1,
+    }
+    var_parameters = (var_id,)
+    return distr, var_parameters
 
 
 def gather_parameters(json_object: dict, group_map: dict, parameters: dict):
@@ -601,7 +641,7 @@ def apply_transforms_for_fullrank(
 
 def create_variational_model(id_, joint, arg) -> Tuple[dict, List[str]]:
     variational = {'id': id_, 'type': 'JointDistributionModel'}
-    if arg.variational == 'meanfield':
+    if len(arg.variational) == 1 and arg.variational[0] == 'meanfield':
         distributions, parameters = create_meanfield(id_, joint, arg.distribution)
     elif (
         arg.variational == 'fullrank'
@@ -609,6 +649,8 @@ def create_variational_model(id_, joint, arg) -> Tuple[dict, List[str]]:
         and arg.variational[0] == 'fullrank'
     ):
         return create_fullrank(id_, joint, arg)
+    elif len(arg.variational) == 1 and arg.variational[0] == 'realnvp':
+        return create_realnvp(id_, joint, arg.distribution)
     else:
         distributions, parameters = create_flexible_variational(arg, joint)
     variational['distributions'] = distributions
@@ -616,7 +658,7 @@ def create_variational_model(id_, joint, arg) -> Tuple[dict, List[str]]:
 
 
 def create_advi(joint, variational, parameters, arg):
-    if arg.K_grad_samples is not None:
+    if arg.K_grad_samples > 1:
         grad_samples = [arg.grad_samples, arg.K_grad_samples]
     else:
         grad_samples = arg.grad_samples
