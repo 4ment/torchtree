@@ -1,6 +1,9 @@
 import abc
-from collections import OrderedDict
-from typing import List, Union
+from typing import Iterator, List, Optional, Union
+
+import torch
+from torch import Tensor
+from torch.nn import Module
 
 from .abstractparameter import AbstractParameter
 
@@ -19,29 +22,70 @@ class ParameterListener(abc.ABC):
         ...
 
 
-class Parametric(ModelListener, ParameterListener, abc.ABC):
+class Parametric(Module, ModelListener, ParameterListener, abc.ABC):
     def __init__(self) -> None:
-        self._parameters = OrderedDict()
-        self._models = OrderedDict()
+        super().__init__()
+        self.listeners = []
 
-    def __getattr__(self, name: str) -> Union[AbstractParameter, 'Parametric']:
-        if '_parameters' in self.__dict__:
-            _parameters = self.__dict__['_parameters']
-            if name in _parameters:
-                return _parameters[name]
-        if '_models' in self.__dict__:
-            _models = self.__dict__['_models']
-            if name in _models:
-                return _models[name]
-        raise AttributeError(
-            "'{}' object has no attribute '{}'".format(type(self).__name__, name)
-        )
+    def register_parameter(self, name: str, param) -> None:
+        r"""Adds a parameter to the module.
 
-    def __setattr__(
-        self, name: str, value: Union[AbstractParameter, 'Parametric']
-    ) -> None:
-        from .model import Model
+        The parameter can be accessed as an attribute using given name.
 
+        Args:
+            name (string): name of the parameter. The parameter can be accessed
+                from this module using the given name
+            param (Parameter or None): parameter to be added to the module. If
+                ``None``, then operations that run on parameters, such as :attr:`cuda`,
+                are ignored. If ``None``, the parameter is **not** included in the
+                module's :attr:`state_dict`.
+        """
+        from .. import Parameter
+
+        # print(name)
+        if '_parameters' not in self.__dict__:
+            raise AttributeError(
+                "cannot assign parameter before Module.__init__() call"
+            )
+
+        elif not isinstance(name, torch._six.string_classes):
+            raise TypeError(
+                "parameter name should be a string. "
+                "Got {}".format(torch.typename(name))
+            )
+        elif '.' in name:
+            raise KeyError("parameter name can't contain \".\"")
+        elif name == '':
+            raise KeyError("parameter name can't be empty string \"\"")
+        elif hasattr(self, name) and name not in self._parameters:
+            raise KeyError("attribute '{}' already exists".format(name))
+
+        if param is None:
+            self._parameters[name] = None
+        elif not isinstance(param, Parameter):
+            raise TypeError(
+                "cannot assign '{}' object to parameter '{}' "
+                "(torch.nn.Parameter or None required)".format(
+                    torch.typename(param), name
+                )
+            )
+        elif param.grad_fn:
+            raise ValueError(
+                "Cannot assign non-leaf Tensor to parameter '{0}'. Model "
+                "parameters must be created explicitly. To express '{0}' "
+                "as a function of another Tensor, compute the value in "
+                "the forward() method.".format(name)
+            )
+        else:
+            self._parameters[name] = param
+            param.add_parameter_listener(self)
+
+    def add_module(self, name: str, module: Optional['Module']) -> None:
+        super().add_module(name, module)
+        if name is not None and isinstance(module, Parametric):
+            self._modules[name].add_model_listener(self)
+
+    def __setattr__(self, name: str, value: Union[Tensor, 'Module']) -> None:
         def remove_from(*dicts_or_sets):
             for d in dicts_or_sets:
                 if name in d:
@@ -50,46 +94,55 @@ class Parametric(ModelListener, ParameterListener, abc.ABC):
                     else:
                         d.discard(name)
 
-        if isinstance(value, AbstractParameter):
-            params = self.__dict__.get('_parameters')
+        params = self.__dict__.get('_parameters')
+        from .. import Parameter
+
+        if isinstance(value, Parameter):
             if params is None:
                 raise AttributeError(
-                    "cannot assign parameters before Model.__init__() call"
+                    "cannot assign parameters before Module.__init__() call"
                 )
-            remove_from(self.__dict__, self._models)
+            remove_from(
+                self.__dict__,
+                self._buffers,
+                self._modules,
+                self._non_persistent_buffers_set,
+            )
             self.register_parameter(name, value)
-        elif isinstance(value, Model):
-            models = self.__dict__.get('_models')
-            if models is None:
-                raise AttributeError(
-                    "cannot assign models before Model.__init__() call"
-                )
-            remove_from(self.__dict__, self._parameters)
-            self.register_model(name, value)
         else:
-            object.__setattr__(self, name, value)
+            super().__setattr__(name, value)
+            if isinstance(value, Parametric):
+                self._modules[name].add_model_listener(self)
 
-    def __delattr__(self, name):
-        if name in self._parameters:
-            del self._parameters[name]
-        elif name in self._models:
-            del self._models[name]
-        else:
-            object.__delattr__(self, name)
-
-    def register_parameter(self, name: str, parameter: AbstractParameter) -> None:
-        self._parameters[name] = parameter
-        parameter.add_parameter_listener(self)
-
-    def register_model(self, name: str, model: 'Parametric') -> None:
-        self._models[name] = model
-        model.add_model_listener(self)
-
-    def parameters(self) -> List[AbstractParameter]:
+    def parameters(
+        self, recurse: bool = True, tensor=False
+    ) -> Union[Iterator[AbstractParameter], List[torch.nn.Parameter]]:
         """Returns parameters of instance Parameter."""
         parameters = []
-        for param in self._parameters.values():
-            parameters.extend(param.parameters())
-        for model in self._models.values():
-            parameters.extend(model.parameters())
+        if tensor:
+            for param in super().parameters(recurse):
+                yield param
+        else:
+            for param in self._parameters.values():
+                parameters.extend(list(param.parameters()))
+                print(self.id, param.id, param.shape)
+            for model in self._modules.values():
+                parameters.extend(list(model.parameters()))
+
         return parameters
+
+    def add_model_listener(self, listener: ModelListener) -> None:
+        self.listeners.append(listener)
+
+    def remove_model_listener(self, listener: ModelListener) -> None:
+        self.listeners.remove(listener)
+
+    def add_parameter_listener(self, listener: ParameterListener) -> None:
+        self.listeners.append(listener)
+
+    def remove_parameter_listener(self, listener: ParameterListener) -> None:
+        self.listeners.remove(listener)
+
+    def fire_model_changed(self, obj=None, index=None) -> None:
+        for listener in self.listeners:
+            listener.handle_model_changed(self, obj, index)

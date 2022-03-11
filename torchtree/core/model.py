@@ -16,23 +16,6 @@ class Model(Parametric, Identifiable, ModelListener, ParameterListener):
     def __init__(self, id_: Optional[str]) -> None:
         Parametric.__init__(self)
         Identifiable.__init__(self, id_)
-        self.listeners = []
-
-    def add_model_listener(self, listener: ModelListener) -> None:
-        self.listeners.append(listener)
-
-    def remove_model_listener(self, listener: ModelListener) -> None:
-        self.listeners.remove(listener)
-
-    def add_parameter_listener(self, listener: ParameterListener) -> None:
-        self.listeners.append(listener)
-
-    def remove_parameter_listener(self, listener: ParameterListener) -> None:
-        self.listeners.remove(listener)
-
-    def fire_model_changed(self, obj=None, index=None) -> None:
-        for listener in self.listeners:
-            listener.handle_model_changed(self, obj, index)
 
     @classproperty
     def tag(cls) -> Optional[str]:
