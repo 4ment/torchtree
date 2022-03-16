@@ -282,6 +282,23 @@ def unrooted_treelikelihood(args, subst_model):
         log_prob.backward()
         return log_prob
 
+    @benchmark
+    def fn_safe_grad_gtr(bls):
+        subst_model._frequencies.need_update = True
+        subst_model._rates.need_update = True
+        mats = subst_model.p_t(bls)
+        log_prob = calculate_treelikelihood_discrete_safe(
+            partials,
+            weights_tensor,
+            indices,
+            mats,
+            subst_model.frequencies,
+            proportions,
+            threshold,
+        )
+        log_prob.backward()
+        return log_prob
+
     blens = branch_lengths.unsqueeze(0).unsqueeze(-1)
 
     total_time, log_prob = fn_safe(args.replicates, blens)
