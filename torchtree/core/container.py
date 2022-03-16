@@ -28,7 +28,7 @@ class Container(Model):
         """parameters and objects should have unique IDs but one of them can
         have an ID that clashes with other attributes."""
         index = 0
-        id_ = str(obj.id)
+        id_ = str(obj.id).replace('.', '_')
         unique_id = id_
         while hasattr(self, unique_id):
             index += 1
