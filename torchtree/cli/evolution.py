@@ -1,3 +1,4 @@
+import argparse
 import re
 
 import numpy as np
@@ -49,48 +50,56 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '-I',
         '--invariant',
-        required=False,
         action='store_true',
         help="""include a proportion of invariant sites""",
     )
     parser.add_argument(
         '-f',
         '--frequencies',
-        required=False,
         help="""frequencies""",
     )
     parser.add_argument(
         '-C',
         '--categories',
         metavar='C',
-        required=False,
         type=int,
         default=1,
-        help="""number of rate categories""",
+        help="""number of rate categories [default: %(default)s]""",
     )
     parser.add_argument(
         '--brlenspr',
-        required=False,
         choices=['exponential', 'gammadir'],
         default='exponential',
-        help="""prior on branch lengths (unrooted tree)""",
+        help="""prior on branch lengths of an unrooted tree [default: %(default)s]""",
     )
     parser.add_argument(
         '--clock',
-        required=False,
         choices=['strict', 'ucln', 'horseshoe'],
-        default=None,
         help="""type of clock""",
     )
     parser.add_argument(
-        '--heights',
-        required=False,
-        choices=['ratio', 'shift'],
-        default='ratio',
-        help="""type of node height reparameterization""",
+        '--clockpr',
+        default='ctmcscale',
+        type=lambda x: distribution_type(x, ('exponential', 'ctmcscale')),
+        help="""prior on substitution rate [default: %(default)s]""",
     )
     parser.add_argument(
-        '--rate', required=False, type=float, help="""fixed substitution rate"""
+        '--heights',
+        choices=['ratio', 'shift'],
+        default='ratio',
+        help="""type of node height reparameterization [default: %(default)s]""",
+    )
+    parser.add_argument(
+        '--heights_init',
+        choices=['tree', 'regression'],
+        help="""initialize node heights using input tree file or
+         root to tip regression""",
+    )
+    parser.add_argument('--rate', type=float, help="""fixed substitution rate""")
+    parser.add_argument(
+        '--rate_init',
+        type=lambda x: str_or_float(x, 'regression'),
+        help="""initialize substitution rate using 'regression' or with a value""",
     )
     parser.add_argument(
         '--dates',
@@ -109,7 +118,6 @@ def create_evolution_parser(parser):
     )
     parser.add_argument(
         '--genetic_code',
-        required=False,
         type=int,
         help="""index of genetic code""",
     )
@@ -164,11 +172,43 @@ def add_coalescent(parser):
     )
     parser.add_argument(
         '--time-aware',
-        required=False,
         action='store_true',
         help="""use time aware GMRF""",
     )
     return parser
+
+
+def str_or_float(arg, choices):
+    """Used by argparse when the argument can be either a number or a string
+    from a prespecified list of options."""
+    try:
+        return float(arg)
+    except ValueError:
+        if (isinstance(choices, tuple) and arg in choices) or choices == arg:
+            return arg
+        else:
+            if isinstance(choices, str):
+                choices = (choices,)
+            message = "'" + "','".join(choices) + '"'
+            raise argparse.ArgumentTypeError(
+                'invalid choice (choose from a number or ' + message + ')'
+            )
+
+
+def distribution_type(arg, choices):
+    """Used by argparse for specifying distributions with optional
+    parameters."""
+    res = arg.split('(')
+    if (isinstance(choices, tuple) and res[0] in choices) or res[0] == choices:
+        return arg
+    else:
+        if isinstance(choices, tuple):
+            message = "'" + "','".join(choices) + '"'
+        else:
+            message = "'" + choices + "'"
+        raise argparse.ArgumentTypeError(
+            'invalid choice (choose from a number or ' + message + ')'
+        )
 
 
 def run_tree_regression(arg, taxa):
@@ -219,7 +259,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
             newick = newick.strip()
 
     kwargs = {}
-    if arg.keep:
+    if arg.keep or arg.heights_init == 'tree':
         kwargs['keep_branch_lengths'] = True
 
     if arg.clock is not None:
@@ -245,6 +285,30 @@ def create_tree_model(id_: str, taxa: dict, arg):
             tree_model = ReparameterizedTimeTreeModel.json_factory(
                 id_, newick, ratios, root_height, 'taxa', **kwargs
             )
+
+            if arg.heights_init == 'tree':
+                # instantiate tree model with keep_branch_lengths to get the
+                # ratios/root height parameters
+                taxa_obj = Taxa.from_json(taxa, {})
+                tree_model_obj = ReparameterizedTimeTreeModel.from_json(
+                    tree_model, {'taxa': taxa_obj}
+                )
+                ratios = Parameter.json_factory(
+                    f'{id_}.ratios',
+                    **{'tensor': tree_model_obj._internal_heights.tensor[:-1].tolist()},
+                )
+                ratios['lower'] = 0.0
+                ratios['upper'] = 1.0
+
+                root_height = Parameter.json_factory(
+                    f'{id_}.root_height',
+                    **{'tensor': tree_model_obj._internal_heights.tensor[-1:].tolist()},
+                )
+                root_height['lower'] = offset
+                tree_model = ReparameterizedTimeTreeModel.json_factory(
+                    id_, newick, ratios, root_height, 'taxa', **kwargs
+                )
+
         elif arg.heights == 'shift':
             shifts = Parameter.json_factory(
                 f'{id_}.shifts', **{'tensor': 0.1, 'full': [len(dates) - 1]}
@@ -306,17 +370,20 @@ def create_tree_likelihood_single(
 
 
 def create_tree_likelihood(id_, taxa, alignment, arg):
+    rate_init = None
     if arg.clock is not None and (
-        'rate_init' not in arg or 'root_height_init' not in arg
+        arg.rate_init == 'regression' or arg.heights_init == 'regression'
     ):
         dates = [taxon['attributes']['date'] for taxon in taxa['taxa']]
         # only use regression for heterochronous data
         if max(dates) != min(dates):
-            rate_init, root_height_init = run_tree_regression(arg, taxa)
-            if 'rate_init' not in arg:
-                arg.rate_init = rate_init
+            rate_init_r, root_height_init = run_tree_regression(arg, taxa)
+            if arg.rate_init is None:
+                rate_init = rate_init_r
             if 'root_height_init' not in arg:
                 arg.root_height_init = root_height_init
+    else:
+        rate_init = arg.rate_init
 
     if arg.model == 'SRD06':
         branch_model = None
@@ -326,7 +393,7 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
         if arg.clock is not None:
             branch_model_id = 'branchmodel'
             branch_model = create_branch_model(
-                branch_model_id, tree_id, len(taxa['taxa']), arg
+                branch_model_id, tree_id, len(taxa['taxa']), arg, rate_init
             )
 
         like_list = []
@@ -378,7 +445,7 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
 
     if arg.clock is not None:
         treelikelihood_model['branch_model'] = create_branch_model(
-            'branchmodel', tree_id, len(taxa['taxa']), arg
+            'branchmodel', tree_id, len(taxa['taxa']), arg, rate_init
         )
     return treelikelihood_model
 
@@ -421,11 +488,21 @@ def create_site_model_srd06_mus(id_):
     return mus
 
 
-def create_branch_model(id_, tree_id, taxa_count, arg):
+def is_float(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+    except TypeError:
+        return False
+
+
+def create_branch_model(id_, tree_id, taxa_count, arg, rate_init=None):
     if arg.rate is not None:
         rate = [arg.rate]
-    elif 'rate_init' in arg:
-        rate = [arg.rate_init]
+    elif rate_init is not None:
+        rate = [rate_init]
     else:
         rate = [0.001]
     rate_parameter = Parameter.json_factory(f'{id_}.rate', **{'tensor': rate})
@@ -915,16 +992,42 @@ def create_ucln_prior(branch_model_id):
     return joint_list
 
 
+def parse_distribution(desc):
+    res = desc.split('(')
+    if len(res) == 1:
+        return res, None
+    else:
+        return res[0], list(map(float, res[1][:-1].split(',')))
+
+
 def create_clock_prior(arg):
     branch_model_id = 'branchmodel'
     tree_id = 'tree'
     prior_list = []
     if arg.clock == 'strict' and arg.rate is None:
-        prior_list.append(
-            CTMCScale.json_factory(
-                f'{branch_model_id}.rate.prior', f'{branch_model_id}.rate', tree_id
+        if arg.clockpr == 'ctmcscale':
+            prior_list.append(
+                CTMCScale.json_factory(
+                    f'{branch_model_id}.rate.prior', f'{branch_model_id}.rate', tree_id
+                )
             )
-        )
+        elif arg.clockpr.startswith('exponential'):
+            name, params = parse_distribution(arg.clockpr)
+            if params is None:
+                rate = 1000.0
+            else:
+                rate = params[0]
+            prior_list.append(
+                Distribution.json_factory(
+                    f'{branch_model_id}.rate.prior',
+                    'torch.distributions.Exponential',
+                    f'{branch_model_id}.rate',
+                    {
+                        'rate': rate,
+                    },
+                ),
+            )
+
     elif arg.clock == 'ucln':
         prior_list.extend(create_ucln_prior(branch_model_id))
     elif arg.clock == 'horseshoe':
