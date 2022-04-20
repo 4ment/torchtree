@@ -245,6 +245,8 @@ class Dumper(JSONSerializable, Runnable):
         if 'file_name' in kwargs:
             self.file_name = kwargs['file_name']
             del kwargs['file_name']
+        else:
+            self.file_name = None
         self.kwargs = kwargs
         self.parameters = parameters
 

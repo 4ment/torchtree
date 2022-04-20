@@ -274,7 +274,7 @@ class UnRootedTreeModel(AbstractTreeModel):
 
         tree_model = {
             'id': id_,
-            'type': 'torchtree.evolution.tree_model.UnRootedTreeModel',
+            'type': 'UnRootedTreeModel',
             'newick': newick,
         }
         if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
@@ -458,7 +458,7 @@ class TimeTreeModel(AbstractTreeModel):
 
         tree_model = {
             'id': id_,
-            'type': 'torchtree.evolution.tree_model.TimeTreeModel',
+            'type': 'TimeTreeModel',
             'newick': newick,
         }
         if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
@@ -587,7 +587,7 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
 
         tree_model = {
             'id': id_,
-            'type': 'torchtree.evolution.tree_model.ReparameterizedTimeTreeModel',
+            'type': 'ReparameterizedTimeTreeModel',
             'newick': newick,
         }
         if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:

@@ -1,5 +1,5 @@
 import json
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import numpy as np
 import torch
@@ -578,7 +578,7 @@ def create_meanfield(
 
 def apply_transforms_for_fullrank(
     var_id: str,
-    json_object: [dict, list],
+    json_object: Union[dict, list],
 ) -> List[Tuple[str, str, list]]:
     var_parameters = []
     if isinstance(json_object, list):
