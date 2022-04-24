@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import torch
 
@@ -24,6 +24,9 @@ class SitePattern(Model):
 
     def compute_tips_partials(self, use_ambiguities=False):
         return compress_alignment(self.alignment, self.indices, use_ambiguities)
+
+    def compute_tips_states(self):
+        return compress_alignment_states(self.alignment, self.indices)
 
     def handle_model_changed(self, model, obj, index):
         pass
@@ -62,15 +65,15 @@ class SitePattern(Model):
         return cls(id_, alignment, list_of_indices)
 
 
-def compress_alignment(
-    alignment: Alignment, indices: List[Union[int, slice]] = None, use_ambiguities=True
-) -> Tuple[List[torch.Tensor], torch.Tensor]:
+def compress(
+    alignment: Alignment, indices: List[Union[int, slice]] = None
+) -> Tuple[Dict[str, Tuple[str]], torch.Tensor]:
     """Compress alignment using data_type.
 
     :param Alignment alignment: sequence alignment
     :param indices: list of indices: int or slice
     :return: a tuple containing partials and weights
-    :rtype: Tuple[torch.Tensor, torch.Tensor]
+    :rtype: Tuple[Dict[str, Tuple[str]], torch.Tensor]
     """
     taxa, sequences = zip(*alignment)
     if alignment.data_type.size > 1:
@@ -90,16 +93,58 @@ def compress_alignment(
     weights = torch.tensor([count_dict[pattern] for pattern in pattern_ordering])
     patterns = dict(zip(taxa, patterns_list))
 
+    return patterns, weights
+
+
+def compress_alignment(
+    alignment: Alignment, indices: List[Union[int, slice]] = None, use_ambiguities=True
+) -> Tuple[List[torch.Tensor], torch.Tensor]:
+    """Compress alignment using data_type.
+
+    :param Alignment alignment: sequence alignment
+    :param indices: list of indices: int or slice
+    :return: a tuple containing partials and weights
+    :rtype: Tuple[List[torch.Tensor], torch.Tensor]
+    """
+    patterns, weights = compress(alignment, indices)
+
     partials = []
 
-    for taxon in taxa:
+    for taxon in alignment.taxa:
         partials.append(
             torch.tensor(
                 [
                     alignment.data_type.partial(c, use_ambiguities)
-                    for c in patterns[taxon]
+                    for c in patterns[taxon.id]
                 ],
                 dtype=torch.get_default_dtype(),
             ).t()
+        )
+    return partials, weights
+
+
+def compress_alignment_states(
+    alignment: Alignment, indices: List[Union[int, slice]] = None
+) -> Tuple[List[torch.Tensor], torch.Tensor]:
+    """Compress alignment using data_type.
+
+    :param Alignment alignment: sequence alignment
+    :param indices: list of indices: int or slice
+    :return: a tuple containing partials and weights
+    :rtype: Tuple[List[torch.Tensor], torch.Tensor]
+    """
+    patterns, weights = compress(alignment, indices)
+
+    partials = []
+
+    for taxon in alignment.taxa:
+        partials.append(
+            torch.clamp(
+                torch.tensor(
+                    [alignment.data_type.encoding(c) for c in patterns[taxon.id]],
+                    dtype=torch.long,
+                ),
+                max=alignment.data_type.state_count,
+            )
         )
     return partials, weights

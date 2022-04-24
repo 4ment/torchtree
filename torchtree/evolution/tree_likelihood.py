@@ -75,6 +75,62 @@ def calculate_treelikelihood_discrete(
     )
 
 
+def calculate_treelikelihood_tip_states_discrete(
+    partials: list,
+    weights: torch.Tensor,
+    post_indexing: list,
+    mats: torch.Tensor,
+    freqs: torch.Tensor,
+    props: torch.Tensor,
+) -> torch.Tensor:
+    r"""Calculate log tree likelihood with rate categories using tip states
+
+    number of tips: T,
+    number of internal nodes: I=T-1,
+    number of branches: B=2T-2,
+    number of states: S,
+    number of sites: N,
+    number of rate categories: K.
+
+    The shape of internal partials after peeling is [...,K,S,N].
+
+    :param partials: list of T tip state tensors [N] and I internals [None]
+    :param weights: [N]
+    :param post_indexing: list of indexes in postorder
+    :param mats: tensor of probability matrices [...,B,K,S,S]
+    :param freqs: tensor of frequencies [...,1,S]
+    :param props: tensor of proportions [...,K,1,1]
+    :return: tree log likelihood [batch]
+    """
+    tip_count = len(post_indexing) + 1
+    mat_tips = torch.cat(
+        (
+            mats[..., :tip_count, :, :, :],
+            torch.ones(mats[..., :tip_count, :, :, :].shape[:-1] + (1,)),
+        ),
+        -1,
+    )
+
+    for node, left, right in post_indexing:
+        if left < tip_count:
+            p_left = mat_tips[..., left, :, :, partials[left]]
+        else:
+            p_left = mats[..., left, :, :, :] @ partials[left]
+
+        if right < tip_count:
+            p_right = mat_tips[..., right, :, :, partials[right]]
+        else:
+            p_right = mats[..., right, :, :, :] @ partials[right]
+
+        partials[node] = p_left * p_right
+
+    return torch.sum(
+        torch.log(freqs @ torch.sum(props * partials[post_indexing[-1][0]], -3))
+        * weights,
+        -1,
+    )
+
+
 def calculate_treelikelihood_discrete_safe(
     partials: list,
     weights: torch.Tensor,
@@ -165,6 +221,62 @@ def calculate_treelikelihood_discrete_rescaled(
     )
 
 
+def calculate_treelikelihood_tip_states_discrete_rescaled(
+    partials: list,
+    weights: torch.Tensor,
+    post_indexing: list,
+    mats: torch.Tensor,
+    freqs: torch.Tensor,
+    props: torch.Tensor,
+) -> torch.Tensor:
+    r"""Calculate log tree likelihood with rate categories using tip states and rescaling
+
+    :param partials: list of tensors of tip states [N] leaves and [...,K,S,N] internals
+    :param weights: [N]
+    :param post_indexing:
+    :param mats: tensor of matrices [...,B,K,S,S]
+    :param freqs: tensor of frequencies [...,1,S]
+    :param props: tensor of proportions [...,K,1,1]
+    :return: tree log likelihood [batch]
+    """
+    tip_count = len(post_indexing) + 1
+    mat_tips = torch.cat(
+        (
+            mats[..., :tip_count, :, :, :],
+            torch.ones(mats[..., :tip_count, :, :, :].shape[:-1] + (1,)),
+        ),
+        -1,
+    )
+
+    scalers = []
+    for node, left, right in post_indexing:
+        if left < tip_count:
+            p_left = mat_tips[..., left, :, :, partials[left]]
+        else:
+            p_left = mats[..., left, :, :, :] @ partials[left]
+
+        if right < tip_count:
+            p_right = mat_tips[..., right, :, :, partials[right]]
+        else:
+            p_right = mats[..., right, :, :, :] @ partials[right]
+
+        partial = p_left * p_right
+
+        scaler, _ = torch.max(
+            partial.view(*partial.shape[:-3], -1, *partial.shape[-1:]), -2, keepdim=True
+        )
+        scalers.append(scaler)
+        partials[node] = partial / scaler.unsqueeze(-2)
+    return torch.sum(
+        (
+            torch.log(freqs @ torch.sum(props * partials[post_indexing[-1][0]], dim=-3))
+            + torch.cat(scalers, -2).log().sum(dim=-2).unsqueeze(-2)
+        )
+        * weights,
+        dim=-1,
+    )
+
+
 @register_class
 class TreeLikelihoodModel(CallableModel):
     def __init__(
@@ -176,6 +288,7 @@ class TreeLikelihoodModel(CallableModel):
         site_model: SiteModel,
         clock_model: BranchModel = None,
         use_ambiguities=False,
+        use_tip_states=False,
     ):
         super().__init__(id_)
         self.site_pattern = site_pattern
@@ -184,12 +297,16 @@ class TreeLikelihoodModel(CallableModel):
         self.site_model = site_model
         self.clock_model = clock_model
         self.rescale = False
+        self.use_tip_states = use_tip_states
         self.threshold = (
             1.0e-20 if subst_model.frequencies.dtype == torch.float32 else 1.0e-40
         )
-        self.partials, self.weights = site_pattern.compute_tips_partials(
-            use_ambiguities
-        )
+        if use_tip_states:
+            self.partials, self.weights = site_pattern.compute_tips_states(
+                use_ambiguities
+            )
+        else:
+            self.partials, self.weights = site_pattern.compute_tips_partials()
         self.partials.extend([None] * (len(tree_model.taxa) - 1))
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
@@ -227,6 +344,14 @@ class TreeLikelihoodModel(CallableModel):
             self.subst_model.frequencies.shape[:-1] + (1, -1)
         )
 
+        if self.use_tip_states:
+            log_p = self.calculate_with_tip_states(mats, frequencies, probs)
+        else:
+            log_p = self.calculate_with_tip_partials(mats, frequencies, probs)
+
+        return log_p
+
+    def calculate_with_tip_partials(self, mats, frequencies, probs):
         if self.rescale:
             log_p = calculate_treelikelihood_discrete_rescaled(
                 self.partials,
@@ -249,6 +374,39 @@ class TreeLikelihoodModel(CallableModel):
             if torch.any(torch.isinf(log_p)):
                 self.rescale = True
                 log_p = calculate_treelikelihood_discrete_safe(
+                    self.partials,
+                    self.weights,
+                    self.tree_model.postorder,
+                    mats,
+                    frequencies,
+                    probs,
+                    self.threshold,
+                )
+        return log_p
+
+    def calculate_with_tip_states(self, mats, frequencies, probs):
+        if self.rescale:
+            log_p = calculate_treelikelihood_tip_states_discrete_rescaled(
+                self.partials,
+                self.weights,
+                self.tree_model.postorder,
+                mats,
+                frequencies,
+                probs,
+            )
+        else:
+            log_p = calculate_treelikelihood_tip_states_discrete(
+                self.partials,
+                self.weights,
+                self.tree_model.postorder,
+                mats,
+                frequencies,
+                probs,
+            )
+
+            if torch.any(torch.isinf(log_p)):
+                self.rescale = True
+                log_p = calculate_treelikelihood_tip_states_discrete_rescaled(
                     self.partials,
                     self.weights,
                     self.tree_model.postorder,
