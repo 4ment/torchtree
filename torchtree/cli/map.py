@@ -59,6 +59,11 @@ def create_map_parser(subprasers):
         type=str,
         help="""either 'strong_wolfe' or None (default: None)""",
     )
+    parser.add_argument(
+        '--stem',
+        required=True,
+        help="""stem for output files""",
+    )
     parser.set_defaults(func=build_optimizer)
     return parser
 
@@ -212,12 +217,21 @@ def create_optimizer(joint, parameters, arg):
     }
 
 
-def create_logger(parameters):
+def create_logger(id_, parameters, arg):
     return {
-        "id": "logger",
+        "id": id_,
         "type": "Logger",
         "parameters": parameters,
-        "_file_name": "parameters-hky.json",
+        "file_name": arg.stem + '.csv',
+    }
+
+
+def create_tree_logger(id_, tree_id, arg):
+    return {
+        "id": id_,
+        "type": "TreeLogger",
+        "tree_model": tree_id,
+        "file_name": arg.stem + '.tree',
     }
 
 
@@ -241,7 +255,8 @@ def build_optimizer(arg):
     opt_dict = create_optimizer('joint', parameters_unres, arg)
     json_list.append(opt_dict)
 
-    logger_dict = create_logger(parameters)
-    json_list.append(logger_dict)
+    logger_dict = create_logger('logger', parameters, arg)
+    tree_logger_dict = create_tree_logger('tree.logger', 'tree', arg)
+    json_list.extend((logger_dict, tree_logger_dict))
 
     return json_list

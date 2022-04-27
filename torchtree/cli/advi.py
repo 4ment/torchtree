@@ -1,4 +1,6 @@
 import json
+import logging
+import sys
 from typing import List, Tuple, Union
 
 import numpy as np
@@ -13,7 +15,10 @@ from torchtree.cli.evolution import (
     create_site_model_srd06_mus,
     create_taxa,
 )
+from torchtree.cli.utils import create_jacobians
 from torchtree.distributions import Distribution
+
+logger = logging.getLogger(__name__)
 
 
 def create_variational_parser(subprasers):
@@ -141,8 +146,8 @@ def create_fullrank_from_meanfield(params, path):
         elif '.scale.unres' in param['id']:
             log_scales.append(param)
         else:
-            print(param['id'])
-            exit(2)
+            sys.stderr.write(param['id'])
+            sys.exit(2)
     sorted(
         locs,
         key=lambda x: params.index(x['id'].replace('.loc', '').replace('var.', '')),
@@ -334,9 +339,13 @@ def apply_sigmoid_transformed(json_object, value=None):
         del json_object['tensor']
         del json_object['full']
     else:
-        print('error from apply_sigmoid_transformed')
-        print(json_object)
-        exit(1)
+        logger.debug(
+            'apply_sigmoid_transformed only works on json object containing'
+            ' tensor or full'
+        )
+        sys.stderr.write('error from apply_sigmoid_transformed\n')
+        sys.stderr.write(json_object)
+        sys.exit(1)
     return unres_id
 
 
@@ -722,23 +731,6 @@ def create_sampler(id_, var_id, parameters, arg):
             }
         ],
     }
-
-
-def create_jacobians(json_object):
-    params = []
-    if isinstance(json_object, list):
-        for element in json_object:
-            params.extend(create_jacobians(element))
-    elif isinstance(json_object, dict):
-        if 'type' in json_object and json_object['type'] == 'TransformedParameter':
-            if not (
-                json_object['transform'] == 'torch.distributions.AffineTransform'
-                and json_object['parameters']['scale'] == 1.0
-            ):
-                params.append(json_object['id'])
-        for value in json_object.values():
-            params.extend(create_jacobians(value))
-    return params
 
 
 def build_advi(arg):

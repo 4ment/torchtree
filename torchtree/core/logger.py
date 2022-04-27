@@ -185,6 +185,7 @@ class TreeLogger(LoggerInterface):
         return cls(tree, **kwargs)
 
 
+@register_class
 class CSV(JSONSerializable, Runnable):
     r"""
     Class for writting parameters to a CSV file.
@@ -233,6 +234,7 @@ class CSV(JSONSerializable, Runnable):
         return cls(params, **kwargs)
 
 
+@register_class
 class Dumper(JSONSerializable, Runnable):
     r"""
     Class for saving parameters to a json file.

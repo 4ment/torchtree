@@ -43,3 +43,21 @@ def read_dates_from_csv(input_file, date_format=None):
                 int(res1[dd]), int(res1[MM]), int(res1[yy])
             )
     return dates
+
+
+def create_jacobians(json_object) -> list[str]:
+    """This function looks for `TransformedParameter` and returns their IDs."""
+    params = []
+    if isinstance(json_object, list):
+        for element in json_object:
+            params.extend(create_jacobians(element))
+    elif isinstance(json_object, dict):
+        if 'type' in json_object and json_object['type'] == 'TransformedParameter':
+            if not (
+                json_object['transform'] == 'torch.distributions.AffineTransform'
+                and json_object['parameters']['scale'] == 1.0
+            ):
+                params.append(json_object['id'])
+        for value in json_object.values():
+            params.extend(create_jacobians(value))
+    return params
