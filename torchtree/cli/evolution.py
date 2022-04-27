@@ -537,7 +537,11 @@ def create_taxa(id_, arg):
             regex = re.compile(regex_date)
             for idx, taxon in enumerate(taxa_list):
                 res = re.search(regex, taxon['id'])
-                taxon['attributes'] = {'date': float(res.group(1))}
+                if res is not None:
+                    date = float(res.group(1))
+                else:
+                    date = 0.
+                taxon['attributes'] = {'date': date}
     return taxa
 
 
