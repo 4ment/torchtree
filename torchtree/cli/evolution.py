@@ -1,5 +1,8 @@
 import argparse
+import logging
+import os
 import re
+import sys
 
 import numpy as np
 from dendropy import TaxonNamespace, Tree
@@ -29,6 +32,8 @@ from torchtree.evolution.tree_model import (
 )
 from torchtree.evolution.tree_model_flexible import FlexibleTimeTreeModel
 from torchtree.treeregression import regression
+
+logger = logging.getLogger(__name__)
 
 
 def create_evolution_parser(parser):
@@ -103,7 +108,7 @@ def create_evolution_parser(parser):
     )
     parser.add_argument(
         '--dates',
-        default=None,
+        type=zero_or_path,
         help="""a csv file or 0 for contemporaneous taxa""",
     )
     parser.add_argument(
@@ -178,6 +183,17 @@ def add_coalescent(parser):
     return parser
 
 
+def zero_or_path(arg):
+    if arg == '0':
+        return 0
+    elif arg is not None and not os.path.exists(arg):
+        raise argparse.ArgumentTypeError(
+            'invalid choice (choose from 0 or a path to a text file)'
+        )
+    else:
+        return arg
+
+
 def str_or_float(arg, choices):
     """Used by argparse when the argument can be either a number or a string
     from a prespecified list of options."""
@@ -242,7 +258,7 @@ def run_tree_regression(arg, taxa):
 
 def create_tree_model(id_: str, taxa: dict, arg):
     tree_format = 'newick'
-    with open(arg.tree) as fp:
+    with open(arg.tree, 'r') as fp:
         if next(fp).upper().startswith('#NEXUS'):
             tree_format = 'nexus'
     if tree_format == 'nexus':
@@ -254,7 +270,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
         )
         newick = str(tree) + ';'
     else:
-        with open(arg.tree) as fp:
+        with open(arg.tree, 'r') as fp:
             newick = fp.read()
             newick = newick.strip()
 
@@ -713,13 +729,13 @@ def create_taxa(id_, arg):
 
     taxa = {'id': id_, 'type': 'Taxa', 'taxa': taxa_list}
     if arg.clock is not None:
-        if arg.dates is not None and isinstance(arg.dates, str):
+        if arg.dates == 0:
+            for taxon in taxa_list:
+                taxon['attributes'] = {'date': 0.0}
+        elif arg.dates is not None:
             dates = read_dates_from_csv(arg.dates, arg.date_format)
             for taxon in taxa_list:
                 taxon['attributes'] = {'date': dates[taxon['id']]}
-        elif arg.dates is not None and arg.dates == '0':
-            for idx, taxon in enumerate(taxa_list):
-                taxon['attributes'] = {'date': 0.0}
         else:
             regex_date = r'_(\d+\.?\d*)$'
             if arg.date_regex is not None:
@@ -732,8 +748,14 @@ def create_taxa(id_, arg):
                 MM = res.index('MM') + 1
                 dd = res.index('dd') + 1
 
-            for idx, taxon in enumerate(taxa_list):
+            for taxon in taxa_list:
                 res = re.search(regex, taxon['id'])
+                if res is None:
+                    logger.error(
+                        f" Could not extract date from {taxon['id']}"
+                        f" - regular expression used: {regex_date}"
+                    )
+                    sys.exit(1)
                 if len(res.groups()) > 1:
                     taxon['attributes'] = {
                         'date': convert_date_to_real(
