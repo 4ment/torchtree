@@ -12,7 +12,7 @@ from torchtree.core.parameter_encoder import ParameterEncoder
 from torchtree.core.runnable import Runnable
 from torchtree.core.serializable import JSONSerializable
 from torchtree.core.utils import process_objects, register_class
-from torchtree.inference.utils import parse_params
+from torchtree.optim.optimizer import Optimizer
 from torchtree.typing import ListParameter
 
 
@@ -149,6 +149,6 @@ class HMC(JSONSerializable, Runnable):
 
         joint = process_objects(data['joint'], dic)
 
-        _, parameters = parse_params(data['parameters'], dic)
+        _, parameters = Optimizer.parse_params(data['parameters'], dic)
 
         return cls(parameters, joint, iterations, steps, step_size, **optionals)
