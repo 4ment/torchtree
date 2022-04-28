@@ -447,32 +447,29 @@ def ratio_transform_jacobian(args):
     ratios_root_height.tensor = tree_model.transform.inv(
         heights_from_branch_lengths(tree)
     )
+    internal_heights = tree_model.transform(ratios_root_height.tensor)
 
     @benchmark
-    def fn(ratios_root_height):
-        internal_heights = tree_model.transform(ratios_root_height)
+    def fn(internal_heights):
         return tree_model.transform.log_abs_det_jacobian(
-            ratios_root_height, internal_heights
+            ratios_root_height.tensor, internal_heights
         )
 
     @benchmark
-    def fn_grad(ratios_root_height):
-        internal_heights = tree_model.transform(ratios_root_height)
+    def fn_grad(internal_heights):
         log_det_jac = tree_model.transform.log_abs_det_jacobian(
-            ratios_root_height, internal_heights
+            ratios_root_height.tensor, internal_heights
         )
         log_det_jac.backward()
-        ratios_root_height.grad.data.zero_()
+        internal_heights.grad.data.zero_()
         return log_det_jac
 
     print('  JIT off')
-    total_time, log_det_jac = fn(args.replicates, ratios_root_height.tensor)
+    total_time, log_det_jac = fn(args.replicates, internal_heights)
     print(f'  {args.replicates} evaluations: {total_time} ({log_det_jac})')
 
-    ratios_root_height.requires_grad = True
-    grad_total_time, grad_log_det_jac = fn_grad(
-        args.replicates, ratios_root_height.tensor
-    )
+    internal_heights.requires_grad = True
+    grad_total_time, grad_log_det_jac = fn_grad(args.replicates, internal_heights)
     print(
         f'  {args.replicates} gradient evaluations: {grad_total_time}'
         f' ({grad_log_det_jac})'
