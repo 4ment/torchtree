@@ -1,4 +1,5 @@
 import argparse
+import importlib
 import logging
 import os
 import re
@@ -34,6 +35,9 @@ from torchtree.evolution.tree_model_flexible import FlexibleTimeTreeModel
 from torchtree.treeregression import regression
 
 logger = logging.getLogger(__name__)
+
+
+_engine = None
 
 
 def create_evolution_parser(parser):
@@ -138,6 +142,10 @@ def create_evolution_parser(parser):
         '--use_ambiguities',
         action="store_true",
         help="""use nucleotide ambiguity codes""",
+    )
+    parser.add_argument(
+        '--engine',
+        help="""specify the package name of a plugin""",
     )
 
     parser = add_coalescent(parser)
@@ -463,6 +471,19 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
         treelikelihood_model['branch_model'] = create_branch_model(
             'branchmodel', tree_id, len(taxa['taxa']), arg, rate_init
         )
+
+    evol = get_engine(arg)
+    if evol is not None:
+        try:
+            evol.process_tree_likelihood(arg, treelikelihood_model)
+        except AttributeError as e:
+            sys.stderr.write(str(e) + '\n')
+            sys.stderr.write(
+                'The process_tree_likelihood method is not implemented'
+                f' in the {arg.engine} engine\n'
+            )
+            sys.exit(1)
+
     return treelikelihood_model
 
 
@@ -913,6 +934,13 @@ def create_coalesent(id_, tree_id, theta_id, arg, **kwargs):
             'theta': theta_id,
             'tree_model': tree_id,
         }
+
+    evol = get_engine(arg)
+    if evol is not None:
+        try:
+            evol.process_coalescent(arg, coalescent)
+        except AttributeError:
+            pass
     return coalescent
 
 
@@ -1285,3 +1313,21 @@ def create_evolution_joint(taxa, alignment, arg):
         'distributions': joint_list,
     }
     return joint_dic
+
+
+def get_engine(arg):
+    """Import module or use cashed module if engine is specified in
+    arguments."""
+    evol = None
+    if _engine is not None:
+        evol = _engine
+    elif arg.engine is not None:
+        try:
+            evol = importlib.import_module(arg.engine + '.cli.evolution')
+        except ModuleNotFoundError as e:
+            sys.stderr.write(str(e) + '\n')
+            sys.stderr.write(
+                f'The {arg.engine} engine does not exist or is not properly specified\n'
+            )
+            sys.exit(1)
+    return evol
