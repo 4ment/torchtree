@@ -206,28 +206,32 @@ class AbstractTreeModel(TreeModel, ABC):
         self.write_newick(out, **kwargs)
         return out.getvalue()
 
-    def write_newick(self, steam, **kwargs) -> None:
-        self._write_newick(self.tree.seed_node, steam, **kwargs)
+    def write_newick(self, stream, **kwargs) -> None:
+        self._write_newick(self.tree.seed_node, stream, **kwargs)
 
-    def _write_newick(self, node, steam, **kwargs) -> None:
+    def _write_newick(self, node, stream, **kwargs) -> None:
         if not node.is_leaf():
-            steam.write('(')
+            stream.write('(')
             for i, child in enumerate(node.child_node_iter()):
-                self._write_newick(child, steam, **kwargs)
+                self._write_newick(child, stream, **kwargs)
                 if i == 0:
-                    steam.write(',')
-            steam.write(')')
+                    stream.write(',')
+            stream.write(')')
         else:
             taxon_index = kwargs.get('taxon_index', None)
             if not taxon_index:
-                steam.write(str(node.taxon).strip("'"))
+                stream.write(str(node.taxon).strip("'"))
             else:
-                steam.write(str(node.index + 1))
+                stream.write(str(node.index + 1))
         if node.parent_node is not None:
             branch_lengths = kwargs.get('branch_lengths', self.branch_lengths())
-            steam.write(':{}'.format(branch_lengths[node.index]))
+            # unrooted trees have 2N-3 branches but it is writing a binary tree
+            if node.index == len(branch_lengths):
+                stream.write(':0')
+            else:
+                stream.write(':{}'.format(branch_lengths[node.index]))
         else:
-            steam.write(';')
+            stream.write(';')
 
 
 @register_class

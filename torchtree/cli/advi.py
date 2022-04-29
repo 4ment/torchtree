@@ -15,7 +15,7 @@ from torchtree.cli.evolution import (
     create_site_model_srd06_mus,
     create_taxa,
 )
-from torchtree.cli.utils import create_jacobians
+from torchtree.cli.jacobians import create_jacobians
 from torchtree.distributions import Distribution
 
 logger = logging.getLogger(__name__)
@@ -102,6 +102,12 @@ def create_variational_parser(subprasers):
         '--init_fullrank',
         required=False,
         help="""checkpoint file from a meanfield analysis""",
+    )
+    parser.add_argument(
+        '--convergence_every',
+        type=int,
+        default=100,
+        help="""convergence every N iterations""",
     )
     parser.set_defaults(func=build_advi)
     return parser
@@ -698,7 +704,7 @@ def create_advi(joint, variational, parameters, arg):
         'type': 'StanVariationalConvergence',
         'max_iterations': arg.iter,
         'loss': 'elbo',
-        'every': 100,
+        'every': arg.convergence_every,
         'samples': arg.elbo_samples,
         'tol_rel_obj': arg.tol_rel_obj,
     }
@@ -713,8 +719,10 @@ def create_advi(joint, variational, parameters, arg):
 def create_sampler(id_, var_id, parameters, arg):
     if arg.stem:
         file_name = arg.stem + '-samples.csv'
+        tree_file_name = arg.stem + '-samples.trees'
     else:
         file_name = 'samples.csv'
+        tree_file_name = 'samples.trees'
 
     return {
         "id": id_,
@@ -728,7 +736,13 @@ def create_sampler(id_, var_id, parameters, arg):
                 "file_name": file_name,
                 "parameters": parameters,
                 "delimiter": "\t",
-            }
+            },
+            {
+                "id": "tree.logger",
+                "type": "TreeLogger",
+                "file_name": tree_file_name,
+                "tree_model": "tree",
+            },
         ],
     }
 

@@ -1,25 +1,19 @@
+from __future__ import annotations
+
 import copy
 import inspect
-import json
-import os
-from typing import Dict, Tuple, Union
 
 import torch
 from torch.optim import Optimizer as TorchOptimizer
 
-from .. import Parameter
-from ..core.model import CallableModel, Parametric
-from ..core.parameter_encoder import ParameterEncoder
+from torchtree.inference.utils import extract_tensors_and_parameters
+
+from ..core.model import CallableModel
+from ..core.parameter_utils import save_parameters
 from ..core.runnable import Runnable
 from ..core.serializable import JSONSerializable
-from ..core.utils import (
-    JSONParseError,
-    SignalHandler,
-    get_class,
-    process_objects,
-    register_class,
-)
-from ..typing import ListParameter, ListTensor
+from ..core.utils import SignalHandler, get_class, process_objects, register_class
+from ..typing import ListParameter
 
 
 @register_class
@@ -53,21 +47,6 @@ class Optimizer(JSONSerializable, Runnable):
         self.checkpoint_frequency = kwargs.get('checkpoint_frequency', 1000)
         self.distributions = kwargs.get('distributions', None)
 
-    def update_checkpoint(self):
-        if not os.path.lexists(self.checkpoint):
-            # for var_name in self.optimizer.state_dict():
-            #     print(var_name, "\t", self.optimizer.state_dict()[var_name])
-            # torch.save(self.optimizer.state_dict(), 'checkpoint.json')
-            with open(self.checkpoint, 'w') as fp:
-                json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
-        else:
-            # torch.save(self.optimizer.state_dict(), 'checkpoint-new.json')
-            with open(self.checkpoint + '.new', 'w') as fp:
-                json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
-            os.rename(self.checkpoint, self.checkpoint + '.old')
-            os.rename(self.checkpoint + '.new', self.checkpoint)
-            os.remove(self.checkpoint + '.old')
-
     def _run_closure(self) -> None:
         def closure():
             for p in self.parameters:
@@ -95,7 +74,7 @@ class Optimizer(JSONSerializable, Runnable):
             n_iter = state["n_iter"]
             print(f'{n_iter:>4} {loss} evaluations: {func_evals}')
 
-            self.update_checkpoint()
+            save_parameters(self.checkpoint, self.parameters)
 
     def _run(self) -> None:
         for logger in self.loggers:
@@ -114,19 +93,34 @@ class Optimizer(JSONSerializable, Runnable):
         for p in self.parameters:
             p.requires_grad = True
 
+        trials = 10
+
         for epoch in range(1, self.iterations + 1):
             if handler.stop:
                 break
 
-            if self.distributions:
-                for distr in self.distributions:
-                    distr.sample(self.loss.samples)
+            for trial in range(trials):
+                if self.distributions:
+                    for distr in self.distributions:
+                        distr.sample(self.loss.samples)
 
-            loss = -self.loss() if self.maximize else self.loss()
+                loss = -self.loss() if self.maximize else self.loss()
 
-            # print(-loss)
-            self.optimizer.zero_grad()
-            loss.backward()
+                self.optimizer.zero_grad()
+                loss.backward()
+
+                for p in self.parameters:
+                    retry = torch.any(torch.isinf(p.grad)) or torch.any(
+                        torch.isnan(p.grad)
+                    )
+                    if retry:
+                        break
+                if not retry:
+                    break
+                else:
+                    for p in self.parameters:
+                        p.fire_parameter_changed()
+
             self.optimizer.step()
 
             for p in self.parameters:
@@ -149,8 +143,8 @@ class Optimizer(JSONSerializable, Runnable):
                 for p in self.parameters:
                     p.fire_parameter_changed()
 
-            if self.checkpoint is not None and epoch % 1000 == 0:
-                self.update_checkpoint()
+            if self.checkpoint is not None and epoch % self.checkpoint_frequency == 0:
+                save_parameters(self.checkpoint, self.parameters)
 
         for logger in self.loggers:
             if hasattr(logger, 'finalize'):
@@ -162,33 +156,8 @@ class Optimizer(JSONSerializable, Runnable):
         else:
             self._run()
 
-    @staticmethod
-    def parse_params(
-        params: Dict[str, Union[list, float]], dic
-    ) -> Tuple[ListTensor, ListParameter]:
-        parameter_or_parametric_list = process_objects(params, dic)
-        if not isinstance(parameter_or_parametric_list, list):
-            parameter_or_parametric_list = [parameter_or_parametric_list]
-
-        tensors = []
-        parameters = []
-        for poml in parameter_or_parametric_list:
-            if isinstance(poml, Parameter):
-                tensors.append(poml.tensor)
-                parameters.append(poml)
-            elif isinstance(poml, Parametric):
-                for parameter in poml.parameters():
-                    tensors.append(parameter.tensor)
-                    parameters.append(parameter)
-            else:
-                raise JSONParseError(
-                    'Optimizable expects a list of Parameters or Parametric models\n{}'
-                    ' was provided'.format(type(poml))
-                )
-        return tensors, parameters
-
     @classmethod
-    def from_json(cls, data: Dict[str, any], dic: Dict[str, any]) -> 'Optimizer':
+    def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> 'Optimizer':
         rules = {  # noqa: F841
             'loss': {'type': 'object|string', 'instanceof': 'CallableModel'},
             'parameters': {
@@ -257,7 +226,7 @@ class Optimizer(JSONSerializable, Runnable):
             #  {'params': ["parameter1", "parameter2"], 'lr': 1e-3}
             # ], lr=1e-2, momentum=0.9
             for param_groups in data['parameters']:
-                t, p = cls.parse_params(param_groups['params'], dic)
+                t, p = extract_tensors_and_parameters(param_groups['params'], dic)
                 param_groups_cpy = copy.deepcopy(param_groups)
                 param_groups_cpy['params'] = t
                 optimizer_params.append(param_groups_cpy)
@@ -265,7 +234,9 @@ class Optimizer(JSONSerializable, Runnable):
 
         else:
             # "parameters": ["model", "parameter1", "parameter2"]
-            optimizer_params, parameters = cls.parse_params(data['parameters'], dic)
+            optimizer_params, parameters = extract_tensors_and_parameters(
+                data['parameters'], dic
+            )
 
         # instanciate torch.optim.optimizer
         optim_class = get_class(data['algorithm'])

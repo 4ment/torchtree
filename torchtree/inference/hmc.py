@@ -1,18 +1,15 @@
 from __future__ import annotations
 
-import json
-import os
-
 import numpy as np
 import torch
 from torch.distributions import Normal
 
 from torchtree.core.model import CallableModel
-from torchtree.core.parameter_encoder import ParameterEncoder
+from torchtree.core.parameter_utils import save_parameters
 from torchtree.core.runnable import Runnable
 from torchtree.core.serializable import JSONSerializable
 from torchtree.core.utils import process_objects, register_class
-from torchtree.inference.utils import parse_params
+from torchtree.inference.utils import extract_tensors_and_parameters
 from torchtree.typing import ListParameter
 
 
@@ -35,17 +32,6 @@ class HMC(JSONSerializable, Runnable):
         self.loggers = kwargs.get('loggers', ())
         self.checkpoint = kwargs.get('checkpoint', None)
         self.checkpoint_frequency = kwargs.get('checkpoint_frequency', 1000)
-
-    def update_checkpoint(self) -> None:
-        if not os.path.lexists(self.checkpoint):
-            with open(self.checkpoint, 'w') as fp:
-                json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
-        else:
-            with open(self.checkpoint + '.new', 'w') as fp:
-                json.dump(self.parameters, fp, cls=ParameterEncoder, indent=2)
-            os.rename(self.checkpoint, self.checkpoint + '.old')
-            os.rename(self.checkpoint + '.new', self.checkpoint)
-            os.remove(self.checkpoint + '.old')
 
     def set_tensor(self, tensor: torch.Tensor) -> None:
         start = 0
@@ -118,12 +104,15 @@ class HMC(JSONSerializable, Runnable):
             for logger in self.loggers:
                 logger.log()
 
+            if self.checkpoint is not None and epoch % self.checkpoint_frequency == 0:
+                save_parameters(self.checkpoint, self.parameters)
+
         for logger in self.loggers:
             if hasattr(logger, 'finalize'):
                 logger.finalize()
 
     @classmethod
-    def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> HMC:
+    def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> 'HMC':
         iterations = data['iterations']
         steps = data['steps']
         step_size = data['step_size']
@@ -141,6 +130,9 @@ class HMC(JSONSerializable, Runnable):
         else:
             optionals['checkpoint'] = 'checkpoint.json'
 
+        if 'checkpoint_frequency' in data:
+            optionals['checkpoint_frequency'] = data['checkpoint_frequency']
+
         if 'loggers' in data:
             loggers = process_objects(data["loggers"], dic)
             if not isinstance(loggers, list):
@@ -149,6 +141,6 @@ class HMC(JSONSerializable, Runnable):
 
         joint = process_objects(data['joint'], dic)
 
-        _, parameters = parse_params(data['parameters'], dic)
+        _, parameters = extract_tensors_and_parameters(data['parameters'], dic)
 
         return cls(parameters, joint, iterations, steps, step_size, **optionals)
