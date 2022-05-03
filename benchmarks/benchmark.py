@@ -308,13 +308,16 @@ def unrooted_treelikelihood(args, subst_model):
     for p in subst_model.parameters():
         p.requires_grad = True
 
-    grad_total_time, grad_log_prob = fn_safe_grad(args.replicates, blens)
+    if isinstance(subst_model, JC69):
+        grad_total_time, grad_log_prob = fn_safe_grad(args.replicates, blens)
+    else:
+        grad_total_time, grad_log_prob = fn_safe_grad_gtr(args.replicates, blens)
     print(
         f'  {args.replicates} gradient evaluations: {grad_total_time} ({grad_log_prob}'
     )
 
     if args.output:
-        name = '' if isinstance(subst_model, JC69) else type(subst_model).__name__
+        name = type(subst_model).__name__
         args.output.write(
             f"treelikelihood{name},evaluation,off,{total_time},"
             f"{log_prob.squeeze().item()}\n"
