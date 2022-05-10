@@ -375,3 +375,108 @@ def process_data_coalesent(data, dtype: torch.dtype) -> AbstractParameter:
         times = torch.tensor([0.0] + data['intervals'], dtype=dtype).cumsum(0)
     events = torch.LongTensor(data['events'])
     return Parameter(None, torch.cat((times[events == 1], times[events == 0]), -1))
+
+
+class PiecewiseExponentialCoalescentGrid(ConstantCoalescent):
+    def __init__(
+        self,
+        thetas: torch.Tensor,
+        growth: torch.Tensor,
+        grid: torch.Tensor,
+        validate_args=None,
+    ) -> None:
+        super().__init__(thetas, validate_args)
+        self.grid = grid
+        self.growth = growth
+
+    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+        if node_heights.dim() > self.theta.dim():
+            batch_shape = node_heights.shape[:-1]
+        else:
+            batch_shape = self.theta.shape[:-1]
+
+        grid = self.grid.expand(batch_shape + torch.Size([-1]))
+
+        if node_heights.dim() < self.theta.dim():
+            grid_heights = torch.cat(
+                [
+                    node_heights.expand(batch_shape + torch.Size([-1])),
+                    grid,
+                ],
+                -1,
+            )
+
+        else:
+            grid_heights = torch.cat([node_heights, grid], -1)
+
+        if self.theta.dim() <= len(batch_shape):
+            thetas = self.theta.expand(batch_shape + torch.Size([-1]))
+            growth = self.growth.expand(batch_shape + torch.Size([-1]))
+        else:
+            thetas = self.theta
+            growth = self.growth
+
+        taxa_shape = grid_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
+        event_mask = torch.cat(
+            [
+                # sampling event
+                torch.full(taxa_shape, 1, dtype=torch.int),
+                # coalescent event
+                torch.full(
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
+                    -1,
+                    dtype=torch.int,
+                ),
+                # no event
+                torch.full(grid.shape, 0, dtype=torch.int),
+            ],
+            dim=-1,
+        )
+
+        indices = torch.argsort(grid_heights, descending=False)
+        grid_heights_sorted = torch.gather(grid_heights, -1, indices)
+        event_mask_sorted = torch.gather(event_mask, -1, indices)
+        lineage_count = event_mask_sorted.cumsum(-1)[..., :-1]
+
+        lchoose2 = lineage_count * (lineage_count - 1) / 2.0
+
+        internal_heights = node_heights[..., taxa_shape[-1] :]
+
+        # Find indices such that grid_i <= t < grid_{i+1}
+        indices_grid_heights = torch.bucketize(grid_heights_sorted, self.grid)
+        indices_internals = indices_grid_heights[event_mask_sorted == -1].reshape(
+            internal_heights.shape
+        )
+
+        grid0 = torch.cat((torch.zeros(batch_shape + (1,)), grid), -1)
+        grid_intervals = grid0[..., 1:] - grid0[..., :-1]
+
+        # log population size at the end of each grid point
+        log_pop_size_grid = (
+            torch.cat(
+                (
+                    torch.zeros(thetas.shape[:-1] + (1,)),
+                    -torch.cumsum(growth[..., :-1] * grid_intervals, -1),
+                ),
+                -1,
+            )
+            + thetas.log()
+        )
+
+        # log population size at the end of each coalescent interval
+        log_pop_sizes = log_pop_size_grid.gather(-1, indices_internals) - growth.gather(
+            -1, indices_internals
+        ) * (internal_heights - grid0.gather(-1, indices_internals))
+
+        # Integrate 1/N(t) over each interval
+        growth_intervals = growth.gather(-1, indices_grid_heights)
+        grid_heights_growth_exp = torch.exp(grid_heights_sorted * growth_intervals)
+        integral = (
+            grid_heights_growth_exp[..., 1:] - grid_heights_growth_exp[..., :-1]
+        ) / (thetas * growth_intervals[..., 1:])
+
+        return -torch.sum(lchoose2 * integral, dim=-1, keepdim=True,) - torch.sum(
+            log_pop_sizes,
+            dim=-1,
+            keepdim=True,
+        )
