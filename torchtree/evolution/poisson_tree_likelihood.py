@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import torch
 import torch.distributions
 
@@ -42,9 +44,6 @@ class PoissonTreeLikelihood(CallableModel):
             .sum(-1)
         )
 
-    def handle_model_changed(self, model, obj, index):
-        self.fire_model_changed()
-
     def handle_parameter_changed(self, variable, index, event):
         pass
 
@@ -53,7 +52,7 @@ class PoissonTreeLikelihood(CallableModel):
         return max([model.sample_shape for model in self._models.values()], key=len)
 
     @classmethod
-    def from_json(cls, data, dic) -> 'PoissonTreeLikelihood':
+    def from_json(cls, data, dic) -> PoissonTreeLikelihood:
         id_ = data['id']
         tree_model = process_object(data[TreeModel.tag], dic)
         clock_model = process_object(data[BranchModel.tag], dic)

@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import abc
-from typing import Tuple
 
 import numpy as np
 
@@ -11,7 +12,7 @@ from ..typing import ID
 class DataType(Identifiable, abc.ABC):
     @property
     @abc.abstractmethod
-    def states(self) -> Tuple[str, ...]:
+    def states(self) -> tuple[str, ...]:
         pass
 
     @property
@@ -24,7 +25,7 @@ class DataType(Identifiable, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def partial(self, string: str, use_ambiguities=True) -> Tuple[float, ...]:
+    def partial(self, string: str, use_ambiguities=True) -> tuple[float, ...]:
         pass
 
     @property
@@ -34,14 +35,14 @@ class DataType(Identifiable, abc.ABC):
 
 
 class AbstractDataType(DataType, abc.ABC):
-    def __init__(self, id_: ID, states: Tuple[str, ...]):
+    def __init__(self, id_: ID, states: tuple[str, ...]):
         super().__init__(id_)
         self._states = states
         self._state_count = len(states)
         self._size = len(states[0])
 
     @property
-    def states(self) -> Tuple[str, ...]:
+    def states(self) -> tuple[str, ...]:
         return self._states
 
     @property
@@ -101,7 +102,7 @@ class NucleotideDataType(AbstractDataType):
     def encoding(self, string) -> int:
         return NucleotideDataType.NUCLEOTIDE_STATES[ord(string)]
 
-    def partial(self, string: str, use_ambiguities=True) -> Tuple[float, ...]:
+    def partial(self, string: str, use_ambiguities=True) -> tuple[float, ...]:
         if not use_ambiguities and string not in 'ACGTUacgtu':
             return (1.0,) * 4
         return NucleotideDataType.NUCLEOTIDE_AMBIGUITY_STATES[
@@ -161,7 +162,7 @@ class AminoAcidDataType(AbstractDataType):
     def encoding(self, string) -> int:
         return AminoAcidDataType.AMINO_ACIDS_STATES[ord(string)]
 
-    def partial(self, string: str, use_ambiguities=True) -> Tuple[float, ...]:
+    def partial(self, string: str, use_ambiguities=True) -> tuple[float, ...]:
         if (
             not use_ambiguities
             and string not in 'ACDEFGHIKLMNPQRSTVWYacdefghiklmnpqrstvwy'
@@ -281,7 +282,7 @@ class CodonDataType(AbstractDataType):
             encoding -= self.stop_count[encoding]
         return encoding
 
-    def partial(self, string: str, use_ambiguities=True) -> Tuple[float, ...]:
+    def partial(self, string: str, use_ambiguities=True) -> tuple[float, ...]:
         encoding = self.encoding(string)
         if encoding == 65:
             p = [1.0] * self._state_count
@@ -298,7 +299,7 @@ class CodonDataType(AbstractDataType):
 
 @register_class
 class GeneralDataType(AbstractDataType):
-    def __init__(self, id_: ID, codes: Tuple[str, ...], ambiguities: dict):
+    def __init__(self, id_: ID, codes: tuple[str, ...], ambiguities: dict):
         super().__init__(id_, codes)
         self.codes = {code: idx for idx, code in enumerate(codes)}
         self._encoding = self.codes.copy()
@@ -318,7 +319,7 @@ class GeneralDataType(AbstractDataType):
     def encoding(self, string: str) -> int:
         return self._encoding.get(string, self.state_count)
 
-    def partial(self, string: str, use_ambiguities=True) -> Tuple[float, ...]:
+    def partial(self, string: str, use_ambiguities=True) -> tuple[float, ...]:
         if string in self.codes:
             p = np.zeros(self.state_count)
             p[self.codes[string]] = 1.0

@@ -157,7 +157,7 @@ class Optimizer(JSONSerializable, Runnable):
             self._run()
 
     @classmethod
-    def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> 'Optimizer':
+    def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> Optimizer:
         rules = {  # noqa: F841
             'loss': {'type': 'object|string', 'instanceof': 'CallableModel'},
             'parameters': {

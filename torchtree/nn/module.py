@@ -43,12 +43,6 @@ class Module(CallableModel):
         """
         return self._module
 
-    def handle_model_changed(self, model, obj, index) -> None:
-        self.fire_model_changed()
-
-    def handle_parameter_changed(self, variable, index, event) -> None:
-        self.fire_model_changed()
-
     def _call(self, *args, **kwargs) -> Tensor:
         return self._module()
 

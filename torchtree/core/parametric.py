@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import abc
 from collections import OrderedDict
-from typing import List, Union
+from typing import Union
 
 from .abstractparameter import AbstractParameter
 
@@ -85,7 +87,7 @@ class Parametric(ModelListener, ParameterListener, abc.ABC):
         self._models[name] = model
         model.add_model_listener(self)
 
-    def parameters(self) -> List[AbstractParameter]:
+    def parameters(self) -> list[AbstractParameter]:
         """Returns parameters of instance Parameter."""
         parameters = []
         for param in self._parameters.values():

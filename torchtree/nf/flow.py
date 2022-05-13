@@ -1,4 +1,6 @@
-from typing import Dict, List, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import Optional, Union
 
 import torch.nn
 from torch import Size, Tensor, nn
@@ -26,9 +28,9 @@ class NormalizingFlow(DistributionModel):
     def __init__(
         self,
         id_: str,
-        x: Union[AbstractParameter, List[AbstractParameter]],
+        x: Union[AbstractParameter, list[AbstractParameter]],
         base: Distribution,
-        modules: List[Module],
+        modules: list[Module],
         dtype=None,
         device=None,
     ) -> None:
@@ -41,7 +43,7 @@ class NormalizingFlow(DistributionModel):
         if device is not None or dtype is not None:
             self.to(device=device, dtype=dtype)
 
-    def forward(self, x: Tensor) -> Tuple[Tensor, Tensor]:
+    def forward(self, x: Tensor) -> tuple[Tensor, Tensor]:
         log_det_J = 0.0
         z = x
         for layer in self.layers:
@@ -76,7 +78,7 @@ class NormalizingFlow(DistributionModel):
         self.apply_flow(sample_shape)
 
     def log_prob(
-        self, x: Union[List[AbstractParameter], AbstractParameter] = None
+        self, x: Union[list[AbstractParameter], AbstractParameter] = None
     ) -> Tensor:
         return self.base() - self.sum_log_abs_det_jacobians
 
@@ -90,7 +92,7 @@ class NormalizingFlow(DistributionModel):
     def sample_shape(self) -> torch.Size:
         return self.base.sample_shape
 
-    def parameters(self) -> List[AbstractParameter]:
+    def parameters(self) -> list[AbstractParameter]:
         parameters = []
         for module in self.modules:
             parameters.extend(module.parameters())
@@ -118,7 +120,7 @@ class NormalizingFlow(DistributionModel):
         self.base.cpu()
 
     @classmethod
-    def from_json(cls, data: Dict[str, any], dic: Dict[str, any]) -> 'NormalizingFlow':
+    def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> NormalizingFlow:
         r"""
         Create a Flow object.
 

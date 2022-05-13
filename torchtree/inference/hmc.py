@@ -112,7 +112,7 @@ class HMC(JSONSerializable, Runnable):
                 logger.finalize()
 
     @classmethod
-    def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> 'HMC':
+    def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> HMC:
         iterations = data['iterations']
         steps = data['steps']
         step_size = data['step_size']

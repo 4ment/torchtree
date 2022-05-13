@@ -59,9 +59,6 @@ class BDSKModel(CallableModel):
     def handle_model_changed(self, model, obj, index):
         pass
 
-    def handle_parameter_changed(self, variable, index, event):
-        self.fire_model_changed(variable, index)
-
     @property
     def sample_shape(self) -> torch.Size:
         return max(self.tree_model.node_heights.shape[:-1], self.R.shape[:-1], key=len)

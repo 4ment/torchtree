@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import inspect
-from typing import Dict
 
 from torch.optim.lr_scheduler import _LRScheduler as TorchScheduler
 
@@ -22,8 +23,8 @@ class Scheduler(JSONSerializable):
 
     @classmethod
     def from_json(
-        cls, data: Dict[str, any], dic: Dict[str, any], **kwargs
-    ) -> 'Scheduler':
+        cls, data: dict[str, any], dic: dict[str, any], **kwargs
+    ) -> Scheduler:
         scheduler_class = get_class(data['scheduler'])
         signature_params = list(inspect.signature(scheduler_class.__init__).parameters)
         optionals = {}

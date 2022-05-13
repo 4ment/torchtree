@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 
 import torch
@@ -45,9 +47,6 @@ class VR(CallableModel):
         log_w_mean = torch.logsumexp(log_w, dim=-1) - math.log(log_w.shape[-1])
         return log_w_mean.sum(-1) / (1.0 - self.alpha)
 
-    def handle_model_changed(self, model, obj, index):
-        self.fire_model_changed()
-
     def handle_parameter_changed(self, variable, index, event):
         pass
 
@@ -56,7 +55,7 @@ class VR(CallableModel):
         return self.q.sample_shape
 
     @classmethod
-    def from_json(cls, data, dic) -> 'VR':
+    def from_json(cls, data, dic) -> VR:
         samples = data.get('samples', 1)
         if isinstance(samples, list):
             samples = torch.Size(samples)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import torch
 
 from ..core.model import CallableModel
@@ -45,9 +47,6 @@ class CUBO(CallableModel):
         log_w_rescaled = torch.exp(log_w - log_max) ** self.n
         return torch.log(log_w_rescaled.mean()) / self.n + log_max
 
-    def handle_model_changed(self, model, obj, index):
-        self.fire_model_changed()
-
     def handle_parameter_changed(self, variable, index, event):
         pass
 
@@ -56,7 +55,7 @@ class CUBO(CallableModel):
         return self.q.sample_shape
 
     @classmethod
-    def from_json(cls, data, dic) -> 'CUBO':
+    def from_json(cls, data, dic) -> CUBO:
         samples = data.get('samples', 1)
         if isinstance(samples, list):
             samples = torch.Size(samples)

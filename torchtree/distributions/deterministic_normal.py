@@ -1,4 +1,6 @@
-from typing import List, Optional, Union
+from __future__ import annotations
+
+from typing import Optional, Union
 
 import torch
 
@@ -28,7 +30,7 @@ class DeterministicNormal(DistributionModel):
         id_: Optional[str],
         loc: AbstractParameter,
         scale: AbstractParameter,
-        x: Union[List[AbstractParameter], AbstractParameter],
+        x: Union[list[AbstractParameter], AbstractParameter],
         shape: torch.Size,
     ) -> None:
         super().__init__(id_)
@@ -49,7 +51,7 @@ class DeterministicNormal(DistributionModel):
             self.x.tensor = self.loc.tensor + self.eps * self.scale.tensor
 
     def log_prob(
-        self, x: Union[List[AbstractParameter], AbstractParameter] = None
+        self, x: Union[list[AbstractParameter], AbstractParameter] = None
     ) -> torch.Tensor:
         return torch.distributions.Normal(self.loc.tensor, self.scale.tensor).log_prob(
             x.tensor

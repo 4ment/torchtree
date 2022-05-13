@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import abc
 from abc import ABC
 from io import StringIO
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import torch
 from dendropy import TaxonNamespace, Tree
@@ -157,12 +159,12 @@ class TreeModel(Model):
 
     @property
     @abc.abstractmethod
-    def postorder(self) -> List[List[int]]:
+    def postorder(self) -> list[list[int]]:
         ...
 
     @property
     @abc.abstractmethod
-    def taxa(self) -> List[str]:
+    def taxa(self) -> list[str]:
         ...
 
     @abc.abstractmethod
@@ -258,7 +260,7 @@ class UnRootedTreeModel(AbstractTreeModel):
         newick: str,
         branch_lengths: Union[dict, list, str],
         taxa: Union[dict, list, str],
-        **kwargs
+        **kwargs,
     ):
         r"""
         Factory for creating tree models in JSON format.
@@ -442,7 +444,7 @@ class TimeTreeModel(AbstractTreeModel):
         newick: str,
         internal_heights: Union[dict, list, str],
         taxa: Union[dict, list, str],
-        **kwargs
+        **kwargs,
     ):
         r"""
         Factory for creating tree models in JSON format.
@@ -549,6 +551,20 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
             self.heights_need_update = False
         return self._node_heights
 
+    def handle_model_changed(self, model, obj, index) -> None:
+        self.lp_needs_update = True
+        self.branch_lengths_need_update = True
+        self.heights_need_update = True
+        self.fire_model_changed(self)
+
+    def handle_parameter_changed(
+        self, variable: AbstractParameter, index, event
+    ) -> None:
+        self.lp_needs_update = True
+        self.branch_lengths_need_update = True
+        self.heights_need_update = True
+        self.fire_model_changed(self)
+
     def _call(self, *args, **kwargs) -> torch.Tensor:
         if self.heights_need_update:
             self.update_node_heights()
@@ -571,7 +587,7 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
         ratios: Union[dict, list, str],
         root_height: Union[dict, list, str],
         taxa: Union[dict, list, str],
-        **kwargs
+        **kwargs,
     ):
         r"""
         Factory for creating tree models in JSON format.

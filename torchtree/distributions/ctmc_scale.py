@@ -44,12 +44,6 @@ class CTMCScale(CallableModel):
         )
         return log_like
 
-    def handle_model_changed(self, model, obj, index):
-        pass
-
-    def handle_parameter_changed(self, variable, index, event):
-        self.fire_model_changed()
-
     @property
     def sample_shape(self) -> torch.Size:
         return self.x.tensor.shape[:-1]
@@ -70,7 +64,7 @@ class CTMCScale(CallableModel):
         self.log_gamma_one_half = self.log_gamma_one_half.cpu()
 
     @staticmethod
-    def json_factory(id_: str, rate: [str, dict], tree: [str, dict]) -> dict:
+    def json_factory(id_: str, rate: Union[str, dict], tree: Union[str, dict]) -> dict:
         return {
             'id': id_,
             'type': 'CTMCScale',

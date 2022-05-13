@@ -1,7 +1,8 @@
 """Masked Autoregressive Flow for Density Estimation arXiv:1705.07057v4 Code
 ported from https://github.com/kamenbliznashki/normalizing_flows."""
+from __future__ import annotations
+
 import copy
-from typing import List
 
 import torch
 from torch import Tensor, nn
@@ -243,7 +244,7 @@ class RealNVP(DistributionModel):
     def sample_shape(self) -> torch.Size:
         return self.base.sample_shape
 
-    def parameters(self) -> List[AbstractParameter]:
+    def parameters(self) -> list[AbstractParameter]:
         return self.net_parameters.parameters()
 
     def handle_model_changed(self, model, obj, index):
@@ -256,7 +257,7 @@ class RealNVP(DistributionModel):
         pass
 
     @classmethod
-    def from_json(cls, data, dic) -> 'RealNVP':
+    def from_json(cls, data, dic) -> RealNVP:
         id_ = data['id']
         x = process_objects(data['x'], dic)
         base = process_object(data['base'], dic)

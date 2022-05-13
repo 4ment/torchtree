@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import csv
 import json
 import sys
 from abc import abstractmethod
-from typing import List, Union
+from typing import Union
 
 import torch
 
@@ -47,7 +49,7 @@ class Logger(LoggerInterface):
     """
 
     def __init__(
-        self, objs: List[Union[AbstractParameter, CallableModel]], **kwargs
+        self, objs: list[Union[AbstractParameter, CallableModel]], **kwargs
     ) -> None:
         if 'file_name' in kwargs:
             self.file_name = kwargs['file_name']
@@ -94,7 +96,7 @@ class Logger(LoggerInterface):
             self.f.close()
 
     @classmethod
-    def from_json(cls, data, dic) -> 'Logger':
+    def from_json(cls, data, dic) -> Logger:
         r"""Create a Logger object.
 
         :param data: json representation of Logger object.
@@ -164,7 +166,7 @@ class TreeLogger(LoggerInterface):
             self.f.close()
 
     @classmethod
-    def from_json(cls, data, dic) -> 'TreeLogger':
+    def from_json(cls, data, dic) -> TreeLogger:
         r"""
         Create a TreeLogger object.
 
@@ -194,7 +196,7 @@ class CSV(JSONSerializable, Runnable):
     :type objs: list[Parameter]
     """
 
-    def __init__(self, objs: List[AbstractParameter], **kwargs) -> None:
+    def __init__(self, objs: list[AbstractParameter], **kwargs) -> None:
         self.objs = objs
         self.file_name = kwargs.get('file_name', None)
         self.kwargs = kwargs
@@ -213,7 +215,7 @@ class CSV(JSONSerializable, Runnable):
             f.close()
 
     @classmethod
-    def from_json(cls, data, dic) -> 'CSV':
+    def from_json(cls, data, dic) -> CSV:
         r"""
         Create a CSV object.
 
@@ -243,7 +245,7 @@ class Dumper(JSONSerializable, Runnable):
     :type parameters: list[Parameter]
     """
 
-    def __init__(self, parameters: List[AbstractParameter], **kwargs) -> None:
+    def __init__(self, parameters: list[AbstractParameter], **kwargs) -> None:
         if 'file_name' in kwargs:
             self.file_name = kwargs['file_name']
             del kwargs['file_name']
@@ -263,7 +265,7 @@ class Dumper(JSONSerializable, Runnable):
             json.dumps(self.parameters, cls=ParameterEncoder, **self.kwargs)
 
     @classmethod
-    def from_json(cls, data, dic) -> 'Dumper':
+    def from_json(cls, data, dic) -> Dumper:
         r"""
         Create a Dumper object.
 

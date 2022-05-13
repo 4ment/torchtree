@@ -12,6 +12,6 @@ import torch
 
 from . import Parameter
 
-ListTensor = List[torch.tensor]
+ListTensor = List[torch.Tensor]
 ListParameter = List[Parameter]
 ID = Union[str, None]

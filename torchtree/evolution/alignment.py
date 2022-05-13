@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import collections
 import itertools
-from typing import List
 
 import numpy as np
 
@@ -25,7 +26,7 @@ class Alignment(Identifiable, collections.UserList):
     _tag = 'alignment'
 
     def __init__(
-        self, id_: ID, sequences: List[Sequence], taxa: Taxa, data_type: DataType
+        self, id_: ID, sequences: list[Sequence], taxa: Taxa, data_type: DataType
     ) -> None:
         self._sequence_size = len(sequences[0].sequence)
         self._taxa = taxa
@@ -48,7 +49,7 @@ class Alignment(Identifiable, collections.UserList):
         return self._data_type
 
     @classmethod
-    def get(cls, id_: ID, filename: str, taxa: Taxa) -> 'Alignment':
+    def get(cls, id_: ID, filename: str, taxa: Taxa) -> Alignment:
         sequences = read_fasta_sequences(filename)
         return cls(id_, sequences, taxa)
 
@@ -78,7 +79,7 @@ class Alignment(Identifiable, collections.UserList):
         return cls(id_, sequences, taxa, data_type)
 
 
-def read_fasta_sequences(filename: str) -> List[Sequence]:
+def read_fasta_sequences(filename: str) -> list[Sequence]:
     sequences = {}
     with open(filename, 'r') as fp:
         for line in fp:

@@ -21,12 +21,6 @@ class AbstractCoalescentModel(CallableModel):
         self.theta = theta
         self.tree_model = tree_model
 
-    def handle_model_changed(self, model, obj, index):
-        self.fire_model_changed()
-
-    def handle_parameter_changed(self, variable, index, event):
-        self.fire_model_changed()
-
     @property
     def sample_shape(self) -> torch.Size:
         return max(self.tree_model.sample_shape, self.theta.shape[:-1], key=len)
@@ -107,12 +101,6 @@ class ExponentialCoalescentModel(AbstractCoalescentModel):
     ) -> None:
         super().__init__(id_, theta, tree_model)
         self.growth = growth
-
-    def handle_model_changed(self, model, obj, index):
-        self.fire_model_changed()
-
-    def handle_parameter_changed(self, variable, index, event):
-        self.fire_model_changed()
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         coalescent = ExponentialCoalescent(self.theta.tensor, self.growth.tensor)

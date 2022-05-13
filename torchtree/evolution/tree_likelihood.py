@@ -417,9 +417,6 @@ class TreeLikelihoodModel(CallableModel):
                 )
         return log_p
 
-    def handle_model_changed(self, model, obj, index):
-        self.fire_model_changed()
-
     def handle_parameter_changed(self, variable, index, event):
         pass
 

@@ -1,10 +1,11 @@
-from typing import List, Union
+from __future__ import annotations
+
+from typing import Union
 
 import torch.distributions
 
 from .. import Parameter
 from ..core.container import Container
-from ..core.model import Model
 from ..core.utils import process_object, register_class
 from ..typing import ID
 from .distributions import DistributionModel
@@ -19,11 +20,11 @@ class JointDistributionModel(DistributionModel):
      CallableModel
     """
 
-    def __init__(self, id_: ID, distributions: List[DistributionModel]) -> None:
+    def __init__(self, id_: ID, distributions: list[DistributionModel]) -> None:
         super().__init__(id_)
         self._distributions = Container(None, distributions)
 
-    def log_prob(self, x: Union[List[Parameter], Parameter] = None) -> torch.Tensor:
+    def log_prob(self, x: Union[list[Parameter], Parameter] = None) -> torch.Tensor:
         log_p = []
         for distr in self._distributions.callables():
             lp = distr()
@@ -58,9 +59,6 @@ class JointDistributionModel(DistributionModel):
         for distr in self._distributions.models():
             entropies.append(distr.entropy())
         return torch.cat(entropies, 0).sum()
-
-    def handle_model_changed(self, model: Model, obj, index) -> None:
-        self.fire_model_changed()
 
     def handle_parameter_changed(self, variable: Parameter, index, event) -> None:
         pass

@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 import torch
 from torch import Tensor
@@ -33,7 +33,7 @@ class RootParameter(AbstractParameter, CallableModel):
         self._tensor = self.transform()
         self.listeners = []
 
-    def parameters(self) -> List[Parameter]:
+    def parameters(self) -> list[Parameter]:
         return [self.distance, self.rate]
 
     def _call(self) -> Tensor:
@@ -62,7 +62,7 @@ class RootParameter(AbstractParameter, CallableModel):
 
     def handle_parameter_changed(self, variable, index, event) -> None:
         self.need_update = True
-        self.fire_parameter_changed()
+        super().handle_parameter_changed(variable, index, event)
 
     def handle_model_changed(self, model, obj, index) -> None:
         pass
@@ -79,7 +79,7 @@ class RootParameter(AbstractParameter, CallableModel):
         return self._tensor.shape[:-1]
 
     @classmethod
-    def from_json(cls, data, dic) -> 'RootParameter':
+    def from_json(cls, data, dic) -> RootParameter:
         r"""
         Create a RootParameter object.
 

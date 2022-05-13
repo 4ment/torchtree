@@ -5,6 +5,8 @@ from typing import Optional, Union
 import torch.distributions
 from torch import Tensor
 
+from torchtree.core.abstractparameter import AbstractParameter
+
 from .classproperty_decorator import classproperty
 from .identifiable import Identifiable
 from .parametric import ModelListener, ParameterListener, Parametric
@@ -64,14 +66,31 @@ class Model(Parametric, Identifiable, ModelListener, ParameterListener):
 
 
 class CallableModel(Model, collections.abc.Callable):
+    """Classes extending CallableModel are Callable and the returned value is
+    cached in case we need to use this value multiple times without the need to
+    recompute it."""
+
     def __init__(self, id_: Optional[str]) -> None:
         Model.__init__(self, id_)
         self.lp = None
+        self.lp_needs_update = True
 
     @abc.abstractmethod
     def _call(self, *args, **kwargs) -> Tensor:
         pass
 
+    def handle_parameter_changed(
+        self, variable: AbstractParameter, index, event
+    ) -> None:
+        self.lp_needs_update = True
+        self.fire_model_changed(self)
+
+    def handle_model_changed(self, model, obj, index) -> None:
+        self.lp_needs_update = True
+        self.fire_model_changed(self)
+
     def __call__(self, *args, **kwargs) -> Tensor:
-        self.lp = self._call(*args, **kwargs)
+        if self.lp_needs_update:
+            self.lp = self._call(*args, **kwargs)
+            self.lp_needs_update = False
         return self.lp

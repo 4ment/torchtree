@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections import Counter
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Optional, Union
 
 import torch
 
@@ -16,7 +18,7 @@ class SitePattern(Model):
         self,
         id_: Optional[str],
         alignment: Alignment,
-        indices: List[Union[int, slice]] = None,
+        indices: list[Union[int, slice]] = None,
     ) -> None:
         super().__init__(id_)
         self.alignment = alignment
@@ -66,8 +68,8 @@ class SitePattern(Model):
 
 
 def compress(
-    alignment: Alignment, indices: List[Union[int, slice]] = None
-) -> Tuple[Dict[str, Tuple[str]], torch.Tensor]:
+    alignment: Alignment, indices: list[Union[int, slice]] = None
+) -> tuple[dict[str, tuple[str]], torch.Tensor]:
     """Compress alignment using data_type.
 
     :param Alignment alignment: sequence alignment
@@ -97,8 +99,8 @@ def compress(
 
 
 def compress_alignment(
-    alignment: Alignment, indices: List[Union[int, slice]] = None, use_ambiguities=True
-) -> Tuple[List[torch.Tensor], torch.Tensor]:
+    alignment: Alignment, indices: list[Union[int, slice]] = None, use_ambiguities=True
+) -> tuple[list[torch.Tensor], torch.Tensor]:
     """Compress alignment using data_type.
 
     :param Alignment alignment: sequence alignment
@@ -124,8 +126,8 @@ def compress_alignment(
 
 
 def compress_alignment_states(
-    alignment: Alignment, indices: List[Union[int, slice]] = None
-) -> Tuple[List[torch.Tensor], torch.Tensor]:
+    alignment: Alignment, indices: list[Union[int, slice]] = None
+) -> tuple[list[torch.Tensor], torch.Tensor]:
     """Compress alignment using data_type.
 
     :param Alignment alignment: sequence alignment

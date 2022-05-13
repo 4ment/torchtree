@@ -1,4 +1,6 @@
-from typing import List, Tuple, Union
+from __future__ import annotations
+
+from typing import Union
 
 import torch
 
@@ -68,7 +70,7 @@ def create_map_parser(subprasers):
     return parser
 
 
-def make_unconstrained(json_object: Union[dict, list]) -> Tuple[List[str], List[str]]:
+def make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[str]]:
     parameters = []
     parameters_unres = []
     if isinstance(json_object, list):

@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import json
 import logging
 import sys
-from typing import List, Tuple, Union
+from typing import Union
 
 import numpy as np
 import torch
@@ -504,7 +506,7 @@ def create_weibull_distribution(var_id, x_unres, json_object, scale, concentrati
 
 def create_meanfield(
     var_id: str, json_object: dict, distribution: str
-) -> Tuple[List[str], List[str]]:
+) -> tuple[list[str], list[str]]:
     distributions = []
     var_parameters = []
     parameters = []
@@ -594,7 +596,7 @@ def create_meanfield(
 def apply_transforms_for_fullrank(
     var_id: str,
     json_object: Union[dict, list],
-) -> List[Tuple[str, str, list]]:
+) -> list[tuple[str, str, list]]:
     var_parameters = []
     if isinstance(json_object, list):
         for element in json_object:
@@ -654,7 +656,7 @@ def apply_transforms_for_fullrank(
     return var_parameters
 
 
-def create_variational_model(id_, joint, arg) -> Tuple[dict, List[str]]:
+def create_variational_model(id_, joint, arg) -> tuple[dict, list[str]]:
     variational = {'id': id_, 'type': 'JointDistributionModel'}
     if len(arg.variational) == 1 and arg.variational[0] == 'meanfield':
         distributions, parameters = create_meanfield(id_, joint, arg.distribution)
@@ -724,6 +726,8 @@ def create_sampler(id_, var_id, parameters, arg):
         file_name = 'samples.csv'
         tree_file_name = 'samples.trees'
 
+    parameters2 = list(filter(lambda x: 'tree.ratios' != x, parameters))
+
     return {
         "id": id_,
         "type": "Sampler",
@@ -734,7 +738,7 @@ def create_sampler(id_, var_id, parameters, arg):
                 "id": "logger",
                 "type": "Logger",
                 "file_name": file_name,
-                "parameters": parameters,
+                "parameters": ['joint', 'like', var_id] + parameters2,
                 "delimiter": "\t",
             },
             {
@@ -767,7 +771,7 @@ def build_advi(arg):
 
     # convert Parameters with constraints to TransformedParameters
     # and create variational distribution
-    var_dic, var_parameters = create_variational_model('var', json_list, arg)
+    var_dic, var_parameters = create_variational_model('variational', json_list, arg)
 
     # extract references of TransformedParameters but not those coming from the
     # variational distribution
@@ -780,7 +784,7 @@ def build_advi(arg):
 
     json_list.append(var_dic)
 
-    advi_dic = create_advi('joint', 'var', var_parameters, arg)
+    advi_dic = create_advi('joint', 'variational', var_parameters, arg)
     json_list.append(advi_dic)
 
     parameters = []
@@ -812,6 +816,8 @@ def build_advi(arg):
             parameters.append('gmrf.precision')
         elif arg.coalescent == 'exponential':
             parameters.append('coalescent.growth')
+        elif arg.coalescent == 'piecewise':
+            parameters.append('coalescent.growth')
     elif arg.birth_death is not None:
         parameters.append("bdsk.R")
         parameters.append("bdsk.delta")
@@ -841,5 +847,5 @@ def build_advi(arg):
             parameters.append("sitemodel.shape")
 
     if arg.samples > 0:
-        json_list.append(create_sampler('sampler', 'var', parameters, arg))
+        json_list.append(create_sampler('sampler', 'variational', parameters, arg))
     return json_list

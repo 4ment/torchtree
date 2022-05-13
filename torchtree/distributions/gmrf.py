@@ -60,12 +60,6 @@ class GMRF(CallableModel):
             - dim / 2.0 * 1.8378770664093453
         )
 
-    def handle_model_changed(self, model, obj, index):
-        pass
-
-    def handle_parameter_changed(self, variable, index, event):
-        self.fire_model_changed()
-
     @property
     def sample_shape(self) -> torch.Size:
         return self.field.tensor.shape[:-1]
@@ -127,12 +121,6 @@ class GMRFCovariate(CallableModel):
             - 0.5 * field_z_beta.t() @ design_matrix @ field_z_beta
             - (dim - 1) / 2.0 * 1.8378770664093453
         )
-
-    def handle_model_changed(self, model, obj, index):
-        pass
-
-    def handle_parameter_changed(self, variable, index, event):
-        self.fire_model_changed()
 
     @property
     def sample_shape(self) -> torch.Size:

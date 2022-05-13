@@ -147,6 +147,11 @@ def create_evolution_parser(parser):
         '--engine',
         help="""specify the package name of a plugin""",
     )
+    parser.add_argument(
+        '--include_jacobian',
+        action="store_true",
+        help="""include Jacobian of the node height transform""",
+    )
 
     parser = add_coalescent(parser)
 
@@ -174,7 +179,7 @@ def add_birth_death(parser):
 def add_coalescent(parser):
     parser.add_argument(
         '--coalescent',
-        choices=['constant', 'exponential', 'skyride', 'skygrid'],
+        choices=['constant', 'exponential', 'skyride', 'skygrid', 'piecewise'],
         default=None,
         help="""type of coalescent""",
     )
@@ -303,7 +308,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
             if 'root_height_init' in arg:
                 root_height['tensor'] = [max(dates) - arg.root_height_init]
             elif arg.coalescent == 'skygrid':
-                root_height['tensor'] = arg.cutoff
+                root_height['tensor'] = [arg.cutoff]
 
             root_height['lower'] = offset
             tree_model = ReparameterizedTimeTreeModel.json_factory(
@@ -934,6 +939,15 @@ def create_coalesent(id_, tree_id, theta_id, arg, **kwargs):
             'theta': theta_id,
             'tree_model': tree_id,
         }
+    elif arg.coalescent.startswith('piecewise'):
+        coalescent = {
+            'id': id_,
+            'type': 'PiecewiseExponentialCoalescentGridModel',
+            'theta': theta_id,
+            'growth': kwargs.get('growth'),
+            'tree_model': tree_id,
+            'cutoff': arg.cutoff,
+        }
 
     evol = get_engine(arg)
     if evol is not None:
@@ -1185,6 +1199,16 @@ def create_time_tree_prior(taxa, arg):
                     },
                 )
             )
+        elif arg.coalescent.startswith('piecewise'):
+            growth = Parameter.json_factory(
+                f'{coalescent_id}.growth', **{'tensor': 0.001, 'full': [arg.grid]}
+            )
+            theta = Parameter.json_factory(
+                f'{coalescent_id}.theta', **{'tensor': [3.0]}
+            )
+            theta['lower'] = 0.0
+            params['growth'] = growth
+
         elif arg.coalescent == 'skygrid':
             theta_log = Parameter.json_factory(
                 f'{coalescent_id}.theta.log', **{'tensor': 3.0, 'full': [arg.grid]}

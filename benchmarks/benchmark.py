@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
+from __future__ import annotations
+
 import argparse
 from timeit import default_timer as timer
-from typing import List, Tuple
 
 import torch
 from torch.distributions import StickBreakingTransform
@@ -210,7 +211,7 @@ def transform(preorder: torch.Tensor, bounds: torch.Tensor, x: torch.Tensor):
     return heights
 
 
-def transform2(preorder: List[Tuple[int, int]], bounds: torch.Tensor, x: torch.Tensor):
+def transform2(preorder: list[tuple[int, int]], bounds: torch.Tensor, x: torch.Tensor):
     heights = torch.empty_like(x)
     heights[..., -1] = x[..., -1]
     for parent_id, id_ in preorder:

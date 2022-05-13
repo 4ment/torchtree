@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import re
 import sys
-from typing import List
 
 import dendropy
 import numpy as np
@@ -191,7 +192,7 @@ def parse_taxa(fp):
     return taxa
 
 
-def split_newick(newick: str) -> List[str]:
+def split_newick(newick: str) -> list[str]:
     """Split tree in newick format around (),;
 
     Example:
@@ -214,7 +215,7 @@ def split_newick(newick: str) -> List[str]:
     return list(filter(None, newick_split))
 
 
-def extract_taxa(file_name: str) -> List[str]:
+def extract_taxa(file_name: str) -> list[str]:
     """Extract taxon list from a nexus file.
 
     This function will try get the taxon names from the taxa and trees blocks.

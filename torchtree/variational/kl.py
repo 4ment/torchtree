@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 import torch
 
@@ -64,9 +64,6 @@ class ELBO(CallableModel):
                 lp = (self.p() - self.q()).mean()
         return lp
 
-    def handle_model_changed(self, model, obj, index):
-        self.fire_model_changed()
-
     def handle_parameter_changed(self, variable, index, event):
         pass
 
@@ -75,7 +72,7 @@ class ELBO(CallableModel):
         return self.q.sample_shape
 
     @classmethod
-    def from_json(cls, data, dic) -> 'ELBO':
+    def from_json(cls, data, dic) -> ELBO:
         obj = _from_json(cls, data, dic)
         obj.entropy = data.get('entropy', False)
         return obj
@@ -113,9 +110,6 @@ class KLpq(CallableModel):
         log_w_norm = log_w - torch.logsumexp(log_w, -1)
         return torch.sum(log_w_norm.exp() * log_w)
 
-    def handle_model_changed(self, model, obj, index):
-        self.fire_model_changed()
-
     def handle_parameter_changed(self, variable, index, event):
         pass
 
@@ -124,7 +118,7 @@ class KLpq(CallableModel):
         return self.q.sample_shape
 
     @classmethod
-    def from_json(cls, data, dic) -> 'KLpq':
+    def from_json(cls, data, dic) -> KLpq:
         return _from_json(cls, data, dic)
 
 
@@ -162,9 +156,6 @@ class KLpqImportance(CallableModel):
         return -torch.sum(w_norm * log_q)
         # log_w_norm = log_w - torch.logsumexp(log_w, -1)
         # return torch.sum(log_w_norm.exp() * log_q)
-
-    def handle_model_changed(self, model, obj, index):
-        pass
 
     def handle_parameter_changed(self, variable, index, event):
         pass
@@ -218,7 +209,7 @@ class SELBO(CallableModel):
     def __init__(
         self,
         id_: ID,
-        components: List[DistributionModel],
+        components: list[DistributionModel],
         weights: AbstractParameter,
         p: CallableModel,
         samples: torch.Size,
@@ -258,9 +249,6 @@ class SELBO(CallableModel):
                     log_probs.append((self.p() - q().sum(-1)).mean().unsqueeze(0))
             lp = (self.weights.tensor * torch.cat(log_probs)).sum()
         return lp
-
-    def handle_model_changed(self, model, obj, index):
-        self.fire_model_changed()
 
     def handle_parameter_changed(self, variable, index, event):
         pass

@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import abc
 import collections
 import math
 import sys
-from typing import Dict
 
 import numpy as np
 import torch
@@ -62,8 +63,8 @@ class VariationalConvergence(BaseConvergence):
 
     @classmethod
     def from_json(
-        cls, data: Dict[str, any], dic: Dict[str, any]
-    ) -> 'VariationalConvergence':
+        cls, data: dict[str, any], dic: dict[str, any]
+    ) -> VariationalConvergence:
         loss = process_objects(data['loss'], dic)
         every = data.get('every', 100)
         samples = data.get('samples', 100)
@@ -163,8 +164,8 @@ class StanVariationalConvergence(VariationalConvergence):
 
     @classmethod
     def from_json(
-        cls, data: Dict[str, any], dic: Dict[str, any]
-    ) -> 'StanVariationalConvergence':
+        cls, data: dict[str, any], dic: dict[str, any]
+    ) -> StanVariationalConvergence:
         loss = process_objects(data['loss'], dic)
         every = data.get('every', 100)
         samples = data.get('samples', 100)

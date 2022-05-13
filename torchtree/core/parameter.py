@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import collections.abc
 import inspect
 import numbers
-from typing import List, Optional, Tuple, Union, overload
+from typing import Optional, Union, overload
 
 import numpy as np
 import torch
@@ -79,7 +81,7 @@ class Parameter(AbstractParameter):
         for listener in self.listeners:
             listener.handle_parameter_changed(self, index, event)
 
-    def clone(self) -> 'Parameter':
+    def clone(self) -> Parameter:
         """Return a clone of the Parameter.
 
         it is not cloning listeners and the clone's id is None
@@ -87,7 +89,7 @@ class Parameter(AbstractParameter):
         tclone = self.tensor.clone()
         return Parameter(None, tclone)
 
-    def __getitem__(self, subscript) -> 'Parameter':
+    def __getitem__(self, subscript) -> Parameter:
         """Can be a slice, int, or Tensor."""
         return Parameter(None, self._tensor[subscript])
 
@@ -223,7 +225,7 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
     def __init__(
         self,
         id_: Optional[str],
-        x: Union[List[AbstractParameter], AbstractParameter],
+        x: Union[list[AbstractParameter], AbstractParameter],
         transform: torch.distributions.Transform,
     ) -> None:
         Parametric.__init__(self)
@@ -237,7 +239,7 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
         self._tensor = self.transform(self.x.tensor)
         self.listeners = []
 
-    def parameters(self) -> List[AbstractParameter]:
+    def parameters(self) -> list[AbstractParameter]:
         return self.x.parameters()
 
     def __call__(self, *args, **kwargs) -> Tensor:
@@ -422,14 +424,14 @@ class ViewParameter(AbstractParameter, ParameterListener):
         for listener in self.listeners:
             listener.handle_parameter_changed(self, index, event)
 
-    def clone(self) -> 'ViewParameter':
+    def clone(self) -> ViewParameter:
         """Return a clone of the Parameter.
 
         it is not cloning listeners and the clone's id is None
         """
         return ViewParameter(None, self.parameter.clone(), self.indices)
 
-    def __getitem__(self, subscript) -> 'ViewParameter':
+    def __getitem__(self, subscript) -> ViewParameter:
         raise NotImplementedError
 
     def handle_parameter_changed(self, variable, index, event) -> None:
@@ -511,7 +513,7 @@ class CatParameter(AbstractParameter, ParameterListener):
     def __init__(
         self,
         id_: Optional[str],
-        parameters: Union[List[Parameter], Tuple[Parameter, ...]],
+        parameters: Union[list[Parameter], tuple[Parameter, ...]],
         dim: Optional[int] = 0,
     ) -> None:
         AbstractParameter.__init__(self, id_)
@@ -638,7 +640,7 @@ class ModuleParameter(AbstractParameter, Parametric):
         self._tensor = module()
         self.listeners = []
 
-    def parameters(self) -> List[AbstractParameter]:
+    def parameters(self) -> list[AbstractParameter]:
         return self.module.parameters()
 
     @property

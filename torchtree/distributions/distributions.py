@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import abc
 import inspect
 import numbers
 from collections import OrderedDict
-from typing import List, Optional, Type, Union
+from typing import Optional, Type, Union
 
 import torch
 import torch.distributions
@@ -10,7 +12,7 @@ import torch.distributions
 from .. import Parameter
 from ..core.abstractparameter import AbstractParameter
 from ..core.container import Container
-from ..core.model import CallableModel, Model
+from ..core.model import CallableModel
 from ..core.parameter import CatParameter
 from ..core.utils import get_class, process_object, process_objects, register_class
 
@@ -48,9 +50,9 @@ class Distribution(DistributionModel):
         self,
         id_: Optional[str],
         dist: Type[torch.distributions.Distribution],
-        x: Union[List[AbstractParameter], AbstractParameter],
+        x: Union[list[AbstractParameter], AbstractParameter],
         args: 'OrderedDict[str, AbstractParameter]',
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(id_)
         self.dist = dist
@@ -77,7 +79,7 @@ class Distribution(DistributionModel):
         self.x.tensor = x
 
     def log_prob(
-        self, x: Union[List[AbstractParameter], AbstractParameter] = None
+        self, x: Union[list[AbstractParameter], AbstractParameter] = None
     ) -> torch.Tensor:
         return self.dist(
             *[arg.tensor for arg in self.args.values()], **self.kwargs
@@ -87,14 +89,6 @@ class Distribution(DistributionModel):
         return self.dist(
             *[arg.tensor for arg in self.args.values()], **self.kwargs
         ).entropy()
-
-    def handle_model_changed(self, model: Model, obj, index) -> None:
-        pass
-
-    def handle_parameter_changed(
-        self, variable: AbstractParameter, index, event
-    ) -> None:
-        pass
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         return self.log_prob(self.x)

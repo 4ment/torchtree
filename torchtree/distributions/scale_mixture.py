@@ -66,11 +66,6 @@ class ScaleMixtureNormal(CallableModel):
     def handle_model_changed(self, model, obj, index) -> None:
         pass
 
-    def handle_parameter_changed(
-        self, variable: AbstractParameter, index, event
-    ) -> None:
-        self.fire_model_changed()
-
     @staticmethod
     def json_factory(id_: str, x, loc, global_scale, local_scale, slab=None):
         model = {

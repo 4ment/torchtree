@@ -69,9 +69,6 @@ class CompoundGammaDirichletPrior(CallableModel):
     def sample_shape(self) -> torch.Size:
         return self.tree_model.sample_shape
 
-    def handle_model_changed(self, model, obj, index) -> None:
-        self.fire_model_changed()
-
     def handle_parameter_changed(self, variable, index, event) -> None:
         pass
 

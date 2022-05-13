@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 from ..core.logger import LoggerInterface
 from ..core.runnable import Runnable
@@ -19,7 +19,7 @@ class Sampler(JSONSerializable, Runnable):
     """
 
     def __init__(
-        self, model: DistributionModel, samples: int, loggers: List[LoggerInterface]
+        self, model: DistributionModel, samples: int, loggers: list[LoggerInterface]
     ) -> None:
         self.model = model
         self.samples = samples
@@ -37,7 +37,7 @@ class Sampler(JSONSerializable, Runnable):
             logger.close()
 
     @classmethod
-    def from_json(cls, data, dic) -> 'Sampler':
+    def from_json(cls, data, dic) -> Sampler:
         r"""Create a Sampler object.
 
         :param data: json representation of Sampler object.

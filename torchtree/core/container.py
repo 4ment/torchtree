@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import collections.abc
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 from torch import Size
 
@@ -18,7 +20,7 @@ class Container(Model):
     """
 
     def __init__(
-        self, id_: Optional[str], objects: List[Union['Model', AbstractParameter]]
+        self, id_: Optional[str], objects: list[Union['Model', AbstractParameter]]
     ):
         super().__init__(id_)
         for obj in objects:
