@@ -44,8 +44,7 @@ def create_variational_parser(subprasers):
         help="""variational distribution family""",
     )
     parser.add_argument(
-        '-e',
-        '--eta',
+        '--lr',
         default=0.1,
         type=float,
         help="""learning rate (default: 0.1)""",
@@ -688,8 +687,8 @@ def create_advi(joint, variational, parameters, arg):
         'id': 'advi',
         'type': 'Optimizer',
         'algorithm': 'torch.optim.Adam',
+        'options': {'lr': arg.lr},
         'maximize': True,
-        'lr': arg.eta,
         'checkpoint': checkpoint,
         'iterations': arg.iter,
         'loss': {

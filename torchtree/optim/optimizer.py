@@ -12,7 +12,13 @@ from ..core.model import CallableModel
 from ..core.parameter_utils import save_parameters
 from ..core.runnable import Runnable
 from ..core.serializable import JSONSerializable
-from ..core.utils import SignalHandler, get_class, process_objects, register_class
+from ..core.utils import (
+    JSONParseError,
+    SignalHandler,
+    get_class,
+    process_objects,
+    register_class,
+)
 from ..typing import ListParameter
 
 
@@ -206,9 +212,6 @@ class Optimizer(JSONSerializable, Runnable):
         if 'checkpoint_frequency' in data:
             optionals['checkpoint_frequency'] = data['checkpoint_frequency']
 
-        if 'maximize' in data:
-            optionals['maximize'] = data['maximize']
-
         if 'loggers' in data:
             loggers = process_objects(data["loggers"], dic)
             if not isinstance(loggers, list):
@@ -240,12 +243,28 @@ class Optimizer(JSONSerializable, Runnable):
 
         # instanciate torch.optim.optimizer
         optim_class = get_class(data['algorithm'])
+        optim_options = data['options']
         signature_params = list(inspect.signature(optim_class.__init__).parameters)
-        kwargs = {}
-        for arg in signature_params[1:]:
-            if arg in data:
-                kwargs[arg] = data[arg]
-        optimizer = optim_class(optimizer_params, **kwargs)
+        # 'maximize' is specified in some Optimizers (e.g. Adam but not LBFGS)
+        # from pytorch 1.11. Here we never provide maximize to Adam and
+        # use the maximize option in torchtree.Optimizer instead.
+        if 'maximize' in optim_options:
+            optionals['maximize'] = optim_options['maximize']
+            del optim_options['maximize']
+        elif 'maximize' in data:
+            optionals['maximize'] = data['maximize']
+        else:
+            optionals['maximize'] = True
+
+        for option in optim_options:
+            if option not in signature_params[1:]:
+                raise JSONParseError(
+                    f'{option} is not a valid option for {optim_class.__name__}'
+                    ' optimizer\n'
+                    'Choose from: ' + ','.join(signature_params[1:]) + '\n'
+                    'https://pytorch.org/docs/stable/optim.html'
+                )
+        optimizer = optim_class(optimizer_params, **optim_options)
 
         # instanciate torch.optim.scheduler
         if 'scheduler' in data:
