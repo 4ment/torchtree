@@ -302,11 +302,11 @@ class TreeLikelihoodModel(CallableModel):
             1.0e-20 if subst_model.frequencies.dtype == torch.float32 else 1.0e-40
         )
         if use_tip_states:
-            self.partials, self.weights = site_pattern.compute_tips_states(
+            self.partials, self.weights = site_pattern.compute_tips_states()
+        else:
+            self.partials, self.weights = site_pattern.compute_tips_partials(
                 use_ambiguities
             )
-        else:
-            self.partials, self.weights = site_pattern.compute_tips_partials()
         self.partials.extend([None] * (len(tree_model.taxa) - 1))
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
@@ -432,6 +432,7 @@ class TreeLikelihoodModel(CallableModel):
         subst_model = process_object(data[SubstitutionModel.tag], dic)
         site_pattern = process_object(data[SitePattern.tag], dic)
         use_ambiguities = data.get('use_ambiguities', False)
+        use_tip_states = data.get('use_tip_states', False)
         clock_model = None
         if BranchModel.tag in data:
             clock_model = process_object(data[BranchModel.tag], dic)
@@ -443,4 +444,5 @@ class TreeLikelihoodModel(CallableModel):
             site_model,
             clock_model,
             use_ambiguities,
+            use_tip_states,
         )

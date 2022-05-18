@@ -144,6 +144,11 @@ def create_evolution_parser(parser):
         help="""use nucleotide ambiguity codes""",
     )
     parser.add_argument(
+        '--use_tip_states',
+        action="store_true",
+        help="""use tip states instead of tip partials""",
+    )
+    parser.add_argument(
         '--engine',
         help="""specify the package name of a plugin""",
     )
@@ -471,6 +476,8 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
     }
     if arg.use_ambiguities:
         treelikelihood_model['use_ambiguities'] = True
+    if arg.use_tip_states:
+        treelikelihood_model['use_tip_states'] = True
 
     if arg.clock is not None:
         treelikelihood_model['branch_model'] = create_branch_model(

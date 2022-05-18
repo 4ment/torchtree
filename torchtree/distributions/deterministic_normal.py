@@ -63,11 +63,6 @@ class DeterministicNormal(DistributionModel):
     def handle_model_changed(self, model: Model, obj, index) -> None:
         pass
 
-    def handle_parameter_changed(
-        self, variable: AbstractParameter, index, event
-    ) -> None:
-        pass
-
     def _call(self, *args, **kwargs) -> torch.Tensor:
         return self.log_prob(self.x)
 

@@ -247,12 +247,6 @@ class RealNVP(DistributionModel):
     def parameters(self) -> list[AbstractParameter]:
         return self.net_parameters.parameters()
 
-    def handle_model_changed(self, model, obj, index):
-        pass
-
-    def handle_parameter_changed(self, variable, index, event):
-        pass
-
     def entropy(self) -> torch.Tensor:
         pass
 

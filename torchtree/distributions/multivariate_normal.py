@@ -3,7 +3,6 @@ import torch.distributions
 
 from .. import Parameter
 from ..core.abstractparameter import AbstractParameter
-from ..core.model import Model
 from ..core.parameter import CatParameter
 from ..core.utils import process_object, process_objects, register_class
 from ..distributions.distributions import DistributionModel
@@ -80,12 +79,6 @@ class MultivariateNormal(DistributionModel):
         return torch.distributions.MultivariateNormal(
             self.loc.tensor, **kwargs
         ).entropy()
-
-    def handle_model_changed(self, model: Model, obj, index) -> None:
-        pass
-
-    def handle_parameter_changed(self, variable: Parameter, index, event) -> None:
-        pass
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         return self.log_prob(self.x)

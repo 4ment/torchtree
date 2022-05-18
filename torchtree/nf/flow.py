@@ -98,12 +98,6 @@ class NormalizingFlow(DistributionModel):
             parameters.extend(module.parameters())
         return parameters
 
-    def handle_model_changed(self, model, obj, index):
-        pass
-
-    def handle_parameter_changed(self, variable, index, event):
-        pass
-
     def to(self, *args, **kwargs) -> None:
         for module in self.modules:
             module.to(*args, **kwargs)
