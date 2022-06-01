@@ -517,6 +517,11 @@ def create_site_model(id_, arg, w=None):
             'categories': arg.categories,
             'shape': shape,
         }
+        if arg.invariant:
+            prop = Parameter.json_factory(f'{id_}.pinv', **{'tensor': [0.1]})
+            prop['lower'] = 0
+            prop['upper'] = 1
+            site_model['invariant'] = prop
 
     if arg.model == 'SRD06':
         site_model['mu'] = w

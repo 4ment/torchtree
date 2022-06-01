@@ -71,7 +71,7 @@ def test_weibull_invariant0():
         4,
         Parameter('inv', torch.tensor([0.0])),
     )
-    rates_expected = (0.1457844, 0.5131316, 1.0708310, 2.2702530)
+    rates_expected = (0.0, 0.20506860315799713, 0.7796264290809631, 2.0153050422668457)
     np.testing.assert_allclose(sitemodel.rates(), rates_expected, rtol=1e-06)
 
     assert torch.sum(

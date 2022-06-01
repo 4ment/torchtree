@@ -154,10 +154,10 @@ class WeibullSiteModel(SiteModel):
 
     @property
     def invariant(self) -> torch.Tensor:
-        return self._invariant.tensor if self._invariant else None
+        return self._invariant.tensor if self._invariant is not None else None
 
     def update_rates(self, shape: torch.Tensor, invariant: torch.Tensor):
-        if invariant:
+        if invariant is not None:
             cat = self.categories - 1
             quantile = (2.0 * torch.arange(cat, device=shape.device) + 1.0) / (
                 2.0 * cat
@@ -165,14 +165,16 @@ class WeibullSiteModel(SiteModel):
             self.probs = torch.cat(
                 (
                     invariant,
-                    torch.full((cat,), (1.0 - invariant) / cat, device=shape.device),
-                )
+                    ((1.0 - invariant) / cat).expand(invariant.shape[:-1] + (cat,)),
+                ),
+                dim=-1,
             )
             rates = torch.cat(
                 (
                     torch.zeros_like(invariant),
                     torch.pow(-torch.log(1.0 - quantile), 1.0 / shape),
-                )
+                ),
+                dim=-1,
             )
         else:
             quantile = (
