@@ -1,7 +1,5 @@
 from typing import Union
 
-import torch
-
 from ..core.utils import JSONParseError, process_object, register_class
 from .tree_model import (
     TimeTreeModel,
@@ -98,9 +96,8 @@ class FlexibleTimeTreeModel(TimeTreeModel):
         tree_model._internal_heights = process_object(data['internal_heights'], dic)
 
         if data.get('keep_branch_lengths', False):
-            tree_model._internal_heights.tensor = torch.tensor(
-                heights_from_branch_lengths(tree),
-                dtype=tree_model._internal_heights.dtype,
+            tree_model._internal_heights.tensor = heights_from_branch_lengths(tree).to(
+                dtype=tree_model._internal_heights.dtype
             )
 
         return tree_model

@@ -23,12 +23,17 @@ def node_heights_difference_transform(
     return node_heights
 
 
+@pytest.mark.parametrize("ages", ([5.0, 3.0, 0.0, 1.0, 0.0, 5.0, 6.0], [0.0] * 7))
 @pytest.mark.parametrize(
     "differences",
-    [torch.tensor([2.0] * 6), torch.arange(1.0, 7.0)],
+    (torch.full((6,), 0.0), torch.arange(1.0, 7.0)),
 )
-def test_difference_height_transform_hetero(differences):
-    taxa = dict(zip('ABCDEFG', [5.0, 3.0, 0.0, 1.0, 0.0, 5.0, 6.0]))
+@pytest.mark.parametrize(
+    "newick",
+    ('(A,(B,(C,(D,(E,(F,G))))));', '(A,((B,C),D),(E,(F,G)));'),
+)
+def test_difference_height_transform(ages, differences, newick):
+    taxa = dict(zip('ABCDEFG', ages))
     node_heights = node_heights_difference_transform(
         'internal_heights', 'tree', differences.tolist()
     )
@@ -37,7 +42,7 @@ def test_difference_height_transform_hetero(differences):
     tree_model = FlexibleTimeTreeModel.from_json(
         TimeTreeModel.json_factory(
             'tree',
-            '(A,(B,(C,(D,(E,(F,G))))));',
+            newick,
             node_heights,
             taxa,
         ),
