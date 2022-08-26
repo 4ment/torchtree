@@ -49,6 +49,7 @@ def create_hmc(joint, parameters, parameters_unres, arg):
         "steps": arg.steps,
         "step_size": arg.step_size,
         "parameters": parameters_unres,
+        "step_size_adaptor": True,
     }
     if arg.stem:
         hmc_json["loggers"] = [
@@ -57,7 +58,7 @@ def create_hmc(joint, parameters, parameters_unres, arg):
                 "type": "Logger",
                 "parameters": parameters,
                 "delimiter": "\t",
-                "file_name": "hmc.csv",
+                "file_name": f"{arg.stem}.csv",
             }
         ]
     return hmc_json
