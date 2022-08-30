@@ -45,17 +45,19 @@ class Logger(LoggerInterface):
 
     :param objs: list of Parameter or CallableModel objects
     :type objs: list[Parameter or CallableModel]
+    :param int every: logging frequency
     :param kwargs: optionals
     """
 
     def __init__(
-        self, objs: list[Union[AbstractParameter, CallableModel]], **kwargs
+        self, objs: list[Union[AbstractParameter, CallableModel]], every: int, **kwargs
     ) -> None:
         if 'file_name' in kwargs:
             self.file_name = kwargs['file_name']
             del kwargs['file_name']
         else:
             self.file_name = None
+        self.every = every
         self.kwargs = kwargs
         self.objs = objs
         self.f = None
@@ -78,7 +80,12 @@ class Logger(LoggerInterface):
         self.writer.writerow(header)
 
     def log(self, *args, **kwargs) -> None:
-        row = [self.sample]
+        sample = kwargs.get('sample', self.sample)
+        self.sample += 1
+        if sample % self.every != 0:
+            return
+
+        row = [sample]
         for obj in self.objs:
             if isinstance(obj, AbstractParameter):
                 row.extend(obj.tensor.detach().cpu().tolist())
@@ -89,7 +96,6 @@ class Logger(LoggerInterface):
                 else:
                     row.append(log_p.sum(-1).item())
         self.writer.writerow(row)
-        self.sample += 1
 
     def close(self) -> None:
         if self.file_name is not None:
@@ -109,11 +115,12 @@ class Logger(LoggerInterface):
         :rtype: Logger
         """
         params = process_objects(data['parameters'], dic)
+        every = data.get('every', 1)
         kwargs = {}
         for key in ('file_name', 'delimiter'):
             if key in data:
                 kwargs[key] = data[key]
-        return cls(params, **kwargs)
+        return cls(params, every, **kwargs)
 
 
 @register_class
@@ -121,14 +128,15 @@ class TreeLogger(LoggerInterface):
     """Class for logging trees to a file.
 
     :param TreeModel objs: TreeModel object
+    :param int every: logging frequency
     :param kwargs: optionals
     """
 
-    def __init__(self, tree_model: TreeModel, **kwargs) -> None:
+    def __init__(self, tree_model: TreeModel, every: int, **kwargs) -> None:
         self.tree_model = tree_model
         self.file_name = kwargs.get('file_name', None)
         self.kwargs = kwargs
-        self.index = 1
+        self.sample = 1
         self.f = None
 
     def initialize(self) -> None:
@@ -149,15 +157,19 @@ class TreeLogger(LoggerInterface):
             self.f.write('\n;\n')
 
     def log(self, *args, **kwargs) -> None:
+        sample = kwargs.get('sample', self.sample)
+        self.sample += 1
+        if sample % self.every != 0:
+            return
+
         tree_format = self.kwargs.get('format', 'newick')
         if tree_format == 'newick':
             self.tree_model.write_newick(self.f)
         else:
-            self.f.write('tree {} = '.format(self.index))
+            self.f.write('tree {} = '.format(sample))
             optionals = {'taxon_index': True}  # replace taxon name by its index
             self.tree_model.write_newick(self.f, **optionals)
         self.f.write('\n')
-        self.index += 1
 
     def close(self) -> None:
         if self.kwargs.get('format', 'newick') == 'nexus':
@@ -180,11 +192,12 @@ class TreeLogger(LoggerInterface):
         :rtype: TreeLogger
         """
         tree = process_object(data['tree_model'], dic)
+        every = data.get('every', 1)
         kwargs = {}
         for key in ('file_name', 'format'):
             if key in data:
                 kwargs[key] = data[key]
-        return cls(tree, **kwargs)
+        return cls(tree, every, **kwargs)
 
 
 @register_class

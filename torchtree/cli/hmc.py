@@ -32,6 +32,12 @@ def create_hmc_parser(subprasers):
         help="""number of Step size for leafrog integrator""",
     )
     parser.add_argument(
+        '--every',
+        type=int,
+        default=1000,
+        help="""logging frequency of samples""",
+    )
+    parser.add_argument(
         '--stem',
         required=False,
         help="""stem for output file""",
@@ -59,6 +65,7 @@ def create_hmc(joint, parameters, parameters_unres, arg):
                 "parameters": parameters,
                 "delimiter": "\t",
                 "file_name": f"{arg.stem}.csv",
+                "every": 100,
             }
         ]
     return hmc_json

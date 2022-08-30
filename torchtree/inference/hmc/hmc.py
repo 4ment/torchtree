@@ -37,6 +37,7 @@ class HMC(JSONSerializable, Runnable):
         self.checkpoint = kwargs.get('checkpoint', None)
         self.checkpoint_frequency = kwargs.get('checkpoint_frequency', 1000)
         self.every = kwargs.get('every', 100)
+        self.find_step_size = kwargs.get('find_set_size', True)
 
     def set_tensor(self, tensor: torch.Tensor) -> None:
         start = 0
@@ -91,6 +92,12 @@ class HMC(JSONSerializable, Runnable):
         for logger in self.loggers:
             logger.initialize()
 
+        if self.find_step_size:
+            self.find_reasonable_step_size()
+
+        if self.step_size_adaptor is not None:
+            self.step_size_adaptor.mu = math.log(10.0 * self.step_size)
+
         print('  iter             logP   hamiltonian   accept ratio   step size ')
 
         for epoch in range(1, self.iterations + 1):
@@ -123,7 +130,7 @@ class HMC(JSONSerializable, Runnable):
                 )
 
             for logger in self.loggers:
-                logger.log()
+                logger.log(sample=epoch)
 
             if self.checkpoint is not None and epoch % self.checkpoint_frequency == 0:
                 save_parameters(self.checkpoint, self.parameters)
@@ -131,7 +138,7 @@ class HMC(JSONSerializable, Runnable):
             if self.step_size_adaptor is not None:
                 if epoch < 1000:
                     self.step_size = self.step_size_adaptor.learn_stepsize(
-                        math.exp(alpha)
+                        torch.exp(alpha)
                     )
                 elif epoch == 1000:
                     self.step_size = self.step_size_adaptor.complete_adaptation()
@@ -139,6 +146,36 @@ class HMC(JSONSerializable, Runnable):
         for logger in self.loggers:
             if hasattr(logger, 'finalize'):
                 logger.finalize()
+
+    def find_reasonable_step_size(self):
+        direction_threshold = math.log(0.8)
+        params = torch.cat(
+            [parameter.tensor.clone() for parameter in self.parameters], -1
+        )
+        r = self.sample_momentum(params)
+        hamiltonian = self.hamiltonian(r)
+
+        r = self.leapfrog(params, r, self.steps, self.step_size)
+        new_hamiltonian = self.hamiltonian(r)
+
+        delta_hamiltonian = hamiltonian - new_hamiltonian
+        direction = 1 if direction_threshold < delta_hamiltonian else -1
+
+        while True:
+            r = self.sample_momentum(params)
+            hamiltonian = self.hamiltonian(r)
+
+            r = self.leapfrog(params, r, self.steps, self.step_size)
+            new_hamiltonian = self.hamiltonian(r)
+
+            delta_hamiltonian = hamiltonian - new_hamiltonian
+
+            if (direction == 1 and delta_hamiltonian <= direction_threshold) or (
+                direction == -1 and delta_hamiltonian >= direction_threshold
+            ):
+                break
+            else:
+                self.step_size = self.step_size * (2.0**direction)
 
     @classmethod
     def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> HMC:
@@ -191,5 +228,8 @@ class HMC(JSONSerializable, Runnable):
                 )
         if 'every' in data:
             optionals['every'] = data['every']
+
+        if 'find_step_size' in data:
+            optionals['find_step_size'] = data['find_step_size']
 
         return cls(parameters, joint, iterations, steps, step_size, **optionals)
