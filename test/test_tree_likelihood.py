@@ -333,7 +333,7 @@ def test_treelikelihood_weibull(flu_a_tree_file, flu_a_fasta_file):
     like.rescale = False
 
     branch_model._rates.tensor = branch_model._rates.tensor.repeat(3, 1)
-    site_model._shape.tensor = site_model._shape.tensor.repeat(3, 1)
+    site_model._parameter.tensor = site_model._parameter.tensor.repeat(3, 1)
     tree_model._internal_heights.tensor = tree_model._internal_heights.tensor.repeat(
         3, 68
     )
