@@ -144,14 +144,16 @@ class UnivariateDiscretizedSiteModel(SiteModel):
         self.probs = torch.full(
             (categories,),
             1.0 / categories,
-            dtype=self.shape.dtype,
+            dtype=parameter.dtype,
             device=parameter.device,
         )
         self._rates = None
         self.need_update = True
 
     @abstractmethod
-    def inverse_cdf(self, parameter, quantile, invariant):
+    def inverse_cdf(
+        self, parameter: torch.Tensor, quantile: torch.Tensor, invariant: torch.Tensor
+    ) -> torch.Tensor:
         ...
 
     @property
@@ -184,13 +186,13 @@ class UnivariateDiscretizedSiteModel(SiteModel):
 
     def rates(self) -> torch.Tensor:
         if self.need_update:
-            self.update_rates(self.shape, self.invariant)
+            self.update_rates(self._parameter.tensor, self.invariant)
             self.need_update = False
         return self._rates
 
     def probabilities(self) -> torch.Tensor:
         if self.need_update:
-            self.update_rates(self.shape, self.invariant)
+            self.update_rates(self._parameter.tensor, self.invariant)
             self.need_update = False
         return self.probs
 
