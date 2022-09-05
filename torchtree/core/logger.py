@@ -134,6 +134,7 @@ class TreeLogger(LoggerInterface):
 
     def __init__(self, tree_model: TreeModel, every: int, **kwargs) -> None:
         self.tree_model = tree_model
+        self.every = every
         self.file_name = kwargs.get('file_name', None)
         self.kwargs = kwargs
         self.sample = 1
