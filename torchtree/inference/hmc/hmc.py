@@ -4,16 +4,16 @@ import math
 
 import numpy as np
 import torch
-from torch.distributions import Normal
+from torch.distributions import MultivariateNormal, Normal
 
 from ...core.model import CallableModel
-from ...core.parameter_utils import save_parameters
+from ...core.parameter_utils import pack_tensor, save_parameters
 from ...core.runnable import Runnable
 from ...core.serializable import JSONSerializable
-from ...core.utils import JSONParseError, process_objects, register_class
+from ...core.utils import process_object, process_objects, register_class
 from ...typing import ListParameter
 from ..utils import extract_tensors_and_parameters
-from .adaptation import StepSizeAdaptation
+from .integrator import Integrator
 
 
 @register_class
@@ -23,66 +23,58 @@ class HMC(JSONSerializable, Runnable):
         parameters: ListParameter,
         joint: CallableModel,
         iterations: int,
-        steps: int,
-        step_size: int,
+        integrator: Integrator,
         **kwargs,
     ) -> None:
         self.parameters = parameters
         self.joint = joint
         self.iterations = iterations
-        self.steps = steps
-        self.step_size = step_size
-        self.step_size_adaptor = kwargs.get('step_size_adaptor', None)
+        self.integrator = integrator
+        self.dimension = sum(
+            [parameter.tensor.shape[0] for parameter in self.parameters]
+        )
+
+        if 'mass_matrix' in kwargs:
+            self.mass_matrix = kwargs['mass_matrix']
+            self.inverse_mass_matrix = 1.0 / self.mass_matrix  # only works for diagonal
+            self.sqrt_mass_matrix = self.mass_matrix.sqrt()
+        else:
+            self.mass_matrix = torch.ones(self.dimension)
+            self.inverse_mass_matrix = torch.ones(self.dimension)
+            self.sqrt_mass_matrix = torch.ones(self.dimension)
+
+        self.warmup_adaptor = kwargs.get('adaptation', None)
         self.loggers = kwargs.get('loggers', ())
         self.checkpoint = kwargs.get('checkpoint', None)
         self.checkpoint_frequency = kwargs.get('checkpoint_frequency', 1000)
         self.every = kwargs.get('every', 100)
         self.find_step_size = kwargs.get('find_set_size', True)
 
-    def set_tensor(self, tensor: torch.Tensor) -> None:
-        start = 0
-        for parameter in self.parameters:
-            parameter.tensor = tensor[
-                ..., start : (start + parameter.shape[-1])
-            ].requires_grad_()
-            start += parameter.shape[-1]
-
     def sample_momentum(self, params):
-        momentum = Normal(
-            torch.zeros(params.size()),
-            torch.ones(params.size()),
-        ).sample()
-        return momentum
-
-    def leapfrog(
-        self, params: torch.Tensor, momentum: torch.Tensor, steps: int, step_size: float
-    ):
-        momentum = momentum.clone()
-        params = params.clone()
-        self.set_tensor(params.detach())
-        U = self.joint()
-        U.backward()
-        dU = -torch.cat([parameter.grad for parameter in self.parameters], -1)
-
-        momentum = momentum - step_size / 2.0 * dU
-
-        for _ in range(steps):
-            params = params + step_size * momentum
-            self.set_tensor(params.detach())
-            U = self.joint()
-            U.backward()
-            dU = -torch.cat([parameter.grad for parameter in self.parameters], -1)
-            momentum -= step_size * dU
-
-        self.set_tensor(params.detach())
-
-        momentum -= step_size / 2 * dU
+        if self.sqrt_mass_matrix.dim() == 1:
+            momentum = Normal(
+                torch.zeros(params.size()),
+                self.sqrt_mass_matrix,
+            ).sample()
+        else:
+            momentum = MultivariateNormal(
+                torch.zeros(params.size()),
+                self.mass_matrix,
+            ).sample()
         return momentum
 
     def hamiltonian(self, momentum):
         with torch.no_grad():
             potential_energy = -self.joint()
-        kinetic_energy = torch.dot(momentum, momentum) * 0.5
+        # diagonal mass matrix
+        if self.inverse_mass_matrix.dim() == 1:
+            kinetic_energy = (
+                torch.dot(momentum, self.inverse_mass_matrix * momentum) * 0.5
+            )
+        else:
+            kinetic_energy = (
+                torch.dot(momentum, self.inverse_mass_matrix @ momentum) * 0.5
+            )
         hamiltonian = potential_energy + kinetic_energy
         return hamiltonian
 
@@ -95,8 +87,8 @@ class HMC(JSONSerializable, Runnable):
         if self.find_step_size:
             self.find_reasonable_step_size()
 
-        if self.step_size_adaptor is not None:
-            self.step_size_adaptor.mu = math.log(10.0 * self.step_size)
+        if self.warmup_adaptor is not None:
+            self.warmup_adaptor.initialize(self.integrator.step_size, self.mass_matrix)
 
         print('  iter             logP   hamiltonian   accept ratio   step size ')
 
@@ -107,7 +99,9 @@ class HMC(JSONSerializable, Runnable):
             momentum = self.sample_momentum(params)
             hamiltonian = self.hamiltonian(momentum)
 
-            momentum = self.leapfrog(params, momentum, self.steps, self.step_size)
+            momentum = self.integrator(
+                self.joint, self.parameters, momentum, self.inverse_mass_matrix
+            )
             proposed_hamiltonian = self.hamiltonian(momentum)
 
             alpha = -proposed_hamiltonian + hamiltonian
@@ -116,7 +110,7 @@ class HMC(JSONSerializable, Runnable):
             if rho > np.log(np.random.uniform()):
                 accept += 1
             else:
-                self.set_tensor(params)
+                pack_tensor(self.parameters, params)
 
             if epoch % self.every == 0:
                 print(
@@ -125,7 +119,7 @@ class HMC(JSONSerializable, Runnable):
                         self.joint(),
                         proposed_hamiltonian,
                         accept / epoch,
-                        self.step_size,
+                        self.integrator.step_size,
                     )
                 )
 
@@ -135,13 +129,12 @@ class HMC(JSONSerializable, Runnable):
             if self.checkpoint is not None and epoch % self.checkpoint_frequency == 0:
                 save_parameters(self.checkpoint, self.parameters)
 
-            if self.step_size_adaptor is not None:
-                if epoch < 1000:
-                    self.step_size = self.step_size_adaptor.learn_stepsize(
-                        torch.exp(alpha)
-                    )
-                elif epoch == 1000:
-                    self.step_size = self.step_size_adaptor.complete_adaptation()
+            if self.warmup_adaptor is not None:
+                self.warmup_adaptor.learn(params, torch.exp(alpha))
+                self.integrator.step_size = self.warmup_adaptor.step_size
+                self.mass_matrix = self.warmup_adaptor.mass_matrix
+                self.inverse_mass_matrix = self.warmup_adaptor.inverse_mass_matrix
+                self.sqrt_mass_matrix = self.warmup_adaptor.sqrt_mass_matrix
 
         for logger in self.loggers:
             if hasattr(logger, 'finalize'):
@@ -155,7 +148,7 @@ class HMC(JSONSerializable, Runnable):
         r = self.sample_momentum(params)
         hamiltonian = self.hamiltonian(r)
 
-        r = self.leapfrog(params, r, self.steps, self.step_size)
+        r = self.integrator(self.joint, self.parameters, r, self.inverse_mass_matrix)
         new_hamiltonian = self.hamiltonian(r)
 
         delta_hamiltonian = hamiltonian - new_hamiltonian
@@ -165,7 +158,9 @@ class HMC(JSONSerializable, Runnable):
             r = self.sample_momentum(params)
             hamiltonian = self.hamiltonian(r)
 
-            r = self.leapfrog(params, r, self.steps, self.step_size)
+            r = self.integrator(
+                self.joint, self.parameters, r, self.inverse_mass_matrix
+            )
             new_hamiltonian = self.hamiltonian(r)
 
             delta_hamiltonian = hamiltonian - new_hamiltonian
@@ -175,13 +170,13 @@ class HMC(JSONSerializable, Runnable):
             ):
                 break
             else:
-                self.step_size = self.step_size * (2.0**direction)
+                self.integrator.step_size = self.integrator.step_size * (
+                    2.0**direction
+                )
 
     @classmethod
     def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> HMC:
         iterations = data['iterations']
-        steps = data['steps']
-        step_size = data['step_size']
 
         optionals = {}
         # checkpointing is used by default and the default file name is checkpoint.json
@@ -209,27 +204,15 @@ class HMC(JSONSerializable, Runnable):
 
         _, parameters = extract_tensors_and_parameters(data['parameters'], dic)
 
-        if 'step_size_adaptor' in data:
-            if (
-                isinstance(data['step_size_adaptor'], bool)
-                and data['step_size_adaptor']
-            ):
-                optionals['step_size_adaptor'] = StepSizeAdaptation(
-                    mu=math.log(10.0 * step_size)
-                )
-            elif isinstance(data['step_size_adaptor'], dict):
-                optionals['step_size_adaptor'] = StepSizeAdaptation(
-                    **data['step_size_adaptor']
-                )
-            else:
-                raise JSONParseError(
-                    f"'step_size_adaptor' element in HMC object ({data['id']}) "
-                    "should be a boolean or a dictionary"
-                )
+        integrator = process_object(data['integrator'], dic)
+
+        if 'adaptation' in data:
+            optionals['adaptation'] = process_object(data['adaptation'], dic)
+
         if 'every' in data:
             optionals['every'] = data['every']
 
         if 'find_step_size' in data:
             optionals['find_step_size'] = data['find_step_size']
 
-        return cls(parameters, joint, iterations, steps, step_size, **optionals)
+        return cls(parameters, joint, iterations, integrator, **optionals)

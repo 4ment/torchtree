@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+from typing import List
+
+import torch
 
 from torchtree.core.parameter import Parameter
 from torchtree.core.parameter_encoder import ParameterEncoder
@@ -28,3 +31,11 @@ def save_parameters(file_name: str, parameters: list[Parameter], safely=True):
         os.rename(file_name, file_name + '.old')
         os.rename(file_name + '.new', file_name)
         os.remove(file_name + '.old')
+
+
+def pack_tensor(parameters: List[Parameter], tensor: torch.Tensor) -> None:
+    r"""Pack a tensor into a list of Parameter."""
+    start = 0
+    for parameter in parameters:
+        parameter.tensor = tensor[..., start : (start + parameter.shape[-1])]
+        start += parameter.shape[-1]

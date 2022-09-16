@@ -38,6 +38,12 @@ def create_hmc_parser(subprasers):
         help="""logging frequency of samples""",
     )
     parser.add_argument(
+        '--warmup',
+        type=int,
+        default=500,
+        help="""number of iterations for warmum""",
+    )
+    parser.add_argument(
         '--stem',
         required=False,
         help="""stem for output file""",
@@ -52,21 +58,57 @@ def create_hmc(joint, parameters, parameters_unres, arg):
         "type": "HMC",
         "joint": joint,
         "iterations": arg.iter,
-        "steps": arg.steps,
-        "step_size": arg.step_size,
         "parameters": parameters_unres,
-        "step_size_adaptor": True,
+        "integrator": {
+            "id": "leapfrog",
+            "type": "LeapfrogIntegrator",
+            "steps": arg.steps,
+            "step_size": arg.step_size,
+        },
     }
+
+    stan_windowed_adaptation = {
+        "id": "adaptor",
+        "type": "StanWindowedAdaptation",
+        "warmup": 1000,
+        "initial_window": 75,
+        "final_window": 50,
+        "base_window": 25,
+        "step_size_adaptor": {
+            "id": "step_size",
+            "type": "StepSizeAdaptation",
+            "mu": 0.5,
+            "delta": 0.5,
+            "gamma": 0.05,
+            "kappa": 0.75,
+            "t0": 10,
+        },
+        "mass_matrix_adaptor": {
+            "id": "matrix_adaptor",
+            "type": "DiagonalMassMatrixAdaptor",
+            "parameters": parameters_unres,
+        },
+    }
+    if arg.warmup > 0:
+        hmc_json['adaptation'] = stan_windowed_adaptation
+
     if arg.stem:
         hmc_json["loggers"] = [
             {
                 "id": "logger",
                 "type": "Logger",
-                "parameters": parameters,
+                "parameters": ['joint', 'like'] + parameters,
                 "delimiter": "\t",
                 "file_name": f"{arg.stem}.csv",
-                "every": 100,
-            }
+                "every": arg.every,
+            },
+            {
+                "id": "looger.trees",
+                "type": "TreeLogger",
+                "tree_model": "tree",
+                "file_name": f"{arg.stem}.trees",
+                "every": arg.every,
+            },
         ]
     return hmc_json
 
