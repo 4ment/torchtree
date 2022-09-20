@@ -844,6 +844,12 @@ def build_advi(arg):
                 parameters.append(f"sitemodel.{tag}.shape")
         else:
             parameters.append("sitemodel.shape")
+    if arg.invariant:
+        if arg.model == 'SRD06':
+            for tag in ('12', '3'):
+                parameters.append(f"sitemodel.{tag}.pinv")
+        else:
+            parameters.append("sitemodel.pinv")
 
     if arg.samples > 0:
         json_list.append(create_sampler('sampler', 'variational', parameters, arg))

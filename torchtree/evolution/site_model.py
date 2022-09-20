@@ -149,6 +149,8 @@ class UnivariateDiscretizedSiteModel(SiteModel):
         )
         self._rates = None
         self.need_update = True
+        if invariant is not None:
+            self._categories += 1
 
     @abstractmethod
     def inverse_cdf(

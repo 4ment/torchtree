@@ -68,7 +68,7 @@ def test_weibull_invariant0():
     sitemodel = WeibullSiteModel(
         'weibull',
         Parameter(key, torch.tensor([1.0])),
-        4,
+        3,
         Parameter('inv', torch.tensor([0.0])),
     )
     rates_expected = (0.0, 0.20506860315799713, 0.7796264290809631, 2.0153050422668457)

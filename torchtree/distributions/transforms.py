@@ -148,4 +148,4 @@ class ConvexCombinationTransform(Transform):
         raise NotImplementedError
 
     def log_abs_det_jacobian(self, x, y):
-        return torch.tensor(0.0)
+        return torch.zeros(x.shape[:-1])
