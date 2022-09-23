@@ -4,6 +4,7 @@ from typing import Union
 
 import torch
 
+from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.evolution import (
     create_alignment,
     create_evolution_joint,
@@ -260,5 +261,8 @@ def build_optimizer(arg):
     logger_dict = create_logger('logger', parameters, arg)
     tree_logger_dict = create_tree_logger('tree.logger', 'tree', arg)
     json_list.extend((logger_dict, tree_logger_dict))
+
+    for plugin in PLUGIN_MANAGER.plugins():
+        plugin.process_all(arg, json_list)
 
     return json_list

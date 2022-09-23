@@ -9,6 +9,7 @@ import numpy as np
 import torch
 
 from torchtree import Parameter
+from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.evolution import (
     create_alignment,
     create_evolution_joint,
@@ -853,4 +854,8 @@ def build_advi(arg):
 
     if arg.samples > 0:
         json_list.append(create_sampler('sampler', 'variational', parameters, arg))
+
+    for plugin in PLUGIN_MANAGER.plugins():
+        plugin.process_all(arg, json_list)
+
     return json_list

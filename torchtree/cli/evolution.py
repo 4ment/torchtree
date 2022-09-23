@@ -9,6 +9,7 @@ import numpy as np
 from dendropy import TaxonNamespace, Tree
 
 from torchtree import Parameter, ViewParameter
+from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.priors import create_clock_horseshoe_prior, create_one_on_x_prior
 from torchtree.cli.utils import convert_date_to_real, read_dates_from_csv
 from torchtree.core.utils import process_object
@@ -452,6 +453,8 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
                     f'{id_}.{tag}', t, b, substitution_model, site_model, site_pattern
                 )
             )
+            for plugin in PLUGIN_MANAGER.plugins():
+                plugin.process_tree_likelihood(arg, like_list[-1])
 
         joint_like = {
             'id': 'like',
@@ -483,6 +486,9 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
         treelikelihood_model['branch_model'] = create_branch_model(
             'branchmodel', tree_id, len(taxa['taxa']), arg, rate_init
         )
+
+    for plugin in PLUGIN_MANAGER.plugins():
+        plugin.process_tree_likelihood(arg, treelikelihood_model)
 
     evol = get_engine(arg)
     if evol is not None:
@@ -960,6 +966,9 @@ def create_coalesent(id_, tree_id, theta_id, arg, **kwargs):
             'tree_model': tree_id,
             'cutoff': arg.cutoff,
         }
+
+    for plugin in PLUGIN_MANAGER.plugins():
+        plugin.process_coalescent(arg, coalescent)
 
     evol = get_engine(arg)
     if evol is not None:

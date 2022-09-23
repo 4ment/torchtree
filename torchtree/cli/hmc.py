@@ -1,3 +1,4 @@
+from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.evolution import (
     create_alignment,
     create_evolution_joint,
@@ -45,7 +46,7 @@ def create_hmc_parser(subprasers):
     )
     parser.add_argument(
         '--stem',
-        required=False,
+        required=True,
         help="""stem for output file""",
     )
     parser.set_defaults(func=build_hmc)
@@ -139,5 +140,8 @@ def build_hmc(arg):
     if arg.coalescent in ('skygrid', 'skyride'):
         jacobians_list.remove("coalescent.theta")
     joint_dic['distributions'].extend(jacobians_list)
+
+    for plugin in PLUGIN_MANAGER.plugins():
+        plugin.process_all(arg, json_list)
 
     return json_list

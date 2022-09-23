@@ -1,6 +1,7 @@
 import argparse
 import json
 
+from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.advi import create_variational_parser
 from torchtree.cli.hmc import create_hmc_parser
 from torchtree.cli.map import create_map_parser
@@ -19,6 +20,9 @@ def main():
     create_map_parser(subprasers)
 
     create_hmc_parser(subprasers)
+
+    PLUGIN_MANAGER.load_plugins()
+    PLUGIN_MANAGER.load_arguments(subprasers)
 
     arg = parser.parse_args()
     json_dic = arg.func(arg)
