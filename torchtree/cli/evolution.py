@@ -168,6 +168,11 @@ def create_evolution_parser(parser):
         type=int,
         help="""number of grid points (number of segments) for skygrid and BDSK""",
     )
+    parser.add_argument(
+        '--disable_time_aware',
+        action="store_true",
+        help="""disable time aware skyride""",
+    )
 
     return parser
 
@@ -1262,7 +1267,7 @@ def create_time_tree_prior(taxa, arg):
                     **{'tensor': [0.1]},
                 ),
             }
-            if arg.time_aware:
+            if not arg.disable_time_aware:
                 gmrf['tree_model'] = 'tree'
             gmrf['precision']['lower'] = 0.0
             joint_list.append(gmrf)
@@ -1348,14 +1353,18 @@ def create_poisson_evolution_joint(taxa, arg):
 
 
 def create_evolution_joint(taxa, alignment, arg):
-    joint_list = [
-        create_tree_likelihood('like', taxa, alignment, arg),
-    ] + create_evolution_priors(taxa, arg)
-
+    prior_dic = {
+        'id': 'prior',
+        'type': 'JointDistributionModel',
+        'distributions': create_evolution_priors(taxa, arg),
+    }
     joint_dic = {
         'id': 'joint',
         'type': 'JointDistributionModel',
-        'distributions': joint_list,
+        'distributions': [
+            create_tree_likelihood('like', taxa, alignment, arg),
+            prior_dic,
+        ],
     }
     return joint_dic
 

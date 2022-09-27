@@ -34,7 +34,7 @@ class LoggerInterface(JSONSerializable, Runnable):
 
     def run(self) -> None:
         self.initialize()
-        self.log()
+        self.log(RUN=True)
         self.close()
 
 
@@ -80,6 +80,24 @@ class Logger(LoggerInterface):
         self.writer.writerow(header)
 
     def log(self, *args, **kwargs) -> None:
+        if kwargs.get('RUN', False):
+            data = []
+            idx = 0
+            for obj in self.objs:
+                if isinstance(obj, AbstractParameter):
+                    data.append(obj.tensor)
+                else:
+                    log_p = obj()
+                    if log_p.dim() == 1:
+                        log_p = log_p.unsqueeze(-1)
+                    data.append(log_p)
+                idx += 1
+            data = torch.cat(data, -1).tolist()
+            for i in range(len(data)):
+                data[i].insert(0, i)
+            self.writer.writerows(data)
+            return
+
         sample = kwargs.get('sample', self.sample)
         self.sample += 1
         if sample % self.every != 0:

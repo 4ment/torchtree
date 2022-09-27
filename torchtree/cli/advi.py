@@ -718,6 +718,35 @@ def create_advi(joint, variational, parameters, arg):
     return advi_dic
 
 
+def create_logger(id_, parameters, arg):
+    if arg.stem:
+        file_name = arg.stem + '-samples.csv'
+    else:
+        file_name = 'samples.csv'
+
+    parameters2 = list(filter(lambda x: 'tree.ratios' != x, parameters))
+    models = ['joint', 'like', 'prior']
+    if arg.coalescent:
+        models.append('coalescent')
+        if arg.coalescent in ('skyride', 'skygrid'):
+            models.append('gmrf')
+            models.append(
+                {
+                    'id': arg.coalescent,
+                    'type': 'JointDistributionModel',
+                    'distributions': ['coalescent', 'gmrf'],
+                }
+            )
+
+    return {
+        "id": id_,
+        "type": "Logger",
+        "file_name": file_name,
+        "parameters": models + parameters2 + ['coalescent.theta.log'],
+        "delimiter": "\t",
+    }
+
+
 def create_sampler(id_, var_id, parameters, arg):
     if arg.stem:
         file_name = arg.stem + '-samples.csv'
@@ -727,6 +756,18 @@ def create_sampler(id_, var_id, parameters, arg):
         tree_file_name = 'samples.trees'
 
     parameters2 = list(filter(lambda x: 'tree.ratios' != x, parameters))
+    models = ['joint', 'like', 'prior', var_id]
+    if arg.coalescent:
+        models.append('coalescent')
+        if arg.coalescent in ('skyride', 'skygrid'):
+            models.append('gmrf')
+            models.append(
+                {
+                    'id': arg.coalescent,
+                    'type': 'JointDistributionModel',
+                    'distributions': ['coalescent', 'gmrf'],
+                }
+            )
 
     return {
         "id": id_,
@@ -738,7 +779,7 @@ def create_sampler(id_, var_id, parameters, arg):
                 "id": "logger",
                 "type": "Logger",
                 "file_name": file_name,
-                "parameters": ['joint', 'like', var_id] + parameters2,
+                "parameters": models + parameters2,
                 "delimiter": "\t",
             },
             {
@@ -784,8 +825,11 @@ def build_advi(arg):
 
     json_list.append(var_dic)
 
-    advi_dic = create_advi('joint', 'variational', var_parameters, arg)
-    json_list.append(advi_dic)
+    # only create a sampler
+    # useful when we have a checkpoint.json file and we only want to sample
+    if arg.iter > 0:
+        advi_dic = create_advi('joint', 'variational', var_parameters, arg)
+        json_list.append(advi_dic)
 
     parameters = []
     if arg.clock is not None:
@@ -854,6 +898,9 @@ def build_advi(arg):
 
     if arg.samples > 0:
         json_list.append(create_sampler('sampler', 'variational', parameters, arg))
+
+    if arg.samples == 0 and arg.iter == 0:
+        json_list.append(create_logger('logger', parameters, arg))
 
     for plugin in PLUGIN_MANAGER.plugins():
         plugin.process_all(arg, json_list)
