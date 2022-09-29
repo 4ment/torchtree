@@ -1,6 +1,7 @@
 import math
 
 import torch
+from torch.autograd.functional import jacobian
 from torch.distributions import Transform, constraints
 from torch.nn.functional import softplus
 
@@ -66,6 +67,7 @@ class CumSumTransform(Transform):
         return torch.zeros(x.shape[:-1], dtype=x.dtype, device=x.device)
 
 
+@register_class
 class CumSumExpTransform(Transform):
     r"""
     Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.
@@ -83,7 +85,20 @@ class CumSumExpTransform(Transform):
         return torch.cat((y_log[..., :1], y_log[..., 1:] - y_log[..., :-1]), -1)
 
     def log_abs_det_jacobian(self, x, y):
-        return torch.zeros(x.shape[:-1], dtype=x.dtype)
+        def f(xx):
+            return xx.cumsum(-1).exp()
+
+        # The Jacobian is triangular so we compute the determinant using the diagonal
+        if x.dim() == 1:
+            jac = jacobian(f, x)
+            return torch.diagonal(jac, 0).log().sum()
+        else:
+            return torch.stack(
+                [
+                    torch.diagonal(jacobian(f, x[i])).log().sum()
+                    for i in range(x.shape[0])
+                ]
+            )
 
 
 class SoftPlusTransform(Transform):
@@ -149,3 +164,23 @@ class ConvexCombinationTransform(Transform):
 
     def log_abs_det_jacobian(self, x, y):
         return torch.zeros(x.shape[:-1])
+
+
+@register_class
+class LogTransform(Transform):
+    r"""
+    Transform via the mapping :math:`y = \log(x)`.
+    """
+    domain = constraints.positive
+    codomain = constraints.real
+    bijective = True
+    sign = +1
+
+    def _call(self, x):
+        return x.log()
+
+    def _inverse(self, y):
+        return y.exp()
+
+    def log_abs_det_jacobian(self, x, y):
+        return -y

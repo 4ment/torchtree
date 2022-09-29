@@ -112,7 +112,7 @@ class DifferenceNodeHeightTransform(Transform):
     sign = +1
 
     def __init__(
-        self, tree_model: 'TimeTreeModel', k: float = 1.0, cache_size=0  # noqa: F821
+        self, tree_model: 'TimeTreeModel', k: float = 0.0, cache_size=0  # noqa: F821
     ) -> None:
         super().__init__(cache_size=cache_size)
         self.tree = tree_model
@@ -141,16 +141,24 @@ class DifferenceNodeHeightTransform(Transform):
         heights = list(
             self.tree.sampling_times.expand(y.shape[:-1] + (-1,)).split(1, -1)
         ) + list(y.split(1, -1))
-        for node, left, right in self.tree.postorder:
-            x[node - self.taxa_count] = (
-                heights[node]
-                - torch.logsumexp(
-                    torch.cat((heights[left] * self.k, heights[right] * self.k), -1),
-                    dim=-1,
-                    keepdim=True,
+        if self.k > 0:
+            for node, left, right in self.tree.postorder:
+                x[node - self.taxa_count] = (
+                    heights[node]
+                    - torch.logsumexp(
+                        torch.cat(
+                            (heights[left] * self.k, heights[right] * self.k), -1
+                        ),
+                        dim=-1,
+                        keepdim=True,
+                    )
+                    / self.k
                 )
-                / self.k
-            )  # - torch.max(heights[left], heights[right])
+        else:
+            for node, left, right in self.tree.postorder:
+                x[node - self.taxa_count] = heights[node] - torch.max(
+                    heights[left], heights[right]
+                )
         return torch.cat(x, -1)
 
     def log_abs_det_jacobian(self, x, y):

@@ -70,6 +70,13 @@ def create_variational_parser(subprasers):
         " using multisample objective",
     )
     parser.add_argument(
+        '--K_elbo_samples',
+        type=int,
+        default=1,
+        help="number of samples for Monte Carlo estimate of ELBO"
+        " using multisample objective",
+    )
+    parser.add_argument(
         '--samples',
         type=int,
         default=1000,
@@ -702,12 +709,17 @@ def create_advi(joint, variational, parameters, arg):
         'parameters': parameters,
     }
 
+    if arg.K_elbo_samples > 1:
+        elbo_samples = [arg.elbo_samples, arg.K_elbo_samples]
+    else:
+        elbo_samples = arg.elbo_samples
+
     advi_dic['convergence'] = {
         'type': 'StanVariationalConvergence',
         'max_iterations': arg.iter,
         'loss': 'elbo',
         'every': arg.convergence_every,
-        'samples': arg.elbo_samples,
+        'samples': elbo_samples,
         'tol_rel_obj': arg.tol_rel_obj,
     }
     advi_dic['scheduler'] = {
@@ -821,14 +833,20 @@ def build_advi(arg):
         jacobians_list.append('tree')
     if arg.coalescent in ('skygrid', 'skyride'):
         jacobians_list.remove("coalescent.theta")
-    joint_dic['distributions'].extend(jacobians_list)
+
+    joint_jacobian = {
+        'id': 'joint.jacobian',
+        'type': 'JointDistributionModel',
+        'distributions': ['joint'] + jacobians_list,
+    }
+    json_list.append(joint_jacobian)
 
     json_list.append(var_dic)
 
     # only create a sampler
     # useful when we have a checkpoint.json file and we only want to sample
     if arg.iter > 0:
-        advi_dic = create_advi('joint', 'variational', var_parameters, arg)
+        advi_dic = create_advi('joint.jacobian', 'variational', var_parameters, arg)
         json_list.append(advi_dic)
 
     parameters = []
@@ -856,7 +874,7 @@ def build_advi(arg):
 
     if arg.coalescent is not None:
         parameters.append("coalescent.theta")
-        if arg.coalescent in ('skygrid', 'skyride'):
+        if arg.coalescent in ('skygrid', 'skyride') and not arg.gmrf_integrated:
             parameters.append('gmrf.precision')
         elif arg.coalescent == 'exponential':
             parameters.append('coalescent.growth')
