@@ -34,9 +34,9 @@ def tree_model_node_heights_transformed(ratios_list):
     tree_model = ReparameterizedTimeTreeModel.json_factory(
         'tree',
         '(((A,B),C),D);',
-        ratios_list[:-1],
-        ratios_list[-1:],
         dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
+        ratios=ratios_list[:-1],
+        root_height=ratios_list[-1:],
     )
     return tree_model
 

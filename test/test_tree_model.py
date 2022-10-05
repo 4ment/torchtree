@@ -37,9 +37,9 @@ def test_general_node_height_transform(ratios, root_height):
         ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
-            ratios,
-            root_height,
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
+            ratios=ratios,
+            root_height=root_height,
             **{'ratios_id': 'ratios', 'root_height_id': 'root_height'}
         ),
         dic,
@@ -59,9 +59,9 @@ def test_general_node_height_transform_hetero(ratios, root_height):
         ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
-            ratios,
-            root_height,
             dict(zip('ABCD', [0.0, 1.0, 4.0, 5.0])),
+            ratios=ratios,
+            root_height=root_height,
             **{'ratios_id': 'ratios', 'root_height_id': 'root_height'}
         ),
         dic,
@@ -87,9 +87,9 @@ def test_general_node_height_transform_hetero_all(
         ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(A:2,(B:1.5,(C:2,D:1):2.5):2.5);',
-            ratios,
-            root_height,
             dict(zip('ABCD', [5.0, 3.0, 0.0, 1.0])),
+            ratios=ratios,
+            root_height=root_height,
             **{
                 'keep_branch_lengths': keep,
                 'ratios_id': 'ratios',
@@ -121,9 +121,9 @@ def test_general_node_height_transform_hetero_7():
         ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(A,(B,(C,(D,(E,(F,G))))));',
-            [0.5] * (len(taxa) - 2),
-            [10.0],
             taxa,
+            ratios=[0.5] * (len(taxa) - 2),
+            root_height=[10.0],
             **{'ratios_id': 'ratios', 'root_height_id': 'root_height'}
         ),
         dic,
@@ -144,9 +144,9 @@ def test_general_node_height_heights_to_ratios(ratios, root_height):
         ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
-            ratios,
-            root_height,
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
+            ratios=ratios,
+            root_height=root_height,
             **{'ratios_id': 'ratios', 'root_height_id': 'root_height'}
         ),
         {},
@@ -164,9 +164,9 @@ def test_keep_branch_lengths_heights():
         ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '((((A_0:1.5,B_1:0.5):2.5,C_2:2):2,D_3:3):10,E_12:4);',
-            [0.0] * 3,
-            [0.0],
             dict(zip(['A_0', 'B_1', 'C_2', 'D_3', 'E_12'], [0.0, 1.0, 2.0, 3.0, 12.0])),
+            ratios=[0.0] * 3,
+            root_height=[0.0],
             **{
                 'keep_branch_lengths': True,
                 'ratios_id': 'ratios',

@@ -73,23 +73,23 @@ def test_calculate_pytorch_rescaled(tiny_newick_file, tiny_fasta_file, jc69_mode
 def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
     site_pattern = {
         'id': 'sp',
-        'type': 'torchtree.evolution.site_pattern.SitePattern',
+        'type': 'SitePattern',
         'alignment': {
             "id": "alignment",
-            "type": "torchtree.evolution.alignment.Alignment",
+            "type": "Alignment",
             'datatype': 'nucleotide',
             'file': tiny_fasta_file,
             'taxa': 'taxa',
         },
     }
-    subst_model = {'id': 'm', 'type': 'torchtree.evolution.substitution_model.JC69'}
+    subst_model = {'id': 'm', 'type': 'JC69'}
     site_model = {
         'id': 'sm',
-        'type': 'torchtree.evolution.site_model.ConstantSiteModel',
+        'type': 'ConstantSiteModel',
     }
     tree_model = {
         'id': 'tree',
-        'type': 'torchtree.evolution.tree_model.UnRootedTreeModel',
+        'type': 'UnRootedTreeModel',
         'file': tiny_newick_file,
         'branch_lengths': {
             'id': 'branches',
@@ -99,56 +99,56 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
         'keep_branch_lengths': True,
         'taxa': {
             'id': 'taxa',
-            'type': 'torchtree.evolution.taxa.Taxa',
+            'type': 'Taxa',
             'taxa': [
                 {
                     "id": "A_Belgium_2_1981",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1981},
                 },
                 {
                     "id": "A_ChristHospital_231_1982",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1982},
                 },
                 {
                     "id": "A_Philippines_2_1982",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1982},
                 },
                 {
                     "id": "A_Baylor1B_1983",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1983},
                 },
                 {
                     "id": "A_Oita_3_1983",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1983},
                 },
                 {
                     "id": "A_Texas_12764_1983",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1983},
                 },
                 {
                     "id": "A_Alaska_8_1984",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1984},
                 },
                 {
                     "id": "A_Caen_1_1984",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1984},
                 },
                 {
                     "id": "A_Texas_17988_1984",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1984},
                 },
                 {
                     "id": "A_Colorado_2_1987",
-                    "type": "torchtree.evolution.taxa.Taxon",
+                    "type": "Taxon",
                     "attributes": {"date": 1987},
                 },
             ],
@@ -156,7 +156,7 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
     }
     tree_likelihood = {
         'id': 'like',
-        'type': 'torchtree.tree_likelihood.TreeLikelihoodModel',
+        'type': 'TreeLikelihoodModel',
         'tree_model': tree_model,
         'site_model': site_model,
         'site_pattern': site_pattern,
@@ -172,33 +172,33 @@ def test_treelikelihood_json(tiny_newick_file, tiny_fasta_file):
 def test_treelikelihood_batch():
     taxa_dict = {
         'id': 'taxa',
-        'type': 'torchtree.evolution.taxa.Taxa',
+        'type': 'Taxa',
         'taxa': [
             {
                 "id": "A",
-                "type": "torchtree.evolution.taxa.Taxon",
+                "type": "Taxon",
                 "attributes": {"date": 0.0},
             },
             {
                 "id": "B",
-                "type": "torchtree.evolution.taxa.Taxon",
+                "type": "Taxon",
                 "attributes": {"date": 1.0},
             },
             {
                 "id": "C",
-                "type": "torchtree.evolution.taxa.Taxon",
+                "type": "Taxon",
                 "attributes": {"date": 4.0},
             },
             {
                 "id": "D",
-                "type": "torchtree.evolution.taxa.Taxon",
+                "type": "Taxon",
                 "attributes": {"date": 5.0},
             },
         ],
     }
     tree_model_dict = {
         'id': 'tree',
-        'type': 'torchtree.evolution.tree_model.TimeTreeModel',
+        'type': 'TimeTreeModel',
         'newick': '(((A,B),C),D);',
         'internal_heights': {
             'id': 'heights',
@@ -209,7 +209,7 @@ def test_treelikelihood_batch():
     }
     tree_model_dict2 = {
         'id': 'tree',
-        'type': 'torchtree.evolution.tree_model.TimeTreeModel',
+        'type': 'TimeTreeModel',
         'newick': '(((A,B),C),D);',
         'internal_heights': {
             'id': 'heights',
@@ -220,7 +220,7 @@ def test_treelikelihood_batch():
     }
     site_pattern_dict = {
         "id": "sites",
-        "type": "torchtree.evolution.site_pattern.SitePattern",
+        "type": "SitePattern",
         "alignment": {
             "id": "alignment",
             "type": "torchtree.evolution.alignment.Alignment",
@@ -300,9 +300,9 @@ def test_treelikelihood_weibull(flu_a_tree_file, flu_a_fasta_file):
         ReparameterizedTimeTreeModel.json_factory(
             'tree_model',
             newick,
-            ratios,
-            root_height,
             'taxa',
+            ratios=ratios,
+            root_height=root_height,
             **{'keep_branch_lengths': True}
         ),
         dic,

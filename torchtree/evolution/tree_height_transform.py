@@ -162,4 +162,4 @@ class DifferenceNodeHeightTransform(Transform):
         return torch.cat(x, -1)
 
     def log_abs_det_jacobian(self, x, y):
-        return torch.zeros(x.shape[:-1])
+        return torch.zeros(x.shape[:-1], dtype=x.dtype, device=x.device)

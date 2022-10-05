@@ -400,7 +400,7 @@ class ViewParameter(AbstractParameter, ParameterListener):
 
     @property
     def shape(self) -> torch.Size:
-        return self.parameter.tensor.shape
+        return self.parameter.tensor[..., self.indices].shape
 
     @property
     def dtype(self) -> torch.dtype:

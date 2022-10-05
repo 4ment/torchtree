@@ -11,9 +11,9 @@ def test_poisson_json():
         ReparameterizedTimeTreeModel.json_factory(
             'tree',
             '(((A,B),C),D);',
-            [10 / 20, 20 / 30],
-            [30.0],
             dict(zip('ABCD', [0.0, 0.0, 0.0, 0.0])),
+            ratios=[10 / 20, 20 / 30],
+            root_height=[30.0],
         ),
         dic,
     )

@@ -14,7 +14,10 @@ from ..core.model import CallableModel, Model
 from ..core.utils import process_object, register_class
 from ..typing import ID
 from .taxa import Taxa
-from .tree_height_transform import GeneralNodeHeightTransform
+from .tree_height_transform import (
+    DifferenceNodeHeightTransform,
+    GeneralNodeHeightTransform,
+)
 
 
 def heights_to_branch_lengths(node_heights, bounds, indexing):
@@ -525,12 +528,21 @@ class TimeTreeModel(AbstractTreeModel):
 @register_class
 class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
     def __init__(
-        self, id_: ID, tree, taxa: Taxa, ratios_root_heights: AbstractParameter
+        self,
+        id_: ID,
+        tree,
+        taxa: Taxa,
+        ratios_root_height: AbstractParameter = None,
+        shifts: AbstractParameter = None,
     ) -> None:
         CallableModel.__init__(self, id_)
-        TimeTreeModel.__init__(self, id_, tree, taxa, ratios_root_heights)
+        if ratios_root_height is not None:
+            TimeTreeModel.__init__(self, id_, tree, taxa, ratios_root_height)
+            self.transform = GeneralNodeHeightTransform(self)
+        else:
+            TimeTreeModel.__init__(self, id_, tree, taxa, shifts)
+            self.transform = DifferenceNodeHeightTransform(self)
         self._heights = None
-        self.transform = GeneralNodeHeightTransform(self)
 
     def update_node_heights(self) -> None:
         self._heights = self.transform(self._internal_heights.tensor)
@@ -584,9 +596,10 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
     def json_factory(
         id_: str,
         newick: str,
-        ratios: Union[dict, list, str],
-        root_height: Union[dict, list, str],
         taxa: Union[dict, list, str],
+        ratios: Union[dict, list, str] = None,
+        root_height: Union[dict, list, str] = None,
+        shifts: Union[dict, list, str] = None,
         **kwargs,
     ):
         r"""
@@ -613,26 +626,36 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
         if 'keep_branch_lengths' in kwargs and kwargs['keep_branch_lengths']:
             tree_model['keep_branch_lengths'] = kwargs['keep_branch_lengths']
 
-        ratios_id = kwargs.get('ratios_id', 'ratios')
-        root_height_id = kwargs.get('root_height_id', 'root_height')
+        if shifts is not None:
+            if isinstance(shifts, (list, tuple)):
+                shifts_id = kwargs.get('shifts_id', 'shifts')
+                tree_model['shifts'] = {
+                    "id": shifts_id,
+                    "type": "Parameter",
+                    "tensor": shifts,
+                }
+            elif isinstance(shifts, (dict, str)):
+                tree_model['shifts'] = shifts
+        else:
+            if isinstance(ratios, (list, tuple)):
+                ratios_id = kwargs.get('ratios_id', 'ratios')
+                tree_model['ratios'] = {
+                    "id": ratios_id,
+                    "type": "Parameter",
+                    "tensor": ratios,
+                }
+            elif isinstance(ratios, (dict, str)):
+                tree_model['ratios'] = ratios
 
-        if isinstance(ratios, (list, tuple)):
-            tree_model['ratios'] = {
-                "id": ratios_id,
-                "type": "torchtree.Parameter",
-                "tensor": ratios,
-            }
-        elif isinstance(ratios, (dict, str)):
-            tree_model['ratios'] = ratios
-
-        if isinstance(root_height, (list, tuple)):
-            tree_model['root_height'] = {
-                "id": root_height_id,
-                "type": "torchtree.Parameter",
-                "tensor": root_height,
-            }
-        elif isinstance(root_height, (dict, str)):
-            tree_model['root_height'] = root_height
+            if isinstance(root_height, (list, tuple)):
+                root_height_id = kwargs.get('root_height_id', 'root_height')
+                tree_model['root_height'] = {
+                    "id": root_height_id,
+                    "type": "Parameter",
+                    "tensor": root_height,
+                }
+            elif isinstance(root_height, (dict, str)):
+                tree_model['root_height'] = root_height
 
         if isinstance(taxa, dict):
             taxon_list = []
@@ -640,19 +663,19 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
                 taxon_list.append(
                     {
                         "id": taxon,
-                        "type": "torchtree.evolution.taxa.Taxon",
+                        "type": "Taxon",
                         "attributes": {"date": taxa[taxon]},
                     }
                 )
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'torchtree.evolution.taxa.Taxa',
+                'type': 'Taxa',
                 'taxa': taxon_list,
             }
         elif isinstance(taxa, list):
             tree_model['taxa'] = {
                 'id': kwargs.get('taxa_id', 'taxa'),
-                'type': 'torchtree.evolution.taxa.Taxa',
+                'type': 'Taxa',
                 'taxa': taxa,
             }
         else:
@@ -667,17 +690,20 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
         tree = parse_tree(taxa, data)
         initialize_dates_from_taxa(tree, taxa)
 
-        root_height = process_object(data['root_height'], dic)
-        ratios = process_object(data['ratios'], dic)
-        ratios_root_height = CatParameter(None, [ratios, root_height], dim=-1)
-
-        tree_model = cls(id_, tree, taxa, ratios_root_height)
+        if 'shifts' in data:
+            parameters = process_object(data['shifts'], dic)
+            tree_model = cls(id_, tree, taxa, shifts=parameters)
+        else:
+            root_height = process_object(data['root_height'], dic)
+            ratios = process_object(data['ratios'], dic)
+            parameters = CatParameter(None, [ratios, root_height], dim=-1)
+            tree_model = cls(id_, tree, taxa, ratios_root_height=parameters)
 
         if data.get('keep_branch_lengths', False):
-            ratios_root_height.tensor = tree_model.transform.inv(
+            parameters.tensor = tree_model.transform.inv(
                 heights_from_branch_lengths(tree).to(
-                    dtype=ratios_root_height.dtype,
-                    device=ratios_root_height.device,
+                    dtype=parameters.dtype,
+                    device=parameters.device,
                 )
             )
         return tree_model

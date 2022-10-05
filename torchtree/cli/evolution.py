@@ -32,7 +32,6 @@ from torchtree.evolution.tree_model import (
     initialize_dates_from_taxa,
     setup_indexes,
 )
-from torchtree.evolution.tree_model_flexible import FlexibleTimeTreeModel
 from torchtree.treeregression import regression
 
 logger = logging.getLogger(__name__)
@@ -328,7 +327,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
 
             root_height['lower'] = offset
             tree_model = ReparameterizedTimeTreeModel.json_factory(
-                id_, newick, ratios, root_height, 'taxa', **kwargs
+                id_, newick, 'taxa', ratios=ratios, root_height=root_height, **kwargs
             )
 
             if arg.heights_init == 'tree':
@@ -351,7 +350,12 @@ def create_tree_model(id_: str, taxa: dict, arg):
                 )
                 root_height['lower'] = offset
                 tree_model = ReparameterizedTimeTreeModel.json_factory(
-                    id_, newick, ratios, root_height, 'taxa', **kwargs
+                    id_,
+                    newick,
+                    'taxa',
+                    ratios=ratios,
+                    root_height=root_height,
+                    **kwargs,
                 )
 
         elif arg.heights == 'shift':
@@ -359,16 +363,9 @@ def create_tree_model(id_: str, taxa: dict, arg):
                 f'{id_}.shifts', **{'tensor': 0.1, 'full': [len(dates) - 1]}
             )
             shifts['lower'] = 0.0
-            node_heights = {
-                'id': f'{id_}.heights',
-                'type': 'TransformedParameter',
-                'transform': 'torchtree.evolution.tree_height_transform'
-                '.DifferenceNodeHeightTransform',
-                'x': shifts,
-                'parameters': {'tree_model': id_},
-            }
-            tree_model = FlexibleTimeTreeModel.json_factory(
-                id_, newick, node_heights, 'taxa', **kwargs
+
+            tree_model = ReparameterizedTimeTreeModel.json_factory(
+                id_, newick, 'taxa', shifts=shifts, **kwargs
             )
     else:
         branch_lengths = Parameter.json_factory(

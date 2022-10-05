@@ -855,7 +855,24 @@ def build_advi(arg):
         if arg.heights == 'ratio':
             parameters.extend(["tree.ratios", "tree.root_height"])
         elif arg.heights == 'shift':
-            parameters.extend(["tree.heights"])
+            parameters.extend(
+                [
+                    'tree.shifts',
+                    {
+                        'id': "tree.root_height",
+                        'type': 'ViewParameter',
+                        'indices': '-1:',
+                        'parameter': {
+                            'id': 'tree.heights',
+                            'type': 'TransformedParameter',
+                            'transform': 'torchtree.evolution.tree_height_transform'
+                            '.DifferenceNodeHeightTransform',
+                            'x': 'tree.shifts',
+                            'parameters': {'tree_model': 'tree'},
+                        },
+                    },
+                ]
+            )
 
         if arg.clock == 'ucln':
             parameters.extend(
