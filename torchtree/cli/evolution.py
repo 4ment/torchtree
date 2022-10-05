@@ -200,9 +200,14 @@ def add_coalescent(parser):
         help="""a cutoff for skygrid""",
     )
     parser.add_argument(
-        '--time-aware',
+        '--gmrf_integrated',
         action='store_true',
-        help="""use time aware GMRF""",
+        help="""use GMRF with precision integrated out""",
+    )
+    parser.add_argument(
+        '--coalescent_non_centered',
+        action='store_true',
+        help="""use non-centered parameterization of population size parameters""",
     )
     return parser
 
@@ -931,27 +936,136 @@ def create_bdsk(birth_death_id, tree_id, arg):
     return bdsk
 
 
-def create_coalesent(id_, tree_id, theta_id, arg, **kwargs):
+def create_coalesent(id_, tree_id, taxa, arg):
+    joint_list = []
+    params = {}
+    if arg.coalescent in ('constant', 'exponential'):
+        theta = Parameter.json_factory(f'{id_}.theta', **{'tensor': [3.0]})
+        theta['lower'] = 0.0
+
+        joint_list.append(create_one_on_x_prior(f'{id_}.theta.prior', f'{id_}.theta'))
+    if arg.coalescent == 'exponential':
+        growth = Parameter.json_factory(f'{id_}.growth', **{'tensor': [1.0]})
+        params['growth'] = growth
+
+        joint_list.append(
+            Distribution.json_factory(
+                f'{id_}.growth.prior',
+                'torch.distributions.Laplace',
+                f'{id_}.growth',
+                {
+                    'loc': 0.0,
+                    'scale': 1.0,
+                },
+            )
+        )
+    elif arg.coalescent.startswith('piecewise'):
+        growth = Parameter.json_factory(
+            f'{id_}.growth', **{'tensor': 0.001, 'full': [arg.grid]}
+        )
+        theta = Parameter.json_factory(f'{id_}.theta', **{'tensor': [3.0]})
+        theta['lower'] = 0.0
+        params['growth'] = growth
+
+    if arg.coalescent in ('skygrid', 'skyride'):
+        if arg.coalescent_non_centered:
+            theta = {
+                "id": f'{id_}.theta',
+                "type": "TransformedParameter",
+                "transform": "CumSumExpTransform",
+                "x": [
+                    {"id": "theta1.unres", "type": "Parameter", "tensor": [1.0]},
+                    {
+                        "id": "theta.unres",
+                        "type": "Parameter",
+                        "tensor": 0.0,
+                        "full": [len(taxa['taxa']) - 2],
+                    },
+                ],
+            }
+        else:
+            if arg.coalescent == 'skygrid':
+                theta_log = Parameter.json_factory(
+                    f'{id_}.theta.log', **{'tensor': 3.0, 'full': [arg.grid]}
+                )
+            elif arg.coalescent == 'skyride':
+                theta_log = Parameter.json_factory(
+                    f'{id_}.theta.log',
+                    **{'tensor': 3.0, 'full': [len(taxa['taxa']) - 1]},
+                )
+            theta = {
+                'id': f'{id_}.theta',
+                'type': 'TransformedParameter',
+                'transform': 'torch.distributions.ExpTransform',
+                'x': theta_log,
+            }
+
+        if arg.gmrf_integrated:
+            gmrf = {
+                'id': 'gmrf',
+                'type': 'GMRFGammaIntegrated',
+                'x': f'{id_}.theta.log',
+                'shape': 0.001,
+                'rate': 0.001,
+            }
+        else:
+            gmrf = {
+                'id': 'gmrf',
+                'type': 'GMRF',
+                'x': f'{id_}.theta.log',
+                'precision': Parameter.json_factory(
+                    'gmrf.precision',
+                    **{'tensor': [0.1]},
+                ),
+            }
+
+        if arg.coalescent_non_centered:
+            gmrf["x"] = {
+                "id": f'{id_}.theta.log',
+                "type": "TransformedParameter",
+                "transform": "LogTransform",
+                "x": f'{id_}.theta',
+            }
+
+        joint_list.append(gmrf)
+
+        if not arg.disable_time_aware:
+            gmrf['tree_model'] = 'tree'
+
+        if not arg.gmrf_integrated:
+            gmrf['precision']['lower'] = 0.0
+            joint_list.append(
+                Distribution.json_factory(
+                    'gmrf.precision.prior',
+                    'torch.distributions.Gamma',
+                    'gmrf.precision',
+                    {
+                        'concentration': 0.0010,
+                        'rate': 0.0010,
+                    },
+                )
+            )
+
     if arg.coalescent == 'constant':
         coalescent = {
             'id': id_,
             'type': 'ConstantCoalescentModel',
-            'theta': theta_id,
+            'theta': theta,
             'tree_model': tree_id,
         }
     elif arg.coalescent == 'exponential':
         coalescent = {
             'id': id_,
             'type': 'ExponentialCoalescentModel',
-            'theta': theta_id,
-            'growth': kwargs.get('growth'),
+            'theta': theta,
+            'growth': growth,
             'tree_model': tree_id,
         }
     elif arg.coalescent == 'skygrid':
         coalescent = {
             'id': id_,
             'type': 'PiecewiseConstantCoalescentGridModel',
-            'theta': theta_id,
+            'theta': theta,
             'tree_model': tree_id,
             'cutoff': arg.cutoff,
         }
@@ -959,15 +1073,15 @@ def create_coalesent(id_, tree_id, theta_id, arg, **kwargs):
         coalescent = {
             'id': id_,
             'type': 'PiecewiseConstantCoalescentModel',
-            'theta': theta_id,
+            'theta': theta,
             'tree_model': tree_id,
         }
     elif arg.coalescent.startswith('piecewise'):
         coalescent = {
             'id': id_,
             'type': 'PiecewiseExponentialCoalescentGridModel',
-            'theta': theta_id,
-            'growth': kwargs.get('growth'),
+            'theta': theta,
+            'growth': growth,
             'tree_model': tree_id,
             'cutoff': arg.cutoff,
         }
@@ -981,7 +1095,8 @@ def create_coalesent(id_, tree_id, theta_id, arg, **kwargs):
             evol.process_coalescent(arg, coalescent)
         except AttributeError:
             pass
-    return coalescent
+
+    return [coalescent] + joint_list
 
 
 def create_substitution_model_priors(substmodel_id, model):
@@ -1192,97 +1307,8 @@ def create_evolution_priors(taxa, arg):
 
 
 def create_time_tree_prior(taxa, arg):
-    prior = []
-    joint_list = []
     if arg.coalescent is not None:
-        params = {}
-        coalescent_id = 'coalescent'
-        if arg.coalescent in ('constant', 'exponential'):
-            theta = Parameter.json_factory(
-                f'{coalescent_id}.theta', **{'tensor': [3.0]}
-            )
-            theta['lower'] = 0.0
-
-            joint_list.append(
-                create_one_on_x_prior(
-                    f'{coalescent_id}.theta.prior', f'{coalescent_id}.theta'
-                )
-            )
-        if arg.coalescent == 'exponential':
-            growth = Parameter.json_factory(
-                f'{coalescent_id}.growth', **{'tensor': [1.0]}
-            )
-            params['growth'] = growth
-
-            joint_list.append(
-                Distribution.json_factory(
-                    f'{coalescent_id}.growth.prior',
-                    'torch.distributions.Laplace',
-                    f'{coalescent_id}.growth',
-                    {
-                        'loc': 0.0,
-                        'scale': 1.0,
-                    },
-                )
-            )
-        elif arg.coalescent.startswith('piecewise'):
-            growth = Parameter.json_factory(
-                f'{coalescent_id}.growth', **{'tensor': 0.001, 'full': [arg.grid]}
-            )
-            theta = Parameter.json_factory(
-                f'{coalescent_id}.theta', **{'tensor': [3.0]}
-            )
-            theta['lower'] = 0.0
-            params['growth'] = growth
-
-        elif arg.coalescent == 'skygrid':
-            theta_log = Parameter.json_factory(
-                f'{coalescent_id}.theta.log', **{'tensor': 3.0, 'full': [arg.grid]}
-            )
-            theta = {
-                'id': f'{coalescent_id}.theta',
-                'type': 'TransformedParameter',
-                'transform': 'torch.distributions.ExpTransform',
-                'x': theta_log,
-            }
-        elif arg.coalescent == 'skyride':
-            theta_log = Parameter.json_factory(
-                f'{coalescent_id}.theta.log',
-                **{'tensor': 3.0, 'full': [len(taxa['taxa']) - 1]},
-            )
-            theta = {
-                'id': f'{coalescent_id}.theta',
-                'type': 'TransformedParameter',
-                'transform': 'torch.distributions.ExpTransform',
-                'x': theta_log,
-            }
-
-        if arg.coalescent in ('skygrid', 'skyride'):
-            gmrf = {
-                'id': 'gmrf',
-                'type': 'GMRF',
-                'x': f'{coalescent_id}.theta.log',
-                'precision': Parameter.json_factory(
-                    'gmrf.precision',
-                    **{'tensor': [0.1]},
-                ),
-            }
-            if not arg.disable_time_aware:
-                gmrf['tree_model'] = 'tree'
-            gmrf['precision']['lower'] = 0.0
-            joint_list.append(gmrf)
-            joint_list.append(
-                Distribution.json_factory(
-                    'gmrf.precision.prior',
-                    'torch.distributions.Gamma',
-                    'gmrf.precision',
-                    {
-                        'concentration': 0.0010,
-                        'rate': 0.0010,
-                    },
-                )
-            )
-        prior = create_coalesent(coalescent_id, 'tree', theta, arg, **params)
+        joint_list = create_coalesent('coalescent', 'tree', taxa, arg)
     elif arg.birth_death is not None:
         if arg.birth_death == 'constant':
             joint_list = create_constant_bd_prior(arg.birth_death)
@@ -1290,8 +1316,9 @@ def create_time_tree_prior(taxa, arg):
             joint_list = create_bdsk_prior(arg.birth_death)
 
         prior = create_birth_death(arg.birth_death, 'tree', arg)
+        joint_list.insert(0, prior)
 
-    return [prior] + joint_list
+    return joint_list
 
 
 def create_bd_prior(id_, parameters):
@@ -1303,8 +1330,8 @@ def create_bd_prior(id_, parameters):
                 'torch.distributions.LogNormal',
                 f'{id_}.{x}',
                 {
-                    'mean': 1.0,
-                    'scale': 1.25,
+                    'loc': 1.0,
+                    'scale': 1.5,
                 },
             ),
         )
