@@ -75,3 +75,15 @@ class SymmetricSubstitutionModel(AbstractSubstitutionModel, ABC):
             [parameter.shape[:-1] for parameter in self._parameters.values()],
             key=len,
         )
+
+
+class NonSymmetricSubstitutionModel(SymmetricSubstitutionModel):
+    def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
+        Q_unnorm = self.q()
+        Q = Q_unnorm / self.norm(Q_unnorm).unsqueeze(-1).unsqueeze(-1)
+        return torch.matrix_exp(
+            Q.unsqueeze(-3).unsqueeze(-3) * branch_lengths.unsqueeze(-1).unsqueeze(-1)
+        )
+
+    def eigen(self, Q: torch.Tensor) -> torch.Tensor:
+        return torch.linalg.eig(Q)

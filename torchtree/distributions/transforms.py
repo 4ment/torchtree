@@ -1,4 +1,5 @@
 import math
+from typing import Union
 
 import torch
 from torch.autograd.functional import jacobian
@@ -184,3 +185,41 @@ class LogTransform(Transform):
 
     def log_abs_det_jacobian(self, x, y):
         return -y
+
+
+@register_class
+class LinearTransform(Transform):
+    r"""
+    Transform via the mapping :math:`y = Ax + b`.
+    """
+    domain = constraints.real
+    codomain = constraints.real
+    bijective = True
+    sign = +1
+
+    def __init__(
+        self,
+        A: Union[AbstractParameter, torch.Tensor],
+        b: AbstractParameter,
+        cache_size=0,
+    ) -> None:
+        super().__init__(cache_size=cache_size)
+        self.A = A
+        self.b = b
+
+    def _call(self, x):
+        if isinstance(self.A, torch.Tensor):
+            return torch.squeeze(self.A.t() @ x.unsqueeze(-1), -1) + self.b.tensor
+        else:
+            return (
+                torch.squeeze(self.A.tensor.t() @ x.unsqueeze(-1), -1) + self.b.tensor
+            )
+
+    def _inverse(self, y):
+        if isinstance(self.A, torch.Tensor):
+            return self.A.t().inverse() @ (y - self.b)
+        else:
+            return self.A.t().tensor.inverse() @ (y - self.b)
+
+    def log_abs_det_jacobian(self, x, y):
+        raise NotImplementedError

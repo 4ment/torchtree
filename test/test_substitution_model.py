@@ -10,6 +10,8 @@ from torchtree.evolution.substitution_model import (
     JC69,
     LG,
     MG94,
+    GeneralJC69,
+    GeneralNonSymmetricSubstitutionModel,
     GeneralSymmetricSubstitutionModel,
 )
 
@@ -248,6 +250,27 @@ def test_general_GTR():
 
     subst_model2 = GTR('gtr', Parameter('rates', rates), Parameter('pi', pi))
     P_expected = subst_model2.p_t(torch.tensor(np.array([[0.1]])))
+    np.testing.assert_allclose(P, P_expected, rtol=1e-06)
+
+    subst_model_non_sym = GeneralNonSymmetricSubstitutionModel(
+        'gen',
+        Parameter('mapping', torch.concat((mapping, mapping))),
+        Parameter('rates', rates),
+        Parameter('pi', pi.unsqueeze(0)),
+    )
+    P_non_sym = subst_model_non_sym.p_t(torch.tensor(np.array([[0.1]])))
+    print(P_expected)
+    print(P_non_sym)
+    assert torch.allclose(P_non_sym, P_expected)
+
+
+def test_general_JC69():
+    subst_model = GeneralJC69('gen', 4)
+    blens = torch.tensor(np.array([[0.1], [0.5]]))
+    P = subst_model.p_t(blens)
+
+    subst_model2 = JC69('jc')
+    P_expected = subst_model2.p_t(blens)
     np.testing.assert_allclose(P, P_expected, rtol=1e-06)
 
 

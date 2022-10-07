@@ -207,6 +207,13 @@ class Parameter(AbstractParameter):
                 kwargs['dtype'] = dtype
             size = data['eye']
             t = torch.eye(size, **kwargs)
+        elif 'arange' in data:
+            if dtype:
+                kwargs['dtype'] = dtype
+            if isinstance(data['arange'], list):
+                t = torch.arange(*data['arange'])
+            else:
+                t = torch.arange(data['arange'])
         else:
             if dtype:
                 kwargs['dtype'] = dtype

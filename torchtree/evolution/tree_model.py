@@ -697,7 +697,7 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
             root_height = process_object(data['root_height'], dic)
             ratios = process_object(data['ratios'], dic)
             parameters = CatParameter(None, [ratios, root_height], dim=-1)
-            tree_model = cls(id_, tree, taxa, ratios_root_height=parameters)
+            tree_model = cls(id_, tree, taxa, parameters)
 
         if data.get('keep_branch_lengths', False):
             parameters.tensor = tree_model.transform.inv(

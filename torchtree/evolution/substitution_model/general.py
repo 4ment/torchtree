@@ -1,10 +1,80 @@
+from typing import Optional, Union
+
 import torch
 import torch.linalg
 
 from ...core.abstractparameter import AbstractParameter
+from ...core.parameter import Parameter
 from ...core.utils import process_object, register_class
 from ...typing import ID
-from .abstract import SubstitutionModel, SymmetricSubstitutionModel
+from .abstract import (
+    NonSymmetricSubstitutionModel,
+    SubstitutionModel,
+    SymmetricSubstitutionModel,
+)
+
+
+@register_class
+class GeneralJC69(SubstitutionModel):
+    def __init__(self, id_: ID, state_count: int) -> None:
+        super().__init__(id_)
+        self._frequencies = torch.full((state_count,), 1.0 / state_count)
+        self.state_count = state_count
+
+    @property
+    def frequencies(self) -> torch.Tensor:
+        return self._frequencies
+
+    def handle_model_changed(self, model, obj, index):
+        pass
+
+    def handle_parameter_changed(self, variable, index, event):
+        pass
+
+    @property
+    def sample_shape(self) -> torch.Size:
+        return torch.Size([])
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        self._frequencies.cuda(device)
+
+    def cpu(self) -> None:
+        self._frequencies.cpu()
+
+    def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
+        d = torch.unsqueeze(branch_lengths, -1)
+        a = 1.0 / self.state_count + (
+            self.state_count - 1.0
+        ) / self.state_count * torch.exp(
+            -self.state_count / (self.state_count - 1.0) * d
+        )
+        b = (
+            1.0 / self.state_count
+            - torch.exp(-self.state_count / (self.state_count - 1.0) * d)
+            / self.state_count
+        )
+        P = b.unsqueeze(-1).repeat(
+            (1,) * branch_lengths.dim() + (self.state_count, self.state_count)
+        )
+        P[..., range(self.state_count), range(self.state_count)] = a.repeat(
+            (1,) * branch_lengths.dim() + (self.state_count,)
+        )
+        return P
+
+    def q(self) -> torch.Tensor:
+        Q = torch.full(
+            (self.state_count, self.state_count),
+            1.0 / self.state_count,
+            dtype=self.rates.dtype,
+        )
+        Q[range(self.state_count), range(self.state_count)] = -1.0
+        return Q
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        state_count = data['state_count']
+        return cls(id_, state_count)
 
 
 @register_class
@@ -19,7 +89,7 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
         super().__init__(id_, frequencies)
         self._rates = rates
         self.mapping = mapping
-        self.state_count = frequencies.shape[0]
+        self.state_count = frequencies.shape[-1]
 
     @property
     def rates(self) -> torch.Tensor:
@@ -46,6 +116,59 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
         rates = process_object(data['rates'], dic)
         frequencies = process_object(data['frequencies'], dic)
         mapping = process_object(data['mapping'], dic)
+        return cls(id_, mapping, rates, frequencies)
+
+
+@register_class
+class GeneralNonSymmetricSubstitutionModel(NonSymmetricSubstitutionModel):
+    def __init__(
+        self,
+        id_: ID,
+        mapping: AbstractParameter,
+        rates: AbstractParameter,
+        frequencies: AbstractParameter,
+    ) -> None:
+        super().__init__(id_, frequencies)
+        self._rates = rates
+        self.mapping = mapping
+        self.state_count = frequencies.shape[-1]
+
+    @property
+    def rates(self) -> torch.Tensor:
+        return self._rates.tensor
+
+    def handle_model_changed(self, model, obj, index):
+        pass
+
+    def handle_parameter_changed(self, variable, index, event):
+        self.fire_model_changed()
+
+    def q(self) -> torch.Tensor:
+        indices = torch.triu_indices(self.state_count, self.state_count, 1)
+        R = torch.zeros(
+            self._rates.tensor.shape[:-1] + (self.state_count, self.state_count),
+            dtype=self._rates.dtype,
+        )
+        dim = int(self.mapping.shape[-1] / 2)
+        R[..., indices[0], indices[1]] = self.rates[..., self.mapping.tensor[:dim]]
+        R[..., indices[1], indices[0]] = self.rates[..., self.mapping.tensor[dim:]]
+        identity = torch.eye(self.state_count)
+        for _ in range(R.dim() - 2):
+            identity = identity.unsqueeze(0)
+        pi = self.frequencies.unsqueeze(-1) * identity.repeat(R.shape[:-2] + (1, 1))
+        Q = R @ pi
+        Q[..., range(self.state_count), range(self.state_count)] = -torch.sum(Q, dim=-1)
+        return Q
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        rates = process_object(data['rates'], dic)
+        frequencies = process_object(data['frequencies'], dic)
+        if isinstance(data['mapping'], list):
+            mapping = Parameter(None, torch.tensor(data['mapping']))
+        else:
+            mapping = process_object(data['mapping'], dic)
         return cls(id_, mapping, rates, frequencies)
 
 
