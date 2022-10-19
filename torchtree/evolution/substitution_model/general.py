@@ -83,6 +83,7 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
     def __init__(
         self,
         id_: ID,
+        data_type: DataType,
         mapping: AbstractParameter,
         rates: AbstractParameter,
         frequencies: AbstractParameter,
@@ -90,7 +91,8 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
         super().__init__(id_, frequencies)
         self._rates = rates
         self.mapping = mapping
-        self.state_count = frequencies.shape[-1]
+        self.state_count = data_type.state_count
+        self.data_type = data_type
 
     @property
     def rates(self) -> torch.Tensor:
@@ -114,10 +116,11 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
+        data_type = process_object(data['data_type'], dic)
         rates = process_object(data['rates'], dic)
         frequencies = process_object(data['frequencies'], dic)
         mapping = process_object(data['mapping'], dic)
-        return cls(id_, mapping, rates, frequencies)
+        return cls(id_, data_type, mapping, rates, frequencies)
 
 
 @register_class
@@ -134,7 +137,7 @@ class GeneralNonSymmetricSubstitutionModel(NonSymmetricSubstitutionModel):
         super().__init__(id_, frequencies)
         self._rates = rates
         self.mapping = mapping
-        self.state_count = frequencies.shape[-1]
+        self.state_count = data_type.state_count
         self.data_type = data_type
         self.normalize = normalize
 

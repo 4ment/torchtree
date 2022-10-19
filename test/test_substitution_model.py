@@ -3,7 +3,7 @@ import pytest
 import torch
 
 from torchtree import Parameter
-from torchtree.evolution.datatype import CodonDataType
+from torchtree.evolution.datatype import CodonDataType, GeneralDataType
 from torchtree.evolution.substitution_model import (
     GTR,
     HKY,
@@ -34,8 +34,10 @@ def test_general_symmetric():
     )
     pi = torch.tensor(np.array([0.479367, 0.172572, 0.140933, 0.207128]))
     mapping = torch.arange(6)
+    data_type = GeneralDataType('id', ('A', 'C', 'T', 'G'))
     subst_model = GeneralSymmetricSubstitutionModel(
         'gen',
+        data_type,
         Parameter('mapping', mapping),
         Parameter('rates', rates),
         Parameter('pi', pi),
@@ -240,8 +242,10 @@ def test_general_GTR():
     )
     pi = torch.tensor(np.array([0.479367, 0.172572, 0.140933, 0.207128]))
     mapping = torch.arange(6, dtype=torch.long)
+    data_type = GeneralDataType('id', ('A', 'C', 'T', 'G'))
     subst_model = GeneralSymmetricSubstitutionModel(
         'gen',
+        data_type,
         Parameter('mapping', mapping),
         Parameter('rates', rates),
         Parameter('pi', pi),
@@ -254,9 +258,11 @@ def test_general_GTR():
 
     subst_model_non_sym = GeneralNonSymmetricSubstitutionModel(
         'gen',
+        data_type,
         Parameter('mapping', torch.concat((mapping, mapping))),
         Parameter('rates', rates),
         Parameter('pi', pi.unsqueeze(0)),
+        True,
     )
     P_non_sym = subst_model_non_sym.p_t(torch.tensor(np.array([[0.1]])))
     print(P_expected)

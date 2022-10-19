@@ -299,7 +299,7 @@ class CodonDataType(AbstractDataType):
 
 @register_class
 class GeneralDataType(AbstractDataType):
-    def __init__(self, id_: ID, codes: tuple[str, ...], ambiguities: dict):
+    def __init__(self, id_: ID, codes: tuple[str, ...], ambiguities: dict = {}):
         super().__init__(id_, codes)
         self.codes = {code: idx for idx, code in enumerate(codes)}
         self._encoding = self.codes.copy()
