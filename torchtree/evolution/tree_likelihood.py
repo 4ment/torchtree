@@ -413,7 +413,6 @@ class TreeLikelihoodModel(CallableModel):
                     mats,
                     frequencies,
                     probs,
-                    self.threshold,
                 )
         return log_p
 

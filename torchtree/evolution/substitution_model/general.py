@@ -6,6 +6,7 @@ import torch.linalg
 from ...core.abstractparameter import AbstractParameter
 from ...core.parameter import Parameter
 from ...core.utils import process_object, register_class
+from ...evolution.datatype import DataType
 from ...typing import ID
 from .abstract import (
     NonSymmetricSubstitutionModel,
@@ -124,14 +125,18 @@ class GeneralNonSymmetricSubstitutionModel(NonSymmetricSubstitutionModel):
     def __init__(
         self,
         id_: ID,
+        data_type: DataType,
         mapping: AbstractParameter,
         rates: AbstractParameter,
         frequencies: AbstractParameter,
+        normalize: bool,
     ) -> None:
         super().__init__(id_, frequencies)
         self._rates = rates
         self.mapping = mapping
         self.state_count = frequencies.shape[-1]
+        self.data_type = data_type
+        self.normalize = normalize
 
     @property
     def rates(self) -> torch.Tensor:
@@ -163,13 +168,15 @@ class GeneralNonSymmetricSubstitutionModel(NonSymmetricSubstitutionModel):
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
+        data_type = process_object(data['data_type'], dic)
         rates = process_object(data['rates'], dic)
         frequencies = process_object(data['frequencies'], dic)
         if isinstance(data['mapping'], list):
             mapping = Parameter(None, torch.tensor(data['mapping']))
         else:
             mapping = process_object(data['mapping'], dic)
-        return cls(id_, mapping, rates, frequencies)
+        normalize = data.get('normalize', True)
+        return cls(id_, data_type, mapping, rates, frequencies, normalize)
 
 
 @register_class

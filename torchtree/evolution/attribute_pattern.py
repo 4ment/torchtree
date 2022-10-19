@@ -18,14 +18,14 @@ class AttributePattern(Model):
     ) -> None:
         super().__init__(id_)
         self.taxa = taxa
-        self.datatype = data_type
+        self.data_type = data_type
         self.attribute = attribute
 
     def compute_tips_states(self):
         return [
             torch.clamp(
                 torch.tensor(
-                    [self.datatype.encoding(taxon['attributes'][self.attribute])],
+                    [self.data_type.encoding(taxon[self.attribute])],
                     dtype=torch.long,
                 ),
                 max=self.data_type.state_count,
@@ -36,7 +36,7 @@ class AttributePattern(Model):
     def compute_tips_partials(self, use_ambiguities=False):
         return [
             torch.tensor(
-                [self.datatype.partial(taxon[self.attribute], use_ambiguities)],
+                [self.data_type.partial(taxon[self.attribute], use_ambiguities)],
                 dtype=torch.get_default_dtype(),
             ).t()
             for taxon in self.taxa
