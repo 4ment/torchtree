@@ -1,11 +1,15 @@
 import argparse
+import csv
 import importlib
 import logging
+import math
+import numbers
 import os
 import re
 import sys
 
 import numpy as np
+import torch
 from dendropy import TaxonNamespace, Tree
 
 from torchtree import Parameter, ViewParameter
@@ -22,6 +26,10 @@ from torchtree.evolution.alignment import (
     calculate_kappa,
     calculate_substitutions,
     read_fasta_sequences,
+)
+from torchtree.evolution.coalescent import (
+    ConstantCoalescent,
+    PiecewiseConstantCoalescent,
 )
 from torchtree.evolution.datatype import CodonDataType, NucleotideDataType
 from torchtree.evolution.io import extract_taxa
@@ -158,6 +166,21 @@ def create_evolution_parser(parser):
         help="""include Jacobian of the node height transform""",
     )
 
+    parser.add_argument(
+        '--location_regex',
+        default=None,
+        help="""regular expression to capture sampling location sequence names""",
+    )
+    parser.add_argument(
+        '--metadata',
+        default=None,
+        help="""csv file containing metadata (e.g. date, location)""",
+    )
+    parser.add_argument(
+        '--trait',
+        nargs='+',
+        help="""column name in metadata file""",
+    )
     parser = add_coalescent(parser)
 
     parser = add_birth_death(parser)
@@ -207,6 +230,12 @@ def add_coalescent(parser):
         '--coalescent_non_centered',
         action='store_true',
         help="""use non-centered parameterization of population size parameters""",
+    )
+    parser.add_argument(
+        '--coalescent_init',
+        type=lambda x: str_or_float(x, 'tree'),
+        help="""initialize coalescent parameter from input tree using MLE.
+        heights_init=tree must be specified.""",
     )
     return parser
 
@@ -334,9 +363,24 @@ def create_tree_model(id_: str, taxa: dict, arg):
                 # instantiate tree model with keep_branch_lengths to get the
                 # ratios/root height parameters
                 taxa_obj = Taxa.from_json(taxa, {})
-                tree_model_obj = ReparameterizedTimeTreeModel.from_json(
-                    tree_model, {'taxa': taxa_obj}
+                tree_model_obj: ReparameterizedTimeTreeModel = (
+                    ReparameterizedTimeTreeModel.from_json(
+                        tree_model, {'taxa': taxa_obj}
+                    )
                 )
+
+                if arg.coalescent_init is not None:
+                    if arg.coalescent in ('constant', 'exponential'):
+                        arg.coalescent_init = ConstantCoalescent.maximum_likelihood(
+                            tree_model_obj.node_heights
+                        )
+                    elif arg.coalescent == 'skyride':
+                        arg.coalescent_init = (
+                            PiecewiseConstantCoalescent.maximum_likelihood(
+                                tree_model_obj.node_heights
+                            )
+                        )
+
                 ratios = Parameter.json_factory(
                     f'{id_}.ratios',
                     **{'tensor': tree_model_obj._internal_heights.tensor[:-1].tolist()},
@@ -407,6 +451,65 @@ def create_tree_likelihood_single(
     }
     if branch_model is not None:
         treelikelihood_model['branch_model'] = branch_model
+
+    return treelikelihood_model
+
+
+def create_tree_likelihood_general(trait: str, data_type: dict, taxa: Taxa, arg):
+    site_pattern = {
+        'id': f'site_pattern.{trait}',
+        'type': 'AttributePattern',
+        'taxa': 'taxa',
+        'data_type': data_type,
+        'attribute': trait,
+    }
+    site_model = create_site_model(f'sitemodel.{trait}', arg)
+
+    state_count = len(data_type['codes'])
+    mapping = np.arange(state_count * (state_count - 1))
+    substitution_model = {
+        'id': f'substmodel.{trait}',
+        'type': 'GeneralNonSymmetricSubstitutionModel',
+        'mapping': mapping.tolist(),
+        'rates': {
+            'id': f'substmodel.{trait}.rates',
+            'type': 'Parameter',
+            'full': [len(mapping)],
+            'tensor': 1.0,
+            'lower': 0.0,
+        },
+        'frequencies': {
+            'id': f'substmodel.{trait}.freqs',
+            'type': 'Parameter',
+            'full': [state_count],
+            'tensor': 1.0 / state_count,
+            'lower': 0.0,
+            'upper': 0.0
+            # 'simplex': True
+        },
+        'state_count': state_count,
+    }
+    # substitution_model = {
+    #     'id': f'substmodel.{trait}',
+    #     'type': 'GeneralJC69',
+    #     'state_count': len(data_type['codes']),
+    # }
+
+    treelikelihood_model = {
+        'id': f'like.{trait}',
+        'type': 'TreeLikelihoodModel',
+        'tree_model': 'tree',
+        'site_model': site_model,
+        'substitution_model': substitution_model,
+        'site_pattern': site_pattern,
+    }
+    if arg.clock is not None:
+        treelikelihood_model['branch_model'] = 'branchmodel'
+
+    if arg.use_ambiguities:
+        treelikelihood_model['use_ambiguities'] = True
+    if arg.use_tip_states:
+        treelikelihood_model['use_tip_states'] = True
 
     return treelikelihood_model
 
@@ -742,6 +845,23 @@ def create_data_type(id_, arg):
     return data_type
 
 
+def create_general_data_type(id_, trait, taxa):
+    unique_codes = list(
+        {
+            taxon['attributes'][trait]
+            for taxon in taxa['taxa']
+            if taxon['attributes'][trait] not in ('', '?', '-')
+        }
+    )
+
+    data_type = {
+        'id': id_,
+        'type': 'GeneralDataType',
+        'codes': unique_codes,
+    }
+    return data_type
+
+
 def create_alignment(id_, taxa, arg):
     data_type_json = 'data_type'
     if not hasattr(arg, '_data_type'):
@@ -815,6 +935,40 @@ def create_taxa(id_, arg):
                     }
                 else:
                     taxon['attributes'] = {'date': float(res.group(1))}
+
+    if arg.location_regex:
+        regex = re.compile(arg.location_regex)
+        for taxon in taxa_list:
+            res = re.search(regex, taxon['id'])
+            if res is None:
+                logger.error(
+                    f" Could not extract location from {taxon['id']}"
+                    f" - regular expression used: {arg.location_regex}"
+                )
+                sys.exit(1)
+
+            if 'attributes' not in taxon:
+                taxon['attributes'] = {}
+            taxon['attributes']['location'] = res.group(1)
+    elif arg.trait and arg.metadata:
+        with open(arg.metadata) as fp:
+            reader = csv.reader(
+                fp,
+                quotechar='"',
+                delimiter=',',
+                quoting=csv.QUOTE_ALL,
+                skipinitialspace=True,
+            )
+
+            for line in reader:
+                indices = [line.index(trait) for trait in arg.trait]
+                break
+            taxa_map = {taxon['id']: taxon for taxon in taxa['taxa']}
+            for line in reader:
+                if 'attributes' not in taxa_map[line[1]]:
+                    taxa_map[line[1]]['attributes'] = {}
+                for trait, idx in zip(arg.trait, indices):
+                    taxa_map[line[1]]['attributes'][trait] = line[idx]
     return taxa
 
 
@@ -937,7 +1091,15 @@ def create_coalesent(id_, tree_id, taxa, arg):
     joint_list = []
     params = {}
     if arg.coalescent in ('constant', 'exponential'):
-        theta = Parameter.json_factory(f'{id_}.theta', **{'tensor': [3.0]})
+        if arg.coalescent_init is not None:
+            if isinstance(arg.coalescent_init, numbers.Number):
+                theta_value = arg.coalescent_init
+            else:
+                theta_value = arg.coalescent_init.item()
+        else:
+            theta_value = 3.0
+
+        theta = Parameter.json_factory(f'{id_}.theta', **{'tensor': [theta_value]})
         theta['lower'] = 0.0
 
         joint_list.append(create_one_on_x_prior(f'{id_}.theta.prior', f'{id_}.theta'))
@@ -986,10 +1148,27 @@ def create_coalesent(id_, tree_id, taxa, arg):
                     f'{id_}.theta.log', **{'tensor': 3.0, 'full': [arg.grid]}
                 )
             elif arg.coalescent == 'skyride':
-                theta_log = Parameter.json_factory(
-                    f'{id_}.theta.log',
-                    **{'tensor': 3.0, 'full': [len(taxa['taxa']) - 1]},
-                )
+                if arg.coalescent_init is not None and not isinstance(
+                    arg.coalescent_init, numbers.Number
+                ):
+                    theta_log = Parameter.json_factory(
+                        f'{id_}.theta.log',
+                        **{
+                            'tensor': torch.clamp(arg.coalescent_init, min=1.0e-6)
+                            .log()
+                            .tolist()
+                        },
+                    )
+                else:
+                    theta_log_value = (
+                        math.log(arg.coalescent_init)
+                        if arg.coalescent_init is not None
+                        else math.log(3.0)
+                    )
+                    theta_log = Parameter.json_factory(
+                        f'{id_}.theta.log',
+                        **{'tensor': theta_log_value, 'full': [len(taxa['taxa']) - 1]},
+                    )
             theta = {
                 'id': f'{id_}.theta',
                 'type': 'TransformedParameter',
@@ -1026,7 +1205,7 @@ def create_coalesent(id_, tree_id, taxa, arg):
 
         joint_list.append(gmrf)
 
-        if not arg.disable_time_aware:
+        if not arg.disable_time_aware and arg.coalescent != 'skygrid':
             gmrf['tree_model'] = 'tree'
 
         if not arg.gmrf_integrated:
@@ -1377,6 +1556,7 @@ def create_poisson_evolution_joint(taxa, arg):
 
 
 def create_evolution_joint(taxa, alignment, arg):
+    likelihood_dic = create_tree_likelihood('like', taxa, alignment, arg)
     prior_dic = {
         'id': 'prior',
         'type': 'JointDistributionModel',
@@ -1386,10 +1566,28 @@ def create_evolution_joint(taxa, alignment, arg):
         'id': 'joint',
         'type': 'JointDistributionModel',
         'distributions': [
-            create_tree_likelihood('like', taxa, alignment, arg),
+            likelihood_dic,
             prior_dic,
         ],
     }
+    if arg.location_regex:
+        data_type_location = create_general_data_type(
+            'data_type.location', 'location', taxa
+        )
+        location_dic = create_tree_likelihood_general(
+            'location', data_type_location, taxa, arg
+        )
+        joint_dic['distributions'].append(location_dic)
+    elif arg.trait and arg.metadata:
+        for trait in arg.trait:
+            data_type_trait = create_general_data_type(
+                f'data_type.{trait}', trait, taxa
+            )
+            trait_dic = create_tree_likelihood_general(
+                trait, data_type_trait, taxa, arg
+            )
+            joint_dic['distributions'].append(trait_dic)
+
     return joint_dic
 
 

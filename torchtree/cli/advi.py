@@ -118,6 +118,12 @@ def create_variational_parser(subprasers):
         default=100,
         help="""convergence every N iterations""",
     )
+    parser.add_argument(
+        '--divergence',
+        choices=['ELBO', 'KLpq'],
+        default='ELBO',
+        help="""divergence to optimize""",
+    )
     parser.set_defaults(func=build_advi)
     return parser
 
@@ -260,27 +266,32 @@ def create_flexible_variational(arg, json_object):
                 )
                 joint_var.extend(distr)
                 var_parameters.extend(var_params)
+        elif id_.lower().startswith('realnvp'):
+            var_id = f"var.{id_}"
+            res = apply_transforms_for_fullrank(id_, params)
+            x = list(map(lambda x: x[1], res))
+            params = torch.cat(list(map(lambda x: torch.tensor(x[2]), res)))
+
+            distr = create_realnp_distribution(var_id, x, params)
+            var_parameters.append(var_id)
+            joint_var.append(distr)
     return joint_var, var_parameters
 
 
-def create_realnvp(var_id, json_object, arg):
-    group_map = {}
-    parameters = {'UNSPECIFIED': []}
-    gather_parameters(json_object, group_map, parameters)
-    res = apply_transforms_for_fullrank(var_id, parameters['UNSPECIFIED'])
-    x = list(map(lambda x: x[1], res))
-
-    params = torch.cat(list(map(lambda x: torch.tensor(x[2]), res)))
-
-    distr = {
+def create_realnp_distribution(var_id: str, x, params: torch.Tensor):
+    return {
         "id": var_id,
         "type": "RealNVP",
         "x": x,
         "base": {
-            "id": "base",
+            "id": f"{var_id}.base",
             "type": "Distribution",
             "distribution": "torchtree.distributions.Normal",
-            "x": {"id": "dummy", "type": "Parameter", "zeros": params.shape[-1]},
+            "x": {
+                "id": f"{var_id}.dummy",
+                "type": "Parameter",
+                "zeros": params.shape[-1],
+            },
             "parameters": {
                 "loc": {
                     "id": f"{var_id}.base.loc",
@@ -298,6 +309,18 @@ def create_realnvp(var_id, json_object, arg):
         "hidden_size": 2,
         "n_hidden": 1,
     }
+
+
+def create_realnvp(var_id, json_object, arg):
+    group_map = {}
+    parameters = {'UNSPECIFIED': []}
+    gather_parameters(json_object, group_map, parameters)
+    res = apply_transforms_for_fullrank(var_id, parameters['UNSPECIFIED'])
+    x = list(map(lambda x: x[1], res))
+
+    params = torch.cat(list(map(lambda x: torch.tensor(x[2]), res)))
+
+    distr = create_realnp_distribution(var_id, x, params)
     var_parameters = (var_id,)
     return distr, var_parameters
 
@@ -691,21 +714,34 @@ def create_advi(joint, variational, parameters, arg):
         checkpoint = arg.stem + '-checkpoint.json'
     else:
         checkpoint = 'checkpoint.json'
-    advi_dic = {
-        'id': 'advi',
-        'type': 'Optimizer',
-        'algorithm': 'torch.optim.Adam',
-        'options': {'lr': arg.lr},
-        'maximize': True,
-        'checkpoint': checkpoint,
-        'iterations': arg.iter,
-        'loss': {
+
+    if arg.divergence == 'ELBO':
+        loss = {
             'id': 'elbo',
             'type': 'ELBO',
             'samples': grad_samples,
             'joint': joint,
             'variational': variational,
-        },
+        }
+        maximize = True
+    elif arg.divergence == 'KLpq':
+        loss = {
+            'id': 'elbo',
+            'type': 'KLpqImportance',
+            'samples': grad_samples,
+            'joint': joint,
+            'variational': variational,
+        }
+        maximize = False
+    advi_dic = {
+        'id': 'advi',
+        'type': 'Optimizer',
+        'algorithm': 'torch.optim.Adam',
+        'options': {'lr': arg.lr},
+        'maximize': maximize,
+        'checkpoint': checkpoint,
+        'iterations': arg.iter,
+        'loss': loss,
         'parameters': parameters,
     }
 
@@ -714,19 +750,31 @@ def create_advi(joint, variational, parameters, arg):
     else:
         elbo_samples = arg.elbo_samples
 
-    advi_dic['convergence'] = {
-        'type': 'StanVariationalConvergence',
-        'max_iterations': arg.iter,
-        'loss': 'elbo',
-        'every': arg.convergence_every,
-        'samples': elbo_samples,
-        'tol_rel_obj': arg.tol_rel_obj,
-    }
-    advi_dic['scheduler'] = {
-        'type': 'torchtree.optim.Scheduler',
-        'scheduler': 'torch.optim.lr_scheduler.LambdaLR',
-        'lr_lambda': 'lambda epoch: 1.0 / (epoch + 1)**0.5',
-    }
+    if elbo_samples > 0:
+        if arg.divergence == 'ELBO':
+            loss2 = 'elbo'
+        elif arg.divergence == 'KLpq':
+            loss2 = {
+                'id': 'loss2',
+                'type': 'KLpq',
+                'samples': grad_samples,
+                'joint': joint,
+                'variational': variational,
+            }
+
+        advi_dic['convergence'] = {
+            'type': 'StanVariationalConvergence',
+            'max_iterations': arg.iter,
+            'loss': loss2,
+            'every': arg.convergence_every,
+            'samples': elbo_samples,
+            'tol_rel_obj': arg.tol_rel_obj,
+        }
+        advi_dic['scheduler'] = {
+            'type': 'torchtree.optim.Scheduler',
+            'scheduler': 'torch.optim.lr_scheduler.LambdaLR',
+            'lr_lambda': 'lambda epoch: 1.0 / (epoch + 1)**0.5',
+        }
     return advi_dic
 
 
@@ -769,6 +817,12 @@ def create_sampler(id_, var_id, parameters, arg):
 
     parameters2 = list(filter(lambda x: 'tree.ratios' != x, parameters))
     models = ['joint', 'like', 'prior', var_id]
+
+    if arg.location_regex:
+        models.append('like.location')
+    elif arg.metadata and arg.trait:
+        models.extend([f'like.{trait}' for trait in arg.trait])
+
     if arg.coalescent:
         models.append('coalescent')
         if arg.coalescent in ('skyride', 'skygrid'):

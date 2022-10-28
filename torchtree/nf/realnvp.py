@@ -242,7 +242,7 @@ class RealNVP(DistributionModel):
 
     @property
     def sample_shape(self) -> torch.Size:
-        return self.base.sample_shape
+        return self.base_dist.sample_shape
 
     def parameters(self) -> list[AbstractParameter]:
         return self.net_parameters.parameters()

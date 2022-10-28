@@ -148,7 +148,8 @@ class KLpqImportance(CallableModel):
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
         self.q.sample(samples)
-        log_p = self.p()
+        with torch.no_grad():
+            log_p = self.p()
         log_q = self.q()
         log_w = log_p - log_q.detach()
         w = torch.exp(log_w - log_w.max())
