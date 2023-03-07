@@ -60,7 +60,7 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '-m',
         '--model',
-        choices=['JC69', 'HKY', 'GTR', 'SRD06'] + ['MG94'] + ['LG', 'WAG'],
+        choices=['JC69', 'HKY', 'SYM', 'GTR', 'SRD06'] + ['MG94'] + ['LG', 'WAG'],
         default='JC69',
         help="""substitution model [default: %(default)s]""",
     )
@@ -440,7 +440,6 @@ def create_poisson_tree_likelihood(id_, taxa, arg):
 def create_tree_likelihood_single(
     id_, tree_model, branch_model, substitution_model, site_model, site_pattern
 ):
-
     treelikelihood_model = {
         'id': id_,
         'type': 'TreeLikelihoodModel',
@@ -731,7 +730,7 @@ def build_alignment(file_name, data_type):
 def create_substitution_model(id_, model, arg):
     if model == 'JC69':
         return {'id': id_, 'type': 'JC69'}
-    elif model == 'HKY' or model == 'GTR':
+    elif model in ('HKY', 'SYM', 'GTR'):
         frequencies = Parameter.json_factory(
             f'{id_}.frequencies', **{'tensor': [0.25] * 4}
         )
@@ -762,7 +761,7 @@ def create_substitution_model(id_, model, arg):
                 'kappa': kappa,
                 'frequencies': frequencies,
             }
-        else:
+        elif model in ('SYM', 'GTR'):
             rates = Parameter.json_factory(
                 f'{id_}.rates', **{'tensor': 1 / 6, 'full': [6]}
             )
@@ -771,6 +770,8 @@ def create_substitution_model(id_, model, arg):
             if alignment is not None:
                 rel_rates = np.array(calculate_substitutions(alignment, mapping))
                 rates['tensor'] = (rel_rates[:-1] / rel_rates[:-1].sum()).tolist()
+            if model == 'SYM':
+                frequencies['lower'] = frequencies['upper'] = 1
             return {
                 'id': id_,
                 'type': 'GTR',
@@ -1049,7 +1050,11 @@ def create_bdsk(birth_death_id, tree_id, arg):
         **{'tensor': 0.0, 'full': [arg.grid]},
     )
     s['lower'] = 0.0
-    s['upper'] = 0.0
+    s['upper'] = 1.0
+    # fixed to 0 for contemporaneous data
+    if arg.dates == 0:
+        s['upper'] = 0.0
+
     rho = Parameter.json_factory(
         f'{birth_death_id}.rho',
         **{
@@ -1277,17 +1282,18 @@ def create_coalesent(id_, tree_id, taxa, arg):
 
 def create_substitution_model_priors(substmodel_id, model):
     joint_list = []
-    if model == 'HKY' or model == 'GTR':
-        joint_list.append(
-            Distribution.json_factory(
-                f'{substmodel_id}.frequencies.prior',
-                'torch.distributions.Dirichlet',
-                f'{substmodel_id}.frequencies',
-                {'concentration': [1.0] * 4},
+    if model in ('HKY', 'SYM', 'GTR'):
+        if model != 'SYM':
+            joint_list.append(
+                Distribution.json_factory(
+                    f'{substmodel_id}.frequencies.prior',
+                    'torch.distributions.Dirichlet',
+                    f'{substmodel_id}.frequencies',
+                    {'concentration': [1.0] * 4},
+                )
             )
-        )
 
-        if model == 'GTR':
+        if model in ('SYM', 'GTR'):
             joint_list.append(
                 Distribution.json_factory(
                     f'{substmodel_id}.rates.prior',
@@ -1507,7 +1513,7 @@ def create_bd_prior(id_, parameters):
                 f'{id_}.{x}',
                 {
                     'loc': 1.0,
-                    'scale': 1.5,
+                    'scale': 1.25,
                 },
             ),
         )
