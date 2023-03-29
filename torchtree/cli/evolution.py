@@ -60,7 +60,9 @@ def create_evolution_parser(parser):
     parser.add_argument(
         '-m',
         '--model',
-        choices=['JC69', 'HKY', 'SYM', 'GTR', 'SRD06'] + ['MG94'] + ['LG', 'WAG'],
+        choices=['JC69', 'K80', 'HKY', 'SYM', 'GTR', 'SRD06']
+        + ['MG94']
+        + ['LG', 'WAG'],
         default='JC69',
         help="""substitution model [default: %(default)s]""",
     )
@@ -111,6 +113,11 @@ def create_evolution_parser(parser):
         choices=['tree', 'regression'],
         help="""initialize node heights using input tree file or
          root to tip regression""",
+    )
+    parser.add_argument(
+        '--root_height_init',
+        type=float,
+        help="""initialize root height""",
     )
     parser.add_argument('--rate', type=float, help="""fixed substitution rate""")
     parser.add_argument(
@@ -349,8 +356,8 @@ def create_tree_model(id_: str, taxa: dict, arg):
             root_height = Parameter.json_factory(
                 f'{id_}.root_height', **{'tensor': [offset + 1.0]}
             )
-            if 'root_height_init' in arg:
-                root_height['tensor'] = [max(dates) - arg.root_height_init]
+            if arg.root_height_init is not None:
+                root_height['tensor'] = [arg.root_height_init]
             elif arg.coalescent == 'skygrid':
                 root_height['tensor'] = [arg.cutoff]
 
@@ -369,13 +376,13 @@ def create_tree_model(id_: str, taxa: dict, arg):
                     )
                 )
 
-                if arg.coalescent_init is not None:
+                if arg.coalescent_init == 'tree':
                     if arg.coalescent in ('constant', 'exponential'):
-                        arg.coalescent_init = ConstantCoalescent.maximum_likelihood(
+                        arg._coalescent_init = ConstantCoalescent.maximum_likelihood(
                             tree_model_obj.node_heights
-                        )
+                        ).item()
                     elif arg.coalescent == 'skyride':
-                        arg.coalescent_init = (
+                        arg._coalescent_init = (
                             PiecewiseConstantCoalescent.maximum_likelihood(
                                 tree_model_obj.node_heights
                             )
@@ -524,8 +531,8 @@ def create_tree_likelihood(id_, taxa, alignment, arg):
             rate_init_r, root_height_init = run_tree_regression(arg, taxa)
             if arg.rate_init is None:
                 rate_init = rate_init_r
-            if 'root_height_init' not in arg:
-                arg.root_height_init = root_height_init
+            if arg.root_height_init is None:
+                arg.root_height_init = max(dates) - root_height_init
     else:
         rate_init = arg.rate_init
 
@@ -730,7 +737,7 @@ def build_alignment(file_name, data_type):
 def create_substitution_model(id_, model, arg):
     if model == 'JC69':
         return {'id': id_, 'type': 'JC69'}
-    elif model in ('HKY', 'SYM', 'GTR'):
+    elif model in ('K80', 'HKY', 'SYM', 'GTR'):
         frequencies = Parameter.json_factory(
             f'{id_}.frequencies', **{'tensor': [0.25] * 4}
         )
@@ -750,11 +757,13 @@ def create_substitution_model(id_, model, arg):
                         f'state count 4'
                     )
 
-        if model == 'HKY':
+        if model in ('K80', 'HKY'):
             kappa = Parameter.json_factory(f'{id_}.kappa', **{'tensor': [3.0]})
             kappa['lower'] = 0.0
             if alignment is not None:
                 kappa['tensor'] = [calculate_kappa(alignment, frequencies['tensor'])]
+            if model == 'SYM':
+                frequencies['lower'] = frequencies['upper'] = 1
             return {
                 'id': id_,
                 'type': 'HKY',
@@ -1096,13 +1105,7 @@ def create_coalesent(id_, tree_id, taxa, arg):
     joint_list = []
     params = {}
     if arg.coalescent in ('constant', 'exponential'):
-        if arg.coalescent_init is not None:
-            if isinstance(arg.coalescent_init, numbers.Number):
-                theta_value = arg.coalescent_init
-            else:
-                theta_value = arg.coalescent_init.item()
-        else:
-            theta_value = 3.0
+        theta_value = arg._coalescent_init if '_coalescent_init' in arg else 3.0
 
         theta = Parameter.json_factory(f'{id_}.theta', **{'tensor': [theta_value]})
         theta['lower'] = 0.0
@@ -1153,21 +1156,21 @@ def create_coalesent(id_, tree_id, taxa, arg):
                     f'{id_}.theta.log', **{'tensor': 3.0, 'full': [arg.grid]}
                 )
             elif arg.coalescent == 'skyride':
-                if arg.coalescent_init is not None and not isinstance(
-                    arg.coalescent_init, numbers.Number
+                if '_coalescent_init' in arg and not isinstance(
+                    arg._coalescent_init, numbers.Number
                 ):
                     theta_log = Parameter.json_factory(
                         f'{id_}.theta.log',
                         **{
-                            'tensor': torch.clamp(arg.coalescent_init, min=1.0e-6)
+                            'tensor': torch.clamp(arg._coalescent_init, min=1.0e-6)
                             .log()
                             .tolist()
                         },
                     )
                 else:
                     theta_log_value = (
-                        math.log(arg.coalescent_init)
-                        if arg.coalescent_init is not None
+                        math.log(arg._coalescent_init)
+                        if '_coalescent_init' in arg
                         else math.log(3.0)
                     )
                     theta_log = Parameter.json_factory(

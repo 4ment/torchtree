@@ -44,18 +44,48 @@ class ConstantCoalescentModel(AbstractCoalescentModel):
             return cls(id_, theta, FakeTreeModel(node_heights))
 
 
-class ConstantCoalescent(Distribution):
-
+class AbstractCoalescentDistribution(Distribution):
     arg_constraints = {
         'theta': constraints.positive,
     }
     support = constraints.positive
-    has_rsample = True
+    has_rsample = False
 
     def __init__(self, theta: torch.Tensor, validate_args=None) -> None:
         self.theta = theta
         batch_shape, event_shape = self.theta.shape[:-1], self.theta.shape[-1:]
         super().__init__(batch_shape, event_shape, validate_args=validate_args)
+
+    @classmethod
+    def maximum_likelihood(cls, node_heights) -> torch.Tensor:
+        raise NotImplementedError
+
+
+class ConstantCoalescent(AbstractCoalescentDistribution):
+    has_rsample = True
+
+    @classmethod
+    def maximum_likelihood(cls, node_heights) -> torch.Tensor:
+        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
+        node_mask = torch.cat(
+            [
+                torch.full(taxa_shape, 1),
+                torch.full(
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
+                    -1,
+                ),
+            ],
+            dim=-1,
+        )
+
+        indices = torch.argsort(node_heights, descending=False)
+        heights_sorted = torch.gather(node_heights, -1, indices)
+        node_mask_sorted = torch.gather(node_mask, -1, indices)
+        lineage_count = node_mask_sorted.cumsum(-1)[..., :-1]
+
+        durations = heights_sorted[..., 1:] - heights_sorted[..., :-1]
+        lchoose2 = lineage_count * (lineage_count - 1) / 2.0
+        return torch.sum(lchoose2 * durations) / (taxa_shape[-1] - 2)
 
     def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
         taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
@@ -129,7 +159,6 @@ class ExponentialCoalescentModel(AbstractCoalescentModel):
 
 
 class ExponentialCoalescent(Distribution):
-
     arg_constraints = {
         'theta': constraints.positive,
         'growth': constraints.real,
@@ -176,7 +205,7 @@ class ExponentialCoalescent(Distribution):
         return torch.sum(-lchoose2 * integral - log_thetas[..., 1:], -1, keepdim=True)
 
 
-class PiecewiseConstantCoalescent(ConstantCoalescent):
+class PiecewiseConstantCoalescent(AbstractCoalescentDistribution):
     def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
         taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
         node_mask = torch.cat(
@@ -210,6 +239,54 @@ class PiecewiseConstantCoalescent(ConstantCoalescent):
             lchoose2 * durations / thetas, -1, keepdim=True
         ) - self.theta.log().sum(-1, keepdim=True)
 
+    @classmethod
+    def maximum_likelihood(cls, node_heights: torch.Tensor) -> torch.Tensor:
+        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
+        node_mask = torch.cat(
+            [
+                # sampling events
+                torch.full(taxa_shape, 1, dtype=torch.int),
+                # coalescent events
+                torch.full(
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
+                    -1,
+                    dtype=torch.int,
+                ),
+            ],
+            dim=-1,
+        )
+
+        indices = torch.argsort(node_heights, descending=False)
+        heights_sorted = torch.gather(node_heights, -1, indices)
+        node_mask_sorted = torch.gather(node_mask, -1, indices)
+        lineage_count = node_mask_sorted.cumsum(-1)[..., :-1]
+
+        durations = heights_sorted[..., 1:] - heights_sorted[..., :-1]
+
+        new_mask = node_mask_sorted.clone()
+        start = 0
+        for i in range(node_mask_sorted.shape[0]):
+            duration = heights_sorted[i] - start
+            if node_mask_sorted[i] == -1 and duration < 5.0:
+                new_mask[i] = 0
+            elif node_mask_sorted[i] == -1:
+                start = heights_sorted[i]
+
+        lchoose2 = lineage_count * (lineage_count - 1) / 2.0
+        idx = torch.cat(
+            (torch.zeros([1]), (node_mask_sorted == -1).nonzero().squeeze()), dim=0
+        ).int()
+        idx2 = torch.cat(
+            [
+                torch.full([x], idx)
+                for idx, x in enumerate((idx[1:] - idx[:-1]).tolist())
+            ]
+        )
+        thetas_hat = torch.zeros([taxa_shape[-1] - 1]).scatter_add_(
+            0, idx2, lchoose2 * durations
+        )
+        return thetas_hat
+
 
 @register_class
 class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
@@ -218,7 +295,7 @@ class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
         return pwc.log_prob(self.tree_model.node_heights)
 
 
-class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
+class PiecewiseConstantCoalescentGrid(AbstractCoalescentDistribution):
     def __init__(
         self,
         thetas: torch.Tensor,
@@ -229,10 +306,11 @@ class PiecewiseConstantCoalescentGrid(ConstantCoalescent):
         self.grid = grid
 
     def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+        batch_shape = max(node_heights.shape, self.theta.shape, key=len)[:-1]
         if node_heights.dim() > self.theta.dim():
-            batch_shape = node_heights.shape[:-1]
+            thetas = self.theta.expand(batch_shape + torch.Size([-1]))
         else:
-            batch_shape = self.theta.shape[:-1]
+            thetas = self.theta
 
         grid = self.grid.expand(batch_shape + torch.Size([-1]))
 
@@ -365,17 +443,26 @@ def process_data_coalesent(data, dtype: torch.dtype) -> AbstractParameter:
     return Parameter(None, torch.cat((times[events == 1], times[events == 0]), -1))
 
 
-class PiecewiseExponentialCoalescentGrid(ConstantCoalescent):
+class PiecewiseExponentialCoalescentGrid(Distribution):
+    arg_constraints = {
+        'theta': constraints.positive,
+        'growth': constraints.real,
+    }
+    support = constraints.positive
+    has_rsample = False
+
     def __init__(
         self,
-        thetas: torch.Tensor,
+        theta: torch.Tensor,
         growth: torch.Tensor,
         grid: torch.Tensor,
         validate_args=None,
     ) -> None:
-        super().__init__(thetas, validate_args)
-        self.grid = grid
+        self.theta = theta
         self.growth = growth
+        self.grid = grid
+        batch_shape, event_shape = self.theta.shape[:-1], self.theta.shape[-1:]
+        super().__init__(batch_shape, event_shape, validate_args=validate_args)
 
     def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
         if node_heights.dim() > self.theta.dim():
