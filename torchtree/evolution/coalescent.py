@@ -374,6 +374,134 @@ class PiecewiseConstantCoalescentGrid(AbstractCoalescentDistribution):
         )
 
 
+class SoftPiecewiseConstantCoalescentGrid(ConstantCoalescent):
+    def __init__(
+        self,
+        thetas: torch.Tensor,
+        grid: torch.Tensor,
+        temperature: float = None,
+        validate_args=None,
+    ) -> None:
+        super().__init__(thetas, validate_args)
+        self.grid = grid
+        self.temperature = temperature
+
+    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+        batch_shape = max(node_heights.shape, self.theta.shape, key=len)[:-1]
+        taxa_count = int((node_heights.shape[-1] + 1) / 2)
+
+        if node_heights.dim() > self.theta.dim():
+            thetas = self.theta.expand(batch_shape + torch.Size([-1]))
+        else:
+            thetas = self.theta
+
+        grid = self.grid.expand(batch_shape + torch.Size([-1]))
+
+        sampling_heights, sampling_counts = node_heights.flatten()[:taxa_count].unique(
+            return_counts=True
+        )
+        sampling_heights = sampling_heights.expand(batch_shape + torch.Size([-1]))
+        sampling_counts = sampling_counts.expand(batch_shape + torch.Size([-1]))
+
+        if node_heights.dim() < self.theta.dim():
+            heights = torch.cat(
+                [
+                    sampling_heights,
+                    node_heights[..., taxa_count:].expand(
+                        batch_shape + torch.Size([-1])
+                    ),
+                    grid,
+                ],
+                -1,
+            )
+
+        else:
+            heights = torch.cat(
+                [sampling_heights, node_heights[..., taxa_count:], grid], -1
+            )
+
+        taxa_shape = heights.shape[:-1] + (taxa_count,)
+        mask_attributes = {
+            'dtype': sampling_counts.dtype,
+            'device': sampling_counts.device,
+        }
+
+        node_mask = torch.cat(
+            [
+                # sampling event
+                sampling_counts,
+                # coalescent event
+                torch.full(
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
+                    -1,
+                    **mask_attributes,
+                ),
+                # no event
+                torch.full(grid.shape, 0, **mask_attributes),
+            ],
+            dim=-1,
+        )
+
+        if self.temperature is None:
+            indices = torch.argsort(heights, descending=False)
+            heights_sorted = torch.gather(heights, -1, indices)
+            node_mask_sorted = torch.gather(node_mask, -1, indices)
+        else:
+            permutation = soft_sort(-heights, self.temperature)
+            heights_sorted = torch.squeeze(permutation @ heights.unsqueeze(-1), -1)
+            node_mask_sorted = torch.squeeze(
+                permutation @ node_mask.unsqueeze(-1).to(dtype=heights.dtype), -1
+            )
+
+        lineage_count = node_mask_sorted.cumsum(-1)[..., :-1]
+
+        durations = heights_sorted[..., 1:] - heights_sorted[..., :-1]
+        lchoose2 = lineage_count * (lineage_count - 1) / 2.0
+
+        if self.temperature is None:
+            thetas_indices = (node_mask_sorted == 0).to(dtype=torch.long).cumsum(-1)
+            thetas_sorted = thetas.gather(-1, thetas_indices)
+            log_thetas = torch.xlogy(node_mask_sorted == -1, thetas_sorted)
+            log_p = torch.sum(
+                -lchoose2 * durations / thetas_sorted[..., :-1] - log_thetas[..., 1:],
+                -1,
+                keepdim=True,
+            )
+        else:
+            grid0 = torch.cat((torch.zeros(batch_shape + (1,)), grid), -1).unsqueeze(-2)
+            pairwise_dist = heights_sorted[..., 1:].unsqueeze(-1) - grid0
+            mat = (
+                (
+                    (pairwise_dist / self.temperature).cumsum(-1).softmax(-1)
+                    * pairwise_dist
+                )
+                / self.temperature
+            ).softmax(-1)
+            thetas_sorted = torch.squeeze(mat @ thetas.unsqueeze(-1), -1)
+
+            pairwise_dist = node_heights[..., taxa_count:].unsqueeze(-1) - grid0
+            mat = (
+                (
+                    (pairwise_dist / self.temperature).cumsum(-1).softmax(-1)
+                    * pairwise_dist
+                )
+                / self.temperature
+            ).softmax(-1)
+            log_thetas = torch.squeeze(mat @ thetas.unsqueeze(-1), -1).log()
+
+            log_p = torch.sum(
+                -lchoose2 * durations / thetas_sorted,
+                -1,
+                keepdim=True,
+            ) - torch.sum(
+                log_thetas,
+                -1,
+                keepdim=True,
+            )
+
+        return log_p
+
+
 @register_class
 class PiecewiseConstantCoalescentGridModel(AbstractCoalescentModel):
     def __init__(
@@ -382,9 +510,11 @@ class PiecewiseConstantCoalescentGridModel(AbstractCoalescentModel):
         theta: AbstractParameter,
         grid: AbstractParameter,
         tree_model: TimeTreeModel = None,
+        temperature: float = None,
     ) -> None:
         super().__init__(id_, theta)
         self.grid = grid
+        self.temperature = temperature
         if isinstance(tree_model, list):
             for tree in tree_model:
                 setattr(self, tree.id, tree)
@@ -392,7 +522,12 @@ class PiecewiseConstantCoalescentGridModel(AbstractCoalescentModel):
             self.tree_model = tree_model
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
-        pwc = PiecewiseConstantCoalescentGrid(self.theta.tensor, self.grid.tensor)
+        if self.temperature is not None:
+            pwc = SoftPiecewiseConstantCoalescentGrid(
+                self.theta.tensor, self.grid.tensor, self.temperature
+            )
+        else:
+            pwc = PiecewiseConstantCoalescentGrid(self.theta.tensor, self.grid.tensor)
         if isinstance(self.tree_model, list):
             log_p = pwc.log_prob(
                 torch.stack([model.node_heights for model in self.tree_model])
@@ -417,12 +552,16 @@ class PiecewiseConstantCoalescentGridModel(AbstractCoalescentModel):
                 grid = process_object(data['grid'], dic)
         assert grid.shape[0] + 1 == theta.shape[-1]
 
+        optionals = {}
+        if 'temperature' in data:
+            optionals['temperature'] = data['temperature']
+
         if TreeModel.tag in data:
             tree_model = process_objects(data[TreeModel.tag], dic)
-            return cls(id_, theta, grid, tree_model)
+            return cls(id_, theta, grid, tree_model, **optionals)
         else:
             node_heights = process_data_coalesent(data, theta.dtype)
-            return cls(id_, theta, grid, FakeTreeModel(node_heights))
+            return cls(id_, theta, grid, FakeTreeModel(node_heights), **optionals)
 
 
 class FakeTreeModel:

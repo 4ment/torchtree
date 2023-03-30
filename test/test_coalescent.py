@@ -166,6 +166,21 @@ def test_skygrid(ratios_list):
     assert -11.8751856 == pytest.approx(log_p.item(), 0.0001)
 
 
+def test_skygrid_homochronous_soft(ratios_list):
+    sampling_times = torch.tensor(np.array([0.0, 0.0, 0.0, 0.0]))
+    ratios = torch.tensor(np.array(ratios_list), requires_grad=True)
+    thetas = torch.tensor(np.array([3.0, 10.0, 4.0, 2.0, 3.0]), requires_grad=True)
+    heights = inverse_transform_homochronous(ratios)
+    grid = torch.tensor(np.linspace(0, 10.0, num=5)[1:])
+    constant = SoftPiecewiseConstantCoalescentGrid(thetas, grid)
+    log_p = constant.log_prob(torch.cat((sampling_times, heights), -1))
+    assert -11.8751856 == pytest.approx(log_p.item(), 0.00000001)
+
+    constant = SoftPiecewiseConstantCoalescentGrid(thetas, grid, temperature=0.0001)
+    log_p = constant.log_prob(torch.cat((sampling_times, heights), -1))
+    assert -11.8751856 == pytest.approx(log_p.item(), 0.0001)
+
+
 def test_skygrid_json(tree_model_node_heights_transformed):
     example = {
         'id': 'coalescent',
