@@ -12,6 +12,7 @@ from torchtree.evolution.coalescent import (
     PiecewiseConstantCoalescentGrid,
     PiecewiseConstantCoalescentGridModel,
     PiecewiseConstantCoalescentModel,
+    SoftPiecewiseConstantCoalescentGrid,
 )
 from torchtree.evolution.tree_model import ReparameterizedTimeTreeModel
 

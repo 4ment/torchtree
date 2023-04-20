@@ -6,6 +6,7 @@ from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel
 from ..core.parameter import Parameter
 from ..core.utils import process_object, process_objects, register_class
+from ..math import soft_sort
 from ..typing import ID
 from .tree_model import TimeTreeModel, TreeModel
 

@@ -28,6 +28,7 @@ class ELBO(CallableModel):
     :param torch.Size samples: number of samples.
     :param bool entropy: use entropy instead of Monte Carlo approximation
     for variational distribution
+    :param bool score: use score function instead of pathwise gradient estimator
     """
 
     def __init__(
@@ -37,17 +38,24 @@ class ELBO(CallableModel):
         p: CallableModel,
         samples: torch.Size,
         entropy=False,
+        score=False,
     ) -> None:
         super().__init__(id_)
         self.q = q
         self.p = p
         self.samples = samples
-        self.entropy = entropy
+        self.score = score
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         samples = kwargs.get('samples', self.samples)
-        # Multi sample
-        if len(samples) == 2:
+        if self.score:
+            self.q.sample(samples)
+            log_q = self.q()
+            with torch.no_grad():
+                cost = self.p() - log_q
+            lp = (cost * log_q).mean()
+        elif len(samples) == 2:
+            # Multi sample
             self.q.rsample(samples)
             log_q = self.q()
             log_p = self.p()
@@ -75,6 +83,7 @@ class ELBO(CallableModel):
     def from_json(cls, data, dic) -> ELBO:
         obj = _from_json(cls, data, dic)
         obj.entropy = data.get('entropy', False)
+        obj.score = data.get('score', False)
         return obj
 
 

@@ -262,4 +262,4 @@ class RealNVP(DistributionModel):
         real_nvp = cls(id_, x, base, n_blocks, hidden_size, n_hidden)
         if 'state' in data:
             real_nvp.net.load_state_dict(torch.load(data['state']))
-        return cls(id_, x, base, n_blocks, hidden_size, n_hidden)
+        return real_nvp
