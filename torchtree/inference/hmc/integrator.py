@@ -3,10 +3,10 @@ from typing import List
 
 import torch
 
+from torchtree.core.identifiable import Identifiable
 from torchtree.core.model import CallableModel
 from torchtree.core.parameter import Parameter
 
-from ...core.serializable import JSONSerializable
 from ...core.utils import register_class
 
 
@@ -19,7 +19,10 @@ def set_tensor(parameters, tensor: torch.Tensor) -> None:
         start += parameter.shape[-1]
 
 
-class Integrator(abc.ABC):
+class Integrator(Identifiable, abc.ABC):
+    def __init__(self, id_):
+        Identifiable.__init__(self, id_)
+
     @abc.abstractmethod
     def __call__(
         self,
@@ -27,13 +30,14 @@ class Integrator(abc.ABC):
         parameters: List[Parameter],
         params: torch.Tensor,
         momentum: torch.Tensor,
-    ):
+    ) -> torch.Tensor:
         pass
 
 
 @register_class
-class LeapfrogIntegrator(JSONSerializable, Integrator):
-    def __init__(self, steps: int, step_size: float):
+class LeapfrogIntegrator(Integrator):
+    def __init__(self, id_, steps: int, step_size: float):
+        super().__init__(id_)
         self.steps = steps
         self.step_size = step_size
 
@@ -43,10 +47,14 @@ class LeapfrogIntegrator(JSONSerializable, Integrator):
         parameters: List[Parameter],
         momentum: torch.Tensor,
         inverse_mass_matrix: torch.Tensor,
-    ):
-        params = torch.cat([parameter.tensor.clone() for parameter in parameters], -1)
+    ) -> torch.Tensor:
+        assert parameters[0].requires_grad is False
+        assert momentum.requires_grad is False
+        params = torch.cat(
+            [parameter.tensor.detach().clone() for parameter in parameters], -1
+        )
         momentum = momentum.clone()
-        set_tensor(parameters, params.detach())
+        set_tensor(parameters, params)
         U = model()
         U.backward()
         dU = -torch.cat([parameter.grad for parameter in parameters], -1)
@@ -64,13 +72,15 @@ class LeapfrogIntegrator(JSONSerializable, Integrator):
             dU = -torch.cat([parameter.grad for parameter in parameters], -1)
             momentum -= self.step_size * dU
 
-        set_tensor(parameters, params.detach())
+        for parameter in parameters:
+            parameter.requires_grad = False
 
-        momentum -= self.step_size / 2 * dU
+        momentum += self.step_size / 2 * dU
         return momentum
 
     @classmethod
     def from_json(cls, data, dic):
+        id_ = data["id"]
         step_size = data.get('step_size', 0.01)
         steps = data.get('steps', 10)
-        return cls(steps, step_size)
+        return cls(id_, steps, step_size)
