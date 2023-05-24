@@ -5,7 +5,6 @@ import inspect
 import numbers
 from typing import Optional, Union, overload
 
-import numpy as np
 import torch
 from torch import Tensor, nn
 
@@ -154,6 +153,8 @@ class Parameter(AbstractParameter):
             parameter['ones'] = kwargs['ones']
         elif 'eye' in kwargs:
             parameter['eye'] = kwargs['eye']
+        elif 'eye_like' in kwargs:
+            parameter['eye_like'] = kwargs['eye_like']
         elif 'tensor' in kwargs:
             parameter['tensor'] = kwargs['tensor']
 
@@ -207,6 +208,12 @@ class Parameter(AbstractParameter):
                 kwargs['dtype'] = dtype
             size = data['eye']
             t = torch.eye(size, **kwargs)
+        elif 'eye_like' in data:
+            # input_param should be 1 or 2 dimensional
+            if dtype:
+                kwargs['dtype'] = dtype
+            input_param = process_object(data['eye_like'], dic)
+            t = torch.eye(*input_param.tensor.shape, **kwargs)
         elif 'arange' in data:
             if dtype:
                 kwargs['dtype'] = dtype
@@ -218,10 +225,10 @@ class Parameter(AbstractParameter):
             if dtype:
                 kwargs['dtype'] = dtype
             values = data['tensor']
-            if 'dimension' in data:
-                values = np.repeat(values, data['dimension'] / len(values) + 1)
-                values = values[: data['dimension']].tolist()
             t = torch.tensor(values, **kwargs)
+            if 'dimension' in data:
+                dim = data['dimension']
+                t = t.repeat(int(dim / len(values)) + 1)[:dim]
         if 'nn' in data and data['nn']:
             return cls(data['id'], nn.Parameter(t))
         return cls(data['id'], t)
@@ -354,8 +361,7 @@ class ViewParameter(AbstractParameter, ParameterListener):
         parameter: Parameter,
         indices: Union[int, slice, Tensor],
     ) -> None:
-        r"""
-        Class representing a view of another parameter.
+        r"""Class representing a view of another parameter.
 
         :param id_: ID of object
         :type id_: str or None

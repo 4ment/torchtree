@@ -40,8 +40,7 @@ class LoggerInterface(JSONSerializable, Runnable):
 
 @register_class
 class Logger(LoggerInterface):
-    r"""
-    Class for logging Parameter objects to a file.
+    r"""Class for logging Parameter objects to a file.
 
     :param objs: list of Parameter or CallableModel objects
     :type objs: list[Parameter or CallableModel]
@@ -81,21 +80,17 @@ class Logger(LoggerInterface):
 
     def log(self, *args, **kwargs) -> None:
         if kwargs.get('RUN', False):
-            data = []
-            idx = 0
+            data = [torch.zeros([1])]
             for obj in self.objs:
                 if isinstance(obj, AbstractParameter):
-                    data.append(obj.tensor)
+                    data.append(obj.tensor.detach().cpu())
                 else:
                     log_p = obj()
                     if log_p.dim() == 1:
                         log_p = log_p.unsqueeze(-1)
                     data.append(log_p)
-                idx += 1
             data = torch.cat(data, -1).tolist()
-            for i in range(len(data)):
-                data[i].insert(0, i)
-            self.writer.writerows(data)
+            self.writer.writerow(data)
             return
 
         sample = kwargs.get('sample', self.sample)
@@ -125,11 +120,11 @@ class Logger(LoggerInterface):
 
         :param data: json representation of Logger object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced
-         in data.
+        :param dic: dictionary containing additional objects that can be
+                referenced in data.
         :type dic: dict[str,Any]
-
-        :return: a :class:`~torchtree.core.logger.Logger` object.
+        :return: a
+        :class: `~torchtree.core.logger.Logger` object.
         :rtype: Logger
         """
         params = process_objects(data['parameters'], dic)
@@ -198,16 +193,15 @@ class TreeLogger(LoggerInterface):
 
     @classmethod
     def from_json(cls, data, dic) -> TreeLogger:
-        r"""
-        Create a TreeLogger object.
+        r"""Create a TreeLogger object.
 
         :param data: json representation of TreeLogger object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced
-         in data.
+        :param dic: dictionary containing additional objects that can be
+                referenced in data.
         :type dic: dict[str,Any]
-
-        :return: a :class:`~torchtree.core.logger.TreeLogger` object.
+        :return: a
+        :class: `~torchtree.core.logger.TreeLogger` object.
         :rtype: TreeLogger
         """
         tree = process_object(data['tree_model'], dic)
@@ -221,8 +215,7 @@ class TreeLogger(LoggerInterface):
 
 @register_class
 class CSV(JSONSerializable, Runnable):
-    r"""
-    Class for writting parameters to a CSV file.
+    r"""Class for writting parameters to a CSV file.
 
     :param objs: list of Parameter objects
     :type objs: list[Parameter]
@@ -248,16 +241,15 @@ class CSV(JSONSerializable, Runnable):
 
     @classmethod
     def from_json(cls, data, dic) -> CSV:
-        r"""
-        Create a CSV object.
+        r"""Create a CSV object.
 
         :param data: json representation of CSV object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced
-         in data.
+        :param dic: dictionary containing additional objects that can be
+                referenced in data.
         :type dic: dict[str,Any]
-
-        :return: a :class:`~torchtree.core.logger.CSV` object.
+        :return: a
+        :class: `~torchtree.core.logger.CSV` object.
         :rtype: CSV
         """
         params = process_objects(data['parameters'], dic)
@@ -270,8 +262,7 @@ class CSV(JSONSerializable, Runnable):
 
 @register_class
 class Dumper(JSONSerializable, Runnable):
-    r"""
-    Class for saving parameters to a json file.
+    r"""Class for saving parameters to a json file.
 
     :param parameters: list of Parameters.
     :type parameters: list[Parameter]
@@ -287,9 +278,7 @@ class Dumper(JSONSerializable, Runnable):
         self.parameters = parameters
 
     def run(self) -> None:
-        r"""
-        Write the parameters to the file.
-        """
+        r"""Write the parameters to the file."""
         if self.file_name is not None:
             with open(self.file_name, 'w') as fp:
                 json.dump(self.parameters, fp, cls=ParameterEncoder, **self.kwargs)
@@ -298,16 +287,15 @@ class Dumper(JSONSerializable, Runnable):
 
     @classmethod
     def from_json(cls, data, dic) -> Dumper:
-        r"""
-        Create a Dumper object.
+        r"""Create a Dumper object.
 
         :param data: json representation of Dumper object.
         :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced
-         in data.
+        :param dic: dictionary containing additional objects that can be
+                referenced in data.
         :type dic: dict[str,Any]
-
-        :return: a :class:`~torchtree.core.logger.Dumper` object.
+        :return: a
+        :class: `~torchtree.core.logger.Dumper` object.
         :rtype: Dumper
         """
         parameters = process_objects(data['parameters'], dic)

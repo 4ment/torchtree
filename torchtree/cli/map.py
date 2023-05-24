@@ -83,7 +83,6 @@ def make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[
         if 'type' in json_object and json_object['type'] == 'Parameter':
             if 'lower' in json_object and 'upper' in json_object:
                 if json_object['lower'] != json_object['upper']:
-
                     json_object['type'] = 'TransformedParameter'
                     json_object['transform'] = 'torch.distributions.SigmoidTransform'
                     json_object['x'] = {

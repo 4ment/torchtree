@@ -100,11 +100,20 @@ class JSONParseError(Exception):
     ...
 
 
-def process_objects(data, dic):
+def process_objects(data, dic, force_list=False, key=None):
+    if key is not None and key not in data:
+        return [] if force_list else None
+    elif key is not None and key in data:
+        data = data[key]
+
     if isinstance(data, list):
         return [process_object(obj, dic) for obj in data]
     else:
-        return process_object(data, dic)
+        obj = process_object(data, dic)
+        if force_list:
+            return [obj]
+        else:
+            return obj
 
 
 def process_object(data, dic):
@@ -305,8 +314,7 @@ def update_parameters(json_object, parameters) -> None:
 
 
 def print_graph(g: torch.Tensor, level: int = 0) -> None:
-    r"""
-    Print computation graph.
+    r"""Print computation graph.
 
     :param torch.Tensor g: a tensor
     :param level: indentation level
@@ -326,7 +334,7 @@ class AlternativeAttributeError(Exception):
 
     @classmethod
     def wrapper(err_type, f):
-        """wraps a function to reraise an AttributeError as the alternate
+        """Wraps a function to reraise an AttributeError as the alternate
         type."""
 
         @functools.wraps(f)

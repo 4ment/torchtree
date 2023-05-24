@@ -188,9 +188,7 @@ class GTR(SymmetricSubstitutionModel):
 
     def q(self) -> torch.Tensor:
         if len(self.frequencies.shape[:-1]) != len(self.rates.shape[:-1]):
-            pi = self.frequencies.unsqueeze(0).unsqueeze(
-                -2
-            )
+            pi = self.frequencies.unsqueeze(0).unsqueeze(-2)
             rates = self.rates.unsqueeze(-2)
         elif len(self.frequencies.shape) == 1:
             pi = self.frequencies.unsqueeze(0)
