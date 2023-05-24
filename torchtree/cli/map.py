@@ -1,9 +1,3 @@
-from __future__ import annotations
-
-from typing import Union
-
-import torch
-
 from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.evolution import (
     create_alignment,
@@ -12,6 +6,7 @@ from torchtree.cli.evolution import (
     create_site_model_srd06_mus,
     create_taxa,
 )
+from torchtree.cli.utils import make_unconstrained
 
 
 def create_map_parser(subprasers):
@@ -71,140 +66,6 @@ def create_map_parser(subprasers):
     return parser
 
 
-def make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[str]]:
-    parameters = []
-    parameters_unres = []
-    if isinstance(json_object, list):
-        for element in json_object:
-            params_unres, params = make_unconstrained(element)
-            parameters_unres.extend(params_unres)
-            parameters.extend(params)
-    elif isinstance(json_object, dict):
-        if 'type' in json_object and json_object['type'] == 'Parameter':
-            if 'lower' in json_object and 'upper' in json_object:
-                if json_object['lower'] != json_object['upper']:
-                    json_object['type'] = 'TransformedParameter'
-                    json_object['transform'] = 'torch.distributions.SigmoidTransform'
-                    json_object['x'] = {
-                        'id': json_object['id'] + '.unres',
-                        'type': 'Parameter',
-                    }
-                    transform = torch.distributions.SigmoidTransform()
-                    if 'tensor' in json_object and isinstance(
-                        json_object['tensor'], list
-                    ):
-                        json_object['x']['tensor'] = transform.inv(
-                            torch.tensor(json_object['tensor'])
-                        ).tolist()
-                    elif 'full' in json_object:
-                        json_object['x']['tensor'] = transform.inv(
-                            torch.tensor(json_object['tensor'])
-                        ).item()
-                        json_object['x']['full'] = json_object['full']
-                        del json_object['full']
-                    elif 'full_like' in json_object:
-                        json_object['x']['tensor'] = transform.inv(
-                            torch.tensor(json_object['tensor'])
-                        ).item()
-                        json_object['x']['full_like'] = json_object['full_like']
-                        del json_object['full_like']
-                    del json_object['tensor']
-
-                    parameters.append(json_object['id'])
-                    parameters_unres.append(json_object['x']['id'])
-            elif 'lower' in json_object:
-                if json_object['lower'] > 0:
-                    json_object['type'] = 'TransformedParameter'
-                    json_object['transform'] = 'torch.distributions.AffineTransform'
-                    json_object['parameters'] = {
-                        'loc': json_object['lower'],
-                        'scale': 1.0,
-                    }
-                    transform = torch.distributions.AffineTransform(
-                        json_object['lower'], 1.0
-                    )
-                    new_value = (
-                        transform.inv(torch.tensor(json_object['tensor']))
-                    ).tolist()
-
-                    json_object['x'] = {
-                        'id': json_object['id'] + '.unshifted',
-                        'type': 'Parameter',
-                        'tensor': new_value,
-                        'lower': 0.0,
-                    }
-                    del json_object['tensor']
-
-                    params_unres, params = make_unconstrained(json_object['x'])
-                    parameters_unres.extend(params_unres)
-                    parameters.extend(params)
-                else:
-                    json_object['type'] = 'TransformedParameter'
-                    json_object['transform'] = 'torch.distributions.ExpTransform'
-
-                    json_object['x'] = {
-                        'id': json_object['id'] + '.unres',
-                        'type': 'Parameter',
-                    }
-                    transform = torch.distributions.ExpTransform()
-
-                    if 'full' in json_object:
-                        json_object['x']['tensor'] = transform.inv(
-                            torch.tensor(json_object['tensor'])
-                        ).item()
-                        json_object['x']['full'] = json_object['full']
-                        del json_object['full']
-                    elif 'full_like' in json_object:
-                        json_object['x']['tensor'] = transform.inv(
-                            torch.tensor(json_object['tensor'])
-                        ).item()
-                        json_object['x']['full_like'] = json_object['full_like']
-                        del json_object['full_like']
-                    else:
-                        json_object['x']['tensor'] = transform.inv(
-                            torch.tensor(json_object['tensor'])
-                        ).tolist()
-
-                    del json_object['tensor']
-
-                    parameters.append(json_object['id'])
-                    parameters_unres.append(json_object['x']['id'])
-            elif 'simplex' in json_object and json_object['simplex']:
-                json_object['type'] = 'TransformedParameter'
-                json_object['transform'] = 'torch.distributions.StickBreakingTransform'
-                transform = torch.distributions.StickBreakingTransform()
-                if 'full' in json_object:
-                    tensor_unres = transform.inv(
-                        torch.full(json_object['full'], json_object['tensor'])
-                    ).tolist()
-                else:
-                    tensor_unres = transform.inv(
-                        torch.tensor(json_object['tensor'])
-                    ).tolist()
-
-                json_object['x'] = {
-                    'id': json_object['id'] + '.unres',
-                    'type': 'Parameter',
-                    'tensor': tensor_unres,
-                }
-                del json_object['tensor']
-                if 'full' in json_object:
-                    del json_object['full']
-
-                parameters.append(json_object['id'])
-                parameters_unres.append(json_object['x']['id'])
-            else:
-                parameters.append(json_object['id'])
-                parameters_unres.append(json_object['id'])
-
-        else:
-            for element in json_object.values():
-                params_unres, params = make_unconstrained(element)
-                parameters.extend(params)
-                parameters_unres.extend(params_unres)
-    return parameters_unres, parameters
-
-
 def create_optimizer(joint, parameters, arg):
     return {
         "id": "bfgs",
@@ -215,7 +76,7 @@ def create_optimizer(joint, parameters, arg):
         "iterations": 10,
         "max_iter": arg.max_iter,
         "loss": joint,
-        "parameters": parameters,
+        "parameters": [parameter["id"] for parameter in parameters],
     }
 
 

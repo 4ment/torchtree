@@ -2,212 +2,249 @@ import abc
 import math
 
 import torch
+from torch import Tensor
 
+from torchtree.ops.dual_averaging import DualAveraging
+from torchtree.ops.welford import WelfordVariance
+from torchtree.typing import ListParameter
+
+from ...core.abstractparameter import AbstractParameter
 from ...core.serializable import JSONSerializable
 from ...core.utils import process_object, register_class
 from ..utils import extract_tensors_and_parameters
+from .integrator import LeapfrogIntegrator
 
 
-class Adaptation(JSONSerializable, abc.ABC):
+class Adaptor(JSONSerializable, abc.ABC):
     @abc.abstractmethod
-    def initialize(self, *args, **kwargs) -> None:
+    def learn(self, acceptance_prob: Tensor, sample: int, accepted: bool) -> None:
         ...
 
     @abc.abstractmethod
     def restart(self) -> None:
-        ...
-
-    @abc.abstractmethod
-    def learn(self) -> None:
-        ...
+        pass
 
 
 @register_class
-class StepSizeAdaptation(Adaptation):
+class AdaptiveStepSize(Adaptor):
+    def __init__(
+        self,
+        integrator: LeapfrogIntegrator,
+        target_acceptance_probability: float,
+        **kwargs,
+    ):
+        self._integrator = integrator
+        self.target_acceptance_probability = target_acceptance_probability
+        self._start = kwargs.get("start", 1)
+        self._end = kwargs.get("end", float("inf"))
+        self._call_counter = 0
+        self._accepted = 0
+        self._acceptance_rate = kwargs.get("use_acceptance_rate ", False)
+
+    def restart(self) -> None:
+        pass
+
+    def learn(self, acceptance_prob: Tensor, sample: int, accepted: bool) -> None:
+        self._call_counter += 1
+        self._accepted += accepted
+
+        if self._start <= self._call_counter <= self._end and (
+            not self._acceptance_rate or self._call_counter >= 10
+        ):
+            prob = (
+                self._accepted / self._call_counter
+                if self._acceptance_rate
+                else acceptance_prob
+            )
+
+            new_parameter = math.log(self._integrator.step_size) + (
+                prob - self.target_acceptance_probability
+            ) / (2 + self._call_counter)
+            self._integrator.step_size = math.exp(new_parameter)
+
+    @classmethod
+    def from_json(cls, data, dic):
+        integrator = process_object(data["integrator"], dic)
+        target_acceptance_probability = data.get("target_acceptance_probability", 0.8)
+        options = {}
+        if "start" in data:
+            options["start"] = data["start"]
+        if "end" in data:
+            options["end"] = data["end"]
+        options["use_acceptance_rate"] = data.get("use_acceptance_rate", False)
+        return cls(integrator, target_acceptance_probability, **options)
+
+
+@register_class
+class DualAveragingStepSize(Adaptor):
     r"""Step size adaptation using dual averaging Nesterov.
 
     Code adapted from: https://github.com/stan-dev/stan
     """
 
-    def __init__(self, mu=0.5, delta=0.8, gamma=0.05, kappa=0.75, t0=10):
-        self.mu = mu
-        self.delta = delta
-        self.gamma = gamma
-        self.kappa = kappa
-        self.t0 = t0
-        self._step_size = 1.0
+    def __init__(
+        self,
+        integrator: LeapfrogIntegrator,
+        mu=0.5,
+        delta=0.8,
+        gamma=0.05,
+        kappa=0.75,
+        t0=10,
+        **kwargs,
+    ):
+        self.integrator = integrator
+        self._dual_avg = DualAveraging(mu=mu, gamma=gamma, kappa=kappa, t0=t0)
+        self._delta = delta
+        self._start = kwargs.get("start", 0)
+        self._end = kwargs.get("end", float("inf"))
+        self._call_counter = 0
         self.restart()
 
-    def initialize(self, **kwargs):
-        self.mu = kwargs.get('mu', self.mu)
-        self._step_size = kwargs.get('step_size', self._step_size)
-
-    @property
-    def step_size(self) -> float:
-        return self._step_size
-
     def restart(self) -> None:
-        self.counter = 0
-        self.s_bar = 0
-        self.x_bar = 0
+        self._dual_avg.restart()
 
-    def learn(self, adapt_stat):
-        self.counter += 1
+    def learn(self, acceptance_prob: Tensor, sample: int, accepted: bool) -> None:
+        self._call_counter += 1
 
-        adapt_stat = 1 if adapt_stat > 1 else adapt_stat
-
-        # Nesterov Dual-Averaging of log(epsilon)
-        eta = 1.0 / (self.counter + self.t0)
-
-        self.s_bar = (1.0 - eta) * self.s_bar + eta * (self.delta - adapt_stat)
-
-        x = self.mu - self.s_bar * math.sqrt(self.counter) / self.gamma
-        x_eta = math.pow(self.counter, -self.kappa)
-
-        self.x_bar = (1.0 - x_eta) * self.x_bar + x_eta * x
-        self._step_size = math.exp(x)
-
-    def complete_adaptation(self):
-        self._step_size = math.exp(self.x_bar)
+        if self._start <= self._call_counter <= self._end:
+            self._dual_avg.step(self._delta - acceptance_prob)
+            self.integrator.step_size = math.exp(self._dual_avg.x)
+        elif self._call_counter >= self._end:
+            self.integrator.step_size = math.exp(self._dual_avg.x_bar)
 
     @classmethod
     def from_json(cls, data, dic):
-        mu = data.get('mu', 0.5)
-        delta = data.get('delta', 0.8)
-        gamma = data.get('gamma', 0.05)
-        kappa = data.get('kappa', 0.75)
-        t0 = data.get('t0', 10)
-
-        return cls(mu=mu, delta=delta, gamma=gamma, kappa=kappa, t0=t0)
-
-
-class WelfordVariance:
-    r"""Welford's online method for estimating variance."""
-
-    def __init__(self, mean: torch.Tensor, variance: torch.Tensor, samples=0) -> None:
-        self._mean = mean
-        self._variance = variance
-        self.samples = samples
-
-    def add_sample(self, x) -> None:
-        self.samples += 1
-        diff = x - self._mean
-        self._mean += diff / self.samples
-        self._variance += (x - self._mean) * diff
-
-    def variance(self):
-        return self._variance / (self.samples - 1)
-
-    def mean(self):
-        return self._mean
-
-    def reset(self) -> None:
-        self._mean = torch.zeros_like(self._mean)
-        self._variance = torch.zeros_like(self._variance)
-        self.samples = 0
-
-
-class MassMatrixAdaptor(Adaptation):
-    @property
-    @abc.abstractmethod
-    def inverse_mass_matrix(self) -> torch.Tensor:
-        ...
-
-    @property
-    @abc.abstractmethod
-    def mass_matrix(self) -> torch.Tensor:
-        ...
-
-    @property
-    @abc.abstractmethod
-    def sqrt_mass_matrix(self) -> torch.Tensor:
-        ...
-
-    @abc.abstractmethod
-    def update(self, x) -> None:
-        ...
-
-
-@register_class
-class IdentityMassMatrix(MassMatrixAdaptor):
-    def __init__(self, dim: int) -> None:
-        self.dim = dim
-
-    def mass_matrix(self) -> torch.Tensor:
-        return torch.eye(self.dim)
-
-    def inverse_mass_matrix(self) -> torch.Tensor:
-        return torch.eye(self.dim)
-
-    def sqrt_mass_matrix(self) -> torch.Tensor:
-        return torch.eye(self.dim)
-
-    def update(self, x) -> None:
-        pass
-
-    def learn(self) -> None:
-        pass
-
-    def restart(self) -> None:
-        pass
-
-    @classmethod
-    def from_json(cls, data, dic):
-        _, parameters = extract_tensors_and_parameters(data['parameters'], dic)
-        dimension = sum([parameter.tensor.shape[0] for parameter in parameters])
-        return cls(dimension)
-
-
-@register_class
-class DiagonalMassMatrixAdaptor(MassMatrixAdaptor):
-    def __init__(self, dim: int, regularize=True):
-        self.variance_estimator = WelfordVariance(
-            torch.zeros([dim]), torch.zeros([dim])
+        integrator = process_object(data["integrator"], dic)
+        mu = data.get("mu", math.log(10.0 * integrator.step_size))
+        target_acceptance_probability = data.get("target_acceptance_probability", 0.8)
+        gamma = data.get("gamma", 0.05)
+        kappa = data.get("kappa", 0.75)
+        t0 = data.get("t0", 10)
+        options = {}
+        if "start" in data:
+            options["start"] = data["start"]
+        if "end" in data:
+            options["end"] = data["end"]
+        return cls(
+            integrator,
+            mu=mu,
+            delta=target_acceptance_probability,
+            gamma=gamma,
+            kappa=kappa,
+            t0=t0,
+            **options,
         )
-        self._mass_matrix = torch.ones([dim])
-        self._inverse_mass_matrix = torch.ones([dim])
-        self._sqrt_mass_matrix = torch.ones([dim])
-        self.regularize = regularize
 
-    def initialize():
-        pass
+
+@register_class
+class MassMatrixAdaptor(Adaptor):
+    def __init__(
+        self,
+        parameters: ListParameter,
+        mass_matrix: AbstractParameter,
+        regularize=True,
+        **kwargs,
+    ):
+        self._mass_matrix = mass_matrix
+        self._parameters = parameters
+        dim = mass_matrix.shape[0]
+        self._diagonal = mass_matrix.tensor.dim() == 1
+        self.variance_estimator = WelfordVariance(
+            torch.zeros([dim]), torch.zeros_like(mass_matrix.tensor)
+        )
+
+        self._regularize = regularize
+        self._start = kwargs.get("start", 0)
+        self._end = kwargs.get("end", float("inf"))
+        self._frequency = kwargs.get("update_frequency", 10)
+        self._restart_frequency = kwargs.get("restart_frequency", float("inf"))
+        self._call_counter = 0
 
     @property
     def mass_matrix(self):
         return self._mass_matrix
 
-    @property
-    def inverse_mass_matrix(self):
-        return self._inverse_mass_matrix
+    def learn(self, acceptance_prob: Tensor, sample: int, accepted: bool) -> None:
+        self._call_counter += 1
 
-    @property
-    def sqrt_mass_matrix(self):
-        return self._sqrt_mass_matrix
+        if self._start <= self._call_counter <= self._end:
+            if self._call_counter % self._restart_frequency == 0:
+                self.variance_estimator.reset()
+                return
 
-    def learn(self):
-        self._inverse_mass_matrix = self.variance_estimator.variance()
-        if self.regularize:
-            n = self.variance_estimator.samples
-            self._inverse_mass_matrix = (
-                n / (n + 5.0)
-            ) * self._inverse_mass_matrix + 1e-3 * (5.0 / (n + 5.0))
-        self._mass_matrix = 1.0 / self._inverse_mass_matrix
-        self._sqrt_mass_matrix = self._mass_matrix.sqrt()
-
-    def update(self, x):
-        self.variance_estimator.add_sample(x)
+            x = torch.cat([parameter.tensor for parameter in self._parameters], -1)
+            self.variance_estimator.add_sample(x)
+            if self._call_counter % self._frequency == 0:
+                inverse_mass_matrix = self.variance_estimator.variance()
+                if self._regularize:
+                    n = self.variance_estimator.samples
+                    inverse_mass_matrix *= n / (n + 5.0)
+                    if self._diagonal:
+                        inverse_mass_matrix += 1e-3 * (5.0 / (n + 5.0))
+                    else:
+                        dim = inverse_mass_matrix.shape[0]
+                        inverse_mass_matrix[range(dim), range(dim)] += 1e-3 * (
+                            5.0 / (n + 5.0)
+                        )
+                if self._diagonal:
+                    self._mass_matrix.tensor = 1.0 / inverse_mass_matrix
+                else:
+                    self._mass_matrix.tensor = torch.inverse(inverse_mass_matrix)
 
     def restart(self) -> None:
         self.variance_estimator.reset()
 
     @classmethod
     def from_json(cls, data, dic):
-        _, parameters = extract_tensors_and_parameters(data['parameters'], dic)
-        dimension = sum([parameter.tensor.shape[0] for parameter in parameters])
-        return cls(dimension, data.get('regularize', True))
+        _, parameters = extract_tensors_and_parameters(data["parameters"], dic)
+        mass_matrix = process_object(data["mass_matrix"], dic)
+
+        regularize = data.get("regularize", True)
+        options = {}
+        if "start" in data:
+            options["start"] = data["start"]
+        if "end" in data:
+            options["end"] = data["end"]
+        if "update_frequency" in data:
+            options["update_frequency"] = data["update_frequency"]
+        if "restart_frequency" in data:
+            options["restart_frequency"] = data["restart_frequency"]
+        return cls(parameters, mass_matrix, regularize, **options)
 
 
-class WarmupAdaptation(Adaptation):
+def find_reasonable_step_size(
+    integrator, parameters, hamiltonian, mass_matrix, inverse_mass_matrix
+):
+    direction_threshold = math.log(0.8)
+    r = hamiltonian.sample_momentum(mass_matrix)
+    ham = hamiltonian(momentum=r, inverse_mass_matrix=inverse_mass_matrix)
+
+    r = integrator(hamiltonian.joint, parameters, r, inverse_mass_matrix)
+
+    new_ham = hamiltonian(momentum=r, inverse_mass_matrix=inverse_mass_matrix)
+
+    delta_hamiltonian = ham - new_ham
+    direction = 1 if direction_threshold < delta_hamiltonian else -1
+
+    while True:
+        r = hamiltonian.sample_momentum(mass_matrix)
+        ham = hamiltonian(momentum=r, inverse_mass_matrix=inverse_mass_matrix)
+
+        r = integrator(hamiltonian.joint, parameters, r, inverse_mass_matrix)
+
+        new_ham = hamiltonian(momentum=r, inverse_mass_matrix=inverse_mass_matrix)
+
+        delta_hamiltonian = ham - new_ham
+
+        if (direction == 1 and delta_hamiltonian <= direction_threshold) or (
+            direction == -1 and delta_hamiltonian >= direction_threshold
+        ):
+            break
+        else:
+            integrator.step_size = integrator.step_size * (2.0**direction)
+
+
+class WarmupAdaptation(Adaptor):
     @property
     @abc.abstractmethod
     def step_size(self):
@@ -227,163 +264,3 @@ class WarmupAdaptation(Adaptation):
     @abc.abstractmethod
     def sqrt_mass_matrix(self):
         ...
-
-
-@register_class
-class StanWindowedAdaptation(WarmupAdaptation):
-    r"""Adapts step size and mass matrix during a warmup period.
-
-    Code adapted from Stan. See online manual for further details
-    https://mc-stan.org/docs/reference-manual/hmc-algorithm-parameters.html
-
-    :param step_size_adaptor: step size adaptor
-    :param mass_matrix_adaptor: mass matrix adaptor
-    :param int num_warmup: number of iteration of warmup period
-    :param int init_buffer: width of initial fast adaptation interval
-    :param int term_buffer: width of final fast adaptation interval
-    :param int base window: initial width of slow adaptation interval
-    """
-
-    def __init__(
-        self,
-        step_size_adaptor: StepSizeAdaptation,
-        mass_matrix_adaptor: MassMatrixAdaptor,
-        num_warmup: int,
-        init_buffer: int,
-        term_buffer: int,
-        base_window: int,
-    ):
-        self.num_warmup = 0
-        self.adapt_init_buffer = 0
-        self.adapt_term_buffer = 0
-        self.adapt_base_window = 0
-        self.step_size_adaptor = step_size_adaptor
-        self.mass_matrix_adaptor = mass_matrix_adaptor
-        self._step_size = None
-
-        self.configure_window_parameters(
-            num_warmup, init_buffer, term_buffer, base_window
-        )
-
-    def restart(self):
-        self.adapt_window_counter = 0
-        self.adapt_window_size = self.adapt_base_window
-        self.adapt_next_window = self.adapt_init_buffer + self.adapt_window_size - 1
-
-    def initialize(self, step_size, mass_matrix):
-        if self.step_size_adaptor is not None:
-            self.step_size_adaptor.initialize(
-                mu=math.log(10.0 * step_size), step_size=step_size
-            )
-        self._step_size = step_size
-
-    def configure_window_parameters(
-        self, num_warmup, init_buffer, term_buffer, base_window
-    ):
-        if num_warmup < 20:
-            print("WARNING: No estimation is")
-            print("         performed for num_warmup < 20")
-            exit(1)
-
-        self.num_warmup = num_warmup
-        if init_buffer + base_window + term_buffer > num_warmup:
-            print("WARNING: There aren't enough warmup iterations to fit the")
-            print("         three stages of adaptation as currently configured.")
-
-            self.adapt_init_buffer = 0.15 * num_warmup
-            self.adapt_term_buffer = 0.10 * num_warmup
-            self.adapt_base_window = num_warmup - (
-                self.adapt_init_buffer + self.adapt_term_buffer
-            )
-
-            print("         Reducing each adaptation stage to 15%/75%/10% of")
-            print("         the given number of warmup iterations:")
-
-            print(f"           init_buffer = {self.adapt_init_buffer}")
-            print(f"           adapt_window = {self.adapt_base_window}")
-            print(f"           term_buffer = {self.adapt_term_buffer}")
-        else:
-            self.adapt_init_buffer = init_buffer
-            self.adapt_term_buffer = term_buffer
-            self.adapt_base_window = base_window
-        self.restart()
-
-    def adaptation_window(self):
-        return (
-            (self.adapt_window_counter >= self.adapt_init_buffer)
-            and (self.adapt_window_counter < self.num_warmup - self.adapt_term_buffer)
-            and (self.adapt_window_counter != self.num_warmup)
-        )
-
-    def end_adaptation_window(self):
-        return (
-            self.adapt_window_counter == self.adapt_next_window
-            and self.adapt_window_counter != self.num_warmup
-        )
-
-    def compute_next_window(self):
-        if self.adapt_next_window == self.num_warmup - self.adapt_term_buffer - 1:
-            return
-
-        self.adapt_window_size *= 2
-        self.adapt_next_window = self.adapt_window_counter + self.adapt_window_size
-
-        if self.adapt_next_window == self.num_warmup - self.adapt_term_buffer - 1:
-            return
-
-        # Boundary of the following window, not the window just computed
-        next_window_boundary = self.adapt_next_window + 2 * self.adapt_window_size
-
-        # If the following window overtakes the full adaptation window,
-        # then stretch the current window to the end of the full window
-        if next_window_boundary >= self.num_warmup - self.adapt_term_buffer:
-            self.adapt_next_window = self.num_warmup - self.adapt_term_buffer - 1
-
-    def learn(self, z, adapt_stat):
-        if self.adapt_window_counter >= self.num_warmup:
-            if self.adapt_window_counter == self.num_warmup:
-                self.step_size_adaptor.complete_adaptation()
-            return
-
-        if self.step_size_adaptor:
-            self.step_size_adaptor.learn(adapt_stat)
-
-        if self.adaptation_window():
-            self.mass_matrix_adaptor.update(z)
-
-        if self.end_adaptation_window():
-            self.mass_matrix_adaptor.learn()
-            self.step_size_adaptor.restart()
-            self.mass_matrix_adaptor.restart()
-            self.compute_next_window()
-
-        self.adapt_window_counter += 1
-
-    @property
-    def step_size(self):
-        if self.step_size_adaptor is None:
-            return self._step_size
-        else:
-            return self.step_size_adaptor.step_size
-
-    @property
-    def mass_matrix(self):
-        return self.mass_matrix_adaptor.mass_matrix
-
-    @property
-    def inverse_mass_matrix(self):
-        return self.mass_matrix_adaptor.inverse_mass_matrix
-
-    @property
-    def sqrt_mass_matrix(self):
-        return self.mass_matrix_adaptor.sqrt_mass_matrix
-
-    @classmethod
-    def from_json(cls, data, dic):
-        warmup = data['warmup']
-        initial = data['initial_window']
-        final = data['final_window']
-        base = data['base_window']
-        step_size_adaptor = process_object(data['step_size_adaptor'], dic)
-        mass_matrix_adaptor = process_object(data['mass_matrix_adaptor'], dic)
-        return cls(step_size_adaptor, mass_matrix_adaptor, warmup, initial, final, base)

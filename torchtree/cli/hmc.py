@@ -7,67 +7,100 @@ from torchtree.cli.evolution import (
     create_taxa,
 )
 from torchtree.cli.jacobians import create_jacobians
-from torchtree.cli.map import make_unconstrained
+from torchtree.cli.utils import make_unconstrained
 
 
 def create_hmc_parser(subprasers):
-    parser = subprasers.add_parser('hmc', help='build a JSON file for HMC inference')
+    parser = subprasers.add_parser("hmc", help="build a JSON file for HMC inference")
     create_evolution_parser(parser)
 
     parser.add_argument(
-        '--iter',
+        "--iter",
         type=int,
         default=100000,
-        help="""maximum number of iterations""",
+        help="""maximum number of iterations [default: %(default)d]""",
     )
     parser.add_argument(
-        '--step_size',
+        "--step_size",
         default=0.01,
         type=float,
-        help="""step size for leafrog integrator""",
+        help="""step size for leafrog integrator [default: %(default)f]""",
     )
     parser.add_argument(
-        '--steps',
+        "--steps",
         type=int,
         default=10,
-        help="""number of Step size for leafrog integrator""",
+        help="""number of steps for leafrog integrator [default: %(default)d]""",
     )
     parser.add_argument(
-        '--every',
+        "--log_every",
         type=int,
         default=1000,
-        help="""logging frequency of samples""",
+        help="""logging frequency of samples [default: %(default)d]""",
     )
     parser.add_argument(
-        '--warmup',
+        "--warmup",
         type=int,
-        default=500,
-        help="""number of iterations for warmum""",
+        default=0,
+        help="""number of iterations for warmup [default: %(default)d]""",
     )
     parser.add_argument(
-        '--stem',
+        "--target_acc_prob",
+        type=float,
+        default=0.8,
+        help="""target acceptance probability [default: %(default)f]""",
+    )
+    parser.add_argument(
+        "--stem",
         required=True,
         help="""stem for output file""",
+    )
+    parser.add_argument(
+        "--mass_matrix",
+        choices=["diagonal", "dense"],
+        default="diagonal",
+        help="""mass matrix type [default: %(default)s]""",
+    )
+    parser.add_argument(
+        "--adapt_mass_matrix",
+        action="store_true",
+        help="""adapt mass matrix""",
+    )
+    parser.add_argument(
+        "--adapt_step_size",
+        choices=["dualaveraging", "adaptive"],
+        help="""adapt step size""",
+    )
+    parser.add_argument(
+        "--split",
+        action="store_true",
+        help="""one parameter per operator""",
     )
     parser.set_defaults(func=build_hmc)
     return parser
 
 
-def create_hmc(joint, parameters, parameters_unres, arg):
-    hmc_json = {
-        "id": "hmc",
-        "type": "HMC",
-        "joint": joint,
-        "iterations": arg.iter,
-        "parameters": parameters_unres,
-        "integrator": {
-            "id": "leapfrog",
-            "type": "LeapfrogIntegrator",
-            "steps": arg.steps,
-            "step_size": arg.step_size,
+def create_loggers(parameters, arg):
+    return [
+        {
+            "id": "logger",
+            "type": "Logger",
+            "parameters": ["joint", "like"] + parameters,
+            "delimiter": "\t",
+            "file_name": f"{arg.stem}.csv",
+            "every": arg.log_every,
         },
-    }
+        {
+            "id": "looger.trees",
+            "type": "TreeLogger",
+            "tree_model": "tree",
+            "file_name": f"{arg.stem}.trees",
+            "every": arg.log_every,
+        },
+    ]
 
+
+def create_stan_windowed_adaptation(joint, parameters, parameters_unres, arg):
     stan_windowed_adaptation = {
         "id": "adaptor",
         "type": "StanWindowedAdaptation",
@@ -90,56 +123,142 @@ def create_hmc(joint, parameters, parameters_unres, arg):
             "parameters": parameters_unres,
         },
     }
+    return stan_windowed_adaptation
+
+
+def create_hmc_operator(id_, joint, parameters, arg):
+    mass_matrix = {
+        "id": f"{id_}.mass.matrix",
+        "type": "Parameter",
+    }
+
+    if isinstance(parameters, list) and len(parameters) > 1:
+        parameter_ids = []
+        count = 0
+        for param in parameters:
+            parameter_ids.append(param["id"])
+            if "tensor" in param:
+                if isinstance(param["tensor"], list):
+                    count += len(param["tensor"])
+                elif "full" in param:
+                    count += param["full"][0]
+                else:
+                    raise NotImplementedError
+            else:
+                raise NotImplementedError
+        if arg.mass_matrix == "diagonal":
+            mass_matrix["ones"] = count
+        elif arg.mass_matrix == "dense":
+            mass_matrix["eye"] = count
+    else:
+        if isinstance(parameters, list) and len(parameters) == 1:
+            parameters = parameters[0]
+        parameter_ids = parameters["id"]
+        if arg.mass_matrix == "diagonal":
+            mass_matrix["ones_like"] = parameters["id"]
+        elif arg.mass_matrix == "dense":
+            mass_matrix["eye_like"] = parameters["id"]
+
+    operator = {
+        "id": f"{id_}.operator",
+        "type": "HMCOperator",
+        "joint": joint,
+        "parameters": parameter_ids,
+        "weight": 1.0,
+        "integrator": {
+            "id": f"{id_}.leapfrog",
+            "type": "LeapfrogIntegrator",
+            "steps": arg.steps,
+            "step_size": arg.step_size,
+        },
+        "mass_matrix": mass_matrix,
+        "adaptors": [],
+    }
+
+    if arg.adapt_mass_matrix:
+        operator["adaptors"].append(
+            {
+                "id": f"{id_}.mass.matrix.adaptor",
+                "type": "MassMatrixAdaptor",
+                "mass_matrix": f"{id_}.mass.matrix",
+                "update_frequency": 10,
+                "parameters": parameter_ids,
+            }
+        )
+    if arg.adapt_step_size == "dualaveraging":
+        operator["adaptors"].append(
+            {
+                "id": f"{id_}.step.size.adaptor",
+                "type": "DualAveragingStepSize",
+                "integrator": f"{param}.leapfrog",
+            }
+        )
+    elif arg.adapt_step_size == "adaptive":
+        operator["adaptors"].append(
+            {
+                "id": f"{id_}.step.size.adaptor",
+                "type": "AdaptiveStepSize",
+                "integrator": f"{id_}.leapfrog",
+                "target_acceptance_probability": arg.target_acc_prob,
+                "use_acceptance_rate": True,
+            }
+        )
+    return operator
+
+
+def create_hmc(joint, parameters, parameters_unres, arg):
+    hmc_json = {
+        "id": "hmc",
+        "type": "MCMC",
+        "joint": joint,
+        "iterations": arg.iter,
+        "operators": [],
+    }
+    if arg.split:
+        for param in parameters_unres:
+            operator = create_hmc_operator(param["id"], joint, param, arg)
+            hmc_json["operators"].append(operator)
+    else:
+        operator = create_hmc_operator("hmc", joint, parameters_unres, arg)
+        hmc_json["operators"].append(operator)
+
     if arg.warmup > 0:
-        hmc_json['adaptation'] = stan_windowed_adaptation
+        hmc_json["adaptation"] = create_stan_windowed_adaptation(
+            joint, parameters, [param["id"] for param in parameters_unres], arg
+        )
 
     if arg.stem:
-        hmc_json["loggers"] = [
-            {
-                "id": "logger",
-                "type": "Logger",
-                "parameters": ['joint', 'like'] + parameters,
-                "delimiter": "\t",
-                "file_name": f"{arg.stem}.csv",
-                "every": arg.every,
-            },
-            {
-                "id": "looger.trees",
-                "type": "TreeLogger",
-                "tree_model": "tree",
-                "file_name": f"{arg.stem}.trees",
-                "every": arg.every,
-            },
-        ]
+        hmc_json["loggers"] = create_loggers(parameters, arg)
+
     return hmc_json
 
 
 def build_hmc(arg):
     json_list = []
-    taxa = create_taxa('taxa', arg)
+    taxa = create_taxa("taxa", arg)
     json_list.append(taxa)
 
-    alignment = create_alignment('alignment', 'taxa', arg)
+    alignment = create_alignment("alignment", "taxa", arg)
     json_list.append(alignment)
 
-    if arg.model == 'SRD06':
-        json_list.append(create_site_model_srd06_mus('srd06.mus'))
+    if arg.model == "SRD06":
+        json_list.append(create_site_model_srd06_mus("srd06.mus"))
 
-    joint_dic = create_evolution_joint(taxa, 'alignment', arg)
+    joint_dic = create_evolution_joint(taxa, "alignment", arg)
 
     json_list.append(joint_dic)
 
     parameters_unres, parameters = make_unconstrained(json_list)
 
-    opt_dict = create_hmc('joint', parameters, parameters_unres, arg)
+    opt_dict = create_hmc("joint", parameters, parameters_unres, arg)
     json_list.append(opt_dict)
 
     jacobians_list = create_jacobians(json_list)
-    if arg.clock is not None and arg.heights == 'ratio':
-        jacobians_list.append('tree')
-    if arg.coalescent in ('skygrid', 'skyride'):
+    if arg.clock is not None and arg.heights == "ratio":
+        jacobians_list.append("tree")
+    if arg.coalescent in ("skygrid", "skyride"):
         jacobians_list.remove("coalescent.theta")
-    joint_dic['distributions'].extend(jacobians_list)
+    joint_dic["distributions"].extend(jacobians_list)
 
     for plugin in PLUGIN_MANAGER.plugins():
         plugin.process_all(arg, json_list)

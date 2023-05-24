@@ -24,11 +24,12 @@ from ..typing import ListParameter
 
 @register_class
 class Optimizer(JSONSerializable, Runnable):
-    """A wrapper for torch.optim.Optimizer objects.
+    r"""A wrapper for torch.optim.Optimizer objects.
 
     :param list parameters: list of Parameter
     :param CallableModel loss: loss function
-    :param torch.optim.Optimizer optimizer: a torch.optim.Optimizer object
+    :param optimizer: a torch.optim.Optimizer object
+    :type optimizer: torch.optim.Optimizer
     :param int iterations: number of iterations
     :param kwargs: optionals
     """
@@ -64,6 +65,9 @@ class Optimizer(JSONSerializable, Runnable):
 
         handler = SignalHandler()
 
+        loss = self.loss()
+        print(f"{0:>4} {loss:.5f}")
+
         for p in self.parameters:
             p.requires_grad = True
 
@@ -78,7 +82,7 @@ class Optimizer(JSONSerializable, Runnable):
 
             func_evals = state["func_evals"]
             n_iter = state["n_iter"]
-            print(f'{n_iter:>4} {loss} evaluations: {func_evals}')
+            print(f"{n_iter:>4} {loss:.5f} evaluations: {func_evals}")
 
             save_parameters(self.checkpoint, self.parameters)
 
