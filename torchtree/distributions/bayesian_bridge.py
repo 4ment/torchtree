@@ -77,8 +77,7 @@ class BayesianBridge(CallableModel):
             )
             return -global_scale.log() - (self.x.tensor.abs() / global_scale) ** alpha
 
-    @property
-    def sample_shape(self) -> Size:
+    def _sample_shape(self) -> Size:
         return self.x.tensor.shape[:-1]
 
     def handle_model_changed(self, model, obj, index) -> None:

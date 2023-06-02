@@ -62,8 +62,7 @@ class EnergyFunctionModel(CallableModel):
     def handle_model_changed(self, model, obj, index):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.x.shape[:-1]
 
     @classmethod

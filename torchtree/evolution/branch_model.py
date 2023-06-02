@@ -30,8 +30,7 @@ class AbstractClockModel(BranchModel, ABC):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self._rates.shape[:-1]
 
 

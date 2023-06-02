@@ -88,8 +88,7 @@ class NormalizingFlow(DistributionModel):
     def _call(self, *args, **kwargs) -> Tensor:
         return self.log_prob()
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.base.sample_shape
 
     def parameters(self) -> list[AbstractParameter]:

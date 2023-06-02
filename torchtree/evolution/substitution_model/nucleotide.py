@@ -50,8 +50,7 @@ class JC69(SubstitutionModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return torch.Size([])
 
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:

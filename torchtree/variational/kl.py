@@ -27,7 +27,7 @@ class ELBO(CallableModel):
     :param CallableModel p: joint distribution.
     :param torch.Size samples: number of samples.
     :param bool entropy: use entropy instead of Monte Carlo approximation
-    for variational distribution
+        for variational distribution
     :param bool score: use score function instead of pathwise gradient estimator
     """
 
@@ -75,8 +75,7 @@ class ELBO(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.q.sample_shape
 
     @classmethod
@@ -122,8 +121,7 @@ class KLpq(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.q.sample_shape
 
     @classmethod
@@ -170,8 +168,7 @@ class KLpqImportance(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.q.sample_shape
 
     @classmethod
@@ -213,7 +210,7 @@ class SELBO(CallableModel):
     :param CallableModel p: joint distribution.
     :param torch.Size samples: number of samples.
     :param bool entropy: use entropy instead of Monte Carlo approximation
-    for variational distribution
+        for variational distribution
     """
 
     def __init__(
@@ -263,8 +260,7 @@ class SELBO(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.q.sample_shape
 
     @classmethod

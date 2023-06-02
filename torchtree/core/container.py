@@ -48,8 +48,7 @@ class Container(Model):
             if isinstance(parameter, collections.abc.Callable):
                 yield parameter
 
-    @property
-    def sample_shape(self) -> Size:
+    def _sample_shape(self) -> Size:
         sample_models = Size([])
         sample_parameters = Size([])
         if len(self._parameters) > 0:

@@ -50,8 +50,7 @@ class SitePattern(Model):
                 break
             self.partials[idx] = partial.cpu()
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return torch.Size([])
 
     @classmethod

@@ -60,8 +60,15 @@ class Model(Parametric, Identifiable, ModelListener, ParameterListener):
             yield model
 
     @property
-    @abc.abstractmethod
     def sample_shape(self) -> torch.Size:
+        """Returns sample shape."""
+        return self._sample_shape()
+
+    @abc.abstractmethod
+    def _sample_shape(self) -> torch.Size:
+        """Implementation of sample_shape.
+
+        :return: sample shape"""
         ...
 
 

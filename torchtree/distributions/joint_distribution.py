@@ -63,8 +63,7 @@ class JointDistributionModel(DistributionModel):
     def handle_parameter_changed(self, variable: Parameter, index, event) -> None:
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self._distributions.sample_shape
 
     @classmethod

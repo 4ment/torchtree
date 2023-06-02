@@ -74,8 +74,7 @@ class RootParameter(AbstractParameter, CallableModel):
         for listener in self.listeners:
             listener.handle_parameter_changed(self, index, event)
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self._tensor.shape[:-1]
 
     @classmethod

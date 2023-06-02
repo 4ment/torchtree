@@ -59,8 +59,7 @@ class ScaleMixtureNormal(CallableModel):
             self.x.tensor
         )
 
-    @property
-    def sample_shape(self) -> Size:
+    def _sample_shape(self) -> Size:
         return self.x.tensor.shape[:-1]
 
     def handle_model_changed(self, model, obj, index) -> None:

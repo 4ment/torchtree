@@ -45,8 +45,7 @@ class BirthDeathModel(CallableModel):
     def handle_model_changed(self, model, obj, index):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return max(
             self.tree_model.node_heights.shape[:-1], self.lambda_.shape[:-1], key=len
         )

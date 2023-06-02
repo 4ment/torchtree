@@ -60,8 +60,7 @@ class GMRF(CallableModel):
             - dim / 2.0 * 1.8378770664093453
         )
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.field.tensor.shape[:-1]
 
     @classmethod
@@ -122,8 +121,7 @@ class GMRFCovariate(CallableModel):
             - (dim - 1) / 2.0 * 1.8378770664093453
         )
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.field.tensor.shape[:-1]
 
     @classmethod

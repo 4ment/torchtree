@@ -22,8 +22,7 @@ class AbstractCoalescentModel(CallableModel):
         self.theta = theta
         self.tree_model = tree_model
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return max(self.tree_model.sample_shape, self.theta.shape[:-1], key=len)
 
 
@@ -137,8 +136,7 @@ class ExponentialCoalescentModel(AbstractCoalescentModel):
         coalescent = ExponentialCoalescent(self.theta.tensor, self.growth.tensor)
         return coalescent.log_prob(self.tree_model.node_heights)
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return max(
             self.tree_model.sample_shape,
             self.theta.shape[:-1],
@@ -690,7 +688,11 @@ class PiecewiseExponentialCoalescentGrid(Distribution):
             grid_heights_growth_exp[..., 1:] - grid_heights_growth_exp[..., :-1]
         ) / (thetas * growth_intervals[..., 1:])
 
-        return -torch.sum(lchoose2 * integral, dim=-1, keepdim=True,) - torch.sum(
+        return -torch.sum(
+            lchoose2 * integral,
+            dim=-1,
+            keepdim=True,
+        ) - torch.sum(
             log_pop_sizes,
             dim=-1,
             keepdim=True,

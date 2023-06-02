@@ -83,8 +83,7 @@ class BDSKModel(CallableModel):
         self.origin_is_root_edge = origin_is_root_edge
         self.removal_probability = removal_probability
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return max(
             self.tree_model.node_heights.shape[:-1],
             self.R.shape[:-1],

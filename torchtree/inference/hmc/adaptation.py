@@ -39,7 +39,7 @@ class AdaptiveStepSize(Adaptor):
         self._end = kwargs.get("end", float("inf"))
         self._call_counter = 0
         self._accepted = 0
-        self._acceptance_rate = kwargs.get("use_acceptance_rate ", False)
+        self._acceptance_rate = kwargs.get("use_acceptance_rate", False)
 
     def restart(self) -> None:
         pass

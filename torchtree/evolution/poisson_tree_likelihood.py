@@ -47,8 +47,7 @@ class PoissonTreeLikelihood(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return max([model.sample_shape for model in self._models.values()], key=len)
 
     @classmethod

@@ -63,8 +63,7 @@ class Hamiltonian(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.joint.sample_shape
 
     @classmethod

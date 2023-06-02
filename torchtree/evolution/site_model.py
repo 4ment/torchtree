@@ -46,8 +46,7 @@ class ConstantSiteModel(SiteModel):
     def handle_parameter_changed(self, variable, index, event):
         self.fire_model_changed()
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self._rate.shape[:-1]
 
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
@@ -113,8 +112,7 @@ class InvariantSiteModel(SiteModel):
         self.need_update = True
         self.fire_model_changed()
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self._invariant.shape[:-1]
 
     @classmethod
@@ -205,8 +203,7 @@ class UnivariateDiscretizedSiteModel(SiteModel):
         self.need_update = True
         self.fire_model_changed()
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return max(
             [parameter.shape[:-1] for parameter in self._parameters.values()],
             key=len,

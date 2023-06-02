@@ -69,8 +69,7 @@ class SymmetricSubstitutionModel(AbstractSubstitutionModel, ABC):
     def eigen(self, Q: torch.Tensor) -> torch.Tensor:
         return torch.linalg.eigh(Q)
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return max(
             [parameter.shape[:-1] for parameter in self._parameters.values()],
             key=len,

@@ -229,7 +229,8 @@ def calculate_treelikelihood_tip_states_discrete_rescaled(
     freqs: torch.Tensor,
     props: torch.Tensor,
 ) -> torch.Tensor:
-    r"""Calculate log tree likelihood with rate categories using tip states and rescaling
+    r"""Calculate rescaled log tree likelihood with rate categories using tip states
+    and rescaling.
 
     :param partials: list of tensors of tip states [N] leaves and [...,K,S,N] internals
     :param weights: [N]
@@ -419,8 +420,7 @@ class TreeLikelihoodModel(CallableModel):
     def handle_parameter_changed(self, variable, index, event):
         pass
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return max([model.sample_shape for model in self._models.values()], key=len)
 
     @classmethod

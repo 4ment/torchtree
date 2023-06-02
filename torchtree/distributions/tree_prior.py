@@ -65,8 +65,7 @@ class CompoundGammaDirichletPrior(CallableModel):
             - self.rate.tensor * sum_x
         )
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.tree_model.sample_shape
 
     def handle_parameter_changed(self, variable, index, event) -> None:

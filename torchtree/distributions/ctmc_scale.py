@@ -44,8 +44,7 @@ class CTMCScale(CallableModel):
         )
         return log_like
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         return self.x.tensor.shape[:-1]
 
     def to(self, *args, **kwargs) -> None:

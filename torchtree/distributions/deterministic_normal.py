@@ -78,8 +78,7 @@ class DeterministicNormal(DistributionModel):
             self.loc.tensor, self.scale.tensor
         ).batch_shape
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         offset = 1 if len(self.batch_shape) == 0 else len(self.batch_shape)
         return self.x.tensor.shape[:-offset]
 

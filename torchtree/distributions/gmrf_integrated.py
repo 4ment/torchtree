@@ -77,11 +77,7 @@ class GMRFGammaIntegrated(CallableModel):
             * (diff_square.sum(-1, keepdim=True) / 2.0 + self._rate).log()
         )
 
-    def update(self, value):
-        pass
-
-    @property
-    def sample_shape(self):
+    def _sample_shape(self) -> torch.Size:
         return self.field.tensor.shape[:-1]
 
     @classmethod
