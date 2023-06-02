@@ -37,17 +37,13 @@ class Module(CallableModel):
 
     @property
     def module(self) -> nn.Module:
-        r"""
-        :return: a pytorch Module object.
-        :rtype: torch.nn.Module
-        """
+        """returns torch.nn.Module"""
         return self._module
 
     def _call(self, *args, **kwargs) -> Tensor:
         return self._module()
 
-    @property
-    def sample_shape(self) -> torch.Size:
+    def _sample_shape(self) -> torch.Size:
         raise NotImplementedError
 
     def to(self, *args, **kwargs) -> None:

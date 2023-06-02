@@ -1,3 +1,4 @@
+"""Phylogenetic tree priors."""
 import torch
 from torch import Tensor
 

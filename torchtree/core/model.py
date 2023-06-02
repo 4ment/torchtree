@@ -1,3 +1,4 @@
+"""Parametric models."""
 import abc
 import collections.abc
 from typing import Optional, Union
@@ -13,6 +14,13 @@ from .parametric import ModelListener, ParameterListener, Parametric
 
 
 class Model(Parametric, Identifiable, ModelListener, ParameterListener):
+    """Parametric model.
+
+    A Model can contain parameters and models and can monitor any
+    changes. A Model is the building block of more complex models. This
+    class is abstract.
+    """
+
     _tag = None
 
     def __init__(self, id_: Optional[str]) -> None:
@@ -68,14 +76,19 @@ class Model(Parametric, Identifiable, ModelListener, ParameterListener):
     def _sample_shape(self) -> torch.Size:
         """Implementation of sample_shape.
 
-        :return: sample shape"""
+        :return: sample shape
+        """
         ...
 
 
 class CallableModel(Model, collections.abc.Callable):
-    """Classes extending CallableModel are Callable and the returned value is
-    cached in case we need to use this value multiple times without the need to
-    recompute it."""
+    """Classes inheriting from :class:`Model` and
+    :class:`collections.abc.Callable`.
+
+    CallableModel are Callable and the returned value is cached in case
+    we need to use this value multiple times without the need to
+    recompute it.
+    """
 
     def __init__(self, id_: Optional[str]) -> None:
         Model.__init__(self, id_)

@@ -1,10 +1,14 @@
+"""Bayesian bridge prior."""
+from __future__ import annotations
+
 from numbers import Number
-from typing import Union
+from typing import Any, Union
 
 import torch
 from torch import Size, Tensor
 
 from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.identifiable import Identifiable
 from torchtree.core.model import CallableModel
 from torchtree.core.utils import process_object, register_class
 from torchtree.typing import ID
@@ -25,7 +29,7 @@ class BayesianBridge(CallableModel):
 
     .. [polson2014] Polson and Scott 2014. The Bayesian Bridge.
     .. [nishimura2019] Nishimura, Suchard 2019 .Shrinkage with shrunken shoulders: Gibbs
-    sampling shrinkage model posteriors with guaranteed convergence rates.
+        sampling shrinkage model posteriors with guaranteed convergence rates.
     """
 
     def __init__(
@@ -95,7 +99,44 @@ class BayesianBridge(CallableModel):
         return model
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(
+        cls, data: dict[str, Any], dic: dict[str, Identifiable]
+    ) -> BayesianBridge:
+        r"""Creates a BayesianBridge object from a dictionary.
+
+        :param dict[str, Any] data: dictionary representation of a
+            BayesianBridge object.
+        :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+            keyed by their ID.
+
+        **JSON attributes**:
+
+         Mandatory:
+          - id (str): unique string identifier.
+          - x (dict or str): parameter.
+          - scale (dict or str or float): global scale parameter.
+
+         Optional:
+          - alpha (dict or str or float): alpha parameter.
+          - local_scale (dict or str or float): local scale parameter.
+          - slab (dict or str or float): slab parameter
+
+        :example:
+        >>> x = {"id": "x", "type": "Parameter", "tensor": [1., 2., 3.]}
+        >>> scale = {"id": "scale", "type": "Parameter", "tensor": [1.]}
+        >>> alpha = {"id": "alpha", "type": "Parameter", "tensor": [0.1]}
+        >>> bridge_dic = {"id": "bridge", "x": x, "scale": scale, "alpha": alpha}
+        >>> bridge = BayesianBridge.from_json(bridge_dic, {})
+        >>> isinstance(bridge, BayesianBridge)
+        True
+        >>> isinstance(bridge(), torch.Tensor)
+        True
+
+        .. note::
+            local_scale or alpha are optional parameters but only one of them can
+            be specified at a time. The slab parameter must be specified if a
+            local_scale parameter is specified.
+        """
         id_ = data['id']
         x = process_object(data['x'], dic)
         info = {'dtype': x.dtype, 'device': x.device}
@@ -113,7 +154,7 @@ class BayesianBridge(CallableModel):
 
 
 def process_object_number(data, dic, **options) -> Union[Tensor, AbstractParameter]:
-    """data can be a Number, str, or dict."""
+    """Data can be a Number, str, or dict."""
     if isinstance(data, Number):
         return torch.tensor(data, **options)
     else:

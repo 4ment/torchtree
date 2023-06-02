@@ -1,3 +1,4 @@
+"""Invertible transformations inheriting from torch.distributions.Transform."""
 import math
 from typing import Union
 
@@ -12,11 +13,11 @@ from torchtree.core.utils import register_class
 
 @register_class
 class TrilExpDiagonalTransform(Transform):
-    r"""
-    Transform a 1D tensor to a triangular tensor. The diagonal of the triangular matrix
-    is exponentiated. Useful for variational inference with the multivariate normal
-    distribution as the variational distribution and it is parameterized
-    with scale_tril, a lower-triangular matrix with positive diagonal.
+    r"""Transform a 1D tensor to a triangular tensor. The diagonal of the
+    triangular matrix is exponentiated. Useful for variational inference with
+    the multivariate normal distribution as the variational distribution and it
+    is parameterized with scale_tril, a lower-triangular matrix with positive
+    diagonal.
 
     Example:
 
@@ -50,8 +51,13 @@ class TrilExpDiagonalTransform(Transform):
 
 
 class CumSumTransform(Transform):
-    r"""
-    Transform via the mapping :math:`y_i = \sum_{j=0}^i x_j`.
+    r"""Transform via the mapping :math:`y_i = \sum_{j=0}^i x_j`.
+
+    >>> x = torch.tensor([1., 2., 3.])
+    >>> all(CumSumTransform()(x) == torch.tensor([1., 3., 6.]))
+    True
+    >>> all(CumSumTransform().inv(torch.tensor([1., 3., 6.])) == x)
+    True
     """
     domain = constraints.real
     codomain = constraints.positive
@@ -70,9 +76,7 @@ class CumSumTransform(Transform):
 
 @register_class
 class CumSumExpTransform(Transform):
-    r"""
-    Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.
-    """
+    r"""Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`."""
     domain = constraints.real
     codomain = constraints.positive
     bijective = True
@@ -103,9 +107,7 @@ class CumSumExpTransform(Transform):
 
 
 class SoftPlusTransform(Transform):
-    r"""
-    Transform via the mapping :math:`y_i = \log(\exp(x_i) + 1)`.
-    """
+    r"""Transform via the mapping :math:`y_i = \log(\exp(x_i) + 1)`."""
     domain = constraints.real
     codomain = constraints.positive
     bijective = True
@@ -122,9 +124,8 @@ class SoftPlusTransform(Transform):
 
 
 class CumSumSoftPlusTransform(Transform):
-    r"""
-    Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.
-    """
+    r"""Transform via the mapping :math:`y_i = \log(\exp(\sum_{j=0}^i x_j) +
+    1)`."""
     domain = constraints.real
     codomain = constraints.positive
     bijective = True
@@ -143,8 +144,8 @@ class CumSumSoftPlusTransform(Transform):
 
 @register_class
 class ConvexCombinationTransform(Transform):
-    r"""Transform from unconstrained space to constrained space via
-    :math:`y = \frac{x}{\sum_{i=1}^K \alpha_i x_i}` in order to satisfy
+    r"""Transform from unconstrained space to constrained space via :math:`y =
+    \frac{x}{\sum_{i=1}^K \alpha_i x_i}` in order to satisfy
     :math:`\sum_{i=1}^K \alpha_i y_i = 1` where :math:`\alpha_i \geq 0` and
     :math:`\sum_{i=1}^K \alpha_i = 1`.
 
@@ -169,9 +170,7 @@ class ConvexCombinationTransform(Transform):
 
 @register_class
 class LogTransform(Transform):
-    r"""
-    Transform via the mapping :math:`y = \log(x)`.
-    """
+    r"""Transform via the mapping :math:`y = \log(x)`."""
     domain = constraints.positive
     codomain = constraints.real
     bijective = True
@@ -189,9 +188,7 @@ class LogTransform(Transform):
 
 @register_class
 class LinearTransform(Transform):
-    r"""
-    Transform via the mapping :math:`y = Ax + b`.
-    """
+    r"""Transform via the mapping :math:`y = Ax + b`."""
     domain = constraints.real
     codomain = constraints.real
     bijective = True
@@ -209,7 +206,10 @@ class LinearTransform(Transform):
 
     def _call(self, x):
         if isinstance(self.A, torch.Tensor):
-            return torch.squeeze(self.A.t() @ x.unsqueeze(-1), -1) + self.b.tensor
+            if self.A.dim() == 1:
+                return self.A * x + self.b.tensor
+            else:
+                return torch.squeeze(self.A.t() @ x.unsqueeze(-1), -1) + self.b.tensor
         else:
             return (
                 torch.squeeze(self.A.tensor.t() @ x.unsqueeze(-1), -1) + self.b.tensor
@@ -217,7 +217,10 @@ class LinearTransform(Transform):
 
     def _inverse(self, y):
         if isinstance(self.A, torch.Tensor):
-            return self.A.t().inverse() @ (y - self.b)
+            if self.A.dim() == 1:
+                return (y - self.b) / self.A
+            else:
+                return self.A.t().inverse() @ (y - self.b)
         else:
             return self.A.t().tensor.inverse() @ (y - self.b)
 

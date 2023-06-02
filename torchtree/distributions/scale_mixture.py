@@ -1,9 +1,13 @@
-from typing import Union
+"""Scale mixture of Normal distributions."""
+from __future__ import annotations
+
+from typing import Any, Union
 
 from torch import Size, Tensor
 from torch.distributions import Normal
 
 from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.identifiable import Identifiable
 from torchtree.core.model import CallableModel
 from torchtree.core.utils import process_object, register_class
 from torchtree.typing import ID
@@ -80,7 +84,41 @@ class ScaleMixtureNormal(CallableModel):
         return model
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(
+        cls, data: dict[str, Any], dic: dict[str, Identifiable]
+    ) -> ScaleMixtureNormal:
+        r"""Creates a ScaleMixtureNormal object from a dictionary.
+
+        :param dict[str, Any] data: dictionary representation of a
+            ScaleMixtureNormal object.
+        :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+            keyed by their ID.
+
+        **JSON attributes**:
+
+         Mandatory:
+          - id (str): unique string identifier.
+          - x (dict or str): parameter.
+          - loc (dict or str or float): location parameter.
+          - scale (dict or str): global scale parameter.
+          - local_scale (dict or str): local scale parameter.
+
+         Optional:
+          - slab (dict or str or float): slab parameter
+
+        :example:
+        >>> x = {"id": "x", "type": "Parameter", "tensor": [1., 2.]}
+        >>> loc = {"id": "loc", "type": "Parameter", "tensor": [1.]}
+        >>> global_scale = {"id": "global", "type": "Parameter", "tensor": [1.]}
+        >>> local_scale = {"id": "local", "type": "Parameter", "tensor": [0.1, 0.2]}
+        >>> mixture_dic = {"id": "mixture", "x": x, "loc": loc,
+        ...     "global_scale": global_scale, "local_scale": local_scale}
+        >>> mixture = ScaleMixtureNormal.from_json(mixture_dic, {})
+        >>> isinstance(mixture, ScaleMixtureNormal)
+        True
+        >>> isinstance(mixture(), Tensor)
+        True
+        """
         id_ = data['id']
         x = process_object(data['x'], dic)
         loc = (
