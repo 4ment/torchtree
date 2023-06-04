@@ -1,0 +1,174 @@
+:py:mod:`torchtree.core.logger`
+===============================
+
+.. py:module:: torchtree.core.logger
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   torchtree.core.logger.LoggerInterface
+   torchtree.core.logger.Logger
+   torchtree.core.logger.TreeLogger
+   torchtree.core.logger.CSV
+   torchtree.core.logger.Dumper
+
+
+
+
+.. py:class:: LoggerInterface
+
+
+
+   Interface for logging things like parameters or trees to a file.
+
+   .. py:method:: log(*args, **kwargs) -> None
+      :abstractmethod:
+
+
+   .. py:method:: initialize() -> None
+      :abstractmethod:
+
+
+   .. py:method:: close() -> None
+      :abstractmethod:
+
+
+   .. py:method:: run() -> None
+
+
+
+.. py:class:: Logger(objs: list[Union[torchtree.core.abstractparameter.AbstractParameter, torchtree.core.model.CallableModel]], every: int, **kwargs)
+
+
+
+   Class for logging Parameter objects to a file.
+
+   :param objs: list of Parameter or CallableModel objects
+   :type objs: list[Parameter or CallableModel]
+   :param int every: logging frequency
+   :param kwargs: optionals
+
+   .. py:method:: initialize() -> None
+
+
+   .. py:method:: log(*args, **kwargs) -> None
+
+
+   .. py:method:: close() -> None
+
+
+   .. py:method:: from_json(data, dic) -> Logger
+      :classmethod:
+
+      Create a Logger object.
+
+      :param data: json representation of Logger object.
+      :type data: dict[str,Any]
+      :param dic: dictionary containing additional objects that can be
+              referenced in data.
+      :type dic: dict[str,Any]
+      :return: a
+      :class: `~torchtree.core.logger.Logger` object.
+      :rtype: Logger
+
+
+
+.. py:class:: TreeLogger(tree_model: torchtree.evolution.tree_model.TreeModel, every: int, **kwargs)
+
+
+
+   Class for logging trees to a file.
+
+   :param TreeModel objs: TreeModel object
+   :param int every: logging frequency
+   :param kwargs: optionals
+
+   .. py:method:: initialize() -> None
+
+
+   .. py:method:: log(*args, **kwargs) -> None
+
+
+   .. py:method:: close() -> None
+
+
+   .. py:method:: from_json(data, dic) -> TreeLogger
+      :classmethod:
+
+      Create a TreeLogger object.
+
+      :param data: json representation of TreeLogger object.
+      :type data: dict[str,Any]
+      :param dic: dictionary containing additional objects that can be
+              referenced in data.
+      :type dic: dict[str,Any]
+      :return: a
+      :class: `~torchtree.core.logger.TreeLogger` object.
+      :rtype: TreeLogger
+
+
+
+.. py:class:: CSV(objs: list[torchtree.core.abstractparameter.AbstractParameter], **kwargs)
+
+
+
+   Class for writting parameters to a CSV file.
+
+   :param objs: list of Parameter objects
+   :type objs: list[Parameter]
+
+   .. py:method:: run() -> None
+
+
+   .. py:method:: from_json(data, dic) -> CSV
+      :classmethod:
+
+      Create a CSV object.
+
+      :param data: json representation of CSV object.
+      :type data: dict[str,Any]
+      :param dic: dictionary containing additional objects that can be
+              referenced in data.
+      :type dic: dict[str,Any]
+      :return: a
+      :class: `~torchtree.core.logger.CSV` object.
+      :rtype: CSV
+
+
+
+.. py:class:: Dumper(parameters: list[torchtree.core.abstractparameter.AbstractParameter], **kwargs)
+
+
+
+   Class for saving parameters to a json file.
+
+   :param parameters: list of Parameters.
+   :type parameters: list[Parameter]
+
+   .. py:method:: run() -> None
+
+      Write the parameters to the file.
+
+
+   .. py:method:: from_json(data, dic) -> Dumper
+      :classmethod:
+
+      Create a Dumper object.
+
+      :param data: json representation of Dumper object.
+      :type data: dict[str,Any]
+      :param dic: dictionary containing additional objects that can be
+              referenced in data.
+      :type dic: dict[str,Any]
+      :return: a
+      :class: `~torchtree.core.logger.Dumper` object.
+      :rtype: Dumper
+
+
+

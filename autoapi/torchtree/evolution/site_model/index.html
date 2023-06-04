@@ -1,0 +1,839 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>torchtree.evolution.site_model &#8212; torchtree 1.0.2-dev documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/torchtree/evolution/site_model/index';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">torchtree 1.0.2-dev documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.plugin_manager.html">torchtree.cli.plugin_manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.priors.html">torchtree.cli.priors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.cli.utils.html">torchtree.cli.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.core.html">torchtree.core</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.abstractparameter.html">torchtree.core.abstractparameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.classproperty_decorator.html">torchtree.core.classproperty_decorator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.container.html">torchtree.core.container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.identifiable.html">torchtree.core.identifiable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.logger.html">torchtree.core.logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.model.html">torchtree.core.model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.parameter.html">torchtree.core.parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.parameter_encoder.html">torchtree.core.parameter_encoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.parameter_utils.html">torchtree.core.parameter_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.parametric.html">torchtree.core.parametric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.runnable.html">torchtree.core.runnable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.serializable.html">torchtree.core.serializable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.core.utils.html">torchtree.core.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.distributions.html">torchtree.distributions</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.bayesian_bridge.html">torchtree.distributions.bayesian_bridge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.ctmc_scale.html">torchtree.distributions.ctmc_scale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.deterministic_normal.html">torchtree.distributions.deterministic_normal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.distributions.html">torchtree.distributions.distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.gmrf.html">torchtree.distributions.gmrf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.gmrf_integrated.html">torchtree.distributions.gmrf_integrated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.inverse_gamma.html">torchtree.distributions.inverse_gamma</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.joint_distribution.html">torchtree.distributions.joint_distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.log_normal.html">torchtree.distributions.log_normal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.multivariate_normal.html">torchtree.distributions.multivariate_normal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.normal.html">torchtree.distributions.normal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.one_on_x.html">torchtree.distributions.one_on_x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.scale_mixture.html">torchtree.distributions.scale_mixture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.transforms.html">torchtree.distributions.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.distributions.tree_prior.html">torchtree.distributions.tree_prior</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.evolution.html">torchtree.evolution</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.alignment.html">torchtree.evolution.alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.attribute_pattern.html">torchtree.evolution.attribute_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.bdsk.html">torchtree.evolution.bdsk</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.birth_death.html">torchtree.evolution.birth_death</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.branch_model.html">torchtree.evolution.branch_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.coalescent.html">torchtree.evolution.coalescent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.datatype.html">torchtree.evolution.datatype</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.io.html">torchtree.evolution.io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.poisson_tree_likelihood.html">torchtree.evolution.poisson_tree_likelihood</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.rate_transform.html">torchtree.evolution.rate_transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.root_transform.html">torchtree.evolution.root_transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.site_model.html">torchtree.evolution.site_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.site_pattern.html">torchtree.evolution.site_pattern</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../modules/torchtree.evolution.substitution_model.html">torchtree.evolution.substitution_model</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.evolution.substitution_model.abstract.html">torchtree.evolution.substitution_model.abstract</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.evolution.substitution_model.amino_acid.html">torchtree.evolution.substitution_model.amino_acid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.evolution.substitution_model.codon.html">torchtree.evolution.substitution_model.codon</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.evolution.substitution_model.general.html">torchtree.evolution.substitution_model.general</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.evolution.substitution_model.nucleotide.html">torchtree.evolution.substitution_model.nucleotide</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.taxa.html">torchtree.evolution.taxa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.tree_height_transform.html">torchtree.evolution.tree_height_transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.tree_likelihood.html">torchtree.evolution.tree_likelihood</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.tree_model.html">torchtree.evolution.tree_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.evolution.tree_model_flexible.html">torchtree.evolution.tree_model_flexible</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.inference.html">torchtree.inference</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../modules/torchtree.inference.hmc.html">torchtree.inference.hmc</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.inference.hmc.adaptation.html">torchtree.inference.hmc.adaptation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.inference.hmc.adaptors.html">torchtree.inference.hmc.adaptors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.inference.hmc.hamiltonian.html">torchtree.inference.hmc.hamiltonian</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.inference.hmc.hmc.html">torchtree.inference.hmc.hmc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.inference.hmc.integrator.html">torchtree.inference.hmc.integrator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.inference.hmc.operator.html">torchtree.inference.hmc.operator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.inference.hmc.stan_adaptation.html">torchtree.inference.hmc.stan_adaptation</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.html">torchtree.inference.mcmc</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.mcmc.html">torchtree.inference.mcmc.mcmc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.operator.html">torchtree.inference.mcmc.operator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.inference.sampler.html">torchtree.inference.sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.inference.utils.html">torchtree.inference.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.nf.html">torchtree.nf</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.nf.energy_functions.html">torchtree.nf.energy_functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.nf.flow.html">torchtree.nf.flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.nf.planar.html">torchtree.nf.planar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.nf.realnvp.html">torchtree.nf.realnvp</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.nn.html">torchtree.nn</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.nn.module.html">torchtree.nn.module</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.ops.html">torchtree.ops</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.ops.dual_averaging.html">torchtree.ops.dual_averaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.ops.welford.html">torchtree.ops.welford</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.optim.html">torchtree.optim</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.optim.convergence.html">torchtree.optim.convergence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.optim.lr_scheduler.html">torchtree.optim.lr_scheduler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.optim.optimizer.html">torchtree.optim.optimizer</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.variational.html">torchtree.variational</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.variational.chi.html">torchtree.variational.chi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.variational.kl.html">torchtree.variational.kl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../modules/torchtree.variational.renyi.html">torchtree.variational.renyi</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../../../_sources/autoapi/torchtree/evolution/site_model/index.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>torchtree.evolution.site_model</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.SiteModel"><code class="docutils literal notranslate"><span class="pre">SiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.SiteModel.rates"><code class="docutils literal notranslate"><span class="pre">SiteModel.rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.SiteModel.probabilities"><code class="docutils literal notranslate"><span class="pre">SiteModel.probabilities()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.rates"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.probabilities"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.probabilities()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.handle_model_changed"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.handle_model_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.handle_parameter_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.cuda"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.cuda()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.cpu"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.cpu()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.from_json"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.invariant"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.invariant</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.update_rates_probs"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.update_rates_probs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.rates"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.probabilities"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.probabilities()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.handle_model_changed"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.handle_model_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.handle_parameter_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.from_json"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.invariant"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.invariant</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.inverse_cdf"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.inverse_cdf()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.update_rates"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.update_rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.rates"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.probabilities"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.probabilities()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.handle_model_changed"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.handle_model_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.handle_parameter_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.cuda"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.cuda()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.cpu"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.cpu()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.WeibullSiteModel"><code class="docutils literal notranslate"><span class="pre">WeibullSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.WeibullSiteModel.shape"><code class="docutils literal notranslate"><span class="pre">WeibullSiteModel.shape</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.WeibullSiteModel.inverse_cdf"><code class="docutils literal notranslate"><span class="pre">WeibullSiteModel.inverse_cdf()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.WeibullSiteModel.from_json"><code class="docutils literal notranslate"><span class="pre">WeibullSiteModel.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.LogNormalSiteModel"><code class="docutils literal notranslate"><span class="pre">LogNormalSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.LogNormalSiteModel.scale"><code class="docutils literal notranslate"><span class="pre">LogNormalSiteModel.scale</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.LogNormalSiteModel.update_rates"><code class="docutils literal notranslate"><span class="pre">LogNormalSiteModel.update_rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.LogNormalSiteModel.from_json"><code class="docutils literal notranslate"><span class="pre">LogNormalSiteModel.from_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="module-torchtree.evolution.site_model">
+<span id="torchtree-evolution-site-model"></span><h1><a class="reference internal" href="../../../../modules/torchtree.evolution.site_model.html#module-torchtree.evolution.site_model" title="torchtree.evolution.site_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.site_model</span></code></a><a class="headerlink" href="#module-torchtree.evolution.site_model" title="Permalink to this heading">#</a></h1>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this heading">#</a></h3>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.site_model.SiteModel" title="torchtree.evolution.site_model.SiteModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SiteModel</span></code></a></p></td>
+<td><p>Parametric model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.site_model.ConstantSiteModel" title="torchtree.evolution.site_model.ConstantSiteModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantSiteModel</span></code></a></p></td>
+<td><p>Parametric model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.site_model.InvariantSiteModel" title="torchtree.evolution.site_model.InvariantSiteModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InvariantSiteModel</span></code></a></p></td>
+<td><p>Parametric model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel" title="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel</span></code></a></p></td>
+<td><p>Parametric model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.site_model.WeibullSiteModel" title="torchtree.evolution.site_model.WeibullSiteModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WeibullSiteModel</span></code></a></p></td>
+<td><p>Parametric model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.site_model.LogNormalSiteModel" title="torchtree.evolution.site_model.LogNormalSiteModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LogNormalSiteModel</span></code></a></p></td>
+<td><p>Parametric model.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.SiteModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.site_model.</span></span><span class="sig-name descname"><span class="pre">SiteModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.SiteModel" title="Permalink to this definition">#</a></dt>
+<dd><p>Parametric model.</p>
+<p>A Model can contain parameters and models and can monitor any
+changes. A Model is the building block of more complex models. This
+class is abstract.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.SiteModel.rates">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.SiteModel.rates" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.SiteModel.probabilities">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">probabilities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.SiteModel.probabilities" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.ConstantSiteModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.site_model.</span></span><span class="sig-name descname"><span class="pre">ConstantSiteModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.ConstantSiteModel" title="Permalink to this definition">#</a></dt>
+<dd><p>Parametric model.</p>
+<p>A Model can contain parameters and models and can monitor any
+changes. A Model is the building block of more complex models. This
+class is abstract.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.ConstantSiteModel.rates">
+<span class="sig-name descname"><span class="pre">rates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.ConstantSiteModel.rates" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.ConstantSiteModel.probabilities">
+<span class="sig-name descname"><span class="pre">probabilities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.ConstantSiteModel.probabilities" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.ConstantSiteModel.handle_model_changed">
+<span class="sig-name descname"><span class="pre">handle_model_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.ConstantSiteModel.handle_model_changed" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.ConstantSiteModel.handle_parameter_changed">
+<span class="sig-name descname"><span class="pre">handle_parameter_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.ConstantSiteModel.handle_parameter_changed" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.ConstantSiteModel.cuda">
+<span class="sig-name descname"><span class="pre">cuda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">torch.device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.ConstantSiteModel.cuda" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.ConstantSiteModel.cpu">
+<span class="sig-name descname"><span class="pre">cpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.ConstantSiteModel.cpu" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.ConstantSiteModel.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.ConstantSiteModel.from_json" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.InvariantSiteModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.site_model.</span></span><span class="sig-name descname"><span class="pre">InvariantSiteModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.InvariantSiteModel" title="Permalink to this definition">#</a></dt>
+<dd><p>Parametric model.</p>
+<p>A Model can contain parameters and models and can monitor any
+changes. A Model is the building block of more complex models. This
+class is abstract.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.InvariantSiteModel.invariant">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">invariant</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Tensor</span></em><a class="headerlink" href="#torchtree.evolution.site_model.InvariantSiteModel.invariant" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.InvariantSiteModel.update_rates_probs">
+<span class="sig-name descname"><span class="pre">update_rates_probs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">invariant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.InvariantSiteModel.update_rates_probs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.InvariantSiteModel.rates">
+<span class="sig-name descname"><span class="pre">rates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.InvariantSiteModel.rates" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.InvariantSiteModel.probabilities">
+<span class="sig-name descname"><span class="pre">probabilities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.InvariantSiteModel.probabilities" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.InvariantSiteModel.handle_model_changed">
+<span class="sig-name descname"><span class="pre">handle_model_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.InvariantSiteModel.handle_model_changed" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.InvariantSiteModel.handle_parameter_changed">
+<span class="sig-name descname"><span class="pre">handle_parameter_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.InvariantSiteModel.handle_parameter_changed" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.InvariantSiteModel.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.InvariantSiteModel.from_json" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.site_model.</span></span><span class="sig-name descname"><span class="pre">UnivariateDiscretizedSiteModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel" title="Permalink to this definition">#</a></dt>
+<dd><p>Parametric model.</p>
+<p>A Model can contain parameters and models and can monitor any
+changes. A Model is the building block of more complex models. This
+class is abstract.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.invariant">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">invariant</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Tensor</span></em><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.invariant" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.inverse_cdf">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inverse_cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.inverse_cdf" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.update_rates">
+<span class="sig-name descname"><span class="pre">update_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.update_rates" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.rates">
+<span class="sig-name descname"><span class="pre">rates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.rates" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.probabilities">
+<span class="sig-name descname"><span class="pre">probabilities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.probabilities" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.handle_model_changed">
+<span class="sig-name descname"><span class="pre">handle_model_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.handle_model_changed" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.handle_parameter_changed">
+<span class="sig-name descname"><span class="pre">handle_parameter_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.handle_parameter_changed" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.cuda">
+<span class="sig-name descname"><span class="pre">cuda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">torch.device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.cuda" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.cpu">
+<span class="sig-name descname"><span class="pre">cpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.cpu" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.WeibullSiteModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.site_model.</span></span><span class="sig-name descname"><span class="pre">WeibullSiteModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.WeibullSiteModel" title="Permalink to this definition">#</a></dt>
+<dd><p>Parametric model.</p>
+<p>A Model can contain parameters and models and can monitor any
+changes. A Model is the building block of more complex models. This
+class is abstract.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.WeibullSiteModel.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Tensor</span></em><a class="headerlink" href="#torchtree.evolution.site_model.WeibullSiteModel.shape" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.WeibullSiteModel.inverse_cdf">
+<span class="sig-name descname"><span class="pre">inverse_cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.WeibullSiteModel.inverse_cdf" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.WeibullSiteModel.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.WeibullSiteModel.from_json" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.LogNormalSiteModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.site_model.</span></span><span class="sig-name descname"><span class="pre">LogNormalSiteModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invariant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.LogNormalSiteModel" title="Permalink to this definition">#</a></dt>
+<dd><p>Parametric model.</p>
+<p>A Model can contain parameters and models and can monitor any
+changes. A Model is the building block of more complex models. This
+class is abstract.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.LogNormalSiteModel.scale">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scale</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Tensor</span></em><a class="headerlink" href="#torchtree.evolution.site_model.LogNormalSiteModel.scale" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.LogNormalSiteModel.update_rates">
+<span class="sig-name descname"><span class="pre">update_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.LogNormalSiteModel.update_rates" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.site_model.LogNormalSiteModel.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.site_model.LogNormalSiteModel.from_json" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.SiteModel"><code class="docutils literal notranslate"><span class="pre">SiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.SiteModel.rates"><code class="docutils literal notranslate"><span class="pre">SiteModel.rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.SiteModel.probabilities"><code class="docutils literal notranslate"><span class="pre">SiteModel.probabilities()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.rates"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.probabilities"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.probabilities()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.handle_model_changed"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.handle_model_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.handle_parameter_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.cuda"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.cuda()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.cpu"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.cpu()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.ConstantSiteModel.from_json"><code class="docutils literal notranslate"><span class="pre">ConstantSiteModel.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.invariant"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.invariant</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.update_rates_probs"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.update_rates_probs()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.rates"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.probabilities"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.probabilities()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.handle_model_changed"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.handle_model_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.handle_parameter_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.InvariantSiteModel.from_json"><code class="docutils literal notranslate"><span class="pre">InvariantSiteModel.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.invariant"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.invariant</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.inverse_cdf"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.inverse_cdf()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.update_rates"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.update_rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.rates"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.probabilities"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.probabilities()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.handle_model_changed"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.handle_model_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.handle_parameter_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.cuda"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.cuda()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.cpu"><code class="docutils literal notranslate"><span class="pre">UnivariateDiscretizedSiteModel.cpu()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.WeibullSiteModel"><code class="docutils literal notranslate"><span class="pre">WeibullSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.WeibullSiteModel.shape"><code class="docutils literal notranslate"><span class="pre">WeibullSiteModel.shape</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.WeibullSiteModel.inverse_cdf"><code class="docutils literal notranslate"><span class="pre">WeibullSiteModel.inverse_cdf()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.WeibullSiteModel.from_json"><code class="docutils literal notranslate"><span class="pre">WeibullSiteModel.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.LogNormalSiteModel"><code class="docutils literal notranslate"><span class="pre">LogNormalSiteModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.LogNormalSiteModel.scale"><code class="docutils literal notranslate"><span class="pre">LogNormalSiteModel.scale</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.LogNormalSiteModel.update_rates"><code class="docutils literal notranslate"><span class="pre">LogNormalSiteModel.update_rates()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.site_model.LogNormalSiteModel.from_json"><code class="docutils literal notranslate"><span class="pre">LogNormalSiteModel.from_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Mathieu Fourment
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023, Mathieu Fourment.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
