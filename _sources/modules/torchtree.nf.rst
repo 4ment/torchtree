@@ -1,4 +1,4 @@
-﻿torchtree.nf
+torchtree.nf
 ============
 
 .. automodule:: torchtree.nf

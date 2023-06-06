@@ -54,7 +54,7 @@ Functions
 
 .. py:class:: TreeModel(id_: Optional[str])
 
-
+   Bases: :py:obj:`torchtree.core.model.Model`
 
    Parametric model.
 
@@ -83,7 +83,7 @@ Functions
 
 .. py:class:: AbstractTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa)
 
-
+   Bases: :py:obj:`TreeModel`, :py:obj:`abc.ABC`
 
    Parametric model.
 
@@ -112,7 +112,7 @@ Functions
 
 .. py:class:: UnRootedTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, branch_lengths: torchtree.core.abstractparameter.AbstractParameter)
 
-
+   Bases: :py:obj:`AbstractTreeModel`
 
    Parametric model.
 
@@ -151,7 +151,7 @@ Functions
 
 .. py:class:: TimeTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, internal_heights: torchtree.core.abstractparameter.AbstractParameter)
 
-
+   Bases: :py:obj:`AbstractTreeModel`
 
    Parametric model.
 
@@ -215,7 +215,7 @@ Functions
 
 .. py:class:: ReparameterizedTimeTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, ratios_root_height: torchtree.core.abstractparameter.AbstractParameter = None, shifts: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
+   Bases: :py:obj:`TimeTreeModel`, :py:obj:`torchtree.core.model.CallableModel`
 
    Parametric model.
 

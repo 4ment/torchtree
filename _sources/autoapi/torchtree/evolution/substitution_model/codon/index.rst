@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: MG94(id_: torchtree.typing.ID, data_type: torchtree.evolution.datatype.CodonDataType, alpha: torchtree.core.abstractparameter.AbstractParameter, beta: torchtree.core.abstractparameter.AbstractParameter, kappa: torchtree.core.abstractparameter.AbstractParameter, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel`
 
    Parametric model.
 

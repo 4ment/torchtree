@@ -25,7 +25,7 @@ Classes
 
 .. py:class:: Model(id_: Optional[str])
 
-
+   Bases: :py:obj:`torchtree.core.parametric.Parametric`, :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`torchtree.core.parametric.ModelListener`, :py:obj:`torchtree.core.parametric.ParameterListener`
 
    Parametric model.
 
@@ -73,7 +73,7 @@ Classes
 
 .. py:class:: CallableModel(id_: Optional[str])
 
-
+   Bases: :py:obj:`Model`, :py:obj:`collections.abc.Callable`
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.

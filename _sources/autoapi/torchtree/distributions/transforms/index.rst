@@ -31,7 +31,7 @@ Classes
 
 .. py:class:: TrilExpDiagonalTransform(cache_size=0)
 
-
+   Bases: :py:obj:`torch.distributions.Transform`
 
    Transform a 1D tensor to a triangular tensor. The diagonal of the
    triangular matrix is exponentiated. Useful for variational inference with
@@ -67,7 +67,7 @@ Classes
 
 .. py:class:: CumSumTransform(cache_size=0)
 
-
+   Bases: :py:obj:`torch.distributions.Transform`
 
    Transform via the mapping :math:`y_i = \sum_{j=0}^i x_j`.
 
@@ -102,7 +102,7 @@ Classes
 
 .. py:class:: CumSumExpTransform(cache_size=0)
 
-
+   Bases: :py:obj:`torch.distributions.Transform`
 
    Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.
 
@@ -131,7 +131,7 @@ Classes
 
 .. py:class:: SoftPlusTransform(cache_size=0)
 
-
+   Bases: :py:obj:`torch.distributions.Transform`
 
    Transform via the mapping :math:`y_i = \log(\exp(x_i) + 1)`.
 
@@ -160,7 +160,7 @@ Classes
 
 .. py:class:: CumSumSoftPlusTransform(cache_size=0)
 
-
+   Bases: :py:obj:`torch.distributions.Transform`
 
    Transform via the mapping :math:`y_i = \log(\exp(\sum_{j=0}^i x_j) +
    1)`.
@@ -190,7 +190,7 @@ Classes
 
 .. py:class:: ConvexCombinationTransform(weights: torchtree.core.abstractparameter.AbstractParameter, cache_size=0)
 
-
+   Bases: :py:obj:`torch.distributions.Transform`
 
    Transform from unconstrained space to constrained space via :math:`y =
    \frac{x}{\sum_{i=1}^K \alpha_i x_i}` in order to satisfy
@@ -215,7 +215,7 @@ Classes
 
 .. py:class:: LogTransform(cache_size=0)
 
-
+   Bases: :py:obj:`torch.distributions.Transform`
 
    Transform via the mapping :math:`y = \log(x)`.
 
@@ -244,7 +244,7 @@ Classes
 
 .. py:class:: LinearTransform(A: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor], b: torchtree.core.abstractparameter.AbstractParameter, cache_size=0)
 
-
+   Bases: :py:obj:`torch.distributions.Transform`
 
    Transform via the mapping :math:`y = Ax + b`.
 

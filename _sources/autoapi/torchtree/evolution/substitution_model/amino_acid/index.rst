@@ -20,7 +20,7 @@ Classes
 
 .. py:class:: LG(id_: torchtree.typing.ID)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel`
 
    Parametric model.
 
@@ -35,7 +35,7 @@ Classes
 
 .. py:class:: WAG(id_: torchtree.typing.ID)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel`
 
    Parametric model.
 

@@ -24,7 +24,7 @@ Classes
 
 .. py:class:: CompoundGammaDirichletPrior(id_: torchtree.typing.ID, tree_model: torchtree.evolution.tree_model.UnRootedTreeModel, alpha: torchtree.core.abstractparameter.AbstractParameter, c: torchtree.core.abstractparameter.AbstractParameter, shape: torchtree.core.abstractparameter.AbstractParameter, rate: torchtree.core.abstractparameter.AbstractParameter)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Compound gamma-Dirichlet prior on an unrooted tree [rannala2011]_
 

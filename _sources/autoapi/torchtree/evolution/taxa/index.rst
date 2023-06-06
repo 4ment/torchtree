@@ -20,7 +20,7 @@ Classes
 
 .. py:class:: Taxon(id_, attributes)
 
-
+   Bases: :py:obj:`torchtree.core.model.Identifiable`, :py:obj:`collections.UserDict`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -32,7 +32,7 @@ Classes
 
 .. py:class:: Taxa(id_, taxa)
 
-
+   Bases: :py:obj:`torchtree.core.model.Identifiable`, :py:obj:`collections.UserList`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.

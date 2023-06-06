@@ -1,4 +1,4 @@
-﻿torchtree.optim
+torchtree.optim
 ===============
 
 .. automodule:: torchtree.optim

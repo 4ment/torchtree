@@ -23,7 +23,7 @@ Classes
 
 .. py:class:: Parameter(id_: Optional[str], tensor: torch.Tensor)
 
-
+   Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -99,7 +99,7 @@ Classes
 
 .. py:class:: TransformedParameter(id_: Optional[str], x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter], transform: torch.distributions.Transform)
 
-
+   Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.parametric.Parametric`, :py:obj:`collections.abc.Callable`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -156,7 +156,7 @@ Classes
 
 .. py:class:: ViewParameter(id_: Optional[str], parameter: Parameter, indices: Union[int, slice, torch.Tensor])
 
-
+   Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.parametric.ParameterListener`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -216,7 +216,7 @@ Classes
 
 .. py:class:: CatParameter(id_: Optional[str], parameters: Union[list[Parameter], tuple[Parameter, Ellipsis]], dim: Optional[int] = 0)
 
-
+   Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.parametric.ParameterListener`
 
    Class for concatenating parameters.
 
@@ -267,7 +267,7 @@ Classes
 
 .. py:class:: ModuleParameter(id_: Optional[str], module)
 
-
+   Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.parametric.Parametric`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.

@@ -1,4 +1,4 @@
-﻿torchtree.distributions
+torchtree.distributions
 =======================
 
 .. automodule:: torchtree.distributions

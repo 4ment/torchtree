@@ -1,4 +1,4 @@
-﻿torchtree.ops
+torchtree.ops
 =============
 
 .. automodule:: torchtree.ops

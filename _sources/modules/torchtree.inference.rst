@@ -1,4 +1,4 @@
-﻿torchtree.inference
+torchtree.inference
 ===================
 
 .. automodule:: torchtree.inference

@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: classproperty
 
-
+   Bases: :py:obj:`property`
 
    Property attribute.
 

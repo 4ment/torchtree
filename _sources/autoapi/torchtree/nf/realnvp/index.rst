@@ -28,7 +28,7 @@ Classes
 
 .. py:class:: LinearMaskedCoupling(input_size, hidden_size, n_hidden, mask, cond_label_size=None)
 
-
+   Bases: :py:obj:`torch.nn.Module`
 
    Modified RealNVP Coupling Layers per the MAF paper.
 
@@ -41,7 +41,7 @@ Classes
 
 .. py:class:: BatchNorm(input_size, momentum=0.9, eps=1e-05)
 
-
+   Bases: :py:obj:`torch.nn.Module`
 
    RealNVP BatchNorm layer.
 
@@ -54,7 +54,7 @@ Classes
 
 .. py:class:: FlowSequential(*args: torch.nn.modules.module.Module)           FlowSequential(arg: OrderedDict[str, Module])
 
-
+   Bases: :py:obj:`torch.nn.Sequential`
 
    Container for layers of a normalizing flow.
 
@@ -67,7 +67,7 @@ Classes
 
 .. py:class:: RealNVP(id_: str, x: torchtree.core.abstractparameter.AbstractParameter, base: torchtree.distributions.distributions.Distribution, n_blocks: int, hidden_size: int, n_hidden: int, cond_label_size=None, batch_norm=False)
 
-
+   Bases: :py:obj:`torchtree.distributions.distributions.DistributionModel`
 
    Class for RealNVP normalizing flows.
 
@@ -95,11 +95,24 @@ Classes
 
    .. py:method:: sample(sample_shape=torch.Size()) -> None
 
+      Generates a sample_shape shaped sample or sample_shape shaped batch of
+      samples if the distribution parameters are batched.
+
 
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
+      Generates a sample_shape shaped reparameterized sample or sample_shape
+      shaped batch of reparameterized samples if the distribution parameters
+      are batched.
+
 
    .. py:method:: log_prob(x: torchtree.core.abstractparameter.AbstractParameter = None) -> torch.Tensor
+
+      Returns the log of the probability density/mass function evaluated at x.
+
+      :param Parameter x: value to evaluate
+      :return: log probability
+      :rtype: Tensor
 
 
    .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]
@@ -108,6 +121,11 @@ Classes
 
 
    .. py:method:: entropy() -> torch.Tensor
+
+      Returns entropy of distribution, batched over batch_shape.
+
+      :return: Tensor of shape batch_shape.
+      :rtype: Tensor
 
 
    .. py:method:: from_json(data, dic) -> RealNVP

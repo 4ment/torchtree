@@ -22,7 +22,7 @@ Classes
 
 .. py:class:: GeneralJC69(id_: torchtree.typing.ID, state_count: int)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SubstitutionModel`
 
    Parametric model.
 
@@ -59,7 +59,7 @@ Classes
 
 .. py:class:: GeneralSymmetricSubstitutionModel(id_: torchtree.typing.ID, data_type: torchtree.evolution.datatype.DataType, mapping: torchtree.core.abstractparameter.AbstractParameter, rates: torchtree.core.abstractparameter.AbstractParameter, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel`
 
    Parametric model.
 
@@ -87,7 +87,7 @@ Classes
 
 .. py:class:: GeneralNonSymmetricSubstitutionModel(id_: torchtree.typing.ID, data_type: torchtree.evolution.datatype.DataType, mapping: torchtree.core.abstractparameter.AbstractParameter, rates: torchtree.core.abstractparameter.AbstractParameter, frequencies: torchtree.core.abstractparameter.AbstractParameter, normalize: bool)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.NonSymmetricSubstitutionModel`
 
    Parametric model.
 
@@ -115,7 +115,7 @@ Classes
 
 .. py:class:: EmpiricalSubstitutionModel(id_: torchtree.typing.ID, rates: torch.Tensor, frequencies: torch.Tensor)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SubstitutionModel`
 
    Parametric model.
 

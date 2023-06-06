@@ -21,7 +21,7 @@ Classes
 
 .. py:class:: JC69(id_: torchtree.typing.ID)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SubstitutionModel`
 
    Parametric model.
 
@@ -63,7 +63,7 @@ Classes
 
 .. py:class:: HKY(id_: torchtree.typing.ID, kappa: torchtree.core.abstractparameter.AbstractParameter, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel`
 
    Parametric model.
 
@@ -95,7 +95,7 @@ Classes
 
 .. py:class:: GTR(id_: torchtree.typing.ID, rates: torchtree.core.abstractparameter.AbstractParameter, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
-
+   Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel`
 
    Parametric model.
 

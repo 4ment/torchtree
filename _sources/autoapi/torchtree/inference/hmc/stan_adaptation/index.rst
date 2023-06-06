@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: StanWindowedAdaptation(step_size_adaptor: torchtree.inference.hmc.adaptation.DualAveragingStepSize, mass_matrix_adaptor: torchtree.inference.hmc.adaptation.Adaptor, num_warmup: int, init_buffer: int, term_buffer: int, base_window: int)
 
-
+   Bases: :py:obj:`torchtree.inference.hmc.adaptation.Adaptor`
 
    Adapts step size and mass matrix during a warmup period.
 

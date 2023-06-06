@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: RootParameter(id_: torchtree.typing.ID, distance: torchtree.core.parameter.Parameter, rate: torchtree.core.parameter.Parameter, shift: float)
 
-
+   Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.model.CallableModel`
 
    This root height parameter is calculated from
     number of substitutions / substitution rate.

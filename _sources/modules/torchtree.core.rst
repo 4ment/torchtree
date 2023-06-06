@@ -1,4 +1,4 @@
-﻿torchtree.core
+torchtree.core
 ==============
 
 .. automodule:: torchtree.core

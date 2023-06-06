@@ -46,7 +46,7 @@ Attributes
 
 .. py:class:: Alignment(id_: torchtree.typing.ID, sequences: list[Sequence], taxa: torchtree.evolution.taxa.Taxa, data_type: torchtree.evolution.datatype.DataType)
 
-
+   Bases: :py:obj:`torchtree.core.model.Identifiable`, :py:obj:`collections.UserList`
 
    Sequence alignment.
 

@@ -32,22 +32,22 @@ Functions
 
 .. py:class:: BayesianBridge(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, scale: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor], alpha: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor] = None, local_scale: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor] = None, slab: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor] = None)
 
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
+   Bayesian bridge prior.
 
-   Bayesian bridge.
+   Creates a Bayesian bridge prior :footcite:p:`polson2014bayesian`.
+   This class also implements the regularized version of the
+   prior :footcite:p:`nishimura2023shrinkage`.
 
-   [polson2014]_ and [nishimura2019]_
+   :param str or None id_: ID of BayesianBridge object.
+   :param AbstractParameter x: random variable.
+   :param AbstractParameter or Tensor scale: global scale.
+   :param AbstractParameter or Tensor alpha: exponent.
+   :param AbstractParameter or Tensor local_scale: local scale.
+   :param AbstractParameter or Tensor slab: slab width.
 
-   :param id_: ID of object
-   :param x: random variable
-   :param scale: global scale
-   :param alpha: exponent
-   :param local_scale: local scale
-   :param slab: slab width
-
-   .. [polson2014] Polson and Scott 2014. The Bayesian Bridge.
-   .. [nishimura2019] Nishimura, Suchard 2019 .Shrinkage with shrunken shoulders: Gibbs
-       sampling shrinkage model posteriors with guaranteed convergence rates.
+   .. footbibliography::
 
    .. py:method:: handle_model_changed(model, obj, index) -> None
 

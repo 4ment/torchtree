@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: HMC(parameters: torchtree.typing.ListParameter, joint: torchtree.core.model.CallableModel, iterations: int, integrator: torchtree.inference.hmc.integrator.Integrator, **kwargs)
 
-
+   Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.

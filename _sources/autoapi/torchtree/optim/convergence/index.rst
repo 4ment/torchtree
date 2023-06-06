@@ -21,7 +21,7 @@ Classes
 
 .. py:class:: BaseConvergence
 
-
+   Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`
 
    Base class for all convergence diagnostic classes.
 
@@ -32,7 +32,7 @@ Classes
 
 .. py:class:: VariationalConvergence(loss: torchtree.core.model.CallableModel, every: int, samples: torch.Size, start: int = 0, file_name: str = None)
 
-
+   Bases: :py:obj:`BaseConvergence`
 
    Class that does not check for convergence but output ELBO.
 
@@ -52,7 +52,7 @@ Classes
 
 .. py:class:: StanVariationalConvergence(loss: torchtree.core.model.CallableModel, every: int, samples: torch.Size, max_iterations: int, start: int = 0, tol_rel_obj: float = 0.01)
 
-
+   Bases: :py:obj:`VariationalConvergence`
 
    Class for checking SGD convergence using Stan's algorithm.
 

@@ -31,7 +31,7 @@ Functions
 
 .. py:class:: Integrator(id_)
 
-
+   Bases: :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -39,7 +39,7 @@ Functions
 
 .. py:class:: LeapfrogIntegrator(id_, steps: int, step_size: float)
 
-
+   Bases: :py:obj:`Integrator`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.

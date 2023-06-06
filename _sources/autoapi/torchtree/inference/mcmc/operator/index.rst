@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: MCMCOperator(id_: torchtree.typing.ID, joint: torchtree.core.model.CallableModel, parameters: list[torchtree.typing.Parameter], weight: float, target_acceptance_probability: float, **kwargs)
 
-
+   Bases: :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.

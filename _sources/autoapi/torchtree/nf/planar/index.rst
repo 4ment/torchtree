@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: PlanarTransform(u: torch.nn.Parameter, w: torch.nn.Parameter, b: torch.nn.Parameter)
 
-
+   Bases: :py:obj:`torch.nn.Module`
 
    Implementation of the transformation used in planar flow:
 

@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: Optimizer(parameters: torchtree.typing.ListParameter, loss: torchtree.core.model.CallableModel, optimizer: torch.optim.Optimizer, iterations: int, **kwargs)
 
-
+   Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
 
    A wrapper for torch.optim.Optimizer objects.
 

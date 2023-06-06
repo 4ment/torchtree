@@ -3,6 +3,11 @@
 
 .. py:module:: torchtree.distributions.one_on_x
 
+.. autoapi-nested-parse::
+
+   One on X prior.
+
+
 
 Module Contents
 ---------------
@@ -19,9 +24,12 @@ Classes
 
 .. py:class:: OneOnX(validate_args=None)
 
+   Bases: :py:obj:`torch.distributions.Distribution`
 
+   One on X prior.
 
-   Distribution is the abstract base class for probability distributions.
+   Calculates the (improper) prior proportional to
+   :math:`\prod_i (1/x_i)` for the given statistic x.
 
    .. py:attribute:: arg_constraints
 

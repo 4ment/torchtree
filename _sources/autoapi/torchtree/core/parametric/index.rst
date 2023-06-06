@@ -21,7 +21,7 @@ Classes
 
 .. py:class:: ModelListener
 
-
+   Bases: :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -33,7 +33,7 @@ Classes
 
 .. py:class:: ParameterListener
 
-
+   Bases: :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -45,7 +45,7 @@ Classes
 
 .. py:class:: Parametric
 
-
+   Bases: :py:obj:`ModelListener`, :py:obj:`ParameterListener`, :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.

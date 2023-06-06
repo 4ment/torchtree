@@ -31,7 +31,7 @@ Functions
 
 .. py:class:: Adaptor
 
-
+   Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -47,7 +47,7 @@ Functions
 
 .. py:class:: AdaptiveStepSize(integrator: torchtree.inference.hmc.integrator.LeapfrogIntegrator, target_acceptance_probability: float, **kwargs)
 
-
+   Bases: :py:obj:`Adaptor`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -65,7 +65,7 @@ Functions
 
 .. py:class:: DualAveragingStepSize(integrator: torchtree.inference.hmc.integrator.LeapfrogIntegrator, mu=0.5, delta=0.8, gamma=0.05, kappa=0.75, t0=10, **kwargs)
 
-
+   Bases: :py:obj:`Adaptor`
 
    Step size adaptation using dual averaging Nesterov.
 
@@ -84,7 +84,7 @@ Functions
 
 .. py:class:: MassMatrixAdaptor(parameters: torchtree.typing.ListParameter, mass_matrix: torchtree.core.abstractparameter.AbstractParameter, regularize=True, **kwargs)
 
-
+   Bases: :py:obj:`Adaptor`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -108,7 +108,7 @@ Functions
 
 .. py:class:: WarmupAdaptation
 
-
+   Bases: :py:obj:`Adaptor`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.

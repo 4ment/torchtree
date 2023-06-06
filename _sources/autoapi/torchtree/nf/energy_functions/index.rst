@@ -38,7 +38,7 @@ Functions
 
 .. py:class:: EnergyFunctionModel(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, desc: str, dtype=None, device=None)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.

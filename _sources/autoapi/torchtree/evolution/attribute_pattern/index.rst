@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: AttributePattern(id_: Optional[str], taxa: torchtree.evolution.taxa.Taxa, data_type: torchtree.evolution.datatype.DataType, attribute: str)
 
-
+   Bases: :py:obj:`torchtree.core.model.Model`
 
    Parametric model.
 

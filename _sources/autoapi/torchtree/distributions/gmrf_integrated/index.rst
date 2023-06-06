@@ -24,7 +24,7 @@ Classes
 
 .. py:class:: GMRFGammaIntegrated(id_: torchtree.typing.ID, field: torchtree.core.abstractparameter.AbstractParameter, shape: float, rate: float, tree_model: torchtree.evolution.tree_model.TimeTreeModel = None, weights: torch.Tensor = None, rescale: bool = True)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Integrated GMRF/gamma distribution.
 

@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: Module(id_: torchtree.typing.ID, module: torch.nn.Module, parameters: torchtree.typing.OrderedDictType[str, torchtree.core.abstractparameter.AbstractParameter])
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Wrapper class for torch.nn.Module.
 

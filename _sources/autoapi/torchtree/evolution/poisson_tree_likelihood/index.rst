@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: PoissonTreeLikelihood(id_: torchtree.typing.ID, tree_model: torchtree.evolution.tree_model.TimeTreeModel, clock_model: torchtree.evolution.branch_model.BranchModel, edge_lengths: torchtree.core.abstractparameter.AbstractParameter)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Tree likelihood class using Poisson model.
 

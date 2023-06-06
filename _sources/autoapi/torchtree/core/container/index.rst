@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: Container(id_: Optional[str], objects: list[Union[torchtree.core.model.Model, torchtree.core.abstractparameter.AbstractParameter]])
 
-
+   Bases: :py:obj:`torchtree.core.model.Model`
 
    Container for multiple objects of type Model or AbstractParameter.
 

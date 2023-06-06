@@ -20,7 +20,7 @@ Classes
 
 .. py:class:: BirthDeathModel(id_: torchtree.typing.ID, tree_model: torchtree.evolution.tree_model.TimeTreeModel, lambda_: torchtree.core.abstractparameter.AbstractParameter, mu: torchtree.core.abstractparameter.AbstractParameter, psi: torchtree.core.abstractparameter.AbstractParameter, rho: torchtree.core.abstractparameter.AbstractParameter, origin: torchtree.core.abstractparameter.AbstractParameter, survival: bool = True)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Birth–death model
 
@@ -41,7 +41,7 @@ Classes
 
 .. py:class:: BirthDeath(lambda_: torch.Tensor, mu: torch.Tensor, psi: torch.Tensor, rho: torch.Tensor, origin: torch.Tensor, survival: bool = True, validate_args=None)
 
-
+   Bases: :py:obj:`torch.distributions.distribution.Distribution`
 
    Constant birth death model
 

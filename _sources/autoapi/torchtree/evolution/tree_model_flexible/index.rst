@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: FlexibleTimeTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, internal_heights: torchtree.core.abstractparameter.AbstractParameter)
 
-
+   Bases: :py:obj:`torchtree.evolution.tree_model.TimeTreeModel`
 
    Parametric model.
 

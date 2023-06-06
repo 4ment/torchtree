@@ -22,7 +22,7 @@ Classes
 
 .. py:class:: BranchModel(id_: Optional[str])
 
-
+   Bases: :py:obj:`torchtree.core.model.Model`
 
    Parametric model.
 
@@ -37,7 +37,7 @@ Classes
 
 .. py:class:: AbstractClockModel(id_: torchtree.typing.ID, rates: torchtree.core.abstractparameter.AbstractParameter, tree: torchtree.evolution.tree_model.TreeModel)
 
-
+   Bases: :py:obj:`BranchModel`, :py:obj:`abc.ABC`
 
    Parametric model.
 
@@ -54,7 +54,7 @@ Classes
 
 .. py:class:: StrictClockModel(id_: torchtree.typing.ID, rates: torchtree.core.abstractparameter.AbstractParameter, tree: torchtree.evolution.tree_model.TreeModel)
 
-
+   Bases: :py:obj:`AbstractClockModel`
 
    Parametric model.
 
@@ -73,7 +73,7 @@ Classes
 
 .. py:class:: SimpleClockModel(id_: torchtree.typing.ID, rates: torchtree.core.abstractparameter.AbstractParameter, tree: torchtree.evolution.tree_model.TreeModel)
 
-
+   Bases: :py:obj:`AbstractClockModel`
 
    Parametric model.
 

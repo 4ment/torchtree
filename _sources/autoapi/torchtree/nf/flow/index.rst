@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: NormalizingFlow(id_: str, x: Union[torchtree.core.abstractparameter.AbstractParameter, list[torchtree.core.abstractparameter.AbstractParameter]], base: torchtree.distributions.distributions.Distribution, modules: list[torchtree.nn.module.Module], dtype=None, device=None)
 
-
+   Bases: :py:obj:`torchtree.distributions.distributions.DistributionModel`
 
    Class for normalizing flows.
 
@@ -39,14 +39,32 @@ Classes
 
    .. py:method:: sample(sample_shape=Size()) -> None
 
+      Generates a sample_shape shaped sample or sample_shape shaped batch of
+      samples if the distribution parameters are batched.
+
 
    .. py:method:: rsample(sample_shape=Size()) -> None
+
+      Generates a sample_shape shaped reparameterized sample or sample_shape
+      shaped batch of reparameterized samples if the distribution parameters
+      are batched.
 
 
    .. py:method:: log_prob(x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter] = None) -> torch.Tensor
 
+      Returns the log of the probability density/mass function evaluated at x.
+
+      :param Parameter x: value to evaluate
+      :return: log probability
+      :rtype: Tensor
+
 
    .. py:method:: entropy() -> torch.Tensor
+
+      Returns entropy of distribution, batched over batch_shape.
+
+      :return: Tensor of shape batch_shape.
+      :rtype: Tensor
 
 
    .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]

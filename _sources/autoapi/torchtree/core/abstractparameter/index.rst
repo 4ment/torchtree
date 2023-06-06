@@ -20,7 +20,7 @@ Classes
 
 .. py:class:: Device
 
-
+   Bases: :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -45,7 +45,7 @@ Classes
 
 .. py:class:: AbstractParameter(id_: Optional[str])
 
-
+   Bases: :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`Device`, :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.

@@ -132,7 +132,7 @@ Functions
 
 .. py:class:: TreeLikelihoodModel(id_: torchtree.typing.ID, site_pattern: torchtree.evolution.site_pattern.SitePattern, tree_model: torchtree.evolution.tree_model.TreeModel, subst_model: torchtree.evolution.substitution_model.abstract.SubstitutionModel, site_model: torchtree.evolution.site_model.SiteModel, clock_model: torchtree.evolution.branch_model.BranchModel = None, use_ambiguities=False, use_tip_states=False)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.

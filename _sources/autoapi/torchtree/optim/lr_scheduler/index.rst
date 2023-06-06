@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: Scheduler(scheduler: torch.optim.lr_scheduler._LRScheduler)
 
-
+   Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`
 
    A wrapper for :class:`~torch.optim.lr_scheduler` objects.
 

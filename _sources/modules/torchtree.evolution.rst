@@ -1,4 +1,4 @@
-﻿torchtree.evolution
+torchtree.evolution
 ===================
 
 .. automodule:: torchtree.evolution

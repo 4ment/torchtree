@@ -3,6 +3,11 @@
 
 .. py:module:: torchtree.distributions.inverse_gamma
 
+.. autoapi-nested-parse::
+
+   Inverse gamma distribution parametrized by concentration and rate.
+
+
 
 Module Contents
 ---------------
@@ -19,38 +24,15 @@ Classes
 
 .. py:class:: InverseGamma(concentration, rate, validate_args=None)
 
+   Bases: :py:obj:`torch.distributions.TransformedDistribution`
 
+   Inverse gamma distribution parametrized by concentration and rate.
 
-   Extension of the Distribution class, which applies a sequence of Transforms
-   to a base distribution.  Let f be the composition of transforms applied::
+   Creates an inverse gamma distribution parameterized by :attr:`concentration`
+   and :attr:`rate`.
 
-       X ~ BaseDistribution
-       Y = f(X) ~ TransformedDistribution(BaseDistribution, f)
-       log p(Y) = log p(X) + log |det (dX/dY)|
-
-   Note that the ``.event_shape`` of a :class:`TransformedDistribution` is the
-   maximum shape of its base distribution and its transforms, since transforms
-   can introduce correlations among events.
-
-   An example for the usage of :class:`TransformedDistribution` would be::
-
-       # Building a Logistic Distribution
-       # X ~ Uniform(0, 1)
-       # f = a + b * logit(X)
-       # Y ~ f(X) ~ Logistic(a, b)
-       base_distribution = Uniform(0, 1)
-       transforms = [SigmoidTransform().inv, AffineTransform(loc=a, scale=b)]
-       logistic = TransformedDistribution(base_distribution, transforms)
-
-   For more examples, please look at the implementations of
-   :class:`~torch.distributions.gumbel.Gumbel`,
-   :class:`~torch.distributions.half_cauchy.HalfCauchy`,
-   :class:`~torch.distributions.half_normal.HalfNormal`,
-   :class:`~torch.distributions.log_normal.LogNormal`,
-   :class:`~torch.distributions.pareto.Pareto`,
-   :class:`~torch.distributions.weibull.Weibull`,
-   :class:`~torch.distributions.relaxed_bernoulli.RelaxedBernoulli` and
-   :class:`~torch.distributions.relaxed_categorical.RelaxedOneHotCategorical`
+   :param float or Tensor concentration: concentration parameter of the distribution
+   :param float or Tensor rate: rate parameter of the distribution
 
    .. py:property:: concentration
 

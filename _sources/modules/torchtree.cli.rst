@@ -1,4 +1,4 @@
-﻿torchtree.cli
+torchtree.cli
 =============
 
 .. automodule:: torchtree.cli

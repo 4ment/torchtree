@@ -3,6 +3,11 @@
 
 .. py:module:: torchtree.distributions.multivariate_normal
 
+.. autoapi-nested-parse::
+
+   Multivariate normal distribution.
+
+
 
 Module Contents
 ---------------
@@ -17,18 +22,19 @@ Classes
 
 
 
-.. py:class:: MultivariateNormal(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, loc: torchtree.core.abstractparameter.AbstractParameter, covariance_matrix=None, precision_matrix=None, scale_tril=None)
+.. py:class:: MultivariateNormal(id_: torchtree.typing.ID, x: Union[torchtree.core.abstractparameter.AbstractParameter, list[torchtree.core.abstractparameter.AbstractParameter]], loc: torchtree.core.abstractparameter.AbstractParameter, covariance_matrix: torchtree.core.abstractparameter.AbstractParameter = None, precision_matrix: torchtree.core.abstractparameter.AbstractParameter = None, scale_tril: torchtree.core.abstractparameter.AbstractParameter = None)
 
+   Bases: :py:obj:`torchtree.distributions.distributions.DistributionModel`
 
+   Multivariate normal distribution model.
 
-   Multivariate normal distribution.
-
-   :param id_: ID of joint distribution
-   :param x: random variable to evaluate/sample using distribution
-   :param loc: mean of the distribution
-   :param covariance_matrix: covariance matrix Parameter
-   :param precision_matrixs: precision matrix Parameter
-   :param scale_tril: scale tril Parameter
+   :param str or None id_: ID of MultivariateNormal distribution
+   :param AbstractParameter or list[AbstractParameter] x: random variable(s) to
+       evaluate/sample using distribution.
+   :param AbstractParameter loc: mean of the distribution.
+   :param AbstractParameter covariance_matrix: covariance of the distribution.
+   :param AbstractParameter precision_matrix: precision of the distribution.
+   :param AbstractParameter scale_tril: scale tril of the distribution.
 
    .. py:property:: event_shape
       :type: torch.Size
@@ -40,14 +46,32 @@ Classes
 
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
+      Generates a sample_shape shaped reparameterized sample or sample_shape
+      shaped batch of reparameterized samples if the distribution parameters
+      are batched.
+
 
    .. py:method:: sample(sample_shape=torch.Size()) -> None
+
+      Generates a sample_shape shaped sample or sample_shape shaped batch of
+      samples if the distribution parameters are batched.
 
 
    .. py:method:: log_prob(x: torchtree.Parameter = None) -> torch.Tensor
 
+      Returns the log of the probability density/mass function evaluated at x.
+
+      :param Parameter x: value to evaluate
+      :return: log probability
+      :rtype: Tensor
+
 
    .. py:method:: entropy() -> torch.Tensor
+
+      Returns entropy of distribution, batched over batch_shape.
+
+      :return: Tensor of shape batch_shape.
+      :rtype: Tensor
 
 
    .. py:method:: from_json(data, dic)

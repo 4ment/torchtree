@@ -24,7 +24,7 @@ Classes
 
 .. py:class:: DataType(id_: Optional[str])
 
-
+   Bases: :py:obj:`torchtree.core.model.Identifiable`, :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -55,7 +55,7 @@ Classes
 
 .. py:class:: AbstractDataType(id_: torchtree.typing.ID, states: tuple[str, Ellipsis])
 
-
+   Bases: :py:obj:`DataType`, :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -75,7 +75,7 @@ Classes
 
 .. py:class:: NucleotideDataType(id_: torchtree.typing.ID)
 
-
+   Bases: :py:obj:`AbstractDataType`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -108,7 +108,7 @@ Classes
 
 .. py:class:: AminoAcidDataType(id_: torchtree.typing.ID)
 
-
+   Bases: :py:obj:`AbstractDataType`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -144,7 +144,7 @@ Classes
 
 .. py:class:: CodonDataType(id_: torchtree.typing.ID, genetic_code: str)
 
-
+   Bases: :py:obj:`AbstractDataType`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.
@@ -182,7 +182,7 @@ Classes
 
 .. py:class:: GeneralDataType(id_: torchtree.typing.ID, codes: tuple[str, Ellipsis], ambiguities: dict = {})
 
-
+   Bases: :py:obj:`AbstractDataType`
 
    Helper class that provides a standard way to create an ABC using
    inheritance.

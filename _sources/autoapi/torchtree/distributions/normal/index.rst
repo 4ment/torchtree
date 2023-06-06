@@ -3,6 +3,11 @@
 
 .. py:module:: torchtree.distributions.normal
 
+.. autoapi-nested-parse::
+
+   Normal distribution parametrized by location and precision.
+
+
 
 Module Contents
 ---------------
@@ -19,13 +24,27 @@ Classes
 
 .. py:class:: Normal(loc: Union[float, torch.Tensor], scale: Union[float, torch.Tensor] = None, precision: Union[float, torch.Tensor] = None, validate_args=None)
 
+   Bases: :py:obj:`torch.distributions.Normal`
 
+   Normal distribution parametrized by location and precision.
 
    Creates a normal distribution parameterized by :attr:`loc` and
-    :attr:`scale` or :attr:`precision`.
+   :attr:`scale` or :attr:`precision`.
 
-   :param loc: mean of the distribution (often referred to as mu)
-   :param scale: standard deviation of the distribution (often referred to as sigma)
-   :param precision: precision of the distribution (precision = 1/scale^2)
+   .. math:: X \sim \mathcal{N}(\mu, 1/\tau)
+
+   where :math:`\tau = 1/ \sigma^2`
+
+   :example:
+   >>> x = torch.tensor(0.1)
+   >>> scale = torch.tensor(0.1)
+   >>> norm1 = Normal(torch.tensor(0.5), precision=1.0/scale**2)
+   >>> norm2 = torch.distributions.Normal(torch.tensor(0.5), scale=scale)
+   >>> norm1.log_prob(x) == norm2.log_prob(x)
+   tensor(True)
+
+   :param float or Tensor loc: mean of the distribution.
+   :param float or Tensor scale: standard deviation.
+   :param float or Tensor precision: precision.
 
 

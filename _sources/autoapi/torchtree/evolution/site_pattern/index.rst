@@ -29,7 +29,7 @@ Functions
 
 .. py:class:: SitePattern(id_: Optional[str], alignment: torchtree.evolution.alignment.Alignment, indices: list[Union[int, slice]] = None)
 
-
+   Bases: :py:obj:`torchtree.core.model.Model`
 
    Parametric model.
 

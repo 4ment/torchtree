@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: Hamiltonian(id_: torchtree.typing.ID, joint: torchtree.core.model.CallableModel)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.

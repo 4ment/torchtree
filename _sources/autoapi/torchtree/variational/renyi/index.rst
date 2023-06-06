@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: VR(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size, alpha: float)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Class representing the variational Renyi bound (VR) [#Li2016]_.
    VR extends traditional variational inference to Rényi’s :math:`\alpha`-divergences.

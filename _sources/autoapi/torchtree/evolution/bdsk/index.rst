@@ -39,7 +39,7 @@ Functions
 
 .. py:class:: BDSKModel(id_: torchtree.typing.ID, tree_model: torchtree.evolution.tree_model.TimeTreeModel, R: torchtree.core.abstractparameter.AbstractParameter, delta: torchtree.core.abstractparameter.AbstractParameter, s: torchtree.core.abstractparameter.AbstractParameter, rho: torchtree.core.abstractparameter.AbstractParameter = None, origin: torchtree.core.abstractparameter.AbstractParameter = None, origin_is_root_edge: bool = False, times: torchtree.core.abstractparameter.AbstractParameter = None, relative_times: bool = False, survival: bool = True, removal_probability: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Birth–death skyline plot as a model for transmission.
 
@@ -69,7 +69,7 @@ Functions
 
 .. py:class:: PiecewiseConstantBirthDeath(lambda_: torch.Tensor, mu: torch.Tensor, psi: torch.Tensor, *, rho: torch.Tensor = torch.zeros(1), origin: torch.Tensor = None, origin_is_root_edge: bool = False, times: torch.Tensor = None, relative_times=False, survival: bool = True, removal_probability: torch.Tensor = None, validate_args=None)
 
-
+   Bases: :py:obj:`torch.distributions.distribution.Distribution`
 
    Piecewise constant birth death model.
 

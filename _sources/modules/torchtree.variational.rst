@@ -1,4 +1,4 @@
-﻿torchtree.variational
+torchtree.variational
 =====================
 
 .. automodule:: torchtree.variational

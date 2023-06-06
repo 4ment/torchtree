@@ -24,7 +24,7 @@ Classes
 
 .. py:class:: SiteModel(id_: torchtree.typing.ID, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
+   Bases: :py:obj:`torchtree.core.model.Model`
 
    Parametric model.
 
@@ -43,7 +43,7 @@ Classes
 
 .. py:class:: ConstantSiteModel(id_: torchtree.typing.ID, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
+   Bases: :py:obj:`SiteModel`
 
    Parametric model.
 
@@ -76,7 +76,7 @@ Classes
 
 .. py:class:: InvariantSiteModel(id_: torchtree.typing.ID, invariant: torchtree.core.abstractparameter.AbstractParameter, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
+   Bases: :py:obj:`SiteModel`
 
    Parametric model.
 
@@ -110,7 +110,7 @@ Classes
 
 .. py:class:: UnivariateDiscretizedSiteModel(id_: torchtree.typing.ID, parameter: torchtree.core.abstractparameter.AbstractParameter, categories: int, invariant: torchtree.core.abstractparameter.AbstractParameter = None, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
+   Bases: :py:obj:`SiteModel`
 
    Parametric model.
 
@@ -150,7 +150,7 @@ Classes
 
 .. py:class:: WeibullSiteModel(id_: torchtree.typing.ID, parameter: torchtree.core.abstractparameter.AbstractParameter, categories: int, invariant: torchtree.core.abstractparameter.AbstractParameter = None, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
+   Bases: :py:obj:`UnivariateDiscretizedSiteModel`
 
    Parametric model.
 
@@ -172,7 +172,7 @@ Classes
 
 .. py:class:: LogNormalSiteModel(id_: torchtree.typing.ID, parameter: torchtree.core.abstractparameter.AbstractParameter, categories: int, invariant: torchtree.core.abstractparameter.AbstractParameter = None, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
+   Bases: :py:obj:`UnivariateDiscretizedSiteModel`
 
    Parametric model.
 

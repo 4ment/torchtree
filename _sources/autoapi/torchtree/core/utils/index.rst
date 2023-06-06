@@ -54,7 +54,7 @@ Attributes
 
 .. py:class:: TensorEncoder(*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
 
-
+   Bases: :py:obj:`json.JSONEncoder`
 
    Extensible JSON <http://json.org> encoder for Python data structures.
 
@@ -147,7 +147,7 @@ Attributes
 
 .. py:exception:: JSONParseError
 
-
+   Bases: :py:obj:`Exception`
 
    Common base class for all non-exit exceptions.
 
@@ -199,7 +199,7 @@ Attributes
 
 .. py:exception:: AlternativeAttributeError
 
-
+   Bases: :py:obj:`Exception`
 
    Custom exception for debugging conflicts between @property and
    __getattr__

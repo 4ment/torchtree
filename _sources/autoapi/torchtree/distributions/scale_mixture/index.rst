@@ -24,11 +24,12 @@ Classes
 
 .. py:class:: ScaleMixtureNormal(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, loc: Union[torchtree.core.abstractparameter.AbstractParameter, float], scale: torchtree.core.abstractparameter.AbstractParameter, gamma: torchtree.core.abstractparameter.AbstractParameter, slab: Union[torchtree.core.abstractparameter.AbstractParameter, float] = None)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Scale mixture of Normal distributions.
 
-   Regularized when a slab width parameter or scalar is provided [piironen2017]_
+   Regularized when a slab width parameter or scalar is provided
+   :footcite:p:`piironen2017sparsity`.
 
    :param id_: ID of object
    :param loc: mean of the distribution
@@ -37,8 +38,7 @@ Classes
    :param gamma: local scale
    :param slab: slab width
 
-   .. [piironen2017] Piironen and Vehtari 2017. Sparsity information and regularization
-    in the horseshoe and other shrinkage priors.
+   .. footbibliography::
 
    .. py:method:: handle_model_changed(model, obj, index) -> None
 

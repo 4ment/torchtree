@@ -19,7 +19,7 @@ Classes
 
 .. py:class:: CUBO(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size, n: torch.Tensor)
 
-
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Class representing the :math:`\chi`-upper bound (CUBO) objective [#Dieng2017]_.
 

@@ -3,6 +3,11 @@
 
 .. py:module:: torchtree.distributions.ctmc_scale
 
+.. autoapi-nested-parse::
+
+   CTMC scale reference prior.
+
+
 
 Module Contents
 ---------------
@@ -19,17 +24,19 @@ Classes
 
 .. py:class:: CTMCScale(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TreeModel)
 
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
 
+   Continuous-time Markov chain scale prior.
 
-   Class implementing the CTMC scale prior [#ferreira2008]_
+   Class implementing the CTMC reference scale prior from
+   :footcite:t:`ferreira2008bayesian`.
 
    :param id_: ID of object
    :type id_: str or None
-   :param torch.Tensor x: substitutin rate parameter
+   :param torch.Tensor x: substitution rate parameter
    :param TreeModel tree_model: tree model
 
-   .. [#ferreira2008] Ferreira and Suchard. Bayesian analysis of elapsed times
-    in continuous-time Markov chains. 2008
+   .. footbibliography::
 
    .. py:attribute:: shape
 
