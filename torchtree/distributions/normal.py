@@ -1,3 +1,4 @@
+"""Normal distribution parametrized by location and precision."""
 from math import sqrt
 from numbers import Number
 from typing import Union
@@ -10,13 +11,26 @@ from ..core.utils import register_class
 
 @register_class
 class Normal(torch.distributions.Normal):
-    """
-    Creates a normal distribution parameterized by :attr:`loc` and
-     :attr:`scale` or :attr:`precision`.
+    r"""Normal distribution parametrized by location and precision.
 
-    :param loc: mean of the distribution (often referred to as mu)
-    :param scale: standard deviation of the distribution (often referred to as sigma)
-    :param precision: precision of the distribution (precision = 1/scale^2)
+    Creates a normal distribution parameterized by :attr:`loc` and
+    :attr:`scale` or :attr:`precision`.
+
+    .. math:: X \sim \mathcal{N}(\mu, 1/\tau)
+
+    where :math:`\tau = 1/ \sigma^2`
+
+    :example:
+    >>> x = torch.tensor(0.1)
+    >>> scale = torch.tensor(0.1)
+    >>> norm1 = Normal(torch.tensor(0.5), precision=1.0/scale**2)
+    >>> norm2 = torch.distributions.Normal(torch.tensor(0.5), scale=scale)
+    >>> norm1.log_prob(x) == norm2.log_prob(x)
+    tensor(True)
+
+    :param float or Tensor loc: mean of the distribution.
+    :param float or Tensor scale: standard deviation.
+    :param float or Tensor precision: precision.
     """
 
     def __init__(

@@ -15,9 +15,10 @@ from torchtree.typing import ID
 
 @register_class
 class ScaleMixtureNormal(CallableModel):
-    """Scale mixture of Normal distributions.
+    r"""Scale mixture of Normal distributions.
 
-    Regularized when a slab width parameter or scalar is provided [piironen2017]_
+    Regularized when a slab width parameter or scalar is provided
+    :footcite:p:`piironen2017sparsity`.
 
     :param id_: ID of object
     :param loc: mean of the distribution
@@ -26,8 +27,7 @@ class ScaleMixtureNormal(CallableModel):
     :param gamma: local scale
     :param slab: slab width
 
-    .. [piironen2017] Piironen and Vehtari 2017. Sparsity information and regularization
-     in the horseshoe and other shrinkage priors.
+    .. footbibliography::
     """
 
     def __init__(
