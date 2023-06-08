@@ -1,5 +1,6 @@
 """Multivariate normal distribution."""
 from typing import Union
+
 import torch
 import torch.distributions
 
@@ -29,9 +30,9 @@ class MultivariateNormal(DistributionModel):
         id_: ID,
         x: Union[AbstractParameter, list[AbstractParameter]],
         loc: AbstractParameter,
-        covariance_matrix:AbstractParameter=None,
-        precision_matrix:AbstractParameter=None,
-        scale_tril:AbstractParameter=None,
+        covariance_matrix: AbstractParameter = None,
+        precision_matrix: AbstractParameter = None,
+        scale_tril: AbstractParameter = None,
     ) -> None:
         super().__init__(id_)
         if (covariance_matrix is not None) + (scale_tril is not None) + (

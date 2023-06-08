@@ -84,7 +84,7 @@ def tensor_rand(distribution, shape, dtype=None, device=None, requires_grad=Fals
     return tensor
 
 
-def get_class(full_name: str) -> any:
+def get_class(full_name: str) -> type:
     if full_name in REGISTERED_CLASSES:
         return REGISTERED_CLASSES[full_name]
 

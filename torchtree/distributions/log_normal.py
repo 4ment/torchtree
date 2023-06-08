@@ -25,8 +25,8 @@ class LogNormal(torch.distributions.LogNormal):
     def __init__(
         self,
         mean: Union[Tensor, float],
-        scale: Union[Tensor, float] = None,
-        scale_real: Union[Tensor, float] = None,
+        scale: Union[Tensor, float, None] = None,
+        scale_real: Union[Tensor, float, None] = None,
         validate_args=None,
     ) -> None:
         if (scale is not None) + (scale_real is not None) != 1:

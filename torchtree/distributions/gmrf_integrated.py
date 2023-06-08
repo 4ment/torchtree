@@ -36,7 +36,7 @@ class GMRFGammaIntegrated(CallableModel):
        p(X) &= \int p(\tau; \alpha, \beta) p(X \mid \tau) d\tau \\
             &= \int \frac{\beta^\alpha}{\Gamma(\alpha)} \tau^{\alpha-1} e^{-\beta \tau} \prod_{i=1}^{N-1} \frac{1}{\sqrt{2 \pi}} \sqrt{\tau} e^{-\frac{\tau}{2} (x_{i+1} -x_i)^2} d\tau \\
             &= \left(\frac{1}{\sqrt{2 \pi}}\right)^{N-1} \frac{\beta^\alpha}{\Gamma(\alpha)} \int \tau^{\alpha + \frac{N-3}{2}} e^{-\tau (\frac{1}{2} \sum_{i=1}^{N-1} (x_{i+1} -x_i)^2 + \beta)}  d\tau\\
-            &= \left(\frac{1}{\sqrt{2 \pi}}\right)^{N-1} \frac{\beta^\alpha}{\Gamma(\alpha)} \Gamma \left(\tau^{\alpha + \frac{N-1}{2}} \right) \left(\sum_{i=1}^{N-1} (x_{i+1} -x_i)^2 + \beta \right)^{ -\alpha - \frac{N-1}{2} }
+            &= \left(\frac{1}{\sqrt{2 \pi}}\right)^{N-1} \frac{\beta^\alpha}{\Gamma(\alpha)} \Gamma (\alpha + \frac{N-1}{2}) \left(\sum_{i=1}^{N-1} (x_{i+1} -x_i)^2 + \beta \right)^{ -\alpha - \frac{N-1}{2} }
 
     Idea from Cheng Zhang
     """  # noqa: E501

@@ -36,8 +36,8 @@ class Normal(torch.distributions.Normal):
     def __init__(
         self,
         loc: Union[float, Tensor],
-        scale: Union[float, Tensor] = None,
-        precision: Union[float, Tensor] = None,
+        scale: Union[float, Tensor, None] = None,
+        precision: Union[float, Tensor, None] = None,
         validate_args=None,
     ) -> None:
         scale_ = None
