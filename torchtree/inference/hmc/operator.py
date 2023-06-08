@@ -60,7 +60,6 @@ class HMCOperator(MCMCOperator, ParameterListener):
             )
             print(f"Step size: {self.id} = {self._integrator.step_size} ({step_size})")
 
-        self._disable_adaptation = kwargs.get("disable_adaptation", False)
         self._divergence_threshold = kwargs.get("divergence_threshold", 1000)
 
     def update_mass_matrices(self) -> None:
@@ -127,7 +126,7 @@ class HMCOperator(MCMCOperator, ParameterListener):
         return kinetic_energy0 - kinetic_energy
 
     def tune(self, acceptance_prob: Tensor, sample: int, accepted: bool) -> None:
-        if len(self._adaptors) == 0 and not self._disable_adaptation:
+        if len(self._adaptors) == 0:
             super().tune(acceptance_prob, sample, accepted)
         else:
             for adaptor in self._adaptors:
@@ -147,7 +146,6 @@ class HMCOperator(MCMCOperator, ParameterListener):
         optionals["find_reasonable_step_size"] = data.get(
             "find_reasonable_step_size", False
         )
-        optionals["disable_adaptation"] = data.get("disable_adaptation", False)
         optionals["divergence_threshold"] = data.get("divergence_threshold", 1000)
         if optionals["divergence_threshold"] in ("inf", "infinity"):
             optionals["divergence_threshold"] = float("inf")

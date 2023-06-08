@@ -36,6 +36,7 @@ class MCMC(JSONSerializable, Runnable):
 
         for logger in self.loggers:
             logger.initialize()
+            logger.log(sample=0)
 
         with torch.no_grad():
             log_joint = self.joint()
@@ -61,10 +62,14 @@ class MCMC(JSONSerializable, Runnable):
             else:
                 with torch.no_grad():
                     log_joint_proposed = self.joint()
-
-                log_alpha = (log_joint_proposed - log_joint) + hastings_ratio
-                acceptance_prob = min(torch.zeros(1), log_alpha).exp()
-                accepted = acceptance_prob > torch.rand(1)
+                if torch.isnan(log_joint_proposed):
+                    log_alpha = torch.finfo(hastings_ratio.dtype).min
+                    acceptance_prob = torch.zeros_like(hastings_ratio)
+                    accepted = False
+                else:
+                    log_alpha = (log_joint_proposed - log_joint) + hastings_ratio
+                    acceptance_prob = min(torch.zeros(1), log_alpha).exp()
+                    accepted = acceptance_prob > torch.rand(1)
 
             if accepted:
                 log_joint = log_joint_proposed

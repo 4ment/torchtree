@@ -5,6 +5,7 @@ from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.advi import create_variational_parser
 from torchtree.cli.hmc import create_hmc_parser
 from torchtree.cli.map import create_map_parser
+from torchtree.cli.mcmc import create_mcmc_parser
 
 
 def main():
@@ -18,6 +19,8 @@ def main():
     create_variational_parser(subprasers)
 
     create_map_parser(subprasers)
+
+    create_mcmc_parser(subprasers)
 
     create_hmc_parser(subprasers)
 

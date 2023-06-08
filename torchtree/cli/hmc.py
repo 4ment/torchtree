@@ -7,6 +7,7 @@ from torchtree.cli.evolution import (
     create_taxa,
 )
 from torchtree.cli.jacobians import create_jacobians
+from torchtree.cli.loggers import create_loggers
 from torchtree.cli.utils import make_unconstrained
 
 
@@ -76,28 +77,13 @@ def create_hmc_parser(subprasers):
         action="store_true",
         help="""one parameter per operator""",
     )
+    parser.add_argument(
+        "--join",
+        required=False,
+        help="""multiple parameters per operator""",
+    )
     parser.set_defaults(func=build_hmc)
     return parser
-
-
-def create_loggers(parameters, arg):
-    return [
-        {
-            "id": "logger",
-            "type": "Logger",
-            "parameters": ["joint", "like"] + parameters,
-            "delimiter": "\t",
-            "file_name": f"{arg.stem}.csv",
-            "every": arg.log_every,
-        },
-        {
-            "id": "looger.trees",
-            "type": "TreeLogger",
-            "tree_model": "tree",
-            "file_name": f"{arg.stem}.trees",
-            "every": arg.log_every,
-        },
-    ]
 
 
 def create_stan_windowed_adaptation(joint, parameters, parameters_unres, arg):
@@ -190,7 +176,7 @@ def create_hmc_operator(id_, joint, parameters, arg):
             {
                 "id": f"{id_}.step.size.adaptor",
                 "type": "DualAveragingStepSize",
-                "integrator": f"{param}.leapfrog",
+                "integrator": f"{id_}.leapfrog",
             }
         )
     elif arg.adapt_step_size == "adaptive":
@@ -214,10 +200,29 @@ def create_hmc(joint, parameters, parameters_unres, arg):
         "iterations": arg.iter,
         "operators": [],
     }
-    if arg.split:
-        for param in parameters_unres:
-            operator = create_hmc_operator(param["id"], joint, param, arg)
-            hmc_json["operators"].append(operator)
+    if arg.split or arg.join is not None:
+        if arg.join is not None:
+            groups = arg.join.split(":")
+            dic = {}
+            dic2 = {group: {} for group in groups}
+            for param in parameters_unres:
+                for group in groups:
+                    if param["id"] in group:
+                        dic[param["id"]] = param
+                        dic2[group][param["id"]] = 1
+                if param["id"] not in dic:
+                    operator = create_hmc_operator(param["id"], joint, param, arg)
+                    hmc_json["operators"].append(operator)
+            for group in dic2:
+                params = group.split(",")
+                operator = create_hmc_operator(
+                    params[0], joint, [dic[p] for p in params], arg
+                )
+                hmc_json["operators"].append(operator)
+        else:
+            for param in parameters_unres:
+                operator = create_hmc_operator(param["id"], joint, param, arg)
+                hmc_json["operators"].append(operator)
     else:
         operator = create_hmc_operator("hmc", joint, parameters_unres, arg)
         hmc_json["operators"].append(operator)
@@ -250,15 +255,21 @@ def build_hmc(arg):
 
     parameters_unres, parameters = make_unconstrained(json_list)
 
-    opt_dict = create_hmc("joint", parameters, parameters_unres, arg)
-    json_list.append(opt_dict)
-
     jacobians_list = create_jacobians(json_list)
     if arg.clock is not None and arg.heights == "ratio":
         jacobians_list.append("tree")
     if arg.coalescent in ("skygrid", "skyride"):
         jacobians_list.remove("coalescent.theta")
-    joint_dic["distributions"].extend(jacobians_list)
+
+    joint_jacobian = {
+        "id": "joint.jacobian",
+        "type": "JointDistributionModel",
+        "distributions": ["joint"] + jacobians_list,
+    }
+    json_list.append(joint_jacobian)
+
+    opt_dict = create_hmc("joint.jacobian", parameters, parameters_unres, arg)
+    json_list.append(opt_dict)
 
     for plugin in PLUGIN_MANAGER.plugins():
         plugin.process_all(arg, json_list)

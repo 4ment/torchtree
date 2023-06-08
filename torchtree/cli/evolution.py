@@ -244,6 +244,11 @@ def add_coalescent(parser):
         help="""initialize coalescent parameter from input tree using MLE.
         heights_init=tree must be specified.""",
     )
+    parser.add_argument(
+        '--coalescent_temperature',
+        type=float,
+        help="""Soft coalescent""",
+    )
     return parser
 
 
@@ -408,6 +413,10 @@ def create_tree_model(id_: str, taxa: dict, arg):
                     root_height=root_height,
                     **kwargs,
                 )
+            elif arg.coalescent_init is not None and isinstance(
+                arg.coalescent_init, numbers.Number
+            ):
+                arg._coalescent_init = arg.coalescent_init
 
         elif arg.heights == 'shift':
             shifts = Parameter.json_factory(
@@ -418,6 +427,31 @@ def create_tree_model(id_: str, taxa: dict, arg):
             tree_model = ReparameterizedTimeTreeModel.json_factory(
                 id_, newick, 'taxa', shifts=shifts, **kwargs
             )
+            if arg.heights_init == 'tree' or arg.root_height_init is not None:
+                # instantiate tree model with keep_branch_lengths to get the
+                # ratios/root height parameters
+                taxa_obj = Taxa.from_json(taxa, {})
+                tree_model_obj: ReparameterizedTimeTreeModel = (
+                    ReparameterizedTimeTreeModel.from_json(
+                        tree_model, {'taxa': taxa_obj}
+                    )
+                )
+                del tree_model["shifts"]["full"]
+                if arg.heights_init == 'tree':
+                    tree_model["shifts"][
+                        "tensor"
+                    ] = tree_model_obj._internal_heights.tensor.tolist()
+                else:
+                    heights = tree_model_obj.node_heights[len(taxa['taxa']) :]
+                    heights /= heights[-1] / arg.root_height_init
+                    tree_model["shifts"]["tensor"] = tree_model_obj.transform.inv(
+                        heights
+                    ).tolist()
+
+            if arg.coalescent_init is not None and isinstance(
+                arg.coalescent_init, numbers.Number
+            ):
+                arg._coalescent_init = arg.coalescent_init
     else:
         branch_lengths = Parameter.json_factory(
             f'{id_}.blens', **{'tensor': 0.1, 'full': [len(taxa['taxa']) * 2 - 3]}
@@ -1253,6 +1287,8 @@ def create_coalesent(id_, tree_id, taxa, arg):
             'tree_model': tree_id,
             'cutoff': arg.cutoff,
         }
+        if arg.coalescent_temperature is not None:
+            coalescent['temperature'] = arg.coalescent_temperature
     elif arg.coalescent == 'skyride':
         coalescent = {
             'id': id_,

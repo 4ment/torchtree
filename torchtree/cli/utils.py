@@ -90,11 +90,11 @@ def make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[
                         json_object['x']['full_like'] = json_object['full_like']
                         del json_object['full_like']
                     del json_object['tensor']
+
+                    parameters.append(json_object['id'])
+                    parameters_unres.append(json_object['x'])
                 elif json_object['lower'] != json_object['upper']:
                     raise NotImplementedError
-
-                parameters.append(json_object['id'])
-                parameters_unres.append(json_object['x'])
             elif 'lower' in json_object:
                 if json_object['lower'] > 0:
                     json_object['type'] = 'TransformedParameter'
@@ -186,3 +186,16 @@ def make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[
                 parameters.extend(params)
                 parameters_unres.extend(params_unres)
     return parameters_unres, parameters
+
+
+def length_of_tensor_in_dict_parameter(param: dict) -> int:
+    if "tensor" in param:
+        if isinstance(param["tensor"], list):
+            length = len(param["tensor"])
+        elif "full" in param:
+            length = param["full"][0]
+        else:
+            raise NotImplementedError
+    else:
+        raise NotImplementedError
+    return length
