@@ -1,3 +1,4 @@
+"""Interface for identifiable objects."""
 from abc import ABC
 from typing import Optional
 
