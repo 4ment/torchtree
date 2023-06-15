@@ -125,9 +125,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../modules/torchtree.html">torchtree</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
@@ -380,6 +378,19 @@ document.write(`
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.MCMCOperator.tune"><code class="docutils literal notranslate"><span class="pre">MCMCOperator.tune()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.ScalerOperator"><code class="docutils literal notranslate"><span class="pre">ScalerOperator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.ScalerOperator.adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">ScalerOperator.adaptable_parameter</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.ScalerOperator.set_adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">ScalerOperator.set_adaptable_parameter()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.ScalerOperator.from_json"><code class="docutils literal notranslate"><span class="pre">ScalerOperator.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator.adaptable_parameter</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.set_adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator.set_adaptable_parameter()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.tune"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator.tune()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.from_json"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator.from_json()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -404,7 +415,13 @@ document.write(`
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.inference.mcmc.operator.MCMCOperator" title="torchtree.inference.mcmc.operator.MCMCOperator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCMCOperator</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Abstract class making an object identifiable.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.inference.mcmc.operator.ScalerOperator" title="torchtree.inference.mcmc.operator.ScalerOperator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScalerOperator</span></code></a></p></td>
+<td><p>Abstract class making an object identifiable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator" title="torchtree.inference.mcmc.operator.SlidingWindowOperator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SlidingWindowOperator</span></code></a></p></td>
+<td><p>Abstract class making an object identifiable.</p></td>
 </tr>
 </tbody>
 </table>
@@ -412,8 +429,12 @@ document.write(`
 <dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.MCMCOperator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.inference.mcmc.operator.</span></span><span class="sig-name descname"><span class="pre">MCMCOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">torchtree.typing.Parameter</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_acceptance_probability</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.mcmc.operator.MCMCOperator" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../../core/identifiable/index.html#torchtree.core.identifiable.Identifiable" title="torchtree.core.identifiable.Identifiable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.identifiable.Identifiable</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Abstract class making an object identifiable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><em>None</em>) – identifier of object</p>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.MCMCOperator.adaptable_parameter">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adaptable_parameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#torchtree.inference.mcmc.operator.MCMCOperator.adaptable_parameter" title="Permalink to this definition">#</a></dt>
@@ -443,6 +464,97 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.MCMCOperator.tune">
 <span class="sig-name descname"><span class="pre">tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">acceptance_prob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.inference.mcmc.operator.MCMCOperator.tune" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.ScalerOperator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.inference.mcmc.operator.</span></span><span class="sig-name descname"><span class="pre">ScalerOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">torchtree.typing.Parameter</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_acceptance_probability</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.mcmc.operator.ScalerOperator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#torchtree.inference.mcmc.operator.MCMCOperator" title="torchtree.inference.mcmc.operator.MCMCOperator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCMCOperator</span></code></a></p>
+<p>Abstract class making an object identifiable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><em>None</em>) – identifier of object</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.ScalerOperator.adaptable_parameter">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adaptable_parameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#torchtree.inference.mcmc.operator.ScalerOperator.adaptable_parameter" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.ScalerOperator.set_adaptable_parameter">
+<span class="sig-name descname"><span class="pre">set_adaptable_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.inference.mcmc.operator.ScalerOperator.set_adaptable_parameter" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.ScalerOperator.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.mcmc.operator.ScalerOperator.from_json" title="Permalink to this definition">#</a></dt>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.SlidingWindowOperator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.inference.mcmc.operator.</span></span><span class="sig-name descname"><span class="pre">SlidingWindowOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">torchtree.typing.Parameter</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_acceptance_probability</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#torchtree.inference.mcmc.operator.MCMCOperator" title="torchtree.inference.mcmc.operator.MCMCOperator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCMCOperator</span></code></a></p>
+<p>Abstract class making an object identifiable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><em>None</em>) – identifier of object</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.SlidingWindowOperator.adaptable_parameter">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adaptable_parameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.adaptable_parameter" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.SlidingWindowOperator.set_adaptable_parameter">
+<span class="sig-name descname"><span class="pre">set_adaptable_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.set_adaptable_parameter" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.SlidingWindowOperator.tune">
+<span class="sig-name descname"><span class="pre">tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">acceptance_prob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.tune" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.operator.SlidingWindowOperator.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.from_json" title="Permalink to this definition">#</a></dt>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -489,6 +601,19 @@ inheritance.</p>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.MCMCOperator.accept"><code class="docutils literal notranslate"><span class="pre">MCMCOperator.accept()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.MCMCOperator.reject"><code class="docutils literal notranslate"><span class="pre">MCMCOperator.reject()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.MCMCOperator.tune"><code class="docutils literal notranslate"><span class="pre">MCMCOperator.tune()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.ScalerOperator"><code class="docutils literal notranslate"><span class="pre">ScalerOperator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.ScalerOperator.adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">ScalerOperator.adaptable_parameter</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.ScalerOperator.set_adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">ScalerOperator.set_adaptable_parameter()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.ScalerOperator.from_json"><code class="docutils literal notranslate"><span class="pre">ScalerOperator.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator.adaptable_parameter</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.set_adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator.set_adaptable_parameter()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.tune"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator.tune()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.operator.SlidingWindowOperator.from_json"><code class="docutils literal notranslate"><span class="pre">SlidingWindowOperator.from_json()</span></code></a></li>
 </ul>
 </li>
 </ul>

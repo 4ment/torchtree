@@ -24,6 +24,7 @@ Classes
 
 .. py:class:: InverseGamma(concentration, rate, validate_args=None)
 
+
    Bases: :py:obj:`torch.distributions.TransformedDistribution`
 
    Inverse gamma distribution parametrized by concentration and rate.

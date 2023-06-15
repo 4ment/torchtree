@@ -22,7 +22,8 @@ Classes
 
 
 
-.. py:class:: LogNormal(mean: Union[torch.Tensor, float], scale: Union[torch.Tensor, float] = None, scale_real: Union[torch.Tensor, float] = None, validate_args=None)
+.. py:class:: LogNormal(mean: Union[torch.Tensor, float], scale: Union[torch.Tensor, float, None] = None, scale_real: Union[torch.Tensor, float, None] = None, validate_args=None)
+
 
    Bases: :py:obj:`torch.distributions.LogNormal`
 

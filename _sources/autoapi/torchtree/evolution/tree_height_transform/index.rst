@@ -20,6 +20,7 @@ Classes
 
 .. py:class:: GeneralNodeHeightTransform(tree: TimeTreeModel, cache_size=0)
 
+
    Bases: :py:obj:`torch.distributions.Transform`
 
    Transform from ratios to node heights.
@@ -48,6 +49,7 @@ Classes
 
 
 .. py:class:: DifferenceNodeHeightTransform(tree_model: TimeTreeModel, k: float = 0.0, cache_size=0)
+
 
    Bases: :py:obj:`torch.distributions.Transform`
 

@@ -124,9 +124,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="modules/torchtree.html">torchtree</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
@@ -424,6 +422,10 @@ document.write(`
       <ul>
         <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator.adaptable_parameter">(torchtree.inference.mcmc.operator.MCMCOperator property)</a>
 </li>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.ScalerOperator.adaptable_parameter">(torchtree.inference.mcmc.operator.ScalerOperator property)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.SlidingWindowOperator.adaptable_parameter">(torchtree.inference.mcmc.operator.SlidingWindowOperator property)</a>
+</li>
       </ul></li>
       <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.AdaptiveStepSize">AdaptiveStepSize (class in torchtree.inference.hmc.adaptation)</a>
 </li>
@@ -453,10 +455,10 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/root_transform/index.html#torchtree.evolution.root_transform.RootParameter.add_parameter_listener">(torchtree.evolution.root_transform.RootParameter method)</a>
 </li>
       </ul></li>
-      <li><a href="autoapi/torchtree/ops/welford/index.html#torchtree.ops.welford.WelfordVariance.add_sample">add_sample() (torchtree.ops.welford.WelfordVariance method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/ops/welford/index.html#torchtree.ops.welford.WelfordVariance.add_sample">add_sample() (torchtree.ops.welford.WelfordVariance method)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/alignment/index.html#torchtree.evolution.alignment.Alignment">Alignment (class in torchtree.evolution.alignment)</a>
 </li>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.AlternativeAttributeError">AlternativeAttributeError</a>
@@ -753,10 +755,10 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_bdsk">create_bdsk() (in module torchtree.cli.evolution)</a>
 </li>
-      <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_bdsk_prior">create_bdsk_prior() (in module torchtree.cli.evolution)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_bdsk_prior">create_bdsk_prior() (in module torchtree.cli.evolution)</a>
+</li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_birth_death">create_birth_death() (in module torchtree.cli.evolution)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_branch_model">create_branch_model() (in module torchtree.cli.evolution)</a>
@@ -803,8 +805,6 @@ document.write(`
         <li><a href="autoapi/torchtree/cli/map/index.html#torchtree.cli.map.create_logger">(in module torchtree.cli.map)</a>
 </li>
       </ul></li>
-      <li><a href="autoapi/torchtree/cli/hmc/index.html#torchtree.cli.hmc.create_loggers">create_loggers() (in module torchtree.cli.hmc)</a>
-</li>
       <li><a href="autoapi/torchtree/cli/map/index.html#torchtree.cli.map.create_map_parser">create_map_parser() (in module torchtree.cli.map)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_meanfield">create_meanfield() (in module torchtree.cli.advi)</a>
@@ -1258,6 +1258,10 @@ document.write(`
 </li>
         <li><a href="autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.from_json">(torchtree.inference.mcmc.mcmc.MCMC class method)</a>
 </li>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.ScalerOperator.from_json">(torchtree.inference.mcmc.operator.ScalerOperator class method)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.SlidingWindowOperator.from_json">(torchtree.inference.mcmc.operator.SlidingWindowOperator class method)</a>
+</li>
         <li><a href="autoapi/torchtree/inference/sampler/index.html#torchtree.inference.sampler.Sampler.from_json">(torchtree.inference.sampler.Sampler class method)</a>
 </li>
         <li><a href="autoapi/torchtree/nf/energy_functions/index.html#torchtree.nf.energy_functions.EnergyFunctionModel.from_json">(torchtree.nf.energy_functions.EnergyFunctionModel class method)</a>
@@ -1637,6 +1641,8 @@ document.write(`
         <li><a href="autoapi/torchtree/inference/hmc/stan_adaptation/index.html#torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation.learn">(torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation method)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/cli/utils/index.html#torchtree.cli.utils.length_of_tensor_in_dict_parameter">length_of_tensor_in_dict_parameter() (in module torchtree.cli.utils)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/amino_acid/index.html#torchtree.evolution.substitution_model.amino_acid.LG">LG (class in torchtree.evolution.substitution_model.amino_acid)</a>
 </li>
       <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.LinearMaskedCoupling">LinearMaskedCoupling (class in torchtree.nf.realnvp)</a>
@@ -1817,11 +1823,11 @@ document.write(`
 </li>
         <li><a href="autoapi/torchtree/cli/advi/index.html#module-torchtree.cli.advi">torchtree.cli.advi</a>, <a href="modules/torchtree.cli.advi.html#module-torchtree.cli.advi">[1]</a>
 </li>
-        <li><a href="autoapi/torchtree/cli/cli/index.html#module-torchtree.cli.cli">torchtree.cli.cli</a>, <a href="modules/torchtree.cli.cli.html#module-torchtree.cli.cli">[1]</a>
+        <li><a href="autoapi/torchtree/cli/cli/index.html#module-torchtree.cli.cli">torchtree.cli.cli</a>
 </li>
         <li><a href="autoapi/torchtree/cli/evolution/index.html#module-torchtree.cli.evolution">torchtree.cli.evolution</a>, <a href="modules/torchtree.cli.evolution.html#module-torchtree.cli.evolution">[1]</a>
 </li>
-        <li><a href="autoapi/torchtree/cli/hmc/index.html#module-torchtree.cli.hmc">torchtree.cli.hmc</a>, <a href="modules/torchtree.cli.hmc.html#module-torchtree.cli.hmc">[1]</a>
+        <li><a href="autoapi/torchtree/cli/hmc/index.html#module-torchtree.cli.hmc">torchtree.cli.hmc</a>
 </li>
         <li><a href="autoapi/torchtree/cli/jacobians/index.html#module-torchtree.cli.jacobians">torchtree.cli.jacobians</a>, <a href="modules/torchtree.cli.jacobians.html#module-torchtree.cli.jacobians">[1]</a>
 </li>
@@ -2432,6 +2438,8 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/distributions/scale_mixture/index.html#torchtree.distributions.scale_mixture.ScaleMixtureNormal">ScaleMixtureNormal (class in torchtree.distributions.scale_mixture)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.ScalerOperator">ScalerOperator (class in torchtree.inference.mcmc.operator)</a>
+</li>
       <li><a href="autoapi/torchtree/optim/lr_scheduler/index.html#torchtree.optim.lr_scheduler.Scheduler">Scheduler (class in torchtree.optim.lr_scheduler)</a>
 </li>
       <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.SELBO">SELBO (class in torchtree.variational.kl)</a>
@@ -2444,6 +2452,10 @@ document.write(`
 
       <ul>
         <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator.set_adaptable_parameter">(torchtree.inference.mcmc.operator.MCMCOperator method)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.ScalerOperator.set_adaptable_parameter">(torchtree.inference.mcmc.operator.ScalerOperator method)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.SlidingWindowOperator.set_adaptable_parameter">(torchtree.inference.mcmc.operator.SlidingWindowOperator method)</a>
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/inference/hmc/integrator/index.html#torchtree.inference.hmc.integrator.set_tensor">set_tensor() (in module torchtree.inference.hmc.integrator)</a>
@@ -2507,6 +2519,8 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.size">size() (torchtree.core.parameter.Parameter method)</a>
+</li>
+      <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.SlidingWindowOperator">SlidingWindowOperator (class in torchtree.inference.mcmc.operator)</a>
 </li>
       <li><a href="autoapi/torchtree/math/index.html#torchtree.math.soft_max">soft_max() (in module torchtree.math)</a>
 </li>
@@ -2672,7 +2686,7 @@ document.write(`
     torchtree.cli.cli
 
       <ul>
-        <li><a href="autoapi/torchtree/cli/cli/index.html#module-torchtree.cli.cli">module</a>, <a href="modules/torchtree.cli.cli.html#module-torchtree.cli.cli">[1]</a>
+        <li><a href="autoapi/torchtree/cli/cli/index.html#module-torchtree.cli.cli">module</a>
 </li>
       </ul></li>
       <li>
@@ -2686,7 +2700,7 @@ document.write(`
     torchtree.cli.hmc
 
       <ul>
-        <li><a href="autoapi/torchtree/cli/hmc/index.html#module-torchtree.cli.hmc">module</a>, <a href="modules/torchtree.cli.hmc.html#module-torchtree.cli.hmc">[1]</a>
+        <li><a href="autoapi/torchtree/cli/hmc/index.html#module-torchtree.cli.hmc">module</a>
 </li>
       </ul></li>
       <li>
@@ -2969,8 +2983,6 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/bdsk/index.html#module-torchtree.evolution.bdsk">module</a>, <a href="modules/torchtree.evolution.bdsk.html#module-torchtree.evolution.bdsk">[1]</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     torchtree.evolution.birth_death
 
@@ -2978,6 +2990,8 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/birth_death/index.html#module-torchtree.evolution.birth_death">module</a>, <a href="modules/torchtree.evolution.birth_death.html#module-torchtree.evolution.birth_death">[1]</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     torchtree.evolution.branch_model
 
@@ -3386,6 +3400,8 @@ document.write(`
 
       <ul>
         <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator.tune">(torchtree.inference.mcmc.operator.MCMCOperator method)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.SlidingWindowOperator.tune">(torchtree.inference.mcmc.operator.SlidingWindowOperator method)</a>
 </li>
       </ul></li>
   </ul></td>

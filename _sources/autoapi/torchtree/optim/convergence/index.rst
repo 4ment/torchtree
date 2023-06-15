@@ -21,6 +21,7 @@ Classes
 
 .. py:class:: BaseConvergence
 
+
    Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`
 
    Base class for all convergence diagnostic classes.
@@ -31,6 +32,7 @@ Classes
 
 
 .. py:class:: VariationalConvergence(loss: torchtree.core.model.CallableModel, every: int, samples: torch.Size, start: int = 0, file_name: str = None)
+
 
    Bases: :py:obj:`BaseConvergence`
 
@@ -48,9 +50,18 @@ Classes
    .. py:method:: from_json(data: dict[str, any], dic: dict[str, any]) -> VariationalConvergence
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: StanVariationalConvergence(loss: torchtree.core.model.CallableModel, every: int, samples: torch.Size, max_iterations: int, start: int = 0, tol_rel_obj: float = 0.01)
+
 
    Bases: :py:obj:`VariationalConvergence`
 
@@ -82,6 +93,14 @@ Classes
 
    .. py:method:: from_json(data: dict[str, any], dic: dict[str, any]) -> StanVariationalConvergence
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

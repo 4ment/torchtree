@@ -23,6 +23,7 @@ Classes
 
 .. py:class:: LoggerInterface
 
+
    Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
 
    Interface for logging things like parameters or trees to a file.
@@ -44,6 +45,7 @@ Classes
 
 
 .. py:class:: Logger(objs: list[Union[torchtree.core.abstractparameter.AbstractParameter, torchtree.core.model.CallableModel]], every: int, **kwargs)
+
 
    Bases: :py:obj:`LoggerInterface`
 
@@ -81,6 +83,7 @@ Classes
 
 .. py:class:: TreeLogger(tree_model: torchtree.evolution.tree_model.TreeModel, every: int, **kwargs)
 
+
    Bases: :py:obj:`LoggerInterface`
 
    Class for logging trees to a file.
@@ -116,6 +119,7 @@ Classes
 
 .. py:class:: CSV(objs: list[torchtree.core.abstractparameter.AbstractParameter], **kwargs)
 
+
    Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
 
    Class for writting parameters to a CSV file.
@@ -143,6 +147,7 @@ Classes
 
 
 .. py:class:: Dumper(parameters: list[torchtree.core.abstractparameter.AbstractParameter], **kwargs)
+
 
    Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
 

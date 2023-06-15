@@ -16,6 +16,7 @@ Functions
    torchtree.cli.utils.convert_date_to_real
    torchtree.cli.utils.read_dates_from_csv
    torchtree.cli.utils.make_unconstrained
+   torchtree.cli.utils.length_of_tensor_in_dict_parameter
 
 
 
@@ -29,5 +30,8 @@ Functions
 
    Returns a list of constrained parameter IDs (str) with the corresponding
    parameters (dict)
+
+
+.. py:function:: length_of_tensor_in_dict_parameter(param: dict) -> int
 
 

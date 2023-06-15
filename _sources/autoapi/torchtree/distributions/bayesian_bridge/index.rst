@@ -32,6 +32,7 @@ Functions
 
 .. py:class:: BayesianBridge(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, scale: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor], alpha: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor] = None, local_scale: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor] = None, slab: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor] = None)
 
+
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Bayesian bridge prior.

@@ -22,7 +22,8 @@ Classes
 
 
 
-.. py:class:: Normal(loc: Union[float, torch.Tensor], scale: Union[float, torch.Tensor] = None, precision: Union[float, torch.Tensor] = None, validate_args=None)
+.. py:class:: Normal(loc: Union[float, torch.Tensor], scale: Union[float, torch.Tensor, None] = None, precision: Union[float, torch.Tensor, None] = None, validate_args=None)
+
 
    Bases: :py:obj:`torch.distributions.Normal`
 

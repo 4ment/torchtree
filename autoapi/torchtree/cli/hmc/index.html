@@ -125,9 +125,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.html">torchtree</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
@@ -372,7 +370,6 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_hmc_parser"><code class="docutils literal notranslate"><span class="pre">create_hmc_parser()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_loggers"><code class="docutils literal notranslate"><span class="pre">create_loggers()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_stan_windowed_adaptation"><code class="docutils literal notranslate"><span class="pre">create_stan_windowed_adaptation()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_hmc_operator"><code class="docutils literal notranslate"><span class="pre">create_hmc_operator()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_hmc"><code class="docutils literal notranslate"><span class="pre">create_hmc()</span></code></a></li>
@@ -393,7 +390,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="module-torchtree.cli.hmc">
-<span id="torchtree-cli-hmc"></span><h1><a class="reference internal" href="../../../../modules/torchtree.cli.hmc.html#module-torchtree.cli.hmc" title="torchtree.cli.hmc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.hmc</span></code></a><a class="headerlink" href="#module-torchtree.cli.hmc" title="Permalink to this heading">#</a></h1>
+<span id="torchtree-cli-hmc"></span><h1><a class="reference internal" href="#module-torchtree.cli.hmc" title="torchtree.cli.hmc"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.hmc</span></code></a><a class="headerlink" href="#module-torchtree.cli.hmc" title="Permalink to this heading">#</a></h1>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="functions">
@@ -403,19 +400,16 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.hmc.create_hmc_parser" title="torchtree.cli.hmc.create_hmc_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_hmc_parser</span></code></a>(subprasers)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.hmc.create_loggers" title="torchtree.cli.hmc.create_loggers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_loggers</span></code></a>(parameters, arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.hmc.create_stan_windowed_adaptation" title="torchtree.cli.hmc.create_stan_windowed_adaptation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_stan_windowed_adaptation</span></code></a>(joint, parameters, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.hmc.create_stan_windowed_adaptation" title="torchtree.cli.hmc.create_stan_windowed_adaptation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_stan_windowed_adaptation</span></code></a>(joint, parameters, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.hmc.create_hmc_operator" title="torchtree.cli.hmc.create_hmc_operator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_hmc_operator</span></code></a>(id_, joint, parameters, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.hmc.create_hmc_operator" title="torchtree.cli.hmc.create_hmc_operator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_hmc_operator</span></code></a>(id_, joint, parameters, arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.hmc.create_hmc" title="torchtree.cli.hmc.create_hmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_hmc</span></code></a>(joint, parameters, parameters_unres, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.hmc.create_hmc" title="torchtree.cli.hmc.create_hmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_hmc</span></code></a>(joint, parameters, parameters_unres, arg)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.hmc.build_hmc" title="torchtree.cli.hmc.build_hmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_hmc</span></code></a>(arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.hmc.build_hmc" title="torchtree.cli.hmc.build_hmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_hmc</span></code></a>(arg)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -423,11 +417,6 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.hmc.create_hmc_parser">
 <span class="sig-prename descclassname"><span class="pre">torchtree.cli.hmc.</span></span><span class="sig-name descname"><span class="pre">create_hmc_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subprasers</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.cli.hmc.create_hmc_parser" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="torchtree.cli.hmc.create_loggers">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.hmc.</span></span><span class="sig-name descname"><span class="pre">create_loggers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.cli.hmc.create_loggers" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -487,7 +476,6 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_hmc_parser"><code class="docutils literal notranslate"><span class="pre">create_hmc_parser()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_loggers"><code class="docutils literal notranslate"><span class="pre">create_loggers()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_stan_windowed_adaptation"><code class="docutils literal notranslate"><span class="pre">create_stan_windowed_adaptation()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_hmc_operator"><code class="docutils literal notranslate"><span class="pre">create_hmc_operator()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.hmc.create_hmc"><code class="docutils literal notranslate"><span class="pre">create_hmc()</span></code></a></li>

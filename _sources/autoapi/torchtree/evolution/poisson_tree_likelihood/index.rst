@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: PoissonTreeLikelihood(id_: torchtree.typing.ID, tree_model: torchtree.evolution.tree_model.TimeTreeModel, clock_model: torchtree.evolution.branch_model.BranchModel, edge_lengths: torchtree.core.abstractparameter.AbstractParameter)
 
+
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Tree likelihood class using Poisson model.
@@ -34,6 +35,14 @@ Classes
 
    .. py:method:: from_json(data, dic) -> PoissonTreeLikelihood
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

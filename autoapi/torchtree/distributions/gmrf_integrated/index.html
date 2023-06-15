@@ -126,9 +126,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.html">torchtree</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
@@ -431,7 +429,7 @@ rate <span class="math notranslate nohighlight">\(\beta\)</span> parameters.</p>
 \[\begin{split}p(X) &amp;= \int p(\tau; \alpha, \beta) p(X \mid \tau) d\tau \\
      &amp;= \int \frac{\beta^\alpha}{\Gamma(\alpha)} \tau^{\alpha-1} e^{-\beta \tau} \prod_{i=1}^{N-1} \frac{1}{\sqrt{2 \pi}} \sqrt{\tau} e^{-\frac{\tau}{2} (x_{i+1} -x_i)^2} d\tau \\
      &amp;= \left(\frac{1}{\sqrt{2 \pi}}\right)^{N-1} \frac{\beta^\alpha}{\Gamma(\alpha)} \int \tau^{\alpha + \frac{N-3}{2}} e^{-\tau (\frac{1}{2} \sum_{i=1}^{N-1} (x_{i+1} -x_i)^2 + \beta)}  d\tau\\
-     &amp;= \left(\frac{1}{\sqrt{2 \pi}}\right)^{N-1} \frac{\beta^\alpha}{\Gamma(\alpha)} \Gamma \left(\tau^{\alpha + \frac{N-1}{2}} \right) \left(\sum_{i=1}^{N-1} (x_{i+1} -x_i)^2 + \beta \right)^{ -\alpha - \frac{N-1}{2} }\end{split}\]</div>
+     &amp;= \left(\frac{1}{\sqrt{2 \pi}}\right)^{N-1} \frac{\beta^\alpha}{\Gamma(\alpha)} \Gamma (\alpha + \frac{N-1}{2}) \left(\sum_{i=1}^{N-1} (x_{i+1} -x_i)^2 + \beta \right)^{ -\alpha - \frac{N-1}{2} }\end{split}\]</div>
 <p>Idea from Cheng Zhang</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.distributions.gmrf_integrated.GMRFGammaIntegrated.from_json">

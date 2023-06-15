@@ -31,6 +31,7 @@ Classes
 
 .. py:class:: TrilExpDiagonalTransform(cache_size=0)
 
+
    Bases: :py:obj:`torch.distributions.Transform`
 
    Transform a 1D tensor to a triangular tensor. The diagonal of the
@@ -67,6 +68,7 @@ Classes
 
 .. py:class:: CumSumTransform(cache_size=0)
 
+
    Bases: :py:obj:`torch.distributions.Transform`
 
    Transform via the mapping :math:`y_i = \sum_{j=0}^i x_j`.
@@ -102,6 +104,7 @@ Classes
 
 .. py:class:: CumSumExpTransform(cache_size=0)
 
+
    Bases: :py:obj:`torch.distributions.Transform`
 
    Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.
@@ -131,6 +134,7 @@ Classes
 
 .. py:class:: SoftPlusTransform(cache_size=0)
 
+
    Bases: :py:obj:`torch.distributions.Transform`
 
    Transform via the mapping :math:`y_i = \log(\exp(x_i) + 1)`.
@@ -159,6 +163,7 @@ Classes
 
 
 .. py:class:: CumSumSoftPlusTransform(cache_size=0)
+
 
    Bases: :py:obj:`torch.distributions.Transform`
 
@@ -190,6 +195,7 @@ Classes
 
 .. py:class:: ConvexCombinationTransform(weights: torchtree.core.abstractparameter.AbstractParameter, cache_size=0)
 
+
    Bases: :py:obj:`torch.distributions.Transform`
 
    Transform from unconstrained space to constrained space via :math:`y =
@@ -214,6 +220,7 @@ Classes
 
 
 .. py:class:: LogTransform(cache_size=0)
+
 
    Bases: :py:obj:`torch.distributions.Transform`
 
@@ -243,6 +250,7 @@ Classes
 
 
 .. py:class:: LinearTransform(A: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor], b: torchtree.core.abstractparameter.AbstractParameter, cache_size=0)
+
 
    Bases: :py:obj:`torch.distributions.Transform`
 

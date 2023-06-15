@@ -49,6 +49,7 @@ Functions
 .. py:class:: Node(name, height=0.0)
 
 
+
 .. py:function:: random_tree_from_heights(sampling: torch.Tensor, heights: torch.Tensor) -> Node
 
 

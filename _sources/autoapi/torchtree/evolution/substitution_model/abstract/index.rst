@@ -22,6 +22,7 @@ Classes
 
 .. py:class:: SubstitutionModel(id_: torchtree.typing.ID)
 
+
    Bases: :py:obj:`torchtree.core.model.Model`
 
    Parametric model.
@@ -46,6 +47,7 @@ Classes
 
 .. py:class:: AbstractSubstitutionModel(id_: torchtree.typing.ID, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
+
    Bases: :py:obj:`SubstitutionModel`, :py:obj:`abc.ABC`
 
    Parametric model.
@@ -64,6 +66,7 @@ Classes
 
 .. py:class:: SymmetricSubstitutionModel(id_: torchtree.typing.ID, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
+
    Bases: :py:obj:`AbstractSubstitutionModel`, :py:obj:`abc.ABC`
 
    Parametric model.
@@ -80,6 +83,7 @@ Classes
 
 
 .. py:class:: NonSymmetricSubstitutionModel(id_: torchtree.typing.ID, frequencies: torchtree.core.abstractparameter.AbstractParameter)
+
 
    Bases: :py:obj:`SymmetricSubstitutionModel`
 

@@ -54,6 +54,7 @@ Functions
 
 .. py:class:: TreeModel(id_: Optional[str])
 
+
    Bases: :py:obj:`torchtree.core.model.Model`
 
    Parametric model.
@@ -83,6 +84,7 @@ Functions
 
 .. py:class:: AbstractTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa)
 
+
    Bases: :py:obj:`TreeModel`, :py:obj:`abc.ABC`
 
    Parametric model.
@@ -111,6 +113,7 @@ Functions
 
 
 .. py:class:: UnRootedTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, branch_lengths: torchtree.core.abstractparameter.AbstractParameter)
+
 
    Bases: :py:obj:`AbstractTreeModel`
 
@@ -147,9 +150,18 @@ Functions
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: TimeTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, internal_heights: torchtree.core.abstractparameter.AbstractParameter)
+
 
    Bases: :py:obj:`AbstractTreeModel`
 
@@ -211,9 +223,18 @@ Functions
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: ReparameterizedTimeTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, ratios_root_height: torchtree.core.abstractparameter.AbstractParameter = None, shifts: torchtree.core.abstractparameter.AbstractParameter = None)
+
 
    Bases: :py:obj:`TimeTreeModel`, :py:obj:`torchtree.core.model.CallableModel`
 
@@ -262,6 +283,14 @@ Functions
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

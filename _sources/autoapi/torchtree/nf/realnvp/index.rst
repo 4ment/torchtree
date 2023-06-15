@@ -28,6 +28,7 @@ Classes
 
 .. py:class:: LinearMaskedCoupling(input_size, hidden_size, n_hidden, mask, cond_label_size=None)
 
+
    Bases: :py:obj:`torch.nn.Module`
 
    Modified RealNVP Coupling Layers per the MAF paper.
@@ -41,6 +42,7 @@ Classes
 
 .. py:class:: BatchNorm(input_size, momentum=0.9, eps=1e-05)
 
+
    Bases: :py:obj:`torch.nn.Module`
 
    RealNVP BatchNorm layer.
@@ -52,7 +54,9 @@ Classes
 
 
 
-.. py:class:: FlowSequential(*args: torch.nn.modules.module.Module)           FlowSequential(arg: OrderedDict[str, Module])
+.. py:class:: FlowSequential(*args: torch.nn.modules.module.Module)
+              FlowSequential(arg: OrderedDict[str, Module])
+
 
    Bases: :py:obj:`torch.nn.Sequential`
 
@@ -66,6 +70,7 @@ Classes
 
 
 .. py:class:: RealNVP(id_: str, x: torchtree.core.abstractparameter.AbstractParameter, base: torchtree.distributions.distributions.Distribution, n_blocks: int, hidden_size: int, n_hidden: int, cond_label_size=None, batch_norm=False)
+
 
    Bases: :py:obj:`torchtree.distributions.distributions.DistributionModel`
 
@@ -130,6 +135,14 @@ Classes
 
    .. py:method:: from_json(data, dic) -> RealNVP
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

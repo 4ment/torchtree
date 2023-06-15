@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: RootParameter(id_: torchtree.typing.ID, distance: torchtree.core.parameter.Parameter, rate: torchtree.core.parameter.Parameter, shift: float)
 
+
    Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.model.CallableModel`
 
    This root height parameter is calculated from
@@ -32,6 +33,12 @@ Classes
 
    .. py:property:: tensor
       :type: torch.Tensor
+
+      The tensor.
+
+      :getter: Returns the tensor.
+      :setter: Sets the tensor.
+      :rtype: Tensor
 
 
    .. py:method:: parameters() -> list[torchtree.core.parameter.Parameter]

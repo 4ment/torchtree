@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: Hamiltonian(id_: torchtree.typing.ID, joint: torchtree.core.model.CallableModel)
 
+
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Classes inheriting from :class:`Model` and
@@ -42,6 +43,14 @@ Classes
 
    .. py:method:: from_json(data, dic) -> Hamiltonian
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

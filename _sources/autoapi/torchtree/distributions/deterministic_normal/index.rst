@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: DeterministicNormal(id_: Optional[str], loc: torchtree.core.abstractparameter.AbstractParameter, scale: torchtree.core.abstractparameter.AbstractParameter, x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter], shape: torch.Size)
 
+
    Bases: :py:obj:`torchtree.distributions.distributions.DistributionModel`
 
    Deterministic Normal distribution.
@@ -79,6 +80,14 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

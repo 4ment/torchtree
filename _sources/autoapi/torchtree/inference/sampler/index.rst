@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: Sampler(model: torchtree.distributions.distributions.DistributionModel, samples: int, loggers: list[torchtree.core.logger.LoggerInterface])
 
+
    Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
 
    Class for sampling a distribution and optionally logging things.

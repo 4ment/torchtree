@@ -22,6 +22,7 @@ Classes
 
 .. py:class:: BranchModel(id_: Optional[str])
 
+
    Bases: :py:obj:`torchtree.core.model.Model`
 
    Parametric model.
@@ -36,6 +37,7 @@ Classes
 
 
 .. py:class:: AbstractClockModel(id_: torchtree.typing.ID, rates: torchtree.core.abstractparameter.AbstractParameter, tree: torchtree.evolution.tree_model.TreeModel)
+
 
    Bases: :py:obj:`BranchModel`, :py:obj:`abc.ABC`
 
@@ -54,6 +56,7 @@ Classes
 
 .. py:class:: StrictClockModel(id_: torchtree.typing.ID, rates: torchtree.core.abstractparameter.AbstractParameter, tree: torchtree.evolution.tree_model.TreeModel)
 
+
    Bases: :py:obj:`AbstractClockModel`
 
    Parametric model.
@@ -69,9 +72,18 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: SimpleClockModel(id_: torchtree.typing.ID, rates: torchtree.core.abstractparameter.AbstractParameter, tree: torchtree.evolution.tree_model.TreeModel)
+
 
    Bases: :py:obj:`AbstractClockModel`
 
@@ -91,6 +103,14 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

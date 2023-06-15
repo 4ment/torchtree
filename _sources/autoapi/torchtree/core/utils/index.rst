@@ -54,6 +54,7 @@ Attributes
 
 .. py:class:: TensorEncoder(*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
 
+
    Bases: :py:obj:`json.JSONEncoder`
 
    Extensible JSON <http://json.org> encoder for Python data structures.
@@ -142,10 +143,11 @@ Attributes
    tensor([[True, True]])
 
 
-.. py:function:: get_class(full_name: str) -> any
+.. py:function:: get_class(full_name: str) -> type
 
 
 .. py:exception:: JSONParseError
+
 
    Bases: :py:obj:`Exception`
 
@@ -159,6 +161,7 @@ Attributes
 
 
 .. py:class:: SignalHandler
+
 
    .. py:method:: exit(signum, frame)
 
@@ -198,6 +201,7 @@ Attributes
 
 
 .. py:exception:: AlternativeAttributeError
+
 
    Bases: :py:obj:`Exception`
 

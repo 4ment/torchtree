@@ -127,9 +127,7 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="torchtree.html">torchtree</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="torchtree.cli.advi.html">torchtree.cli.advi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchtree.cli.map.html">torchtree.cli.map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
@@ -375,6 +373,7 @@ document.write(`
                   
   <section id="module-torchtree.core.parameter">
 <span id="torchtree-core-parameter"></span><h1>torchtree.core.parameter<a class="headerlink" href="#module-torchtree.core.parameter" title="Permalink to this heading">#</a></h1>
+<p>Implementation of Parameter classes.</p>
 <p class="rubric">Classes</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
@@ -385,13 +384,13 @@ document.write(`
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter" title="torchtree.core.parameter.Parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Parameter</span></code></a>(id_, tensor)</p></td>
-<td><p></p></td>
+<td><p>Parameter class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.TransformedParameter" title="torchtree.core.parameter.TransformedParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformedParameter</span></code></a>(id_, x, transform)</p></td>
-<td><p></p></td>
+<td><p>Class wrapping an AbstractParameter and a torch Transform object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ViewParameter" title="torchtree.core.parameter.ViewParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ViewParameter</span></code></a>(id_, parameter, indices)</p></td>
-<td><p></p></td>
+<td><p>Class representing a view of another parameter.</p></td>
 </tr>
 </tbody>
 </table>

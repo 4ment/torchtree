@@ -38,6 +38,7 @@ Functions
 
 .. py:class:: EnergyFunctionModel(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, desc: str, dtype=None, device=None)
 
+
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Classes inheriting from :class:`Model` and
@@ -52,6 +53,14 @@ Functions
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

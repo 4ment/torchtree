@@ -125,9 +125,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.html">torchtree</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
@@ -444,22 +442,22 @@ document.write(`
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.datatype.DataType" title="torchtree.evolution.datatype.DataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataType</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Abstract class making an object identifiable.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.datatype.AbstractDataType" title="torchtree.evolution.datatype.AbstractDataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractDataType</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Abstract class making an object identifiable.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.datatype.NucleotideDataType" title="torchtree.evolution.datatype.NucleotideDataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NucleotideDataType</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Abstract class making an object identifiable.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.datatype.AminoAcidDataType" title="torchtree.evolution.datatype.AminoAcidDataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AminoAcidDataType</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Abstract class making an object identifiable.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.datatype.CodonDataType" title="torchtree.evolution.datatype.CodonDataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CodonDataType</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Abstract class making an object identifiable.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.datatype.GeneralDataType" title="torchtree.evolution.datatype.GeneralDataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneralDataType</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Abstract class making an object identifiable.</p></td>
 </tr>
 </tbody>
 </table>
@@ -467,8 +465,12 @@ document.write(`
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.DataType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.datatype.</span></span><span class="sig-name descname"><span class="pre">DataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.DataType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.model.Identifiable</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Abstract class making an object identifiable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><em>None</em>) – identifier of object</p>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.DataType.states">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#torchtree.evolution.datatype.DataType.states" title="Permalink to this definition">#</a></dt>
@@ -500,8 +502,12 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.AbstractDataType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.datatype.</span></span><span class="sig-name descname"><span class="pre">AbstractDataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.AbstractDataType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.datatype.DataType" title="torchtree.evolution.datatype.DataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataType</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Abstract class making an object identifiable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><em>None</em>) – identifier of object</p>
+</dd>
+</dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.AbstractDataType.states">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#torchtree.evolution.datatype.AbstractDataType.states" title="Permalink to this definition">#</a></dt>
@@ -523,8 +529,12 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.NucleotideDataType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.datatype.</span></span><span class="sig-name descname"><span class="pre">NucleotideDataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.NucleotideDataType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.datatype.AbstractDataType" title="torchtree.evolution.datatype.AbstractDataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractDataType</span></code></a></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Abstract class making an object identifiable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><em>None</em>) – identifier of object</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.NucleotideDataType.NUCLEOTIDES">
 <span class="sig-name descname"><span class="pre">NUCLEOTIDES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ACGTUKMRSWYBDHVN?-'</span></em><a class="headerlink" href="#torchtree.evolution.datatype.NucleotideDataType.NUCLEOTIDES" title="Permalink to this definition">#</a></dt>
@@ -553,7 +563,23 @@ inheritance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.NucleotideDataType.from_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.NucleotideDataType.from_json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -561,8 +587,12 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.AminoAcidDataType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.datatype.</span></span><span class="sig-name descname"><span class="pre">AminoAcidDataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.AminoAcidDataType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.datatype.AbstractDataType" title="torchtree.evolution.datatype.AbstractDataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractDataType</span></code></a></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Abstract class making an object identifiable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><em>None</em>) – identifier of object</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.AminoAcidDataType.AMINO_ACIDS">
 <span class="sig-name descname"><span class="pre">AMINO_ACIDS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ACDEFGHIKLMNPQRSTVWYBZX*?-'</span></em><a class="headerlink" href="#torchtree.evolution.datatype.AminoAcidDataType.AMINO_ACIDS" title="Permalink to this definition">#</a></dt>
@@ -596,7 +626,23 @@ inheritance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.AminoAcidDataType.from_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.AminoAcidDataType.from_json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -604,8 +650,12 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.CodonDataType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.datatype.</span></span><span class="sig-name descname"><span class="pre">CodonDataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genetic_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.CodonDataType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.datatype.AbstractDataType" title="torchtree.evolution.datatype.AbstractDataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractDataType</span></code></a></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Abstract class making an object identifiable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><em>None</em>) – identifier of object</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.CodonDataType.GENETIC_CODE_TABLES">
 <span class="sig-name descname"><span class="pre">GENETIC_CODE_TABLES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('KNKNTTTTRSRSIIMIQHQHPPPPRRRRLLLLEDEDAAAAGGGGVVVV*Y*YSSSS*CWCLFLF',...</span></em><a class="headerlink" href="#torchtree.evolution.datatype.CodonDataType.GENETIC_CODE_TABLES" title="Permalink to this definition">#</a></dt>
@@ -639,7 +689,23 @@ inheritance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.CodonDataType.from_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.CodonDataType.from_json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -647,8 +713,12 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.GeneralDataType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.datatype.</span></span><span class="sig-name descname"><span class="pre">GeneralDataType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ambiguities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.GeneralDataType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.datatype.AbstractDataType" title="torchtree.evolution.datatype.AbstractDataType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractDataType</span></code></a></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Abstract class making an object identifiable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em><em> or </em><em>None</em>) – identifier of object</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.GeneralDataType.encoding">
 <span class="sig-name descname"><span class="pre">encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#torchtree.evolution.datatype.GeneralDataType.encoding" title="Permalink to this definition">#</a></dt>
@@ -662,7 +732,23 @@ inheritance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.evolution.datatype.GeneralDataType.from_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.datatype.GeneralDataType.from_json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

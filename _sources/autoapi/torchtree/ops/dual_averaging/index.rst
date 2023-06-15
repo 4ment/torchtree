@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: DualAveraging(mu=0.5, gamma=0.05, kappa=0.75, t0=10)
 
+
    Dual averaging Nesterov.
 
    Code adapted from: https://github.com/stan-dev/stan

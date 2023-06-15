@@ -20,6 +20,7 @@ Classes
 
 .. py:class:: LogDifferenceRateTransform(tree_model: torchtree.evolution.tree_model.TreeModel, cache_size=0)
 
+
    Bases: :py:obj:`torch.distributions.Transform`
 
    Compute log rate difference of adjacent nodes.
@@ -42,6 +43,7 @@ Classes
 
 
 .. py:class:: RescaledRateTransform(rate: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TreeModel, cache_size=0)
+
 
    Bases: :py:obj:`torch.distributions.Transform`
 

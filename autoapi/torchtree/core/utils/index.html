@@ -125,9 +125,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.html">torchtree</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
@@ -444,7 +442,7 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.core.utils.tensor_rand" title="torchtree.core.utils.tensor_rand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tensor_rand</span></code></a>(distribution, shape[, dtype, device, ...])</p></td>
 <td><p>Create a tensor with the given dtype and shape and initialize it using a</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.core.utils.get_class" title="torchtree.core.utils.get_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_class</span></code></a>(→ any)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.core.utils.get_class" title="torchtree.core.utils.get_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_class</span></code></a>(→ type)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.core.utils.process_objects" title="torchtree.core.utils.process_objects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_objects</span></code></a>(data, dic[, force_list, key])</p></td>
@@ -610,7 +608,7 @@ Discrete distributions: random, bernoulli</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.core.utils.get_class">
-<span class="sig-prename descclassname"><span class="pre">torchtree.core.utils.</span></span><span class="sig-name descname"><span class="pre">get_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="headerlink" href="#torchtree.core.utils.get_class" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.core.utils.</span></span><span class="sig-name descname"><span class="pre">get_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">type</span></span></span><a class="headerlink" href="#torchtree.core.utils.get_class" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py exception">

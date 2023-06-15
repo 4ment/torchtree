@@ -125,9 +125,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules/torchtree.html">torchtree</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
@@ -407,6 +405,7 @@ document.write(`
                   
   <section id="module-torchtree.core.abstractparameter">
 <span id="torchtree-core-abstractparameter"></span><h1><a class="reference internal" href="../../../../modules/torchtree.core.abstractparameter.html#module-torchtree.core.abstractparameter" title="torchtree.core.abstractparameter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.abstractparameter</span></code></a><a class="headerlink" href="#module-torchtree.core.abstractparameter" title="Permalink to this heading">#</a></h1>
+<p>Abstract parameter module.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
@@ -414,10 +413,10 @@ document.write(`
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.core.abstractparameter.Device" title="torchtree.core.abstractparameter.Device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Device</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Interface for classes needing to allocate a Tensor on a device.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractParameter</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Abstract base class for parameters.</p></td>
 </tr>
 </tbody>
 </table>
@@ -425,27 +424,35 @@ document.write(`
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.Device">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.core.abstractparameter.</span></span><span class="sig-name descname"><span class="pre">Device</span></span><a class="headerlink" href="#torchtree.core.abstractparameter.Device" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Interface for classes needing to allocate a Tensor on a device.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.Device.device">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.device</span></em><a class="headerlink" href="#torchtree.core.abstractparameter.Device.device" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the torch.device where the Tensor is.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.device</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.Device.to">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.core.abstractparameter.Device.to" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Performs Tensor dtype and/or device conversion.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.Device.cuda">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cuda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">torch.device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.core.abstractparameter.Device.cuda" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Moves the tensor object in CUDA memory.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.Device.cpu">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.core.abstractparameter.Device.cpu" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Moves the tensor object in CPU memory.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -453,37 +460,84 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.AbstractParameter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.core.abstractparameter.</span></span><span class="sig-name descname"><span class="pre">AbstractParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.core.abstractparameter.AbstractParameter" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../identifiable/index.html#torchtree.core.identifiable.Identifiable" title="torchtree.core.identifiable.Identifiable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.identifiable.Identifiable</span></code></a>, <a class="reference internal" href="#torchtree.core.abstractparameter.Device" title="torchtree.core.abstractparameter.Device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Device</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Abstract base class for parameters.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.AbstractParameter.tensor">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tensor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Tensor</span></em><a class="headerlink" href="#torchtree.core.abstractparameter.AbstractParameter.tensor" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>The tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Getter<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns the tensor.</p>
+</dd>
+<dt class="field-even">Setter<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sets the tensor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.AbstractParameter.shape">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Size</span></em><a class="headerlink" href="#torchtree.core.abstractparameter.AbstractParameter.shape" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>The shape of the tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Size</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.AbstractParameter.dtype">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.dtype</span></em><a class="headerlink" href="#torchtree.core.abstractparameter.AbstractParameter.dtype" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>The dtype of the tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.dtype</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.AbstractParameter.requires_grad">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">requires_grad</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#torchtree.core.abstractparameter.AbstractParameter.requires_grad" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Is True if gradients need to be computed for this Tensor, False otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Getter<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns the flag.</p>
+</dd>
+<dt class="field-even">Setter<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sets the flag.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.AbstractParameter.device">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.device</span></em><a class="headerlink" href="#torchtree.core.abstractparameter.AbstractParameter.device" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the torch.device where the Tensor is.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.device</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.AbstractParameter.dim">
 <span class="sig-name descname"><span class="pre">dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#torchtree.core.abstractparameter.AbstractParameter.dim" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the dimension of the tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.core.abstractparameter.AbstractParameter.parameters">

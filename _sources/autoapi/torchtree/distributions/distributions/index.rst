@@ -25,6 +25,7 @@ Classes
 
 .. py:class:: DistributionModel(id_: Optional[str])
 
+
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Abstract base class for distribution models.
@@ -65,6 +66,7 @@ Classes
 
 
 .. py:class:: Distribution(id_: Optional[str], dist: Type[torch.distributions.Distribution], x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter], args: OrderedDict[str, AbstractParameter], **kwargs)
+
 
    Bases: :py:obj:`DistributionModel`
 

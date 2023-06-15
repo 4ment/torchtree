@@ -24,6 +24,7 @@ Classes
 
 .. py:class:: OneOnX(validate_args=None)
 
+
    Bases: :py:obj:`torch.distributions.Distribution`
 
    One on X prior.

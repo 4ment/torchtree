@@ -20,6 +20,7 @@ Classes
 
 .. py:class:: LG(id_: torchtree.typing.ID)
 
+
    Bases: :py:obj:`torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel`
 
    Parametric model.
@@ -30,11 +31,20 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 
 .. py:class:: WAG(id_: torchtree.typing.ID)
 
+
    Bases: :py:obj:`torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel`
 
    Parametric model.
@@ -45,6 +55,14 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

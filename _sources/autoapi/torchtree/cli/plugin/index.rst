@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: Plugin
 
+
    Bases: :py:obj:`abc.ABC`
 
    Helper class that provides a standard way to create an ABC using

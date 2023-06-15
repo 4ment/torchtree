@@ -22,6 +22,7 @@ Classes
 
 .. py:class:: GeneralJC69(id_: torchtree.typing.ID, state_count: int)
 
+
    Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SubstitutionModel`
 
    Parametric model.
@@ -55,9 +56,18 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: GeneralSymmetricSubstitutionModel(id_: torchtree.typing.ID, data_type: torchtree.evolution.datatype.DataType, mapping: torchtree.core.abstractparameter.AbstractParameter, rates: torchtree.core.abstractparameter.AbstractParameter, frequencies: torchtree.core.abstractparameter.AbstractParameter)
+
 
    Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel`
 
@@ -83,9 +93,18 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: GeneralNonSymmetricSubstitutionModel(id_: torchtree.typing.ID, data_type: torchtree.evolution.datatype.DataType, mapping: torchtree.core.abstractparameter.AbstractParameter, rates: torchtree.core.abstractparameter.AbstractParameter, frequencies: torchtree.core.abstractparameter.AbstractParameter, normalize: bool)
+
 
    Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.NonSymmetricSubstitutionModel`
 
@@ -111,9 +130,18 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: EmpiricalSubstitutionModel(id_: torchtree.typing.ID, rates: torch.Tensor, frequencies: torch.Tensor)
+
 
    Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SubstitutionModel`
 
@@ -148,6 +176,14 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

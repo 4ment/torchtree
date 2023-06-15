@@ -125,9 +125,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../modules/torchtree.html">torchtree</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
@@ -428,19 +426,19 @@ document.write(`
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.inference.hmc.adaptation.Adaptor" title="torchtree.inference.hmc.adaptation.Adaptor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Adaptor</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Interface making an object JSON serializable.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.inference.hmc.adaptation.AdaptiveStepSize" title="torchtree.inference.hmc.adaptation.AdaptiveStepSize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AdaptiveStepSize</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Interface making an object JSON serializable.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.inference.hmc.adaptation.DualAveragingStepSize" title="torchtree.inference.hmc.adaptation.DualAveragingStepSize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DualAveragingStepSize</span></code></a></p></td>
 <td><p>Step size adaptation using dual averaging Nesterov.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.inference.hmc.adaptation.MassMatrixAdaptor" title="torchtree.inference.hmc.adaptation.MassMatrixAdaptor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MassMatrixAdaptor</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Interface making an object JSON serializable.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.inference.hmc.adaptation.WarmupAdaptation" title="torchtree.inference.hmc.adaptation.WarmupAdaptation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WarmupAdaptation</span></code></a></p></td>
-<td><p>Helper class that provides a standard way to create an ABC using</p></td>
+<td><p>Interface making an object JSON serializable.</p></td>
 </tr>
 </tbody>
 </table>
@@ -458,8 +456,9 @@ document.write(`
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.Adaptor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.inference.hmc.adaptation.</span></span><span class="sig-name descname"><span class="pre">Adaptor</span></span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.Adaptor" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../../core/serializable/index.html#torchtree.core.serializable.JSONSerializable" title="torchtree.core.serializable.JSONSerializable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.serializable.JSONSerializable</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Interface making an object JSON serializable.</p>
+<p>Serializable base class establishing
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">from_json()</span></code> abstract method.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.Adaptor.learn">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">learn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">acceptance_prob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accepted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.Adaptor.learn" title="Permalink to this definition">#</a></dt>
@@ -476,8 +475,9 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.AdaptiveStepSize">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.inference.hmc.adaptation.</span></span><span class="sig-name descname"><span class="pre">AdaptiveStepSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">integrator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../integrator/index.html#torchtree.inference.hmc.integrator.LeapfrogIntegrator" title="torchtree.inference.hmc.integrator.LeapfrogIntegrator"><span class="pre">torchtree.inference.hmc.integrator.LeapfrogIntegrator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_acceptance_probability</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.AdaptiveStepSize" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.inference.hmc.adaptation.Adaptor" title="torchtree.inference.hmc.adaptation.Adaptor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Adaptor</span></code></a></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Interface making an object JSON serializable.</p>
+<p>Serializable base class establishing
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">from_json()</span></code> abstract method.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.AdaptiveStepSize.restart">
 <span class="sig-name descname"><span class="pre">restart</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.AdaptiveStepSize.restart" title="Permalink to this definition">#</a></dt>
@@ -491,7 +491,23 @@ inheritance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.AdaptiveStepSize.from_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.AdaptiveStepSize.from_json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -514,7 +530,23 @@ inheritance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.DualAveragingStepSize.from_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.DualAveragingStepSize.from_json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -522,8 +554,9 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.MassMatrixAdaptor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.inference.hmc.adaptation.</span></span><span class="sig-name descname"><span class="pre">MassMatrixAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ListParameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.MassMatrixAdaptor" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.inference.hmc.adaptation.Adaptor" title="torchtree.inference.hmc.adaptation.Adaptor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Adaptor</span></code></a></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Interface making an object JSON serializable.</p>
+<p>Serializable base class establishing
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">from_json()</span></code> abstract method.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.MassMatrixAdaptor.mass_matrix">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mass_matrix</span></span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.MassMatrixAdaptor.mass_matrix" title="Permalink to this definition">#</a></dt>
@@ -542,7 +575,23 @@ inheritance.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.MassMatrixAdaptor.from_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.MassMatrixAdaptor.from_json" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -555,8 +604,9 @@ inheritance.</p>
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.WarmupAdaptation">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.inference.hmc.adaptation.</span></span><span class="sig-name descname"><span class="pre">WarmupAdaptation</span></span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.WarmupAdaptation" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.inference.hmc.adaptation.Adaptor" title="torchtree.inference.hmc.adaptation.Adaptor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Adaptor</span></code></a></p>
-<p>Helper class that provides a standard way to create an ABC using
-inheritance.</p>
+<p>Interface making an object JSON serializable.</p>
+<p>Serializable base class establishing
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">from_json()</span></code> abstract method.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.inference.hmc.adaptation.WarmupAdaptation.step_size">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">step_size</span></span><a class="headerlink" href="#torchtree.inference.hmc.adaptation.WarmupAdaptation.step_size" title="Permalink to this definition">#</a></dt>

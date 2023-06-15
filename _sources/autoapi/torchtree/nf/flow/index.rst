@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: NormalizingFlow(id_: str, x: Union[torchtree.core.abstractparameter.AbstractParameter, list[torchtree.core.abstractparameter.AbstractParameter]], base: torchtree.distributions.distributions.Distribution, modules: list[torchtree.nn.module.Module], dtype=None, device=None)
 
+
    Bases: :py:obj:`torchtree.distributions.distributions.DistributionModel`
 
    Class for normalizing flows.

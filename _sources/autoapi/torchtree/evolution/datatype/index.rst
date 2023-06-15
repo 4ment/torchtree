@@ -24,10 +24,12 @@ Classes
 
 .. py:class:: DataType(id_: Optional[str])
 
+
    Bases: :py:obj:`torchtree.core.model.Identifiable`, :py:obj:`abc.ABC`
 
-   Helper class that provides a standard way to create an ABC using
-   inheritance.
+   Abstract class making an object identifiable.
+
+   :param str or None id_: identifier of object
 
    .. py:property:: states
       :type: tuple[str, Ellipsis]
@@ -55,10 +57,12 @@ Classes
 
 .. py:class:: AbstractDataType(id_: torchtree.typing.ID, states: tuple[str, Ellipsis])
 
+
    Bases: :py:obj:`DataType`, :py:obj:`abc.ABC`
 
-   Helper class that provides a standard way to create an ABC using
-   inheritance.
+   Abstract class making an object identifiable.
+
+   :param str or None id_: identifier of object
 
    .. py:property:: states
       :type: tuple[str, Ellipsis]
@@ -75,10 +79,12 @@ Classes
 
 .. py:class:: NucleotideDataType(id_: torchtree.typing.ID)
 
+
    Bases: :py:obj:`AbstractDataType`
 
-   Helper class that provides a standard way to create an ABC using
-   inheritance.
+   Abstract class making an object identifiable.
+
+   :param str or None id_: identifier of object
 
    .. py:attribute:: NUCLEOTIDES
       :value: 'ACGTUKMRSWYBDHVN?-'
@@ -104,14 +110,24 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: AminoAcidDataType(id_: torchtree.typing.ID)
 
+
    Bases: :py:obj:`AbstractDataType`
 
-   Helper class that provides a standard way to create an ABC using
-   inheritance.
+   Abstract class making an object identifiable.
+
+   :param str or None id_: identifier of object
 
    .. py:attribute:: AMINO_ACIDS
       :value: 'ACDEFGHIKLMNPQRSTVWYBZX*?-'
@@ -140,14 +156,24 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: CodonDataType(id_: torchtree.typing.ID, genetic_code: str)
 
+
    Bases: :py:obj:`AbstractDataType`
 
-   Helper class that provides a standard way to create an ABC using
-   inheritance.
+   Abstract class making an object identifiable.
+
+   :param str or None id_: identifier of object
 
    .. py:attribute:: GENETIC_CODE_TABLES
       :value: ('KNKNTTTTRSRSIIMIQHQHPPPPRRRRLLLLEDEDAAAAGGGGVVVV*Y*YSSSS*CWCLFLF',...
@@ -178,14 +204,24 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: GeneralDataType(id_: torchtree.typing.ID, codes: tuple[str, Ellipsis], ambiguities: dict = {})
 
+
    Bases: :py:obj:`AbstractDataType`
 
-   Helper class that provides a standard way to create an ABC using
-   inheritance.
+   Abstract class making an object identifiable.
+
+   :param str or None id_: identifier of object
 
    .. py:method:: encoding(string: str) -> int
 
@@ -195,6 +231,14 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

@@ -22,6 +22,7 @@ Classes
 
 .. py:class:: ELBO(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size, entropy=False, score=False)
 
+
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
    Class representing the evidence lower bound (ELBO) objective.
@@ -48,9 +49,18 @@ Classes
    .. py:method:: from_json(data, dic) -> ELBO
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: KLpq(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size)
+
 
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
@@ -73,9 +83,18 @@ Classes
    .. py:method:: from_json(data, dic) -> KLpq
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: KLpqImportance(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size)
+
 
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
@@ -96,9 +115,18 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: SELBO(id_: torchtree.typing.ID, components: list[torchtree.distributions.distributions.DistributionModel], weights: torchtree.core.abstractparameter.AbstractParameter, p: torchtree.core.model.CallableModel, samples: torch.Size, entropy=False)
+
 
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
@@ -125,6 +153,14 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

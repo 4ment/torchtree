@@ -24,6 +24,7 @@ Classes
 
 .. py:class:: SiteModel(id_: torchtree.typing.ID, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
+
    Bases: :py:obj:`torchtree.core.model.Model`
 
    Parametric model.
@@ -42,6 +43,7 @@ Classes
 
 
 .. py:class:: ConstantSiteModel(id_: torchtree.typing.ID, mu: torchtree.core.abstractparameter.AbstractParameter = None)
+
 
    Bases: :py:obj:`SiteModel`
 
@@ -72,9 +74,18 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: InvariantSiteModel(id_: torchtree.typing.ID, invariant: torchtree.core.abstractparameter.AbstractParameter, mu: torchtree.core.abstractparameter.AbstractParameter = None)
+
 
    Bases: :py:obj:`SiteModel`
 
@@ -106,9 +117,18 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: UnivariateDiscretizedSiteModel(id_: torchtree.typing.ID, parameter: torchtree.core.abstractparameter.AbstractParameter, categories: int, invariant: torchtree.core.abstractparameter.AbstractParameter = None, mu: torchtree.core.abstractparameter.AbstractParameter = None)
+
 
    Bases: :py:obj:`SiteModel`
 
@@ -150,6 +170,7 @@ Classes
 
 .. py:class:: WeibullSiteModel(id_: torchtree.typing.ID, parameter: torchtree.core.abstractparameter.AbstractParameter, categories: int, invariant: torchtree.core.abstractparameter.AbstractParameter = None, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
+
    Bases: :py:obj:`UnivariateDiscretizedSiteModel`
 
    Parametric model.
@@ -168,9 +189,18 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
 
 
 .. py:class:: LogNormalSiteModel(id_: torchtree.typing.ID, parameter: torchtree.core.abstractparameter.AbstractParameter, categories: int, invariant: torchtree.core.abstractparameter.AbstractParameter = None, mu: torchtree.core.abstractparameter.AbstractParameter = None)
+
 
    Bases: :py:obj:`UnivariateDiscretizedSiteModel`
 
@@ -189,6 +219,14 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

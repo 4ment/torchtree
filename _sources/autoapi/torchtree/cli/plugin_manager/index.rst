@@ -19,6 +19,7 @@ Classes
 
 .. py:class:: PluginManager
 
+
    .. py:method:: load_plugins()
 
 
