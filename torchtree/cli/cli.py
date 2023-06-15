@@ -1,6 +1,7 @@
 import argparse
 import json
 
+from torchtree._version import __version__
 from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.advi import create_variational_parser
 from torchtree.cli.hmc import create_hmc_parser
@@ -13,6 +14,9 @@ def main():
         prog='torchtree-cli',
         description='Command line interface for creating JSON file for torchtree',
         formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
     )
     subprasers = parser.add_subparsers()
 
@@ -28,6 +32,10 @@ def main():
     PLUGIN_MANAGER.load_arguments(subprasers)
 
     arg = parser.parse_args()
+    if not hasattr(arg, "func"):
+        parser.print_help()
+        exit(2)
+
     json_dic = arg.func(arg)
 
     print(json.dumps(json_dic, indent=2))

@@ -1,3 +1,4 @@
+"""Abstract parameter module."""
 import abc
 from typing import List, Optional, Union
 
@@ -8,28 +9,45 @@ from .identifiable import Identifiable
 
 
 class Device(abc.ABC):
+    """Interface for classes needing to allocate a Tensor on a device."""
+
     @property
     @abc.abstractmethod
     def device(self) -> torch.device:
+        """Returns the torch.device where the Tensor is.
+
+        :rtype: torch.device
+        """
         ...
 
     @abc.abstractmethod
     def to(self, *args, **kwargs) -> None:
+        """Performs Tensor dtype and/or device conversion."""
         ...
 
     @abc.abstractmethod
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        """Moves the tensor object in CUDA memory."""
         ...
 
     @abc.abstractmethod
     def cpu(self) -> None:
+        """Moves the tensor object in CPU memory."""
         ...
 
 
 class AbstractParameter(Identifiable, Device, abc.ABC):
+    """Abstract base class for parameters."""
+
     @property
     @abc.abstractmethod
     def tensor(self) -> Tensor:
+        """The tensor.
+
+        :getter: Returns the tensor.
+        :setter: Sets the tensor.
+        :rtype: Tensor
+        """
         ...
 
     @tensor.setter
@@ -39,14 +57,28 @@ class AbstractParameter(Identifiable, Device, abc.ABC):
 
     @property
     def shape(self) -> Size:
+        """The shape of the tensor.
+
+        :rtype: Size
+        """
         return self.tensor.shape
 
     @property
     def dtype(self) -> torch.dtype:
+        """The dtype of the tensor.
+
+        :rtype: torch.dtype
+        """
         return self.tensor.dtype
 
     @property
     def requires_grad(self) -> bool:
+        """Is True if gradients need to be computed for this Tensor, False otherwise.
+
+        :getter: Returns the flag.
+        :setter: Sets the flag.
+        :rtype: bool
+        """
         return self.tensor.requires_grad
 
     @requires_grad.setter
@@ -55,6 +87,10 @@ class AbstractParameter(Identifiable, Device, abc.ABC):
         ...
 
     def dim(self) -> int:
+        """Returns the dimension of the tensor.
+
+        :rtype: int
+        """
         return self.tensor.dim()
 
     def parameters(self) -> List['AbstractParameter']:
@@ -62,6 +98,10 @@ class AbstractParameter(Identifiable, Device, abc.ABC):
 
     @property
     def device(self) -> torch.device:
+        """Returns the torch.device where the Tensor is.
+
+        :rtype: torch.device
+        """
         return self.tensor.device
 
     @abc.abstractmethod

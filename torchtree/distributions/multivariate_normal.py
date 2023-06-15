@@ -1,3 +1,8 @@
+"""Multivariate normal distribution."""
+from __future__ import annotations
+
+from typing import Union
+
 import torch
 import torch.distributions
 
@@ -11,24 +16,25 @@ from ..typing import ID
 
 @register_class
 class MultivariateNormal(DistributionModel):
-    """Multivariate normal distribution.
+    """Multivariate normal distribution model.
 
-    :param id_: ID of joint distribution
-    :param x: random variable to evaluate/sample using distribution
-    :param loc: mean of the distribution
-    :param covariance_matrix: covariance matrix Parameter
-    :param precision_matrixs: precision matrix Parameter
-    :param scale_tril: scale tril Parameter
+    :param str or None id_: ID of MultivariateNormal distribution
+    :param AbstractParameter or list[AbstractParameter] x: random variable(s) to
+        evaluate/sample using distribution.
+    :param AbstractParameter loc: mean of the distribution.
+    :param AbstractParameter covariance_matrix: covariance of the distribution.
+    :param AbstractParameter precision_matrix: precision of the distribution.
+    :param AbstractParameter scale_tril: scale tril of the distribution.
     """
 
     def __init__(
         self,
         id_: ID,
-        x: AbstractParameter,
+        x: Union[AbstractParameter, list[AbstractParameter]],
         loc: AbstractParameter,
-        covariance_matrix=None,
-        precision_matrix=None,
-        scale_tril=None,
+        covariance_matrix: AbstractParameter = None,
+        precision_matrix: AbstractParameter = None,
+        scale_tril: AbstractParameter = None,
     ) -> None:
         super().__init__(id_)
         if (covariance_matrix is not None) + (scale_tril is not None) + (

@@ -10,19 +10,22 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+from datetime import date
+
+sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'torchtree'
-copyright = '2021, Mathieu Fourment'
+copyright = f"{date.today().year}, Mathieu Fourment"
 author = 'Mathieu Fourment'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+with open(os.path.join("..", "torchtree", "_version.py")) as f:
+    release = f.readlines()[-1].split()[-1].strip("\"'")
 
 
 # -- General configuration ---------------------------------------------------
@@ -30,7 +33,12 @@ release = '0.0.1'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosummary']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'autoapi.extension',
+    'sphinxcontrib.bibtex',
+]
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -47,7 +55,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_book_theme'
+html_theme_options = {
+    "repository_url": "https://github.com/4ment/torchtree",
+    "use_repository_button": True,
+    "use_download_button": False,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -55,4 +68,15 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 
+source_suffix = {".rst": "restructuredtext"}
+
 # -- Extension configuration -------------------------------------------------
+
+# AutoAPI configuration
+autoapi_dirs = ["../torchtree"]
+autoapi_type = "python"
+autoapi_add_toctree_entry = False
+autoapi_options = ["show-module-summary", "undoc-members", "show-inheritance"]
+autodoc_typehints = "signature"
+
+bibtex_bibfiles = ['bibliography/refs.bib']

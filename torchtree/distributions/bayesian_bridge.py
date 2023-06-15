@@ -16,20 +16,20 @@ from torchtree.typing import ID
 
 @register_class
 class BayesianBridge(CallableModel):
-    """Bayesian bridge.
+    """Bayesian bridge prior.
 
-    [polson2014]_ and [nishimura2019]_
+    Creates a Bayesian bridge prior :footcite:p:`polson2014bayesian`.
+    This class also implements the regularized version of the
+    prior :footcite:p:`nishimura2023shrinkage`.
 
-    :param id_: ID of object
-    :param x: random variable
-    :param scale: global scale
-    :param alpha: exponent
-    :param local_scale: local scale
-    :param slab: slab width
+    :param str or None id_: ID of BayesianBridge object.
+    :param AbstractParameter x: random variable.
+    :param AbstractParameter or Tensor scale: global scale.
+    :param AbstractParameter or Tensor alpha: exponent.
+    :param AbstractParameter or Tensor local_scale: local scale.
+    :param AbstractParameter or Tensor slab: slab width.
 
-    .. [polson2014] Polson and Scott 2014. The Bayesian Bridge.
-    .. [nishimura2019] Nishimura, Suchard 2019 .Shrinkage with shrunken shoulders: Gibbs
-        sampling shrinkage model posteriors with guaranteed convergence rates.
+    .. footbibliography::
     """
 
     def __init__(

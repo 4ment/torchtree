@@ -1,3 +1,4 @@
+"""Lognormal distribution parametrized by mean and scale."""
 import math
 from math import log
 from numbers import Number
@@ -11,7 +12,8 @@ from ..core.utils import register_class
 
 @register_class
 class LogNormal(torch.distributions.LogNormal):
-    """
+    """Lognormal distribution parametrized by mean and scale.
+
     Creates a lognormal distribution parameterized by :attr:`mean` and
     :attr:`scale`.
 
@@ -23,8 +25,8 @@ class LogNormal(torch.distributions.LogNormal):
     def __init__(
         self,
         mean: Union[Tensor, float],
-        scale: Union[Tensor, float] = None,
-        scale_real: Union[Tensor, float] = None,
+        scale: Union[Tensor, float, None] = None,
+        scale_real: Union[Tensor, float, None] = None,
         validate_args=None,
     ) -> None:
         if (scale is not None) + (scale_real is not None) != 1:

@@ -1,3 +1,4 @@
+"""Joint distribution of independent variables."""
 from __future__ import annotations
 
 from typing import Union
@@ -13,7 +14,9 @@ from .distributions import DistributionModel
 
 @register_class
 class JointDistributionModel(DistributionModel):
-    """Joint distribution of independent distributions.
+    """Joint distribution of independent variables.
+
+    A JointDistributionModel object contains a list of DistributionModels
 
     :param id_: ID of joint distribution
     :param distributions: list of distributions of type DistributionModel or

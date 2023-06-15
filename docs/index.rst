@@ -7,24 +7,13 @@ Packages
 
 .. autosummary::
    :toctree: modules
+   :caption: API
    :recursive:
-   
-   torchtree.cli
-   torchtree.core
-   torchtree.distributions
-   torchtree.evolution
-   torchtree.inference
-   torchtree.nf
-   torchtree.nn
-   torchtree.ops
-   torchtree.optim
-   torchtree.variational
+
+   torchtree
 
 
 
-Indices and tables
-==================
+.. toctree::
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   bibliography/bib

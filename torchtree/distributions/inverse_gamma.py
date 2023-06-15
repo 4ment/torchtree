@@ -1,8 +1,18 @@
+"""Inverse gamma distribution parametrized by concentration and rate."""
 from torch.distributions import Gamma, TransformedDistribution, constraints
 from torch.distributions.transforms import PowerTransform
 
 
 class InverseGamma(TransformedDistribution):
+    """Inverse gamma distribution parametrized by concentration and rate.
+
+    Creates an inverse gamma distribution parameterized by :attr:`concentration`
+    and :attr:`rate`.
+
+    :param float or Tensor concentration: concentration parameter of the distribution
+    :param float or Tensor rate: rate parameter of the distribution
+    """
+
     arg_constraints = {
         'concentration': constraints.positive,
         'rate': constraints.positive,
@@ -11,7 +21,7 @@ class InverseGamma(TransformedDistribution):
     has_rsample = True
 
     def __init__(self, concentration, rate, validate_args=None):
-        base_dist = Gamma(concentration, rate)
+        base_dist = Gamma(concentration, rate, validate_args=validate_args)
         super().__init__(
             base_dist,
             PowerTransform(-base_dist.rate.new_ones(())),

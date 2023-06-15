@@ -1,3 +1,4 @@
+"""CTMC scale reference prior."""
 from typing import Optional, Union
 
 import torch
@@ -13,15 +14,17 @@ from ..typing import ID
 # github.com/beast-dev/beast-mcmc/blob/master/src/dr/evomodel/tree/CTMCScalePrior.java
 @register_class
 class CTMCScale(CallableModel):
-    """Class implementing the CTMC scale prior [#ferreira2008]_
+    """Continuous-time Markov chain scale prior.
+
+    Class implementing the CTMC reference scale prior from
+    :footcite:t:`ferreira2008bayesian`.
 
     :param id_: ID of object
     :type id_: str or None
-    :param torch.Tensor x: substitutin rate parameter
+    :param torch.Tensor x: substitution rate parameter
     :param TreeModel tree_model: tree model
 
-    .. [#ferreira2008] Ferreira and Suchard. Bayesian analysis of elapsed times
-     in continuous-time Markov chains. 2008
+    .. footbibliography::
     """
 
     shape = torch.tensor([0.5])

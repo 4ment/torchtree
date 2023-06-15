@@ -1,15 +1,17 @@
+"""Implementation of Parameter classes."""
 from __future__ import annotations
 
 import collections.abc
 import inspect
 import numbers
-from typing import Optional, Union, overload
+from typing import Any, Optional, Union, overload
 
 import torch
 from torch import Tensor, nn
 
 from .abstractparameter import AbstractParameter
 from .container import Container
+from .identifiable import Identifiable
 from .parametric import ParameterListener, Parametric
 from .utils import (
     JSONParseError,
@@ -23,6 +25,13 @@ from .utils import (
 
 @register_class
 class Parameter(AbstractParameter):
+    """Parameter class.
+
+    :param id_: identifier of Parameter object.
+    :type id_: str or None
+    :param Tensor tensor: Tensor object.
+    """
+
     def __init__(self, id_: Optional[str], tensor: Tensor) -> None:
         super().__init__(id_)
         self._tensor = tensor
@@ -61,16 +70,28 @@ class Parameter(AbstractParameter):
 
     @property
     def grad_fn(self):
+        """The grad_fn property of the tensor.
+
+        :rtype: torch.autograd.graph.node
+        """
         return self._tensor.grad_fn
 
     def copy_(self, tensor):
         self._tensor.copy_(tensor)
 
-    def size(self):
+    def size(self) -> torch.Size:
+        """Returns the size of the tensor.
+
+        :rtype: Size
+        """
         return self._tensor.size()
 
     @property
-    def grad(self) -> bool:
+    def grad(self) -> Tensor:
+        """The grad property of the Tensor.
+
+        :rtype: Tensor
+        """
         return self._tensor.grad
 
     def add_parameter_listener(self, listener) -> None:
@@ -165,7 +186,68 @@ class Parameter(AbstractParameter):
         return parameter
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(cls, data: dict[str, Any], dic: dict[str, Identifiable]) -> Parameter:
+        r"""Creates a Parameter object from a dictionary.
+
+        :param dict[str, Any] data: dictionary representation of a parameter object.
+        :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+            keyed by their ID.
+
+        **JSON attributes**:
+
+         Only one of :attr:`tensor`, :attr:`full_like` :attr:`full`,
+         :attr:`zeros_like`, :attr:`zeros`, :attr:`ones_like`, :attr:`ones`,
+         :attr:`eye_like`, :attr:`eye`, :attr:`arange` can be specified.
+
+         - tensor (list): list of values.
+         - full_like (AbstractParameter): parameter used to determine the size of
+           the tensor.
+
+           - value (float or int or bool): the number to fill the tensor with.
+         - full (int or list): size of the tensor.
+
+           - value (float or int or bool): the number to fill the tensor with.
+         - ones_like (AbstractParameter): parameter used to determine the size of
+           the tensor filled with the scalar value 1.
+         - ones (int or list): size of the tensor.
+         - zeros_like (AbstractParameter): parameter used to determine the size of
+           the tensor filled with the scalar value 0.
+         - zeros (int or list): size of the tensor.
+         - eye_like (AbstractParameter): parameter used to create a 2-D tensor with
+           ones on the diagonal and zeros elsewhere.
+         - eye (int or list): size of the 2D tensor with ones on the diagonal and
+           zeros elsewhere. The list can only contain 2 integers.
+         - arange (int or list): emulate torch.arange. If a int is provided it is
+           equiavalent to torch.arange(x). If a list is provided it is equivalient to
+           torch.arange(x[0], x[1], x[2]). The list can be of size 2 or 3.
+
+         Optional:
+          - dtype (str): the desired data type of returned tensor.
+            Default: if None, infers data type from data.
+          - device (str):  the device of the constructed tensor. If None and data
+            is a tensor then the device of data is used. If None and data is not a
+            tensor then the result tensor is constructed on the CPU.
+          - requires_grad (bool): If autograd should record operations on the returned
+            tensor. Default: False.
+          - nn (bool): If the tensor should wrapped in a torch.nn.Parameter object.
+
+        :example:
+        >>> p_dic = {"id": "parameter", "type": "Parameter", "tensor": [1., 2., 3.]}
+        >>> parameter = Parameter.from_json(p_dic, {})
+        >>> isinstance(parameter, Parameter)
+        True
+        >>> parameter.tensor
+        tensor([1., 2., 3.])
+        >>> ones_dic = {"id": "parameter", "type": "Parameter", "ones_like": p_dic}
+        >>> ones = Parameter.from_json(ones_dic, {})
+        >>> all(ones.tensor == torch.ones(3))
+        True
+
+        .. note::
+            The specification of the tensor loosely follows the way Tensors
+            (full, ones, eye, ...) are constructed:
+            https://pytorch.org/docs/stable/torch.html
+        """
         dtype = get_class(data['dtype']) if 'dtype' in data else None
         device = data.get('device', None)
         kwargs = {'device': device}
@@ -236,6 +318,22 @@ class Parameter(AbstractParameter):
 
 @register_class
 class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callable):
+    """Class wrapping an AbstractParameter and a torch Transform object.
+
+    The tensor property of this object returns the wrapped parameter tensor
+    transformed with the wrapped transform.
+
+    This class is callable and it returns the log determinant jacobians of the
+    invertible transformation.
+
+    :param id_: object identifier.
+    :type id_: str or None
+    :param x: parameter to transform.
+    :type x: Union[list[AbstractParameter], AbstractParameter]
+    :param transform: torch transform object.
+    :type transform: torch.distributions.Transform
+    """
+
     def __init__(
         self,
         id_: Optional[str],
@@ -326,7 +424,42 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
         self.need_update = True
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(
+        cls, data: dict[str, Any], dic: dict[str, Identifiable]
+    ) -> TransformedParameter:
+        r"""Creates a TransformedParameter object from a dictionary.
+
+        :param dict[str, Any] data: dictionary representation of a transformed
+            parameter object.
+        :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+            keyed by their ID.
+
+        **JSON attributes**:
+
+         Mandatory:
+          - id (str): identidifer of object.
+          - x (AbstractParameter): parameter to transform.
+          - transform (str): torch transform class name, including package
+            and module names.
+
+         Optional:
+          - parameters (dic): parameter of torch transform.
+
+        :example:
+        >>> tensor = torch.tensor([1.,2.])
+        >>> p_dic = {"id": "parameter", "type": "Parameter", "tensor": tensor.tolist()}
+        >>> t_dic =  {"id": "t", "type": "TransformedParameter", "x": p_dic,
+        ... "transform": "torch.distributions.ExpTransform"}
+        >>> transformed = TransformedParameter.from_json(t_dic, {})
+        >>> isinstance(transformed, TransformedParameter)
+        True
+        >>> exp_transform = torch.distributions.ExpTransform()
+        >>> tensor2 = exp_transform(tensor)
+        >>> all(transformed.tensor == tensor2)
+        True
+        >>> all(transformed() == exp_transform.log_abs_det_jacobian(tensor, tensor2))
+        True
+        """
         # parse transform
         klass = get_class(data['transform'])
         signature_params = list(inspect.signature(klass.__init__).parameters)
@@ -355,19 +488,20 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
 
 @register_class
 class ViewParameter(AbstractParameter, ParameterListener):
+    r"""Class representing a view of another parameter.
+
+    :param id_: ID of object.
+    :type id_: str or None
+    :param Parameter parameter: parameter that ViewParameter wrap.
+    :param indices: indices used on parameter
+    """
+
     def __init__(
         self,
         id_: Optional[str],
         parameter: Parameter,
         indices: Union[int, slice, Tensor],
     ) -> None:
-        r"""Class representing a view of another parameter.
-
-        :param id_: ID of object
-        :type id_: str or None
-        :param Parameter parameter: parameter that ViewParameter wrap
-        :param indices: indices used on parameter
-        """
         AbstractParameter.__init__(self, id_)
         self.parameter = parameter
         self.indices = indices

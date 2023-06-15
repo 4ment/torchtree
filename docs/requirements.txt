@@ -1,0 +1,7 @@
+dendropy
+numpy
+sphinx
+sphinx-autoapi
+sphinx-book-theme
+sphinxcontrib-bibtex
+torch

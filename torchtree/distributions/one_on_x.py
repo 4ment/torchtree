@@ -1,3 +1,4 @@
+"""One on X prior."""
 import torch.distributions
 import torch.distributions.constraints
 
@@ -6,6 +7,12 @@ from ..core.utils import register_class
 
 @register_class
 class OneOnX(torch.distributions.Distribution):
+    r"""One on X prior.
+
+    Calculates the (improper) prior proportional to
+    :math:`\prod_i (1/x_i)` for the given statistic x.
+    """
+
     arg_constraints = {}
     support = torch.distributions.constraints.positive
 
