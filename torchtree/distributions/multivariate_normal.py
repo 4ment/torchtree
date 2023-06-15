@@ -1,4 +1,6 @@
 """Multivariate normal distribution."""
+from __future__ import annotations
+
 from typing import Union
 
 import torch
