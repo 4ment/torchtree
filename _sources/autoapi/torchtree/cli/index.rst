@@ -21,6 +21,7 @@ Submodules
    evolution/index.rst
    hmc/index.rst
    jacobians/index.rst
+   loggers/index.rst
    map/index.rst
    plugin/index.rst
    plugin_manager/index.rst
