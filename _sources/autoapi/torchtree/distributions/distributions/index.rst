@@ -5,7 +5,7 @@
 
 .. autoapi-nested-parse::
 
-   torchtree distribution classes.
+   Torchtree distribution classes.
 
 
 
@@ -33,16 +33,16 @@ Classes
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
       :abstractmethod:
 
-      Generates a sample_shape shaped reparameterized sample or sample_shape
-      shaped batch of reparameterized samples if the distribution parameters
-      are batched.
+      Generates a sample_shape shaped reparameterized sample or
+      sample_shape shaped batch of reparameterized samples if the
+      distribution parameters are batched.
 
 
    .. py:method:: sample(sample_shape=torch.Size()) -> None
       :abstractmethod:
 
-      Generates a sample_shape shaped sample or sample_shape shaped batch of
-      samples if the distribution parameters are batched.
+      Generates a sample_shape shaped sample or sample_shape shaped batch
+      of samples if the distribution parameters are batched.
 
 
    .. py:method:: log_prob(x: torchtree.core.abstractparameter.AbstractParameter = None) -> torch.Tensor
@@ -86,17 +86,21 @@ Classes
       :type: torch.Size
 
 
+   .. py:property:: distribution
+      :type: torch.distributions.Distribution
+
+
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
-      Generates a sample_shape shaped reparameterized sample or sample_shape
-      shaped batch of reparameterized samples if the distribution parameters
-      are batched.
+      Generates a sample_shape shaped reparameterized sample or
+      sample_shape shaped batch of reparameterized samples if the
+      distribution parameters are batched.
 
 
    .. py:method:: sample(sample_shape=torch.Size()) -> None
 
-      Generates a sample_shape shaped sample or sample_shape shaped batch of
-      samples if the distribution parameters are batched.
+      Generates a sample_shape shaped sample or sample_shape shaped batch
+      of samples if the distribution parameters are batched.
 
 
    .. py:method:: log_prob(x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter] = None) -> torch.Tensor
@@ -142,16 +146,16 @@ Classes
 
       :example:
       >>> x_dict = {"id": "x", "type": "Parameter", "tensor": [1., 2.]}
-      >>> x = Parameter.from_json(x_dic, {})
-      >>> dic = {"x", x}
+      >>> x = Parameter.from_json(x_dict, {})
+      >>> dic = {"x": x}
       >>> loc = {"id": "loc", "type": "Parameter", "tensor": [0.1]}
       >>> scale = {"id": "scale", "type": "Parameter", "tensor": [1.]}
       >>> normal_dic = {"id": "normal", "distribution": "torch.distributions.Normal",
-      ...     "x": x, "parameters":{"loc": loc, "scale": scale}}
+      ...     "x": "x", "parameters":{"loc": loc, "scale": scale}}
       >>> normal = Distribution.from_json(normal_dic, dic)
       >>> isinstance(normal, Distribution)
       True
-      >>> exp_dic = {"id": "exp", "x": x,"parameters":{"rate": 1.0}
+      >>> exp_dic = {"id": "exp", "x": "x", "parameters":{"rate": 1.0},
       ...     "distribution": "torch.distributions.Exponential"}
       >>> exp = Distribution.from_json(exp_dic, dic)
       >>> exp() == torch.distributions.Exponential(1.0).log_prob(x.tensor)

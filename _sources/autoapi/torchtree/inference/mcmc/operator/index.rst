@@ -19,7 +19,7 @@ Classes
 
 
 
-.. py:class:: MCMCOperator(id_: torchtree.typing.ID, joint: torchtree.core.model.CallableModel, parameters: list[torchtree.typing.Parameter], weight: float, target_acceptance_probability: float, **kwargs)
+.. py:class:: MCMCOperator(id_: torchtree.typing.ID, parameters: list[torchtree.typing.Parameter], weight: float, target_acceptance_probability: float, **kwargs)
 
 
    Bases: :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`abc.ABC`
@@ -27,6 +27,11 @@ Classes
    Abstract class making an object identifiable.
 
    :param str or None id_: identifier of object
+
+   .. py:property:: tuning_parameter
+      :type: float
+      :abstractmethod:
+
 
    .. py:property:: adaptable_parameter
       :type: float
@@ -50,7 +55,7 @@ Classes
 
 
 
-.. py:class:: ScalerOperator(id_: torchtree.typing.ID, joint: torchtree.core.model.CallableModel, parameters: list[torchtree.typing.Parameter], weight: float, target_acceptance_probability: float, scaler: float, **kwargs)
+.. py:class:: ScalerOperator(id_: torchtree.typing.ID, parameters: list[torchtree.typing.Parameter], weight: float, target_acceptance_probability: float, scaler: float, **kwargs)
 
 
    Bases: :py:obj:`MCMCOperator`
@@ -59,8 +64,11 @@ Classes
 
    :param str or None id_: identifier of object
 
-   .. py:property:: adaptable_parameter
+   .. py:property:: tuning_parameter
       :type: float
+
+
+   .. py:method:: adaptable_parameter() -> float
 
 
    .. py:method:: set_adaptable_parameter(value: float) -> None
@@ -79,7 +87,7 @@ Classes
 
 
 
-.. py:class:: SlidingWindowOperator(id_: torchtree.typing.ID, joint: torchtree.core.model.CallableModel, parameters: list[torchtree.typing.Parameter], weight: float, target_acceptance_probability: float, width: float, **kwargs)
+.. py:class:: SlidingWindowOperator(id_: torchtree.typing.ID, parameters: list[torchtree.typing.Parameter], weight: float, target_acceptance_probability: float, width: float, **kwargs)
 
 
    Bases: :py:obj:`MCMCOperator`
@@ -88,14 +96,14 @@ Classes
 
    :param str or None id_: identifier of object
 
-   .. py:property:: adaptable_parameter
+   .. py:property:: tuning_parameter
       :type: float
 
 
+   .. py:method:: adaptable_parameter() -> float
+
+
    .. py:method:: set_adaptable_parameter(value: float) -> None
-
-
-   .. py:method:: tune(acceptance_prob: torch.Tensor, sample: int, accepted: bool) -> None
 
 
    .. py:method:: from_json(data, dic)

@@ -371,9 +371,10 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator"><code class="docutils literal notranslate"><span class="pre">HMCOperator</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.mass_matrix"><code class="docutils literal notranslate"><span class="pre">HMCOperator.mass_matrix</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">HMCOperator.adaptable_parameter</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.tuning_parameter"><code class="docutils literal notranslate"><span class="pre">HMCOperator.tuning_parameter</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.update_mass_matrices"><code class="docutils literal notranslate"><span class="pre">HMCOperator.update_mass_matrices()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">HMCOperator.handle_parameter_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">HMCOperator.adaptable_parameter()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.set_adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">HMCOperator.set_adaptable_parameter()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.tune"><code class="docutils literal notranslate"><span class="pre">HMCOperator.tune()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.from_json"><code class="docutils literal notranslate"><span class="pre">HMCOperator.from_json()</span></code></a></li>
@@ -423,8 +424,8 @@ document.write(`
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="torchtree.inference.hmc.operator.HMCOperator.adaptable_parameter">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adaptable_parameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Tensor</span></em><a class="headerlink" href="#torchtree.inference.hmc.operator.HMCOperator.adaptable_parameter" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="torchtree.inference.hmc.operator.HMCOperator.tuning_parameter">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tuning_parameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#torchtree.inference.hmc.operator.HMCOperator.tuning_parameter" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -435,6 +436,11 @@ document.write(`
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.inference.hmc.operator.HMCOperator.handle_parameter_changed">
 <span class="sig-name descname"><span class="pre">handle_parameter_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.inference.hmc.operator.HMCOperator.handle_parameter_changed" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.hmc.operator.HMCOperator.adaptable_parameter">
+<span class="sig-name descname"><span class="pre">adaptable_parameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#torchtree.inference.hmc.operator.HMCOperator.adaptable_parameter" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -508,9 +514,10 @@ by their ID.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator"><code class="docutils literal notranslate"><span class="pre">HMCOperator</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.mass_matrix"><code class="docutils literal notranslate"><span class="pre">HMCOperator.mass_matrix</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">HMCOperator.adaptable_parameter</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.tuning_parameter"><code class="docutils literal notranslate"><span class="pre">HMCOperator.tuning_parameter</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.update_mass_matrices"><code class="docutils literal notranslate"><span class="pre">HMCOperator.update_mass_matrices()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">HMCOperator.handle_parameter_changed()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">HMCOperator.adaptable_parameter()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.set_adaptable_parameter"><code class="docutils literal notranslate"><span class="pre">HMCOperator.set_adaptable_parameter()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.tune"><code class="docutils literal notranslate"><span class="pre">HMCOperator.tune()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.hmc.operator.HMCOperator.from_json"><code class="docutils literal notranslate"><span class="pre">HMCOperator.from_json()</span></code></a></li>

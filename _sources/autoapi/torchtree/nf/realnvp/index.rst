@@ -100,15 +100,15 @@ Classes
 
    .. py:method:: sample(sample_shape=torch.Size()) -> None
 
-      Generates a sample_shape shaped sample or sample_shape shaped batch of
-      samples if the distribution parameters are batched.
+      Generates a sample_shape shaped sample or sample_shape shaped batch
+      of samples if the distribution parameters are batched.
 
 
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
-      Generates a sample_shape shaped reparameterized sample or sample_shape
-      shaped batch of reparameterized samples if the distribution parameters
-      are batched.
+      Generates a sample_shape shaped reparameterized sample or
+      sample_shape shaped batch of reparameterized samples if the
+      distribution parameters are batched.
 
 
    .. py:method:: log_prob(x: torchtree.core.abstractparameter.AbstractParameter = None) -> torch.Tensor

@@ -18,6 +18,7 @@ torchtree.core.logger
    .. autosummary::
    
       CSV
+      ContainerLogger
       Dumper
       Logger
       LoggerInterface

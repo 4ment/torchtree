@@ -45,6 +45,9 @@ Classes
       p(\boldsymbol{x} \mid \tau) =  \prod_{i=1}^{N-1} \frac{1}{\sqrt{2 \pi}}
        \sqrt{\tau} e^{-\frac{\tau}{2} (x_{i+1} -x_i)^2}
 
+   .. py:method:: precision_matrix() -> torch.Tensor
+
+
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> GMRF
       :classmethod:
 
@@ -68,7 +71,7 @@ Classes
       :example:
       >>> field = {"id": "field", "type": "Parameter", "tensor": [1., 2., 3.]}
       >>> precision = {"id": "precision", "type": "Parameter", "tensor": [1.]}
-      >>> gmrf_dic = {"id": "gmrf", "x": field, "precision", precision}
+      >>> gmrf_dic = {"id": "gmrf", "x": field, "precision": precision}
       >>> gmrf = GMRF.from_json(gmrf_dic, {})
       >>> isinstance(gmrf, GMRF)
       True

@@ -400,6 +400,13 @@ document.write(`
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.Dumper.from_json"><code class="docutils literal notranslate"><span class="pre">Dumper.from_json()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger"><code class="docutils literal notranslate"><span class="pre">ContainerLogger</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger.initialize"><code class="docutils literal notranslate"><span class="pre">ContainerLogger.initialize()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger.log"><code class="docutils literal notranslate"><span class="pre">ContainerLogger.log()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger.close"><code class="docutils literal notranslate"><span class="pre">ContainerLogger.close()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger.from_json"><code class="docutils literal notranslate"><span class="pre">ContainerLogger.from_json()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -437,6 +444,9 @@ document.write(`
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.core.logger.Dumper" title="torchtree.core.logger.Dumper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dumper</span></code></a></p></td>
 <td><p>Class for saving parameters to a json file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.core.logger.ContainerLogger" title="torchtree.core.logger.ContainerLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ContainerLogger</span></code></a></p></td>
+<td><p>Class for logging Parameter and CallableModel values to a list.</p></td>
 </tr>
 </tbody>
 </table>
@@ -660,6 +670,67 @@ referenced in data.</p></li>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="torchtree.core.logger.ContainerLogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.core.logger.</span></span><span class="sig-name descname"><span class="pre">ContainerLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">every</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.core.logger.ContainerLogger" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#torchtree.core.logger.LoggerInterface" title="torchtree.core.logger.LoggerInterface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoggerInterface</span></code></a></p>
+<p>Class for logging Parameter and CallableModel values to a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> (<em>list</em><em>[</em><a class="reference internal" href="../parameter/index.html#torchtree.core.parameter.Parameter" title="torchtree.core.parameter.Parameter"><em>Parameter</em></a><em> or </em><a class="reference internal" href="../model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><em>CallableModel</em></a><em>]</em>) – list of Parameter or CallableModel objects</p></li>
+<li><p><strong>every</strong> (<em>int</em>) – logging frequency</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.core.logger.ContainerLogger.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.core.logger.ContainerLogger.initialize" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.core.logger.ContainerLogger.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.core.logger.ContainerLogger.log" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.core.logger.ContainerLogger.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.core.logger.ContainerLogger.close" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.core.logger.ContainerLogger.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.core.logger.ContainerLogger" title="torchtree.core.logger.ContainerLogger"><span class="pre">ContainerLogger</span></a></span></span><a class="headerlink" href="#torchtree.core.logger.ContainerLogger.from_json" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a ContainerLogger object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a ContainerLogger
+object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="../identifiable/index.html#torchtree.core.identifiable.Identifiable" title="torchtree.core.identifiable.Identifiable"><em>Identifiable</em></a><em>]</em>) – dictionary containing torchtree objects
+keyed by their ID.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>JSON attributes</strong>:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Mandatory:</dt><dd><ul class="simple">
+<li><p>container (list): python list to log values.</p></li>
+<li><p>inputs (list[AbstractParameter or CallableObject]): list of parameters
+or models to log.</p></li>
+</ul>
+</dd>
+<dt>Optional:</dt><dd><ul class="simple">
+<li><p>every (int): logging frequency.</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 </section>
@@ -725,6 +796,13 @@ referenced in data.</p></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.Dumper"><code class="docutils literal notranslate"><span class="pre">Dumper</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.Dumper.run"><code class="docutils literal notranslate"><span class="pre">Dumper.run()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.Dumper.from_json"><code class="docutils literal notranslate"><span class="pre">Dumper.from_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger"><code class="docutils literal notranslate"><span class="pre">ContainerLogger</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger.initialize"><code class="docutils literal notranslate"><span class="pre">ContainerLogger.initialize()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger.log"><code class="docutils literal notranslate"><span class="pre">ContainerLogger.log()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger.close"><code class="docutils literal notranslate"><span class="pre">ContainerLogger.close()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.core.logger.ContainerLogger.from_json"><code class="docutils literal notranslate"><span class="pre">ContainerLogger.from_json()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -17,6 +17,7 @@ Classes
    torchtree.core.logger.TreeLogger
    torchtree.core.logger.CSV
    torchtree.core.logger.Dumper
+   torchtree.core.logger.ContainerLogger
 
 
 
@@ -174,6 +175,48 @@ Classes
       :return: a
       :class: `~torchtree.core.logger.Dumper` object.
       :rtype: Dumper
+
+
+
+.. py:class:: ContainerLogger(inputs: list[Union[torchtree.core.abstractparameter.AbstractParameter, torchtree.core.model.CallableModel]], container, every: int)
+
+
+   Bases: :py:obj:`LoggerInterface`
+
+   Class for logging Parameter and CallableModel values to a list.
+
+   :param inputs: list of Parameter or CallableModel objects
+   :type inputs: list[Parameter or CallableModel]
+   :param int every: logging frequency
+
+   .. py:method:: initialize() -> None
+
+
+   .. py:method:: log(*args, **kwargs) -> None
+
+
+   .. py:method:: close() -> None
+
+
+   .. py:method:: from_json(data, dic) -> ContainerLogger
+      :classmethod:
+
+      Create a ContainerLogger object.
+
+      :param dict[str, Any] data: dictionary representation of a ContainerLogger
+          object.
+      :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+          keyed by their ID.
+
+      **JSON attributes**:
+
+       Mandatory:
+        - container (list): python list to log values.
+        - inputs (list[AbstractParameter or CallableObject]): list of parameters
+          or models to log.
+
+       Optional:
+        - every (int): logging frequency.
 
 
 

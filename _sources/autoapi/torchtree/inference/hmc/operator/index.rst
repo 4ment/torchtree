@@ -30,14 +30,17 @@ Classes
       :type: torch.Tensor
 
 
-   .. py:property:: adaptable_parameter
-      :type: torch.Tensor
+   .. py:property:: tuning_parameter
+      :type: float
 
 
    .. py:method:: update_mass_matrices() -> None
 
 
    .. py:method:: handle_parameter_changed(variable: torchtree.core.abstractparameter.AbstractParameter, index, event) -> None
+
+
+   .. py:method:: adaptable_parameter() -> torch.Tensor
 
 
    .. py:method:: set_adaptable_parameter(value) -> None

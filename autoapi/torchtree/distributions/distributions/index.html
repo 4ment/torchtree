@@ -379,6 +379,7 @@ document.write(`
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution"><code class="docutils literal notranslate"><span class="pre">Distribution</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.event_shape"><code class="docutils literal notranslate"><span class="pre">Distribution.event_shape</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.batch_shape"><code class="docutils literal notranslate"><span class="pre">Distribution.batch_shape</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.distribution"><code class="docutils literal notranslate"><span class="pre">Distribution.distribution</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.rsample"><code class="docutils literal notranslate"><span class="pre">Distribution.rsample()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.sample"><code class="docutils literal notranslate"><span class="pre">Distribution.sample()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.log_prob"><code class="docutils literal notranslate"><span class="pre">Distribution.log_prob()</span></code></a></li>
@@ -404,7 +405,7 @@ document.write(`
                   
   <section id="module-torchtree.distributions.distributions">
 <span id="torchtree-distributions-distributions"></span><h1><a class="reference internal" href="../../../../modules/torchtree.distributions.distributions.html#module-torchtree.distributions.distributions" title="torchtree.distributions.distributions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.distributions</span></code></a><a class="headerlink" href="#module-torchtree.distributions.distributions" title="Permalink to this heading">#</a></h1>
-<p>torchtree distribution classes.</p>
+<p>Torchtree distribution classes.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
 <section id="classes">
@@ -427,16 +428,16 @@ document.write(`
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.distributions.distributions.DistributionModel.rsample">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rsample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.Size()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.distributions.distributions.DistributionModel.rsample" title="Permalink to this definition">#</a></dt>
-<dd><p>Generates a sample_shape shaped reparameterized sample or sample_shape
-shaped batch of reparameterized samples if the distribution parameters
-are batched.</p>
+<dd><p>Generates a sample_shape shaped reparameterized sample or
+sample_shape shaped batch of reparameterized samples if the
+distribution parameters are batched.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.distributions.distributions.DistributionModel.sample">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.Size()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.distributions.distributions.DistributionModel.sample" title="Permalink to this definition">#</a></dt>
-<dd><p>Generates a sample_shape shaped sample or sample_shape shaped batch of
-samples if the distribution parameters are batched.</p>
+<dd><p>Generates a sample_shape shaped sample or sample_shape shaped batch
+of samples if the distribution parameters are batched.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -499,19 +500,24 @@ samples if the distribution parameters are batched.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Size</span></em><a class="headerlink" href="#torchtree.distributions.distributions.Distribution.batch_shape" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="torchtree.distributions.distributions.Distribution.distribution">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">distribution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.distributions.Distribution</span></em><a class="headerlink" href="#torchtree.distributions.distributions.Distribution.distribution" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.distributions.distributions.Distribution.rsample">
 <span class="sig-name descname"><span class="pre">rsample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.Size()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.distributions.distributions.Distribution.rsample" title="Permalink to this definition">#</a></dt>
-<dd><p>Generates a sample_shape shaped reparameterized sample or sample_shape
-shaped batch of reparameterized samples if the distribution parameters
-are batched.</p>
+<dd><p>Generates a sample_shape shaped reparameterized sample or
+sample_shape shaped batch of reparameterized samples if the
+distribution parameters are batched.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.distributions.distributions.Distribution.sample">
 <span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.Size()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#torchtree.distributions.distributions.Distribution.sample" title="Permalink to this definition">#</a></dt>
-<dd><p>Generates a sample_shape shaped sample or sample_shape shaped batch of
-samples if the distribution parameters are batched.</p>
+<dd><p>Generates a sample_shape shaped sample or sample_shape shaped batch
+of samples if the distribution parameters are batched.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -584,16 +590,16 @@ keyed by their ID.</p></li>
 <dd class="field-odd"><p></p></dd>
 </dl>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="s2">&quot;tensor&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">Parameter</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">x_dic</span><span class="p">,</span> <span class="p">{})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dic</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">Parameter</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">x_dict</span><span class="p">,</span> <span class="p">{})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dic</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">loc</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="s2">&quot;tensor&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">]}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">scale</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="s2">&quot;tensor&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.</span><span class="p">]}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">normal_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="s2">&quot;distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;torch.distributions.Normal&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">:{</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="n">loc</span><span class="p">,</span> <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="n">scale</span><span class="p">}}</span>
+<span class="gp">... </span>    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">:{</span><span class="s2">&quot;loc&quot;</span><span class="p">:</span> <span class="n">loc</span><span class="p">,</span> <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="n">scale</span><span class="p">}}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">normal</span> <span class="o">=</span> <span class="n">Distribution</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">normal_dic</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">normal</span><span class="p">,</span> <span class="n">Distribution</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">exp_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;exp&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span><span class="s2">&quot;parameters&quot;</span><span class="p">:{</span><span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exp_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;exp&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">:{</span><span class="s2">&quot;rate&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span>
 <span class="gp">... </span>    <span class="s2">&quot;distribution&quot;</span><span class="p">:</span> <span class="s2">&quot;torch.distributions.Exponential&quot;</span><span class="p">}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">exp</span> <span class="o">=</span> <span class="n">Distribution</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">exp_dic</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">exp</span><span class="p">()</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span>
@@ -656,6 +662,7 @@ See <a class="reference external" href="https://pytorch.org/docs/stable/distribu
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution"><code class="docutils literal notranslate"><span class="pre">Distribution</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.event_shape"><code class="docutils literal notranslate"><span class="pre">Distribution.event_shape</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.batch_shape"><code class="docutils literal notranslate"><span class="pre">Distribution.batch_shape</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.distribution"><code class="docutils literal notranslate"><span class="pre">Distribution.distribution</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.rsample"><code class="docutils literal notranslate"><span class="pre">Distribution.rsample()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.sample"><code class="docutils literal notranslate"><span class="pre">Distribution.sample()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.distributions.distributions.Distribution.log_prob"><code class="docutils literal notranslate"><span class="pre">Distribution.log_prob()</span></code></a></li>
