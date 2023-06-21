@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 from typing import List
 
 import torch
@@ -43,8 +42,10 @@ class MCMC(JSONSerializable, Runnable):
 
         handler = SignalHandler()
 
-        print("  iter             logP   accept ratio   step size ")
-        print(f"  {0:>4}  {log_joint:>15.3f}")
+        if self.every != 0:
+            print("  iter             logP   accept ratio   step size ")
+            print(f"  {0:>4}  {log_joint:>15.3f}")
+
         for epoch in range(1, self.iterations + 1):
             if handler.stop:
                 break
@@ -78,7 +79,7 @@ class MCMC(JSONSerializable, Runnable):
             else:
                 operator.reject()
 
-            if epoch % self.every == 0:
+            if self.every != 0 and epoch % self.every == 0:
                 step_size = 0
                 if hasattr(operator, "_integrator"):
                     step_size = operator._integrator.step_size
@@ -97,15 +98,14 @@ class MCMC(JSONSerializable, Runnable):
                 save_parameters(self.checkpoint, self.parameters)
 
         for logger in self.loggers:
-            if hasattr(logger, "finalize"):
-                logger.finalize()
+            logger.close()
 
         for op in self._operators:
             print(
                 op.id,
                 op._accept / (op._accept + op._reject),
                 op._accept + op._reject,
-                math.exp(op.adaptable_parameter),
+                op.tuning_parameter,
             )
 
     @classmethod

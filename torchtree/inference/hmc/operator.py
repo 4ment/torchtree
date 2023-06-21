@@ -33,7 +33,6 @@ class HMCOperator(MCMCOperator, ParameterListener):
         MCMCOperator.__init__(
             self,
             id_,
-            joint,
             parameters,
             weight,
             target_acceptance_probability,
@@ -78,13 +77,12 @@ class HMCOperator(MCMCOperator, ParameterListener):
         return self._mass_matrix.tensor
 
     @property
+    def tuning_parameter(self) -> float:
+        return self._integrator.step_size
+
+    @MCMCOperator.adaptable_parameter.getter
     def adaptable_parameter(self) -> Tensor:
         return math.log(self._integrator.step_size)
-
-    @adaptable_parameter.setter
-    def adaptable_parameter(self, value: float) -> None:
-        self.set_adaptable_parameter(value)
-        self._adapt_count += 1
 
     def set_adaptable_parameter(self, value) -> None:
         self._integrator.step_size = math.exp(value)
@@ -100,7 +98,10 @@ class HMCOperator(MCMCOperator, ParameterListener):
                 ham0 = self._hamiltonian.potential_energy() + kinetic_energy0
 
                 momentum = self._integrator(
-                    self._joint, self.parameters, momentum, self.inverse_mass_matrix
+                    self._hamiltonian.joint,
+                    self.parameters,
+                    momentum,
+                    self.inverse_mass_matrix,
                 )
 
                 kinetic_energy = self._hamiltonian.kinetic_energy(
@@ -149,6 +150,8 @@ class HMCOperator(MCMCOperator, ParameterListener):
         optionals["divergence_threshold"] = data.get("divergence_threshold", 1000)
         if optionals["divergence_threshold"] in ("inf", "infinity"):
             optionals["divergence_threshold"] = float("inf")
+
+        optionals["disable_adaptation"] = data.get("disable_adaptation", False)
 
         return cls(
             id_,

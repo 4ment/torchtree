@@ -23,8 +23,6 @@ class DualAveraging:
     def step(self, statistic) -> None:
         self._counter += 1
 
-        statistic = 1 if statistic > 1 else statistic
-
         # Nesterov Dual-Averaging of log(epsilon)
         eta = 1.0 / (self._counter + self._t0)
 

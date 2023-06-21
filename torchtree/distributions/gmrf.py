@@ -87,6 +87,24 @@ class GMRF(CallableModel):
     def _sample_shape(self) -> torch.Size:
         return self.field.tensor.shape[:-1]
 
+    def precision_matrix(self) -> torch.Tensor:
+        dim = self.field.shape[-1]
+        precision = self.precision.tensor
+        precision_matrix = torch.zeros(
+            self.field.shape[:-1] + (dim, dim),
+            dtype=self.field.dtype,
+            device=self.field.device,
+        )
+        precision_matrix[..., range(dim - 1), range(1, dim)] = precision_matrix[
+            ..., range(1, dim), range(dim - 1)
+        ] = -precision.expand(self.field.shape[:-1] + (dim - 1,))
+
+        precision_matrix[..., range(1, dim - 1), range(1, dim - 1)] = 2.0 * precision
+        precision_matrix[..., 0, 0] = precision_matrix[
+            ..., dim - 1, dim - 1
+        ] = precision
+        return precision_matrix
+
     @classmethod
     def from_json(cls, data: dict[str, Any], dic: dict[str, Identifiable]) -> GMRF:
         r"""Creates a GMRF object from a dictionary.
@@ -109,7 +127,7 @@ class GMRF(CallableModel):
         :example:
         >>> field = {"id": "field", "type": "Parameter", "tensor": [1., 2., 3.]}
         >>> precision = {"id": "precision", "type": "Parameter", "tensor": [1.]}
-        >>> gmrf_dic = {"id": "gmrf", "x": field, "precision", precision}
+        >>> gmrf_dic = {"id": "gmrf", "x": field, "precision": precision}
         >>> gmrf = GMRF.from_json(gmrf_dic, {})
         >>> isinstance(gmrf, GMRF)
         True

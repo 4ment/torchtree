@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.evolution import (
     create_alignment,

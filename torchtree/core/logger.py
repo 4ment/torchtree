@@ -14,7 +14,7 @@ from .model import CallableModel
 from .parameter_encoder import ParameterEncoder
 from .runnable import Runnable
 from .serializable import JSONSerializable
-from .utils import process_object, process_objects, register_class
+from .utils import JSONParseError, process_object, process_objects, register_class
 
 
 class LoggerInterface(JSONSerializable, Runnable):
@@ -304,3 +304,76 @@ class Dumper(JSONSerializable, Runnable):
             if key in data:
                 kwargs[key] = data[key]
         return cls(parameters, **kwargs)
+
+
+@register_class
+class ContainerLogger(LoggerInterface):
+    r"""Class for logging Parameter and CallableModel values to a list.
+
+    :param inputs: list of Parameter or CallableModel objects
+    :type inputs: list[Parameter or CallableModel]
+    :param int every: logging frequency
+    """
+
+    def __init__(
+        self,
+        inputs: list[Union[AbstractParameter, CallableModel]],
+        container,
+        every: int,
+    ) -> None:
+        self.container = container
+        self.every = every
+        self.inputs = inputs
+        self.sample = 1
+
+    def initialize(self) -> None:
+        pass
+
+    def log(self, *args, **kwargs) -> None:
+        sample = kwargs.get('sample', self.sample)
+        self.sample += 1
+        if sample % self.every != 0:
+            return
+
+        row = []
+        for obj in self.inputs:
+            if isinstance(obj, AbstractParameter):
+                row.extend(obj.tensor.detach().cpu().tolist())
+            else:
+                log_p = obj()
+                if len(log_p.shape) == 0 or log_p.shape[-1] <= 1:
+                    row.append(log_p.item())
+                else:
+                    row.append(log_p.sum(-1).item())
+        if isinstance(self.container, list):
+            self.container.append(row)
+
+    def close(self) -> None:
+        pass
+
+    @classmethod
+    def from_json(cls, data, dic) -> ContainerLogger:
+        r"""Create a ContainerLogger object.
+
+        :param dict[str, Any] data: dictionary representation of a ContainerLogger
+            object.
+        :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+            keyed by their ID.
+
+        **JSON attributes**:
+
+         Mandatory:
+          - container (list): python list to log values.
+          - inputs (list[AbstractParameter or CallableObject]): list of parameters
+            or models to log.
+
+         Optional:
+          - every (int): logging frequency.
+        """
+        inputs = process_objects(data["inputs"], dic)
+        if isinstance(data["container"], list):
+            container = data["container"]
+        else:
+            raise JSONParseError("The container must be a list")
+        every = data.get("every", 1)
+        return cls(inputs, container, every)

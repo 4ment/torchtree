@@ -157,8 +157,7 @@ class Optimizer(JSONSerializable, Runnable):
                 save_parameters(self.checkpoint, self.parameters)
 
         for logger in self.loggers:
-            if hasattr(logger, 'finalize'):
-                logger.finalize()
+            logger.close()
 
     def run(self) -> None:
         if isinstance(self.optimizer, torch.optim.LBFGS):

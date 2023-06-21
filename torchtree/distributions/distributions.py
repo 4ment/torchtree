@@ -1,4 +1,4 @@
-"""torchtree distribution classes."""
+"""Torchtree distribution classes."""
 from __future__ import annotations
 
 import abc
@@ -25,19 +25,15 @@ class DistributionModel(CallableModel):
 
     @abc.abstractmethod
     def rsample(self, sample_shape=torch.Size()) -> None:
-        """
-        Generates a sample_shape shaped reparameterized sample or sample_shape
-        shaped batch of reparameterized samples if the distribution parameters
-        are batched.
-        """
+        """Generates a sample_shape shaped reparameterized sample or
+        sample_shape shaped batch of reparameterized samples if the
+        distribution parameters are batched."""
         ...
 
     @abc.abstractmethod
     def sample(self, sample_shape=torch.Size()) -> None:
-        """
-        Generates a sample_shape shaped sample or sample_shape shaped batch of
-        samples if the distribution parameters are batched.
-        """
+        """Generates a sample_shape shaped sample or sample_shape shaped batch
+        of samples if the distribution parameters are batched."""
         ...
 
     @abc.abstractmethod
@@ -52,8 +48,7 @@ class DistributionModel(CallableModel):
 
     @abc.abstractmethod
     def entropy(self) -> torch.Tensor:
-        """
-        Returns entropy of distribution, batched over batch_shape.
+        """Returns entropy of distribution, batched over batch_shape.
 
         :return: Tensor of shape batch_shape.
         :rtype: Tensor
@@ -135,6 +130,10 @@ class Distribution(DistributionModel):
         offset = 1 if len(self.batch_shape) == 0 else len(self.batch_shape)
         return self.x.tensor.shape[:-offset]
 
+    @property
+    def distribution(self) -> torch.distributions.Distribution:
+        return self.dist(*[arg.tensor for arg in self.args.values()], **self.kwargs)
+
     @staticmethod
     def json_factory(
         id_: str,
@@ -175,16 +174,16 @@ class Distribution(DistributionModel):
 
         :example:
         >>> x_dict = {"id": "x", "type": "Parameter", "tensor": [1., 2.]}
-        >>> x = Parameter.from_json(x_dic, {})
-        >>> dic = {"x", x}
+        >>> x = Parameter.from_json(x_dict, {})
+        >>> dic = {"x": x}
         >>> loc = {"id": "loc", "type": "Parameter", "tensor": [0.1]}
         >>> scale = {"id": "scale", "type": "Parameter", "tensor": [1.]}
         >>> normal_dic = {"id": "normal", "distribution": "torch.distributions.Normal",
-        ...     "x": x, "parameters":{"loc": loc, "scale": scale}}
+        ...     "x": "x", "parameters":{"loc": loc, "scale": scale}}
         >>> normal = Distribution.from_json(normal_dic, dic)
         >>> isinstance(normal, Distribution)
         True
-        >>> exp_dic = {"id": "exp", "x": x,"parameters":{"rate": 1.0}
+        >>> exp_dic = {"id": "exp", "x": "x", "parameters":{"rate": 1.0},
         ...     "distribution": "torch.distributions.Exponential"}
         >>> exp = Distribution.from_json(exp_dic, dic)
         >>> exp() == torch.distributions.Exponential(1.0).log_prob(x.tensor)
