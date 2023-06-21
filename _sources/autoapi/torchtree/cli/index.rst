@@ -23,6 +23,7 @@ Submodules
    jacobians/index.rst
    loggers/index.rst
    map/index.rst
+   mcmc/index.rst
    plugin/index.rst
    plugin_manager/index.rst
    priors/index.rst
