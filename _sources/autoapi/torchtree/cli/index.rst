@@ -24,6 +24,7 @@ Submodules
    loggers/index.rst
    map/index.rst
    mcmc/index.rst
+   operators/index.rst
    plugin/index.rst
    plugin_manager/index.rst
    priors/index.rst

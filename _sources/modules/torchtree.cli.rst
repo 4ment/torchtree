@@ -35,6 +35,7 @@ torchtree.cli
    torchtree.cli.loggers
    torchtree.cli.map
    torchtree.cli.mcmc
+   torchtree.cli.operators
    torchtree.cli.plugin
    torchtree.cli.plugin_manager
    torchtree.cli.priors

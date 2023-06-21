@@ -124,11 +124,14 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="modules/torchtree.html">torchtree</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="modules/torchtree.cli.html">torchtree.cli</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.advi.html">torchtree.cli.advi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.cli.html">torchtree.cli.cli</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.evolution.html">torchtree.cli.evolution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.hmc.html">torchtree.cli.hmc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.jacobians.html">torchtree.cli.jacobians</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.loggers.html">torchtree.cli.loggers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.map.html">torchtree.cli.map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.mcmc.html">torchtree.cli.mcmc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.operators.html">torchtree.cli.operators</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.plugin.html">torchtree.cli.plugin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.plugin_manager.html">torchtree.cli.plugin_manager</a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/torchtree.cli.priors.html">torchtree.cli.priors</a></li>
@@ -765,10 +768,10 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_bdsk_prior">create_bdsk_prior() (in module torchtree.cli.evolution)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_birth_death">create_birth_death() (in module torchtree.cli.evolution)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_branch_model">create_branch_model() (in module torchtree.cli.evolution)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/priors/index.html#torchtree.cli.priors.create_clock_horseshoe_prior">create_clock_horseshoe_prior() (in module torchtree.cli.priors)</a>
@@ -841,11 +844,15 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_sampler">create_sampler() (in module torchtree.cli.advi)</a>
 </li>
+      <li><a href="autoapi/torchtree/cli/operators/index.html#torchtree.cli.operators.create_scaler_operator">create_scaler_operator() (in module torchtree.cli.operators)</a>
+</li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_site_model">create_site_model() (in module torchtree.cli.evolution)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_site_model_srd06_mus">create_site_model_srd06_mus() (in module torchtree.cli.evolution)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_site_pattern">create_site_pattern() (in module torchtree.cli.evolution)</a>
+</li>
+      <li><a href="autoapi/torchtree/cli/operators/index.html#torchtree.cli.operators.create_sliding_window_operator">create_sliding_window_operator() (in module torchtree.cli.operators)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/hmc/index.html#torchtree.cli.hmc.create_stan_windowed_adaptation">create_stan_windowed_adaptation() (in module torchtree.cli.hmc)</a>
 </li>
@@ -1845,7 +1852,7 @@ document.write(`
 </li>
         <li><a href="autoapi/torchtree/cli/advi/index.html#module-torchtree.cli.advi">torchtree.cli.advi</a>, <a href="modules/torchtree.cli.advi.html#module-torchtree.cli.advi">[1]</a>
 </li>
-        <li><a href="autoapi/torchtree/cli/cli/index.html#module-torchtree.cli.cli">torchtree.cli.cli</a>
+        <li><a href="autoapi/torchtree/cli/cli/index.html#module-torchtree.cli.cli">torchtree.cli.cli</a>, <a href="modules/torchtree.cli.cli.html#module-torchtree.cli.cli">[1]</a>
 </li>
         <li><a href="autoapi/torchtree/cli/evolution/index.html#module-torchtree.cli.evolution">torchtree.cli.evolution</a>, <a href="modules/torchtree.cli.evolution.html#module-torchtree.cli.evolution">[1]</a>
 </li>
@@ -1857,7 +1864,9 @@ document.write(`
 </li>
         <li><a href="autoapi/torchtree/cli/map/index.html#module-torchtree.cli.map">torchtree.cli.map</a>, <a href="modules/torchtree.cli.map.html#module-torchtree.cli.map">[1]</a>
 </li>
-        <li><a href="autoapi/torchtree/cli/mcmc/index.html#module-torchtree.cli.mcmc">torchtree.cli.mcmc</a>
+        <li><a href="autoapi/torchtree/cli/mcmc/index.html#module-torchtree.cli.mcmc">torchtree.cli.mcmc</a>, <a href="modules/torchtree.cli.mcmc.html#module-torchtree.cli.mcmc">[1]</a>
+</li>
+        <li><a href="autoapi/torchtree/cli/operators/index.html#module-torchtree.cli.operators">torchtree.cli.operators</a>, <a href="modules/torchtree.cli.operators.html#module-torchtree.cli.operators">[1]</a>
 </li>
         <li><a href="autoapi/torchtree/cli/plugin/index.html#module-torchtree.cli.plugin">torchtree.cli.plugin</a>, <a href="modules/torchtree.cli.plugin.html#module-torchtree.cli.plugin">[1]</a>
 </li>
@@ -2714,7 +2723,7 @@ document.write(`
     torchtree.cli.cli
 
       <ul>
-        <li><a href="autoapi/torchtree/cli/cli/index.html#module-torchtree.cli.cli">module</a>
+        <li><a href="autoapi/torchtree/cli/cli/index.html#module-torchtree.cli.cli">module</a>, <a href="modules/torchtree.cli.cli.html#module-torchtree.cli.cli">[1]</a>
 </li>
       </ul></li>
       <li>
@@ -2756,7 +2765,14 @@ document.write(`
     torchtree.cli.mcmc
 
       <ul>
-        <li><a href="autoapi/torchtree/cli/mcmc/index.html#module-torchtree.cli.mcmc">module</a>
+        <li><a href="autoapi/torchtree/cli/mcmc/index.html#module-torchtree.cli.mcmc">module</a>, <a href="modules/torchtree.cli.mcmc.html#module-torchtree.cli.mcmc">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    torchtree.cli.operators
+
+      <ul>
+        <li><a href="autoapi/torchtree/cli/operators/index.html#module-torchtree.cli.operators">module</a>, <a href="modules/torchtree.cli.operators.html#module-torchtree.cli.operators">[1]</a>
 </li>
       </ul></li>
       <li>
