@@ -11,10 +11,9 @@ from ..typing import ID
 
 @register_class
 class ELBO(CallableModel):
-    r"""
-    Class representing the evidence lower bound (ELBO) objective.
-    Maximizing the ELBO is equivalent to minimizing exclusive Kullback-Leibler
-    divergence from p to q :math:`KL(q\|p)`.
+    r"""Class representing the evidence lower bound (ELBO) objective. Maximizing
+    the ELBO is equivalent to minimizing exclusive Kullback-Leibler divergence
+    from p to q :math:`KL(q\|p)`.
 
     The shape of ``samples`` is at most 2 dimensional.
 
@@ -44,6 +43,7 @@ class ELBO(CallableModel):
         self.q = q
         self.p = p
         self.samples = samples
+        self.entropy = entropy
         self.score = score
 
     def _call(self, *args, **kwargs) -> torch.Tensor:

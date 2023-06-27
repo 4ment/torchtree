@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 def create_loggers(parameters: list[str], arg) -> dict:
     models = ["joint.jacobian", "joint", "like", "prior"]
     if arg.coalescent:

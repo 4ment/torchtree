@@ -4,7 +4,6 @@ from __future__ import annotations
 import abc
 import inspect
 import numbers
-from collections import OrderedDict
 from typing import Any, Optional, Type, Union
 
 import torch
@@ -38,7 +37,8 @@ class DistributionModel(CallableModel):
 
     @abc.abstractmethod
     def log_prob(self, x: AbstractParameter = None) -> torch.Tensor:
-        """Returns the log of the probability density/mass function evaluated at x.
+        """Returns the log of the probability density/mass function evaluated
+        at x.
 
         :param Parameter x: value to evaluate
         :return: log probability
@@ -63,7 +63,7 @@ class Distribution(DistributionModel):
     :param id_: ID of distribution
     :param dist: class of torch Distribution
     :param x: random variable to evaluate/sample using distribution
-    :param args: parameters of the distribution
+    :param dict[str, AbstractParameter] parameters: parameters of the distribution
     :param **kwargs: optional arguments for instanciating torch Distribution
     """
 
@@ -72,15 +72,18 @@ class Distribution(DistributionModel):
         id_: Optional[str],
         dist: Type[torch.distributions.Distribution],
         x: Union[list[AbstractParameter], AbstractParameter],
-        args: 'OrderedDict[str, AbstractParameter]',
+        parameters: dict[str, AbstractParameter],
         **kwargs,
     ) -> None:
         super().__init__(id_)
         self.dist = dist
-        self.args = args
+        self.dict_parameters = parameters
         self.kwargs = kwargs
 
-        self.parameters = Container(None, self.args.values())
+        # this is for listening to changes.
+        self.distribution_parameters = Container(
+            None, list(self.dict_parameters.values())
+        )
 
         if isinstance(x, (tuple, list)):
             self.x = CatParameter('x', x, dim=-1)
@@ -89,13 +92,15 @@ class Distribution(DistributionModel):
 
     def rsample(self, sample_shape=torch.Size()) -> None:
         x = self.dist(
-            *[arg.tensor for arg in self.args.values()], **self.kwargs
+            **{name: p.tensor for name, p in self.dict_parameters.items()},
+            **self.kwargs,
         ).rsample(sample_shape)
         self.x.tensor = x
 
     def sample(self, sample_shape=torch.Size()) -> None:
         x = self.dist(
-            *[arg.tensor for arg in self.args.values()], **self.kwargs
+            **{name: p.tensor for name, p in self.dict_parameters.items()},
+            **self.kwargs,
         ).sample(sample_shape)
         self.x.tensor = x
 
@@ -103,12 +108,14 @@ class Distribution(DistributionModel):
         self, x: Union[list[AbstractParameter], AbstractParameter] = None
     ) -> torch.Tensor:
         return self.dist(
-            *[arg.tensor for arg in self.args.values()], **self.kwargs
+            **{name: p.tensor for name, p in self.dict_parameters.items()},
+            **self.kwargs,
         ).log_prob(x.tensor)
 
     def entropy(self) -> torch.Tensor:
         return self.dist(
-            *[arg.tensor for arg in self.args.values()], **self.kwargs
+            **{name: p.tensor for name, p in self.dict_parameters.items()},
+            **self.kwargs,
         ).entropy()
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
@@ -117,13 +124,15 @@ class Distribution(DistributionModel):
     @property
     def event_shape(self) -> torch.Size:
         return self.dist(
-            *[arg.tensor for arg in self.args.values()], **self.kwargs
+            **{name: p.tensor for name, p in self.dict_parameters.items()},
+            **self.kwargs,
         ).event_shape
 
     @property
     def batch_shape(self) -> torch.Size:
         return self.dist(
-            *[arg.tensor for arg in self.args.values()], **self.kwargs
+            **{name: p.tensor for name, p in self.dict_parameters.items()},
+            **self.kwargs,
         ).batch_shape
 
     def _sample_shape(self) -> torch.Size:
@@ -132,7 +141,10 @@ class Distribution(DistributionModel):
 
     @property
     def distribution(self) -> torch.distributions.Distribution:
-        return self.dist(*[arg.tensor for arg in self.args.values()], **self.kwargs)
+        return self.dist(
+            **{name: p.tensor for name, p in self.dict_parameters.items()},
+            **self.kwargs,
+        )
 
     @staticmethod
     def json_factory(
@@ -199,7 +211,7 @@ class Distribution(DistributionModel):
         x = process_objects(data['x'], dic)
 
         signature_params = list(inspect.signature(klass.__init__).parameters)
-        params = OrderedDict()
+        params = {}
         if 'parameters' not in data:
             return cls(id_, klass, x, params)
 
