@@ -47,8 +47,8 @@ Classes
        >>> y
        tensor([[ 2.7183,  0.0000],
                [ 2.0000, 20.0855]])
-       >>> TrilExpDiagonalTransform().inv(y)
-       tensor([1.0000, 2.0000, 3.0000])
+       >>> torch.allclose(TrilExpDiagonalTransform().inv(y), x)
+       True
 
    .. py:attribute:: bijective
       :value: True

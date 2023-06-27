@@ -419,7 +419,7 @@ document.write(`
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.variational.kl.ELBO" title="torchtree.variational.kl.ELBO"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ELBO</span></code></a></p></td>
-<td><p>Class representing the evidence lower bound (ELBO) objective.</p></td>
+<td><p>Class representing the evidence lower bound (ELBO) objective. Maximizing</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.variational.kl.KLpq" title="torchtree.variational.kl.KLpq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KLpq</span></code></a></p></td>
 <td><p>Calculate inclusive Kullback-Leibler divergence from q to p <span class="math notranslate nohighlight">\(KL(p\|q)\)</span></p></td>
@@ -436,9 +436,9 @@ document.write(`
 <dt class="sig sig-object py" id="torchtree.variational.kl.ELBO">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.variational.kl.</span></span><span class="sig-name descname"><span class="pre">ELBO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../distributions/distributions/index.html#torchtree.distributions.distributions.DistributionModel" title="torchtree.distributions.distributions.DistributionModel"><span class="pre">torchtree.distributions.distributions.DistributionModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entropy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.variational.kl.ELBO" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.model.CallableModel</span></code></a></p>
-<p>Class representing the evidence lower bound (ELBO) objective.
-Maximizing the ELBO is equivalent to minimizing exclusive Kullback-Leibler
-divergence from p to q <span class="math notranslate nohighlight">\(KL(q\|p)\)</span>.</p>
+<p>Class representing the evidence lower bound (ELBO) objective. Maximizing
+the ELBO is equivalent to minimizing exclusive Kullback-Leibler divergence
+from p to q <span class="math notranslate nohighlight">\(KL(q\|p)\)</span>.</p>
 <p>The shape of <code class="docutils literal notranslate"><span class="pre">samples</span></code> is at most 2 dimensional.</p>
 <ul class="simple">
 <li><p>0 or 1 dimension N or [N]: standard ELBO.</p></li>

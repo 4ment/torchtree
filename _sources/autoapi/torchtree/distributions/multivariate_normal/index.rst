@@ -60,7 +60,8 @@ Classes
 
    .. py:method:: log_prob(x: torchtree.Parameter = None) -> torch.Tensor
 
-      Returns the log of the probability density/mass function evaluated at x.
+      Returns the log of the probability density/mass function evaluated
+      at x.
 
       :param Parameter x: value to evaluate
       :return: log probability

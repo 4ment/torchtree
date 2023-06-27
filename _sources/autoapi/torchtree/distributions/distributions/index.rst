@@ -48,7 +48,8 @@ Classes
    .. py:method:: log_prob(x: torchtree.core.abstractparameter.AbstractParameter = None) -> torch.Tensor
       :abstractmethod:
 
-      Returns the log of the probability density/mass function evaluated at x.
+      Returns the log of the probability density/mass function evaluated
+      at x.
 
       :param Parameter x: value to evaluate
       :return: log probability
@@ -65,7 +66,7 @@ Classes
 
 
 
-.. py:class:: Distribution(id_: Optional[str], dist: Type[torch.distributions.Distribution], x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter], args: OrderedDict[str, AbstractParameter], **kwargs)
+.. py:class:: Distribution(id_: Optional[str], dist: Type[torch.distributions.Distribution], x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter], parameters: dict[str, torchtree.core.abstractparameter.AbstractParameter], **kwargs)
 
 
    Bases: :py:obj:`DistributionModel`
@@ -75,7 +76,7 @@ Classes
    :param id_: ID of distribution
    :param dist: class of torch Distribution
    :param x: random variable to evaluate/sample using distribution
-   :param args: parameters of the distribution
+   :param dict[str, AbstractParameter] parameters: parameters of the distribution
    :param **kwargs: optional arguments for instanciating torch Distribution
 
    .. py:property:: event_shape
@@ -105,7 +106,8 @@ Classes
 
    .. py:method:: log_prob(x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter] = None) -> torch.Tensor
 
-      Returns the log of the probability density/mass function evaluated at x.
+      Returns the log of the probability density/mass function evaluated
+      at x.
 
       :param Parameter x: value to evaluate
       :return: log probability

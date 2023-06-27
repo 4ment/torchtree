@@ -500,8 +500,8 @@ diagonal.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
 <span class="go">tensor([[ 2.7183,  0.0000],</span>
 <span class="go">        [ 2.0000, 20.0855]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">TrilExpDiagonalTransform</span><span class="p">()</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-<span class="go">tensor([1.0000, 2.0000, 3.0000])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">TrilExpDiagonalTransform</span><span class="p">()</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">x</span><span class="p">)</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 <dl class="py attribute">

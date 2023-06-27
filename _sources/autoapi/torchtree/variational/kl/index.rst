@@ -25,9 +25,9 @@ Classes
 
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
-   Class representing the evidence lower bound (ELBO) objective.
-   Maximizing the ELBO is equivalent to minimizing exclusive Kullback-Leibler
-   divergence from p to q :math:`KL(q\|p)`.
+   Class representing the evidence lower bound (ELBO) objective. Maximizing
+   the ELBO is equivalent to minimizing exclusive Kullback-Leibler divergence
+   from p to q :math:`KL(q\|p)`.
 
    The shape of ``samples`` is at most 2 dimensional.
 
