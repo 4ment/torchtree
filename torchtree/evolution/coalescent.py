@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+import abc
+import math
+
 import torch
 from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
@@ -9,39 +14,6 @@ from ..core.utils import process_object, process_objects, register_class
 from ..math import soft_sort
 from ..typing import ID
 from .tree_model import TimeTreeModel, TreeModel
-
-
-class AbstractCoalescentModel(CallableModel):
-    def __init__(
-        self,
-        id_: ID,
-        theta: AbstractParameter,
-        tree_model: TimeTreeModel = None,
-    ) -> None:
-        super().__init__(id_)
-        self.theta = theta
-        self.tree_model = tree_model
-
-    def _sample_shape(self) -> torch.Size:
-        return max(self.tree_model.sample_shape, self.theta.shape[:-1], key=len)
-
-
-@register_class
-class ConstantCoalescentModel(AbstractCoalescentModel):
-    def _call(self, *args, **kwargs) -> torch.Tensor:
-        coalescent = ConstantCoalescent(self.theta.tensor)
-        return coalescent.log_prob(self.tree_model.node_heights)
-
-    @classmethod
-    def from_json(cls, data, dic):
-        id_ = data['id']
-        theta = process_object(data['theta'], dic)
-        if TreeModel.tag in data:
-            tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
-            return cls(id_, theta, tree_model=tree_model)
-        else:
-            node_heights = process_data_coalesent(data, theta.dtype)
-            return cls(id_, theta, FakeTreeModel(node_heights))
 
 
 class AbstractCoalescentDistribution(Distribution):
@@ -59,6 +31,66 @@ class AbstractCoalescentDistribution(Distribution):
     @classmethod
     def maximum_likelihood(cls, node_heights) -> torch.Tensor:
         raise NotImplementedError
+
+
+class AbstractCoalescentModel(CallableModel):
+    def __init__(
+        self,
+        id_: ID,
+        theta: AbstractParameter,
+        tree_model: TimeTreeModel = None,
+    ) -> None:
+        super().__init__(id_)
+        self.theta = theta
+        self.tree_model = tree_model
+
+    def _sample_shape(self) -> torch.Size:
+        return max(self.tree_model.sample_shape, self.theta.shape[:-1], key=len)
+
+    @abc.abstractmethod
+    def distribution(self) -> AbstractCoalescentDistribution:
+        """Returns underlying coalescent distribution."""
+        ...
+
+
+@register_class
+class ConstantCoalescentModel(AbstractCoalescentModel):
+    def __init__(
+        self,
+        id_: ID,
+        theta: AbstractParameter,
+        tree_model: TimeTreeModel = None,
+        alpha=None,
+        beta=None,
+    ) -> None:
+        super().__init__(id_, theta, tree_model)
+        self.alpha = alpha
+        self.beta = beta
+
+    def distribution(self) -> AbstractCoalescentDistribution:
+        if self.alpha is None:
+            return ConstantCoalescent(self.theta.tensor)
+        else:
+            return ConstantCoalescentIntegrated(
+                self.theta.tensor, self.alpha, self.beta
+            )
+
+    def _call(self, *args, **kwargs) -> torch.Tensor:
+        coalescent = self.distribution()
+        return coalescent.log_prob(self.tree_model.node_heights)
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        theta = process_object(data['theta'], dic)
+        alpha = data.get("alpha", None)
+        beta = data.get("beta", None)
+        if TreeModel.tag in data:
+            tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
+            return cls(id_, theta, tree_model=tree_model, alpha=alpha, beta=beta)
+        else:
+            node_heights = process_data_coalesent(data, theta.dtype)
+            return cls(id_, theta, FakeTreeModel(node_heights), alpha=alpha, beta=beta)
 
 
 class ConstantCoalescent(AbstractCoalescentDistribution):
@@ -120,6 +152,62 @@ class ConstantCoalescent(AbstractCoalescentDistribution):
         ).rsample(sample_shape)
 
 
+class ConstantCoalescentIntegrated(AbstractCoalescentDistribution):
+    r"""Integrated Constant size coalescent/inverse gamma distribution.
+
+    Integrate the product of constant population coalescent and inverse gamma distribtions
+    with respect to population size.
+
+    :param AbstractParameter theta: population size parameter
+    :param float alpha: shape parameter of the gamma distribution.
+    :param float beta: rate parameter of the gamma distribution.
+
+    .. math::
+       p(T; \alpha, \beta) &= \int_0^{\infty} p(\theta; \alpha, \beta) p(T \mid \theta) d\theta \\
+                           &= \int_0^{\infty} \frac{\beta^\alpha}{\Gamma(\alpha)}\theta^{-\alpha-1} e^{-\beta/\theta} \theta^{-N} e^{-(\sum_{i=1}^N C_i t_i)/\theta} d\theta \\
+                           &= \frac{\beta^\alpha}{\Gamma(\alpha)} \frac{\Gamma}{\left(\beta + \sum_{i=1}^N C_i t_i \right)^{\alpha + N}}
+
+    The posterior distribution of the population size parameter is an inverse gamma with shape :math:`\alpha + N` and rate :math:`\beta + \sum_{i=1}^N C_i t_i`.
+    """  # noqa: E501
+    has_rsample = False
+
+    def __init__(
+        self, theta: torch.Tensor, alpha: float, beta, validate_args=None
+    ) -> None:
+        super().__init__(theta, validate_args=validate_args)
+        self.alpha = alpha
+        self.beta = beta
+
+    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+        internal_count = int((node_heights.shape[-1] + 1) / 2) - 1
+        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
+        node_mask = torch.cat(
+            [
+                torch.full(taxa_shape, 1),
+                torch.full(
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
+                    -1,
+                ),
+            ],
+            dim=-1,
+        )
+
+        indices = torch.argsort(node_heights, descending=False)
+        heights_sorted = torch.gather(node_heights, -1, indices)
+        node_mask_sorted = torch.gather(node_mask, -1, indices)
+        lineage_count = node_mask_sorted.cumsum(-1)[..., :-1]
+
+        durations = heights_sorted[..., 1:] - heights_sorted[..., :-1]
+        lchoose2 = lineage_count * (lineage_count - 1) / 2.0
+        return (
+            self.alpha * math.log(self.beta)
+            - math.lgamma(self.alpha)
+            + math.lgamma(self.alpha + internal_count)
+            - (self.alpha + internal_count)
+            * torch.log(self.beta + torch.sum(lchoose2 * durations, -1, keepdim=True))
+        )
+
+
 @register_class
 class ExponentialCoalescentModel(AbstractCoalescentModel):
     def __init__(
@@ -131,6 +219,9 @@ class ExponentialCoalescentModel(AbstractCoalescentModel):
     ) -> None:
         super().__init__(id_, theta, tree_model)
         self.growth = growth
+
+    def distribution(self) -> AbstractCoalescentDistribution:
+        return ExponentialCoalescent(self.theta.tensor, self.growth.tensor)
 
     def _call(self, *args, **kwargs) -> torch.Tensor:
         coalescent = ExponentialCoalescent(self.theta.tensor, self.growth.tensor)
@@ -289,6 +380,9 @@ class PiecewiseConstantCoalescent(AbstractCoalescentDistribution):
 
 @register_class
 class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
+    def distribution(self) -> AbstractCoalescentDistribution:
+        return PiecewiseConstantCoalescent(self.theta.tensor)
+
     def _call(self, *args, **kwargs) -> torch.Tensor:
         pwc = PiecewiseConstantCoalescent(self.theta.tensor)
         return pwc.log_prob(self.tree_model.node_heights)
@@ -520,6 +614,14 @@ class PiecewiseConstantCoalescentGridModel(AbstractCoalescentModel):
         else:
             self.tree_model = tree_model
 
+    def distribution(self) -> AbstractCoalescentDistribution:
+        if self.temperature is not None:
+            return SoftPiecewiseConstantCoalescentGrid(
+                self.theta.tensor, self.grid.tensor, self.temperature
+            )
+        else:
+            return PiecewiseConstantCoalescentGrid(self.theta.tensor, self.grid.tensor)
+
     def _call(self, *args, **kwargs) -> torch.Tensor:
         if self.temperature is not None:
             pwc = SoftPiecewiseConstantCoalescentGrid(
@@ -570,6 +672,10 @@ class FakeTreeModel:
     @property
     def node_heights(self):
         return self._node_heights.tensor
+
+    @property
+    def sample_shape(self) -> torch.Size:
+        return self._node_heights.tensor.shape[:-1]
 
 
 def process_data_coalesent(data, dtype: torch.dtype) -> AbstractParameter:
