@@ -36,6 +36,9 @@ torchtree.evolution.coalescent
       PiecewiseConstantCoalescentGridModel
       PiecewiseConstantCoalescentModel
       PiecewiseExponentialCoalescentGrid
+      PiecewiseExponentialCoalescentGridModel
+      PiecewiseLinearCoalescentGrid
+      PiecewiseLinearCoalescentGridModel
       SoftPiecewiseConstantCoalescentGrid
    
    

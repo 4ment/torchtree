@@ -26,6 +26,9 @@ Classes
    torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel
    torchtree.evolution.coalescent.FakeTreeModel
    torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid
+   torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel
+   torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid
+   torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel
 
 
 
@@ -64,7 +67,7 @@ Functions
 
 
 
-.. py:class:: AbstractCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel = None)
+.. py:class:: AbstractCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
 
    Bases: :py:obj:`torchtree.core.model.CallableModel`
@@ -83,7 +86,7 @@ Functions
 
 
 
-.. py:class:: ConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel = None, alpha=None, beta=None)
+.. py:class:: ConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel, alpha=None, beta=None)
 
 
    Bases: :py:obj:`AbstractCoalescentModel`
@@ -182,7 +185,7 @@ Functions
 
 
 
-.. py:class:: ExponentialCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, growth: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel = None)
+.. py:class:: ExponentialCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, growth: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
 
    Bases: :py:obj:`AbstractCoalescentModel`
@@ -263,7 +266,7 @@ Functions
 
 
 
-.. py:class:: PiecewiseConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel = None, alpha=None, beta=None)
+.. py:class:: PiecewiseConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel, alpha=None, beta=None)
 
 
    Bases: :py:obj:`ConstantCoalescentModel`
@@ -278,6 +281,18 @@ Functions
    .. py:method:: distribution() -> AbstractCoalescentDistribution
 
       Returns underlying coalescent distribution.
+
+
+   .. py:method:: from_json(data, dic)
+      :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 
@@ -315,7 +330,7 @@ Functions
 
 
 
-.. py:class:: PiecewiseConstantCoalescentGridModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, grid: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel = None, temperature: float = None)
+.. py:class:: PiecewiseConstantCoalescentGridModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, grid: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel, temperature: float = None)
 
 
    Bases: :py:obj:`AbstractCoalescentModel`
@@ -386,6 +401,96 @@ Functions
 
       Args:
           value (Tensor):
+
+
+
+.. py:class:: PiecewiseExponentialCoalescentGridModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, growth: torchtree.core.abstractparameter.AbstractParameter, grid: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
+
+
+   Bases: :py:obj:`AbstractCoalescentModel`
+
+   Classes inheriting from :class:`Model` and
+   :class:`collections.abc.Callable`.
+
+   CallableModel are Callable and the returned value is cached in case
+   we need to use this value multiple times without the need to
+   recompute it.
+
+   .. py:method:: distribution() -> AbstractCoalescentDistribution
+
+      Returns underlying coalescent distribution.
+
+
+   .. py:method:: from_json(data, dic)
+      :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
+
+
+.. py:class:: PiecewiseLinearCoalescentGrid(theta: torch.Tensor, grid: torch.Tensor, validate_args=None)
+
+
+   Bases: :py:obj:`torch.distributions.distribution.Distribution`
+
+   Distribution is the abstract base class for probability distributions.
+
+   .. py:attribute:: arg_constraints
+
+      
+
+   .. py:attribute:: support
+
+      
+
+   .. py:attribute:: has_rsample
+      :value: False
+
+      
+
+   .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
+
+      Returns the log of the probability density/mass function evaluated at
+      `value`.
+
+      Args:
+          value (Tensor):
+
+
+
+.. py:class:: PiecewiseLinearCoalescentGridModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, grid: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
+
+
+   Bases: :py:obj:`AbstractCoalescentModel`
+
+   Classes inheriting from :class:`Model` and
+   :class:`collections.abc.Callable`.
+
+   CallableModel are Callable and the returned value is cached in case
+   we need to use this value multiple times without the need to
+   recompute it.
+
+   .. py:method:: distribution() -> AbstractCoalescentDistribution
+
+      Returns underlying coalescent distribution.
+
+
+   .. py:method:: from_json(data, dic)
+      :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
 
 
 

@@ -392,7 +392,7 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentDistribution" title="torchtree.evolution.coalescent.AbstractCoalescentDistribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractCoalescentDistribution</span></code></a>(theta[, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentModel" title="torchtree.evolution.coalescent.AbstractCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractCoalescentModel</span></code></a>(id_, theta[, tree_model])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentModel" title="torchtree.evolution.coalescent.AbstractCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractCoalescentModel</span></code></a>(id_, theta, tree_model)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescent" title="torchtree.evolution.coalescent.ConstantCoalescent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescent</span></code></a>(theta[, validate_args])</p></td>
@@ -401,13 +401,13 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegrated" title="torchtree.evolution.coalescent.ConstantCoalescentIntegrated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated</span></code></a>(theta, alpha, beta)</p></td>
 <td><p>Integrated Constant size coalescent/inverse gamma distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentModel" title="torchtree.evolution.coalescent.ConstantCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescentModel</span></code></a>(id_, theta[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentModel" title="torchtree.evolution.coalescent.ConstantCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescentModel</span></code></a>(id_, theta, tree_model)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescent" title="torchtree.evolution.coalescent.ExponentialCoalescent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExponentialCoalescent</span></code></a>(theta, growth[, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescentModel" title="torchtree.evolution.coalescent.ExponentialCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExponentialCoalescentModel</span></code></a>(id_, theta, growth)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescentModel" title="torchtree.evolution.coalescent.ExponentialCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExponentialCoalescentModel</span></code></a>(id_, theta, ...)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.FakeTreeModel" title="torchtree.evolution.coalescent.FakeTreeModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FakeTreeModel</span></code></a>(node_heights)</p></td>
@@ -422,13 +422,22 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGridModel</span></code></a>(id_, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentModel</span></code></a>(id_, theta)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentModel</span></code></a>(id_, theta, ...)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid" title="torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseExponentialCoalescentGrid</span></code></a>(theta, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid" title="torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SoftPiecewiseConstantCoalescentGrid</span></code></a>(thetas, grid)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel" title="torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseExponentialCoalescentGridModel</span></code></a>(id_, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid" title="torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseLinearCoalescentGrid</span></code></a>(theta, grid[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel" title="torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseLinearCoalescentGridModel</span></code></a>(id_, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid" title="torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SoftPiecewiseConstantCoalescentGrid</span></code></a>(thetas, grid)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
