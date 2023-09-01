@@ -788,7 +788,12 @@ def create_logger(id_, parameters, arg):
     models = ['joint', 'like', 'prior']
     if arg.coalescent:
         models.append('coalescent')
-        if arg.coalescent in ('skyride', 'skygrid'):
+        if arg.coalescent in (
+            "skyride",
+            "skygrid",
+            "piecewise-exponential",
+            "piecewise-linear",
+        ):
             models.append('gmrf')
             models.append(
                 {
@@ -885,7 +890,12 @@ def build_advi(arg):
     jacobians_list = create_jacobians(json_list)
     if arg.clock is not None and arg.heights == 'ratio':
         jacobians_list.append('tree')
-    if arg.coalescent in ('skygrid', 'skyride'):
+    if arg.coalescent in (
+        "skygrid",
+        "skyride",
+        "piecewise-exponential",
+        "piecewise-linear",
+    ):
         jacobians_list.remove("coalescent.theta")
 
     joint_jacobian = {
@@ -945,11 +955,20 @@ def build_advi(arg):
 
     if arg.coalescent is not None:
         parameters.append("coalescent.theta")
-        if arg.coalescent in ('skygrid', 'skyride') and not arg.gmrf_integrated:
+        if (
+            arg.coalescent
+            in (
+                "skygrid",
+                "skyride",
+                "piecewise-exponential",
+                "piecewise-linear",
+            )
+            and not arg.gmrf_integrated
+        ):
             parameters.append('gmrf.precision')
         elif arg.coalescent == 'exponential':
             parameters.append('coalescent.growth')
-        elif arg.coalescent == 'piecewise':
+        if arg.coalescent == 'piecewise-exponential':
             parameters.append('coalescent.growth')
     elif arg.birth_death is not None:
         parameters.append("bdsk.R")

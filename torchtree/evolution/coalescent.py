@@ -38,7 +38,7 @@ class AbstractCoalescentModel(CallableModel):
         self,
         id_: ID,
         theta: AbstractParameter,
-        tree_model: TimeTreeModel = None,
+        tree_model: TimeTreeModel,
     ) -> None:
         super().__init__(id_)
         self.theta = theta
@@ -52,6 +52,10 @@ class AbstractCoalescentModel(CallableModel):
         """Returns underlying coalescent distribution."""
         ...
 
+    def _call(self, *args, **kwargs) -> torch.Tensor:
+        coalescent = self.distribution()
+        return coalescent.log_prob(self.tree_model.node_heights)
+
 
 @register_class
 class ConstantCoalescentModel(AbstractCoalescentModel):
@@ -59,7 +63,7 @@ class ConstantCoalescentModel(AbstractCoalescentModel):
         self,
         id_: ID,
         theta: AbstractParameter,
-        tree_model: TimeTreeModel = None,
+        tree_model: TimeTreeModel,
         alpha=None,
         beta=None,
     ) -> None:
@@ -75,10 +79,6 @@ class ConstantCoalescentModel(AbstractCoalescentModel):
                 self.theta.tensor, self.alpha, self.beta
             )
 
-    def _call(self, *args, **kwargs) -> torch.Tensor:
-        coalescent = self.distribution()
-        return coalescent.log_prob(self.tree_model.node_heights)
-
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
@@ -87,10 +87,10 @@ class ConstantCoalescentModel(AbstractCoalescentModel):
         beta = data.get("beta", None)
         if TreeModel.tag in data:
             tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
-            return cls(id_, theta, tree_model=tree_model, alpha=alpha, beta=beta)
         else:
             node_heights = process_data_coalesent(data, theta.dtype)
-            return cls(id_, theta, FakeTreeModel(node_heights), alpha=alpha, beta=beta)
+            tree_model = FakeTreeModel(node_heights)
+        return cls(id_, theta, tree_model, alpha=alpha, beta=beta)
 
 
 class ConstantCoalescent(AbstractCoalescentDistribution):
@@ -215,17 +215,13 @@ class ExponentialCoalescentModel(AbstractCoalescentModel):
         id_: ID,
         theta: AbstractParameter,
         growth: AbstractParameter,
-        tree_model: TimeTreeModel = None,
+        tree_model: TimeTreeModel,
     ) -> None:
         super().__init__(id_, theta, tree_model)
         self.growth = growth
 
     def distribution(self) -> AbstractCoalescentDistribution:
         return ExponentialCoalescent(self.theta.tensor, self.growth.tensor)
-
-    def _call(self, *args, **kwargs) -> torch.Tensor:
-        coalescent = ExponentialCoalescent(self.theta.tensor, self.growth.tensor)
-        return coalescent.log_prob(self.tree_model.node_heights)
 
     def _sample_shape(self) -> torch.Size:
         return max(
@@ -242,10 +238,10 @@ class ExponentialCoalescentModel(AbstractCoalescentModel):
         growth = process_object(data['growth'], dic)
         if TreeModel.tag in data:
             tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
-            return cls(id_, theta, growth, tree_model=tree_model)
         else:
             node_heights = process_data_coalesent(data, theta.dtype)
-            return cls(id_, theta, growth, FakeTreeModel(node_heights))
+            tree_model = FakeTreeModel(node_heights)
+        return cls(id_, theta, growth, tree_model)
 
 
 class ExponentialCoalescent(Distribution):
@@ -383,9 +379,16 @@ class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
     def distribution(self) -> AbstractCoalescentDistribution:
         return PiecewiseConstantCoalescent(self.theta.tensor)
 
-    def _call(self, *args, **kwargs) -> torch.Tensor:
-        pwc = PiecewiseConstantCoalescent(self.theta.tensor)
-        return pwc.log_prob(self.tree_model.node_heights)
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        theta = process_object(data['theta'], dic)
+        if TreeModel.tag in data:
+            tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
+        else:
+            node_heights = process_data_coalesent(data, theta.dtype)
+            tree_model = FakeTreeModel(node_heights)
+        return cls(id_, theta, tree_model)
 
 
 class PiecewiseConstantCoalescentGrid(AbstractCoalescentDistribution):
@@ -602,17 +605,12 @@ class PiecewiseConstantCoalescentGridModel(AbstractCoalescentModel):
         id_: ID,
         theta: AbstractParameter,
         grid: AbstractParameter,
-        tree_model: TimeTreeModel = None,
+        tree_model: TimeTreeModel,
         temperature: float = None,
     ) -> None:
-        super().__init__(id_, theta)
+        super().__init__(id_, theta, tree_model)
         self.grid = grid
         self.temperature = temperature
-        if isinstance(tree_model, list):
-            for tree in tree_model:
-                setattr(self, tree.id, tree)
-        else:
-            self.tree_model = tree_model
 
     def distribution(self) -> AbstractCoalescentDistribution:
         if self.temperature is not None:
@@ -621,21 +619,6 @@ class PiecewiseConstantCoalescentGridModel(AbstractCoalescentModel):
             )
         else:
             return PiecewiseConstantCoalescentGrid(self.theta.tensor, self.grid.tensor)
-
-    def _call(self, *args, **kwargs) -> torch.Tensor:
-        if self.temperature is not None:
-            pwc = SoftPiecewiseConstantCoalescentGrid(
-                self.theta.tensor, self.grid.tensor, self.temperature
-            )
-        else:
-            pwc = PiecewiseConstantCoalescentGrid(self.theta.tensor, self.grid.tensor)
-        if isinstance(self.tree_model, list):
-            log_p = pwc.log_prob(
-                torch.stack([model.node_heights for model in self.tree_model])
-            ).sum(0)
-        else:
-            log_p = pwc.log_prob(self.tree_model.node_heights)
-        return log_p
 
     @classmethod
     def from_json(cls, data, dic):
@@ -803,3 +786,238 @@ class PiecewiseExponentialCoalescentGrid(Distribution):
             dim=-1,
             keepdim=True,
         )
+
+
+@register_class
+class PiecewiseExponentialCoalescentGridModel(AbstractCoalescentModel):
+    def __init__(
+        self,
+        id_: ID,
+        theta: AbstractParameter,
+        growth: AbstractParameter,
+        grid: AbstractParameter,
+        tree_model: TimeTreeModel,
+    ) -> None:
+        super().__init__(id_, theta, tree_model)
+        self.growth = growth
+        self.grid = grid
+        if isinstance(tree_model, list):
+            for tree in tree_model:
+                setattr(self, tree.id, tree)
+        else:
+            self.tree_model = tree_model
+
+    def distribution(self) -> AbstractCoalescentDistribution:
+        return PiecewiseExponentialCoalescentGrid(
+            self.theta.tensor, self.growth.tensor, self.grid.tensor
+        )
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+
+        theta = process_object(data['theta'], dic)
+        growth = process_object(data['growth'], dic)
+
+        if 'grid' not in data:
+            cutoff: float = data['cutoff']
+            grid = Parameter(None, torch.linspace(0, cutoff, theta.shape[-1])[1:])
+        else:
+            if isinstance(data['grid'], list):
+                grid = Parameter(None, torch.tensor(data['grid'], dtype=theta.dtype))
+            else:
+                grid = process_object(data['grid'], dic)
+        assert grid.shape[0] + 1 == theta.shape[-1]
+
+        if TreeModel.tag in data:
+            tree_model = process_objects(data[TreeModel.tag], dic)
+            return cls(id_, theta, growth, grid, tree_model)
+        else:
+            node_heights = process_data_coalesent(data, theta.dtype)
+            return cls(id_, theta, growth, grid, FakeTreeModel(node_heights))
+
+
+class PiecewiseLinearCoalescentGrid(Distribution):
+    arg_constraints = {
+        'theta': constraints.positive,
+    }
+    support = constraints.positive
+    has_rsample = False
+
+    def __init__(
+        self,
+        theta: torch.Tensor,
+        grid: torch.Tensor,
+        validate_args=None,
+    ) -> None:
+        self.theta = theta
+        self.grid = grid
+        batch_shape, event_shape = self.theta.shape[:-1], self.theta.shape[-1:]
+        super().__init__(batch_shape, event_shape, validate_args=validate_args)
+
+    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+        if node_heights.dim() > self.theta.dim():
+            batch_shape = node_heights.shape[:-1]
+        else:
+            batch_shape = self.theta.shape[:-1]
+
+        grid = torch.cat((torch.tensor([-1.0]), self.grid)).expand(
+            batch_shape + torch.Size([-1])
+        )
+
+        taxa_count = int((node_heights.shape[-1] + 1) / 2)
+        # avoid "NotImplementedError: the derivative for 'unique_dim' is not implemented."
+        with torch.no_grad():
+            taxa_heights, event_mask = torch.unique(
+                node_heights[..., :taxa_count], return_counts=True, dim=-1
+            )
+
+        taxa_heights = taxa_heights.expand(batch_shape + torch.Size([-1]))
+        event_mask = event_mask.expand(batch_shape + torch.Size([-1]))
+        event_mask = torch.cat(
+            (
+                event_mask,
+                torch.full(batch_shape + (taxa_count - 1,), -1, dtype=torch.int),
+                torch.full(grid.shape, 0, dtype=torch.int),
+            ),
+            -1,
+        )
+        node_heights = torch.cat((taxa_heights, node_heights[..., taxa_count:]), -1)
+        taxa_shape = taxa_heights.shape
+
+        if node_heights.dim() < self.theta.dim():
+            # TODO
+            grid_heights = torch.cat(
+                [
+                    node_heights.expand(batch_shape + torch.Size([-1])),
+                    grid,
+                ],
+                -1,
+            )
+
+        else:
+            grid_heights = torch.cat([node_heights, grid], -1)
+
+        if self.theta.dim() <= len(batch_shape):
+            thetas = self.theta.expand(batch_shape + torch.Size([-1]))
+        else:
+            thetas = self.theta
+
+        indices = torch.argsort(grid_heights, descending=False)
+        grid_heights_sorted = torch.gather(grid_heights, -1, indices)
+        grid_heights_sorted[..., 0] = 0
+        grid[..., 0] = 0
+        event_mask_sorted = torch.gather(event_mask, -1, indices)
+        lineage_count = event_mask_sorted.cumsum(-1)[..., :-1]
+
+        lchoose2 = lineage_count * (lineage_count - 1) / 2.0
+
+        internal_heights = node_heights[..., taxa_shape[-1] :]
+
+        # population size at every time point including grid at t=0
+        pop_sizes = torch.zeros_like(grid_heights)
+
+        # set population size at every grid point
+        indices_grid = torch.zeros(grid_heights_sorted.shape, dtype=torch.long)
+        indices_grid[..., 1:] = 1
+        indices_grid = indices_grid.cumsum(-1)[event_mask_sorted == 0].reshape(
+            grid.shape
+        )
+
+        pop_sizes = pop_sizes.scatter(-1, indices_grid, thetas)
+
+        # Find indices such that grid_i <= t < grid_{i+1}
+        node_heights_sorted = grid_heights_sorted[event_mask_sorted != 0].reshape(
+            node_heights.shape
+        )
+        indices_node_heights = torch.bucketize(node_heights_sorted, self.grid)
+
+        indices_node_heights_end_clamped = torch.clamp(
+            indices_node_heights + 1, max=thetas.shape[-1] - 1
+        )
+        start_grid = grid.gather(-1, indices_node_heights)
+        end_grid = grid.gather(-1, indices_node_heights_end_clamped)
+        pop_size_start = thetas.gather(-1, indices_node_heights)
+        pop_size_end = thetas.gather(-1, indices_node_heights_end_clamped)
+
+        pop_size_node_heights = pop_size_end.clone()
+        idx = (indices_node_heights + 1 == indices_node_heights_end_clamped).nonzero(
+            as_tuple=True
+        )
+        pop_size_node_heights[idx] = pop_size_start[idx] + (
+            pop_size_end[idx] - pop_size_start[idx]
+        ) * (node_heights_sorted[idx] - start_grid[idx]) / (
+            end_grid[idx] - start_grid[idx]
+        )
+
+        p = torch.zeros(pop_sizes.shape, dtype=torch.long)
+        p[..., 1:] = 1
+        indices = p.cumsum(-1)[event_mask_sorted != 0].reshape(
+            pop_size_node_heights.shape
+        )
+
+        pop_sizes = pop_sizes.scatter(-1, indices, pop_size_node_heights)
+        log_pop_sizes = pop_sizes.log()
+
+        # log population size at the end of each coalescent interval
+        log_pop_sizes_internal = log_pop_sizes[event_mask_sorted == -1].reshape(
+            internal_heights.shape
+        )
+
+        # Integrate 1/N(t) over each interval
+        intervals = grid_heights_sorted[..., 2:] - grid_heights_sorted[..., 1:-1]
+        diff_thetas = pop_sizes[..., 2:] - pop_sizes[..., 1:-1]
+        diff_log_thetas = log_pop_sizes[..., 2:] - log_pop_sizes[..., 1:-1]
+
+        integral = intervals / thetas[..., -1:]
+        idx = (diff_thetas != 0.0).nonzero(as_tuple=True)
+        integral[idx] = intervals[idx] * diff_log_thetas[idx] / diff_thetas[idx]
+
+        return -torch.sum(
+            lchoose2[..., 1:] * integral,
+            dim=-1,
+            keepdim=True,
+        ) - torch.sum(
+            log_pop_sizes_internal,
+            dim=-1,
+            keepdim=True,
+        )
+
+
+@register_class
+class PiecewiseLinearCoalescentGridModel(AbstractCoalescentModel):
+    def __init__(
+        self,
+        id_: ID,
+        theta: AbstractParameter,
+        grid: AbstractParameter,
+        tree_model: TimeTreeModel,
+    ) -> None:
+        super().__init__(id_, theta, tree_model)
+        self.grid = grid
+
+    def distribution(self) -> AbstractCoalescentDistribution:
+        return PiecewiseLinearCoalescentGrid(self.theta.tensor, self.grid.tensor)
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+
+        theta = process_object(data['theta'], dic)
+
+        if 'grid' not in data:
+            cutoff: float = data['cutoff']
+            grid = Parameter(None, torch.linspace(0, cutoff, theta.shape[-1])[1:])
+        else:
+            if isinstance(data['grid'], list):
+                grid = Parameter(None, torch.tensor(data['grid'], dtype=theta.dtype))
+            else:
+                grid = process_object(data['grid'], dic)
+        assert grid.shape[0] + 1 == theta.shape[-1]
+
+        if TreeModel.tag in data:
+            tree_model = process_objects(data[TreeModel.tag], dic)
+        else:
+            node_heights = process_data_coalesent(data, theta.dtype)
+            tree_model = FakeTreeModel(node_heights)
+        return cls(id_, theta, grid, tree_model)

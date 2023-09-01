@@ -69,7 +69,7 @@ class MCMCOperator(Identifiable, abc.ABC):
         if not self._disable_adaptation:
             assert 0.0 <= acceptance_prob <= 1.0
             new_parameter = self.adaptable_parameter + (
-                acceptance_prob - self.target_acceptance_probability
+                acceptance_prob.item() - self.target_acceptance_probability
             ) / (2 + self._adapt_count)
             self.adaptable_parameter = new_parameter
 

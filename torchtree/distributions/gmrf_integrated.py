@@ -140,13 +140,17 @@ class GMRFGammaIntegrated(CallableModel):
             specified.
         """
         id_ = data['id']
+        tree_model = None
+        weights = None
         # time-aware if a tree_model is provided
         if TreeModel.tag in data:
             tree_model = process_object(data[TreeModel.tag], dic)
-        else:
-            tree_model = None
+        elif "weights" in data:
+            weights = process_object(data["weights"], dic)
+
         x = process_object(data['x'], dic)
         shape = float(data['shape'])
         rate = float(data['rate'])
+        rescale = data.get("rescale", True)
 
-        return cls(id_, x, shape, rate, tree_model)
+        return cls(id_, x, shape, rate, tree_model, weights, rescale)

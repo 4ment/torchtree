@@ -202,6 +202,11 @@ def create_evolution_parser(parser):
         action="store_true",
         help="""disable time aware skyride""",
     )
+    parser.add_argument(
+        '--disable_gmrf_rescaling',
+        action="store_true",
+        help="""disable rescaling using root height of time aware skyride""",
+    )
 
     return parser
 
@@ -219,7 +224,14 @@ def add_birth_death(parser):
 def add_coalescent(parser):
     parser.add_argument(
         '--coalescent',
-        choices=['constant', 'exponential', 'skyride', 'skygrid', 'piecewise'],
+        choices=[
+            "constant",
+            "exponential",
+            "skyride",
+            "skygrid",
+            "piecewise-exponential",
+            "piecewise-linear",
+        ],
         default=None,
         help="""type of coalescent""",
     )
@@ -240,7 +252,7 @@ def add_coalescent(parser):
     )
     parser.add_argument(
         '--coalescent_init',
-        type=lambda x: str_or_float(x, 'tree'),
+        type=lambda x: str_or_float(x, ("tree", "constant")),
         help="""initialize coalescent parameter from input tree using MLE.
         heights_init=tree must be specified.""",
     )
@@ -363,7 +375,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
             )
             if arg.root_height_init is not None:
                 root_height['tensor'] = [arg.root_height_init]
-            elif arg.coalescent == 'skygrid':
+            elif arg.cutoff is not None:
                 root_height['tensor'] = [arg.cutoff]
 
             root_height['lower'] = offset
@@ -380,18 +392,6 @@ def create_tree_model(id_: str, taxa: dict, arg):
                         tree_model, {'taxa': taxa_obj}
                     )
                 )
-
-                if arg.coalescent_init == 'tree':
-                    if arg.coalescent in ('constant', 'exponential'):
-                        arg._coalescent_init = ConstantCoalescent.maximum_likelihood(
-                            tree_model_obj.node_heights
-                        ).item()
-                    elif arg.coalescent == 'skyride':
-                        arg._coalescent_init = (
-                            PiecewiseConstantCoalescent.maximum_likelihood(
-                                tree_model_obj.node_heights
-                            )
-                        )
 
                 ratios = Parameter.json_factory(
                     f'{id_}.ratios',
@@ -413,11 +413,6 @@ def create_tree_model(id_: str, taxa: dict, arg):
                     root_height=root_height,
                     **kwargs,
                 )
-            elif arg.coalescent_init is not None and isinstance(
-                arg.coalescent_init, numbers.Number
-            ):
-                arg._coalescent_init = arg.coalescent_init
-
         elif arg.heights == 'shift':
             shifts = Parameter.json_factory(
                 f'{id_}.shifts', **{'tensor': 0.1, 'full': [len(dates) - 1]}
@@ -448,10 +443,22 @@ def create_tree_model(id_: str, taxa: dict, arg):
                         heights
                     ).tolist()
 
-            if arg.coalescent_init is not None and isinstance(
-                arg.coalescent_init, numbers.Number
-            ):
-                arg._coalescent_init = arg.coalescent_init
+        if arg.coalescent_init is not None and isinstance(
+            arg.coalescent_init, numbers.Number
+        ):
+            arg._coalescent_init = arg.coalescent_init
+        elif arg.coalescent_init == "tree" and arg.coalescent == "constant":
+            arg._coalescent_init = ConstantCoalescent.maximum_likelihood(
+                tree_model_obj.node_heights
+            ).item()
+        elif arg.coalescent_init == "tree" and arg.coalescent == 'skyride':
+            arg._coalescent_init = PiecewiseConstantCoalescent.maximum_likelihood(
+                tree_model_obj.node_heights
+            )
+        elif arg.coalescent_init == "constant":
+            arg._coalescent_init = ConstantCoalescent.maximum_likelihood(
+                tree_model_obj.node_heights
+            ).item()
     else:
         branch_lengths = Parameter.json_factory(
             f'{id_}.blens', **{'tensor': 0.1, 'full': [len(taxa['taxa']) * 2 - 3]}
@@ -1139,14 +1146,14 @@ def create_coalesent(id_, tree_id, taxa, arg):
     joint_list = []
     params = {}
     if arg.coalescent in ('constant', 'exponential'):
-        theta_value = arg._coalescent_init if '_coalescent_init' in arg else 3.0
+        theta_value = arg._coalescent_init if '_coalescent_init' in arg else 100.0
 
         theta = Parameter.json_factory(f'{id_}.theta', **{'tensor': [theta_value]})
         theta['lower'] = 0.0
 
         joint_list.append(create_one_on_x_prior(f'{id_}.theta.prior', f'{id_}.theta'))
     if arg.coalescent == 'exponential':
-        growth = Parameter.json_factory(f'{id_}.growth', **{'tensor': [1.0]})
+        growth = Parameter.json_factory(f'{id_}.growth', **{'tensor': [0.01]})
         params['growth'] = growth
 
         joint_list.append(
@@ -1160,15 +1167,17 @@ def create_coalesent(id_, tree_id, taxa, arg):
                 },
             )
         )
-    elif arg.coalescent.startswith('piecewise'):
-        growth = Parameter.json_factory(
-            f'{id_}.growth', **{'tensor': 0.001, 'full': [arg.grid]}
-        )
-        theta = Parameter.json_factory(f'{id_}.theta', **{'tensor': [3.0]})
-        theta['lower'] = 0.0
-        params['growth'] = growth
+    elif arg.coalescent in (
+        "skyride",
+        "skygrid",
+        "piecewise-exponential",
+        "piecewise-linear",
+    ):
+        if arg.coalescent == "skyride":
+            theta_shape = [len(taxa["taxa"]) - 1]
+        else:
+            theta_shape = [arg.grid]
 
-    if arg.coalescent in ('skygrid', 'skyride'):
         if arg.coalescent_non_centered:
             theta = {
                 "id": f'{id_}.theta',
@@ -1180,37 +1189,37 @@ def create_coalesent(id_, tree_id, taxa, arg):
                         "id": "theta.unres",
                         "type": "Parameter",
                         "tensor": 0.0,
-                        "full": [len(taxa['taxa']) - 2],
+                        "full": [theta_shape[0] - 1],
                     },
                 ],
             }
         else:
-            if arg.coalescent == 'skygrid':
-                theta_log = Parameter.json_factory(
-                    f'{id_}.theta.log', **{'tensor': 3.0, 'full': [arg.grid]}
-                )
-            elif arg.coalescent == 'skyride':
-                if '_coalescent_init' in arg and not isinstance(
-                    arg._coalescent_init, numbers.Number
-                ):
+            if "_coalescent_init" in arg:
+                if isinstance(arg._coalescent_init, numbers.Number):
                     theta_log = Parameter.json_factory(
-                        f'{id_}.theta.log',
+                        f"{id_}.theta.log",
                         **{
-                            'tensor': torch.clamp(arg._coalescent_init, min=1.0e-6)
+                            "tensor": math.log(arg._coalescent_init),
+                            "full": theta_shape,
+                        },
+                    )
+                elif isinstance(arg._coalescent_init, torch.Tensor):
+                    theta_log = Parameter.json_factory(
+                        f"{id_}.theta.log",
+                        **{
+                            "tensor": torch.clamp(arg._coalescent_init, min=1.0e-6)
                             .log()
                             .tolist()
                         },
                     )
                 else:
-                    theta_log_value = (
-                        math.log(arg._coalescent_init)
-                        if '_coalescent_init' in arg
-                        else math.log(3.0)
-                    )
-                    theta_log = Parameter.json_factory(
-                        f'{id_}.theta.log',
-                        **{'tensor': theta_log_value, 'full': [len(taxa['taxa']) - 1]},
-                    )
+                    sys.stderr.write("_coalescent_init is not valid\n")
+                    exit(1)
+            else:
+                theta_log = Parameter.json_factory(
+                    f"{id_}.theta.log", **{"tensor": 3.0, "full": theta_shape}
+                )
+
             theta = {
                 'id': f'{id_}.theta',
                 'type': 'TransformedParameter',
@@ -1247,8 +1256,12 @@ def create_coalesent(id_, tree_id, taxa, arg):
 
         joint_list.append(gmrf)
 
-        if not arg.disable_time_aware and arg.coalescent != 'skygrid':
-            gmrf['tree_model'] = 'tree'
+        if arg.coalescent == "skyride":
+            if not arg.disable_time_aware:
+                gmrf['tree_model'] = 'tree'
+
+            if arg.disable_gmrf_rescaling:
+                gmrf["rescale"] = False
 
         if not arg.gmrf_integrated:
             gmrf['precision']['lower'] = 0.0
@@ -1296,12 +1309,22 @@ def create_coalesent(id_, tree_id, taxa, arg):
             'theta': theta,
             'tree_model': tree_id,
         }
-    elif arg.coalescent.startswith('piecewise'):
+    elif arg.coalescent == 'piecewise-exponential':
         coalescent = {
             'id': id_,
             'type': 'PiecewiseExponentialCoalescentGridModel',
             'theta': theta,
-            'growth': growth,
+            'growth': Parameter.json_factory(
+                f'{id_}.growth', **{'tensor': 0.001, 'full': [arg.grid]}
+            ),
+            'tree_model': tree_id,
+            'cutoff': arg.cutoff,
+        }
+    elif arg.coalescent == 'piecewise-linear':
+        coalescent = {
+            'id': id_,
+            'type': 'PiecewiseLinearCoalescentGridModel',
+            'theta': theta,
             'tree_model': tree_id,
             'cutoff': arg.cutoff,
         }
@@ -1612,9 +1635,12 @@ def create_evolution_joint(taxa, alignment, arg):
         'type': 'JointDistributionModel',
         'distributions': [
             likelihood_dic,
-            prior_dic,
         ],
     }
+
+    if len(prior_dic["distributions"]) > 0:
+        joint_dic["distributions"].append(prior_dic)
+
     if arg.location_regex:
         data_type_location = create_general_data_type(
             'data_type.location', 'location', taxa
