@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 from itertools import combinations
+from typing import Union
 
 import numpy
 import torch
+from torch import Tensor
 
 from ...core.abstractparameter import AbstractParameter
 from ...core.utils import process_object, register_class
@@ -71,6 +75,10 @@ class MG94(SymmetricSubstitutionModel):
         Q = R @ self.frequencies.diag_embed()
         Q[..., range(dim), range(dim)] = -torch.sum(Q, dim=-1)
         return Q
+
+    @property
+    def rates(self) -> Union[Tensor, list[Tensor]]:
+        return self.alpha.tensor, self.beta.tensor, self.kappa.tensor
 
     def handle_model_changed(self, model, obj, index) -> None:
         pass

@@ -28,7 +28,10 @@ class MCMC(JSONSerializable, Runnable):
         self.checkpoint = kwargs.get("checkpoint", None)
         self.checkpoint_frequency = kwargs.get("checkpoint_frequency", 1000)
         self.every = kwargs.get("every", 100)
-        self.parameters = [parameter for op in operators for parameter in op.parameters]
+        self.parameters = []
+        for op in operators:
+            for parameter in op.parameters:
+                self.parameters.extend(parameter.parameters())
 
     def run(self) -> None:
         accept = 0

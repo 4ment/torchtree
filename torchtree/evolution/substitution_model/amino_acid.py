@@ -1,4 +1,9 @@
+from __future__ import annotations
+
+from typing import Union
+
 import torch
+from torch import Tensor
 
 from ...typing import ID
 from .general import EmpiricalSubstitutionModel
@@ -43,6 +48,10 @@ class LG(EmpiricalSubstitutionModel):
         # fmt: on
         super().__init__(id_, rates, frequencies)
 
+    @property
+    def rates(self) -> Union[Tensor, list[Tensor]]:
+        return []
+
     @classmethod
     def from_json(cls, data, dic):
         return cls(data['id'])
@@ -86,6 +95,10 @@ class WAG(EmpiricalSubstitutionModel):
              2.763540, ])
         # fmt: on
         super().__init__(id_, rates, frequencies)
+
+    @property
+    def rates(self) -> Union[Tensor, list[Tensor]]:
+        return []
 
     @classmethod
     def from_json(cls, data, dic):

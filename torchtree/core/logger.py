@@ -86,7 +86,7 @@ class Logger(LoggerInterface):
                     data.append(obj.tensor.detach().cpu())
                 else:
                     log_p = obj()
-                    if log_p.dim() == 1:
+                    if log_p.dim() == 0:
                         log_p = log_p.unsqueeze(-1)
                     data.append(log_p)
             data = torch.cat(data, -1).tolist()

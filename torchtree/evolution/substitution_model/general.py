@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from typing import Optional, Union
 
 import torch
 import torch.linalg
+from torch import Tensor
 
 from ...core.abstractparameter import AbstractParameter
 from ...core.parameter import Parameter
@@ -25,6 +28,10 @@ class GeneralJC69(SubstitutionModel):
     @property
     def frequencies(self) -> torch.Tensor:
         return self._frequencies
+
+    @property
+    def rates(self) -> Union[Tensor, list[Tensor]]:
+        return []
 
     def handle_model_changed(self, model, obj, index):
         pass
@@ -64,8 +71,8 @@ class GeneralJC69(SubstitutionModel):
     def q(self) -> torch.Tensor:
         Q = torch.full(
             (self.state_count, self.state_count),
-            1.0 / self.state_count,
-            dtype=self.rates.dtype,
+            1.0 / (self.state_count - 1),
+            dtype=self._frequencies.dtype,
         )
         Q[range(self.state_count), range(self.state_count)] = -1.0
         return Q
@@ -94,7 +101,7 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
         self.data_type = data_type
 
     @property
-    def rates(self) -> torch.Tensor:
+    def rates(self) -> Union[Tensor, list[Tensor]]:
         return self._rates.tensor
 
     def handle_model_changed(self, model, obj, index):
@@ -105,11 +112,18 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
 
     def q(self) -> torch.Tensor:
         indices = torch.triu_indices(self.state_count, self.state_count, 1)
-        R = torch.zeros((self.state_count, self.state_count), dtype=self.rates.dtype)
-        R[indices[0], indices[1]] = self.rates[self.mapping.tensor]
-        R[indices[1], indices[0]] = self.rates[self.mapping.tensor]
-        Q = R @ self.frequencies.diag()
-        Q[range(len(Q)), range(len(Q))] = -torch.sum(Q, dim=1)
+        R = torch.zeros(
+            self._rates.tensor.shape[:-1] + (self.state_count, self.state_count),
+            dtype=self.rates.dtype,
+        )
+        R[..., indices[0], indices[1]] = self.rates[..., self.mapping.tensor]
+        R[..., indices[1], indices[0]] = self.rates[..., self.mapping.tensor]
+        identity = torch.eye(self.state_count)
+        for _ in range(R.dim() - 2):
+            identity = identity.unsqueeze(0)
+        pi = self.frequencies.unsqueeze(-1) * identity.repeat(R.shape[:-2] + (1, 1))
+        Q = R @ pi
+        Q[..., range(self.state_count), range(self.state_count)] = -torch.sum(Q, dim=-1)
         return Q
 
     @classmethod

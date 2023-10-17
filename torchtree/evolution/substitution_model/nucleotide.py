@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from typing import Optional, Union
 
 import torch
 import torch.linalg
+from torch import Tensor
 
 from ...core.abstractparameter import AbstractParameter
 from ...core.utils import process_object, register_class
@@ -18,6 +21,10 @@ class JC69(SubstitutionModel):
     @property
     def frequencies(self) -> torch.Tensor:
         return self._frequencies
+
+    @property
+    def rates(self) -> Union[Tensor, list[Tensor]]:
+        return []
 
     def p_t(self, branch_lengths: torch.Tensor) -> torch.Tensor:
         """Calculate transition probability matrices.
@@ -71,6 +78,10 @@ class HKY(SymmetricSubstitutionModel):
     ) -> None:
         super().__init__(id_, frequencies)
         self._kappa = kappa
+
+    @property
+    def rates(self) -> Union[Tensor, list[Tensor]]:
+        return self._kappa.tensor
 
     @property
     def kappa(self) -> torch.Tensor:
@@ -176,7 +187,7 @@ class GTR(SymmetricSubstitutionModel):
         self._rates = rates
 
     @property
-    def rates(self) -> torch.Tensor:
+    def rates(self) -> Union[Tensor, list[Tensor]]:
         return self._rates.tensor
 
     def handle_model_changed(self, model, obj, index):

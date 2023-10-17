@@ -23,11 +23,11 @@ class HMCOperator(MCMCOperator, ParameterListener):
         id_: ID,
         joint: CallableModel,
         parameters: ListParameter,
-        weight: float,
-        target_acceptance_probability: float,
         integrator: Integrator,
         mass_matrix: AbstractParameter,
-        adaptors: list[Adaptor],
+        weight: float = 1.0,
+        target_acceptance_probability: float = 0.8,
+        adaptors: list[Adaptor] = [],
         **kwargs,
     ):
         MCMCOperator.__init__(
@@ -157,10 +157,10 @@ class HMCOperator(MCMCOperator, ParameterListener):
             id_,
             joint,
             parameters,
-            weight,
-            target_acceptance_probability,
             integrator,
             mass_matrix,
+            weight,
+            target_acceptance_probability,
             adaptors,
             **optionals,
         )

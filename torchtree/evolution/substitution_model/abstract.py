@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from typing import Union
 
 import torch
 import torch.linalg
+from torch import Tensor
 
 from ...core.abstractparameter import AbstractParameter
 from ...core.model import Model
@@ -9,7 +13,7 @@ from ...typing import ID
 
 
 class SubstitutionModel(Model):
-    _tag = 'substitution_model'
+    _tag = "substitution_model"
 
     def __init__(self, id_: ID) -> None:
         super().__init__(id_)
@@ -17,6 +21,11 @@ class SubstitutionModel(Model):
     @property
     @abstractmethod
     def frequencies(self) -> torch.Tensor:
+        pass
+
+    @property
+    @abstractmethod
+    def rates(self) -> Union[Tensor, list[Tensor]]:
         pass
 
     @abstractmethod
