@@ -35,6 +35,10 @@ Classes
       :type: torch.Tensor
 
 
+   .. py:property:: rates
+      :type: Union[torch.Tensor, list[torch.Tensor]]
+
+
    .. py:method:: handle_model_changed(model, obj, index)
 
 
@@ -78,7 +82,7 @@ Classes
    class is abstract.
 
    .. py:property:: rates
-      :type: torch.Tensor
+      :type: Union[torch.Tensor, list[torch.Tensor]]
 
 
    .. py:method:: handle_model_changed(model, obj, index)

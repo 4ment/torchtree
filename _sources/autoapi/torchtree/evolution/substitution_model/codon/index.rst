@@ -28,6 +28,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+   .. py:property:: rates
+      :type: Union[torch.Tensor, list[torch.Tensor]]
+
+
    .. py:method:: q() -> torch.Tensor
 
 

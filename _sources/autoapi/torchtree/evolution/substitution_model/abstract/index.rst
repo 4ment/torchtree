@@ -36,6 +36,11 @@ Classes
       :abstractmethod:
 
 
+   .. py:property:: rates
+      :type: Union[torch.Tensor, list[torch.Tensor]]
+      :abstractmethod:
+
+
    .. py:method:: p_t(branch_lengths: torch.Tensor) -> torch.Tensor
       :abstractmethod:
 

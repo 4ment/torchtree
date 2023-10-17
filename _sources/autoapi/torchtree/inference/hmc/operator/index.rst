@@ -17,7 +17,7 @@ Classes
 
 
 
-.. py:class:: HMCOperator(id_: torchtree.typing.ID, joint: torchtree.core.model.CallableModel, parameters: torchtree.typing.ListParameter, weight: float, target_acceptance_probability: float, integrator: torchtree.inference.hmc.integrator.Integrator, mass_matrix: torchtree.core.abstractparameter.AbstractParameter, adaptors: list[torchtree.inference.hmc.adaptation.Adaptor], **kwargs)
+.. py:class:: HMCOperator(id_: torchtree.typing.ID, joint: torchtree.core.model.CallableModel, parameters: torchtree.typing.ListParameter, integrator: torchtree.inference.hmc.integrator.Integrator, mass_matrix: torchtree.core.abstractparameter.AbstractParameter, weight: float = 1.0, target_acceptance_probability: float = 0.8, adaptors: list[torchtree.inference.hmc.adaptation.Adaptor] = [], **kwargs)
 
 
    Bases: :py:obj:`torchtree.inference.mcmc.operator.MCMCOperator`, :py:obj:`torchtree.core.parametric.ParameterListener`

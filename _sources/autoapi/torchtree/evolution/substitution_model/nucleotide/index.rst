@@ -34,6 +34,10 @@ Classes
       :type: torch.Tensor
 
 
+   .. py:property:: rates
+      :type: Union[torch.Tensor, list[torch.Tensor]]
+
+
    .. py:method:: p_t(branch_lengths: torch.Tensor) -> torch.Tensor
 
       Calculate transition probability matrices.
@@ -81,6 +85,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+   .. py:property:: rates
+      :type: Union[torch.Tensor, list[torch.Tensor]]
+
+
    .. py:property:: kappa
       :type: torch.Tensor
 
@@ -123,7 +131,7 @@ Classes
    class is abstract.
 
    .. py:property:: rates
-      :type: torch.Tensor
+      :type: Union[torch.Tensor, list[torch.Tensor]]
 
 
    .. py:method:: handle_model_changed(model, obj, index)

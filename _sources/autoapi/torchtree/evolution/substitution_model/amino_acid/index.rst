@@ -29,6 +29,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+   .. py:property:: rates
+      :type: Union[torch.Tensor, list[torch.Tensor]]
+
+
    .. py:method:: from_json(data, dic)
       :classmethod:
 
@@ -52,6 +56,10 @@ Classes
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
+   .. py:property:: rates
+      :type: Union[torch.Tensor, list[torch.Tensor]]
+
 
    .. py:method:: from_json(data, dic)
       :classmethod:
