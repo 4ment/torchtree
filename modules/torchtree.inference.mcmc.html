@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>torchtree.inference.mcmc &#8212; torchtree 1.0.2-dev documentation</title>
+    <title>torchtree.inference.mcmc &#8212; torchtree 1.0.2-dev1 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,9 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -45,7 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'modules/torchtree.inference.mcmc';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="torchtree.inference.mcmc.mcmc" href="torchtree.inference.mcmc.mcmc.html" />
+    <link rel="next" title="torchtree.inference.mcmc.gmrf_block_updating" href="torchtree.inference.mcmc.gmrf_block_updating.html" />
     <link rel="prev" title="torchtree.inference.hmc.stan_adaptation" href="torchtree.inference.hmc.stan_adaptation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -127,7 +127,8 @@
   
   
   
-    <p class="title logo__title">torchtree 1.0.2-dev documentation</p>
+  
+    <p class="title logo__title">torchtree 1.0.2-dev1 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -226,6 +227,7 @@
 </ul>
 </li>
 <li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">torchtree.inference.mcmc</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="torchtree.inference.mcmc.gmrf_block_updating.html">torchtree.inference.mcmc.gmrf_block_updating</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torchtree.inference.mcmc.mcmc.html">torchtree.inference.mcmc.mcmc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="torchtree.inference.mcmc.operator.html">torchtree.inference.mcmc.operator</a></li>
 </ul>
@@ -391,10 +393,13 @@ document.write(`
 <p class="rubric">Modules</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="torchtree.inference.mcmc.mcmc.html#module-torchtree.inference.mcmc.mcmc" title="torchtree.inference.mcmc.mcmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.mcmc</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="torchtree.inference.mcmc.gmrf_block_updating.html#module-torchtree.inference.mcmc.gmrf_block_updating" title="torchtree.inference.mcmc.gmrf_block_updating"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.gmrf_block_updating</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="torchtree.inference.mcmc.operator.html#module-torchtree.inference.mcmc.operator" title="torchtree.inference.mcmc.operator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.operator</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="torchtree.inference.mcmc.mcmc.html#module-torchtree.inference.mcmc.mcmc" title="torchtree.inference.mcmc.mcmc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.mcmc</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="torchtree.inference.mcmc.operator.html#module-torchtree.inference.mcmc.operator" title="torchtree.inference.mcmc.operator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.operator</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -422,11 +427,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="torchtree.inference.mcmc.mcmc.html"
+       href="torchtree.inference.mcmc.gmrf_block_updating.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">torchtree.inference.mcmc.mcmc</p>
+        <p class="prev-next-title">torchtree.inference.mcmc.gmrf_block_updating</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -479,8 +484,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
   </footer>

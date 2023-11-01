@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>torchtree.evolution.coalescent &#8212; torchtree 1.0.2-dev documentation</title>
+    <title>torchtree.evolution.coalescent &#8212; torchtree 1.0.2-dev1 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,9 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/doctools.js"></script>
@@ -126,7 +126,8 @@
   
   
   
-    <p class="title logo__title">torchtree 1.0.2-dev documentation</p>
+  
+    <p class="title logo__title">torchtree 1.0.2-dev1 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -225,6 +226,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.html">torchtree.inference.mcmc</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.gmrf_block_updating.html">torchtree.inference.mcmc.gmrf_block_updating</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.mcmc.html">torchtree.inference.mcmc.mcmc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.operator.html">torchtree.inference.mcmc.operator</a></li>
 </ul>
@@ -409,7 +411,14 @@ document.write(`
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescent.rsample"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescent.rsample()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegratedModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.distribution"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegratedModel.distribution()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.from_json"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegratedModel.from_json()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.arg_constraints"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated.arg_constraints</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.support"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated.support</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.has_rsample"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated.has_rsample</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.log_prob"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated.log_prob()</span></code></a></li>
 </ul>
@@ -514,43 +523,46 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.ConstantCoalescent" title="torchtree.evolution.coalescent.ConstantCoalescent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescent</span></code></a></p></td>
 <td><p>Distribution is the abstract base class for probability distributions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated" title="torchtree.evolution.coalescent.ConstantCoalescentIntegrated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel" title="torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescentIntegratedModel</span></code></a></p></td>
+<td><p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated" title="torchtree.evolution.coalescent.ConstantCoalescentIntegrated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated</span></code></a></p></td>
 <td><p>Integrated Constant size coalescent/inverse gamma distribution.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.ExponentialCoalescentModel" title="torchtree.evolution.coalescent.ExponentialCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExponentialCoalescentModel</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.ExponentialCoalescentModel" title="torchtree.evolution.coalescent.ExponentialCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExponentialCoalescentModel</span></code></a></p></td>
 <td><p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.ExponentialCoalescent" title="torchtree.evolution.coalescent.ExponentialCoalescent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExponentialCoalescent</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.ExponentialCoalescent" title="torchtree.evolution.coalescent.ExponentialCoalescent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExponentialCoalescent</span></code></a></p></td>
 <td><p>Distribution is the abstract base class for probability distributions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent</span></code></a></p></td>
 <td><p>Distribution is the abstract base class for probability distributions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentModel</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentModel</span></code></a></p></td>
 <td><p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGrid</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGrid</span></code></a></p></td>
 <td><p>Distribution is the abstract base class for probability distributions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid" title="torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SoftPiecewiseConstantCoalescentGrid</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid" title="torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SoftPiecewiseConstantCoalescentGrid</span></code></a></p></td>
 <td><p>Distribution is the abstract base class for probability distributions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGridModel</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel" title="torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGridModel</span></code></a></p></td>
 <td><p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.FakeTreeModel" title="torchtree.evolution.coalescent.FakeTreeModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FakeTreeModel</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.FakeTreeModel" title="torchtree.evolution.coalescent.FakeTreeModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FakeTreeModel</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid" title="torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseExponentialCoalescentGrid</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid" title="torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseExponentialCoalescentGrid</span></code></a></p></td>
 <td><p>Distribution is the abstract base class for probability distributions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel" title="torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseExponentialCoalescentGridModel</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel" title="torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseExponentialCoalescentGridModel</span></code></a></p></td>
 <td><p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid" title="torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseLinearCoalescentGrid</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid" title="torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseLinearCoalescentGrid</span></code></a></p></td>
 <td><p>Distribution is the abstract base class for probability distributions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel" title="torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseLinearCoalescentGridModel</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel" title="torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PiecewiseLinearCoalescentGridModel</span></code></a></p></td>
 <td><p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and</p></td>
 </tr>
 </tbody>
@@ -611,7 +623,7 @@ recompute it.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="torchtree.evolution.coalescent.ConstantCoalescentModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.coalescent.</span></span><span class="sig-name descname"><span class="pre">ConstantCoalescentModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel" title="torchtree.evolution.tree_model.TimeTreeModel"><span class="pre">torchtree.evolution.tree_model.TimeTreeModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentModel" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.coalescent.</span></span><span class="sig-name descname"><span class="pre">ConstantCoalescentModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel" title="torchtree.evolution.tree_model.TimeTreeModel"><span class="pre">torchtree.evolution.tree_model.TimeTreeModel</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentModel" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.coalescent.AbstractCoalescentModel" title="torchtree.evolution.coalescent.AbstractCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractCoalescentModel</span></code></a></p>
 <p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and
 <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Callable</span></code>.</p>
@@ -684,9 +696,46 @@ are batched.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.coalescent.</span></span><span class="sig-name descname"><span class="pre">ConstantCoalescentIntegratedModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel" title="torchtree.evolution.tree_model.TimeTreeModel"><span class="pre">torchtree.evolution.tree_model.TimeTreeModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.model.CallableModel</span></code></a></p>
+<p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Callable</span></code>.</p>
+<p>CallableModel are Callable and the returned value is cached in case
+we need to use this value multiple times without the need to
+recompute it.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.distribution">
+<span class="sig-name descname"><span class="pre">distribution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.evolution.coalescent.AbstractCoalescentDistribution" title="torchtree.evolution.coalescent.AbstractCoalescentDistribution"><span class="pre">AbstractCoalescentDistribution</span></a></span></span><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.distribution" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.from_json" title="Permalink to this definition">#</a></dt>
+<dd><p>Abstract method to create object from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+by their ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>torchtree object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="torchtree.evolution.coalescent.ConstantCoalescentIntegrated">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.coalescent.</span></span><span class="sig-name descname"><span class="pre">ConstantCoalescentIntegrated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.coalescent.AbstractCoalescentDistribution" title="torchtree.evolution.coalescent.AbstractCoalescentDistribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractCoalescentDistribution</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.coalescent.</span></span><span class="sig-name descname"><span class="pre">ConstantCoalescentIntegrated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.distributions.distribution.Distribution</span></code></p>
 <p>Integrated Constant size coalescent/inverse gamma distribution.</p>
 <p>Integrate the product of constant population coalescent and inverse gamma distribtions
 with respect to population size.</p>
@@ -704,6 +753,16 @@ with respect to population size.</p>
                     &amp;= \int_0^{\infty} \frac{\beta^\alpha}{\Gamma(\alpha)}\theta^{-\alpha-1} e^{-\beta/\theta} \theta^{-N} e^{-(\sum_{i=1}^N C_i t_i)/\theta} d\theta \\
                     &amp;= \frac{\beta^\alpha}{\Gamma(\alpha)} \frac{\Gamma}{\left(\beta + \sum_{i=1}^N C_i t_i \right)^{\alpha + N}}\end{split}\]</div>
 <p>The posterior distribution of the population size parameter is an inverse gamma with shape <span class="math notranslate nohighlight">\(\alpha + N\)</span> and rate <span class="math notranslate nohighlight">\(\beta + \sum_{i=1}^N C_i t_i\)</span>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.evolution.coalescent.ConstantCoalescentIntegrated.arg_constraints">
+<span class="sig-name descname"><span class="pre">arg_constraints</span></span><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.arg_constraints" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.evolution.coalescent.ConstantCoalescentIntegrated.support">
+<span class="sig-name descname"><span class="pre">support</span></span><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.support" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="torchtree.evolution.coalescent.ConstantCoalescentIntegrated.has_rsample">
 <span class="sig-name descname"><span class="pre">has_rsample</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.has_rsample" title="Permalink to this definition">#</a></dt>
@@ -818,7 +877,7 @@ by their ID.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.coalescent.</span></span><span class="sig-name descname"><span class="pre">PiecewiseConstantCoalescentModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel" title="torchtree.evolution.tree_model.TimeTreeModel"><span class="pre">torchtree.evolution.tree_model.TimeTreeModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.coalescent.</span></span><span class="sig-name descname"><span class="pre">PiecewiseConstantCoalescentModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel" title="torchtree.evolution.tree_model.TimeTreeModel"><span class="pre">torchtree.evolution.tree_model.TimeTreeModel</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.coalescent.ConstantCoalescentModel" title="torchtree.evolution.coalescent.ConstantCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescentModel</span></code></a></p>
 <p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and
 <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Callable</span></code>.</p>
@@ -1146,7 +1205,14 @@ by their ID.</p></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescent.rsample"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescent.rsample()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegratedModel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.distribution"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegratedModel.distribution()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.from_json"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegratedModel.from_json()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.arg_constraints"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated.arg_constraints</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.support"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated.support</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.has_rsample"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated.has_rsample</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.log_prob"><code class="docutils literal notranslate"><span class="pre">ConstantCoalescentIntegrated.log_prob()</span></code></a></li>
 </ul>
@@ -1267,8 +1333,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -27,6 +27,7 @@ torchtree.evolution.coalescent
       AbstractCoalescentModel
       ConstantCoalescent
       ConstantCoalescentIntegrated
+      ConstantCoalescentIntegratedModel
       ConstantCoalescentModel
       ExponentialCoalescent
       ExponentialCoalescentModel

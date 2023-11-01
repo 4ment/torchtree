@@ -16,6 +16,7 @@ Classes
    torchtree.evolution.coalescent.AbstractCoalescentModel
    torchtree.evolution.coalescent.ConstantCoalescentModel
    torchtree.evolution.coalescent.ConstantCoalescent
+   torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel
    torchtree.evolution.coalescent.ConstantCoalescentIntegrated
    torchtree.evolution.coalescent.ExponentialCoalescentModel
    torchtree.evolution.coalescent.ExponentialCoalescent
@@ -86,7 +87,7 @@ Functions
 
 
 
-.. py:class:: ConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel, alpha=None, beta=None)
+.. py:class:: ConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
 
    Bases: :py:obj:`AbstractCoalescentModel`
@@ -149,10 +150,38 @@ Functions
 
 
 
-.. py:class:: ConstantCoalescentIntegrated(theta: torch.Tensor, alpha: float, beta, validate_args=None)
+.. py:class:: ConstantCoalescentIntegratedModel(id_: torchtree.typing.ID, tree_model: torchtree.evolution.tree_model.TimeTreeModel, alpha: float, beta: float)
 
 
-   Bases: :py:obj:`AbstractCoalescentDistribution`
+   Bases: :py:obj:`torchtree.core.model.CallableModel`
+
+   Classes inheriting from :class:`Model` and
+   :class:`collections.abc.Callable`.
+
+   CallableModel are Callable and the returned value is cached in case
+   we need to use this value multiple times without the need to
+   recompute it.
+
+   .. py:method:: distribution() -> AbstractCoalescentDistribution
+
+
+   .. py:method:: from_json(data, dic)
+      :classmethod:
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
+
+
+.. py:class:: ConstantCoalescentIntegrated(alpha: float, beta, validate_args=None)
+
+
+   Bases: :py:obj:`torch.distributions.distribution.Distribution`
 
    Integrated Constant size coalescent/inverse gamma distribution.
 
@@ -169,6 +198,14 @@ Functions
                           &= \frac{\beta^\alpha}{\Gamma(\alpha)} \frac{\Gamma}{\left(\beta + \sum_{i=1}^N C_i t_i \right)^{\alpha + N}}
 
    The posterior distribution of the population size parameter is an inverse gamma with shape :math:`\alpha + N` and rate :math:`\beta + \sum_{i=1}^N C_i t_i`.
+
+   .. py:attribute:: arg_constraints
+
+      
+
+   .. py:attribute:: support
+
+      
 
    .. py:attribute:: has_rsample
       :value: False
@@ -266,7 +303,7 @@ Functions
 
 
 
-.. py:class:: PiecewiseConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel, alpha=None, beta=None)
+.. py:class:: PiecewiseConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
 
    Bases: :py:obj:`ConstantCoalescentModel`

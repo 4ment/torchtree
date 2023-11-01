@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>torchtree.cli.operators &#8212; torchtree 1.0.2-dev documentation</title>
+    <title>torchtree.cli.operators &#8212; torchtree 1.0.2-dev1 documentation</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,9 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/doctools.js"></script>
@@ -125,7 +125,8 @@
   
   
   
-    <p class="title logo__title">torchtree 1.0.2-dev documentation</p>
+  
+    <p class="title logo__title">torchtree 1.0.2-dev1 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
@@ -224,6 +225,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.html">torchtree.inference.mcmc</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.gmrf_block_updating.html">torchtree.inference.mcmc.gmrf_block_updating</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.mcmc.html">torchtree.inference.mcmc.mcmc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../modules/torchtree.inference.mcmc.operator.html">torchtree.inference.mcmc.operator</a></li>
 </ul>
@@ -386,6 +388,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.operators.create_scaler_operator"><code class="docutils literal notranslate"><span class="pre">create_scaler_operator()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.operators.create_sliding_window_operator"><code class="docutils literal notranslate"><span class="pre">create_sliding_window_operator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.operators.create_block_updating_operator"><code class="docutils literal notranslate"><span class="pre">create_block_updating_operator()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -415,6 +418,9 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.operators.create_sliding_window_operator" title="torchtree.cli.operators.create_sliding_window_operator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_sliding_window_operator</span></code></a>(id_, joint, parameters, arg)</p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.operators.create_block_updating_operator" title="torchtree.cli.operators.create_block_updating_operator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_block_updating_operator</span></code></a>(id_, gmrf, coalescent, arg)</p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py function">
@@ -425,6 +431,11 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.operators.create_sliding_window_operator">
 <span class="sig-prename descclassname"><span class="pre">torchtree.cli.operators.</span></span><span class="sig-name descname"><span class="pre">create_sliding_window_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.cli.operators.create_sliding_window_operator" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torchtree.cli.operators.create_block_updating_operator">
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.operators.</span></span><span class="sig-name descname"><span class="pre">create_block_updating_operator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gmrf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coalescent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchtree.cli.operators.create_block_updating_operator" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -461,6 +472,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.operators.create_scaler_operator"><code class="docutils literal notranslate"><span class="pre">create_scaler_operator()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.operators.create_sliding_window_operator"><code class="docutils literal notranslate"><span class="pre">create_sliding_window_operator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.operators.create_block_updating_operator"><code class="docutils literal notranslate"><span class="pre">create_block_updating_operator()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -512,8 +524,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
   </footer>

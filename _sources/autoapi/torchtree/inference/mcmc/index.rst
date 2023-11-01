@@ -10,6 +10,7 @@ Submodules
    :titlesonly:
    :maxdepth: 1
 
+   gmrf_block_updating/index.rst
    mcmc/index.rst
    operator/index.rst
 

@@ -57,9 +57,10 @@ Attributes
 
    Create a 1 dimentional tensor containing a flatten tridiagonal matrix.
 
-   A covariance matrix is created using scales**2 for variances and the covariances
-   are set to zero. A tridiagonal is created using the cholesky decomposition and the
-   diagonal elements are replaced with their log.
+   A covariance matrix is created using scales**2 for variances and the
+   covariances are set to zero. A tridiagonal is created using the
+   cholesky decomposition and the diagonal elements are replaced with
+   their log.
 
    :param scales: standard deviations
    :return:

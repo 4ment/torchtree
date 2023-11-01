@@ -17,6 +17,7 @@ torchtree.inference.mcmc.operator
 
    .. autosummary::
    
+      DirichletOperator
       MCMCOperator
       ScalerOperator
       SlidingWindowOperator
