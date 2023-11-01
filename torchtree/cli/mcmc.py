@@ -10,7 +10,10 @@ from torchtree.cli.evolution import (
 )
 from torchtree.cli.jacobians import create_jacobians
 from torchtree.cli.loggers import create_loggers
-from torchtree.cli.operators import create_sliding_window_operator
+from torchtree.cli.operators import (
+    create_block_updating_operator,
+    create_sliding_window_operator,
+)
 from torchtree.cli.utils import make_unconstrained
 
 
@@ -47,8 +50,8 @@ def create_mcmc_parser(subprasers):
 
 
 def create_mcmc(joint, parameters, parameters_unres, arg):
-    hmc_json = {
-        "id": "hmc",
+    mcmc_json = {
+        "id": "mcmc",
         "type": "MCMC",
         "joint": joint,
         "iterations": arg.iter,
@@ -56,13 +59,19 @@ def create_mcmc(joint, parameters, parameters_unres, arg):
     }
 
     for param in parameters_unres:
-        operator = create_sliding_window_operator(param["id"], joint, param, arg)
-        hmc_json["operators"].append(operator)
+        if param["id"].endswith("theta.log"):
+            operator = create_block_updating_operator(
+                param["id"], "gmrf", "coalescent", arg
+            )
+            mcmc_json["operators"].append(operator)
+        else:
+            operator = create_sliding_window_operator(param["id"], joint, param, arg)
+            mcmc_json["operators"].append(operator)
 
     if arg.stem:
-        hmc_json["loggers"] = create_loggers(parameters, arg)
+        mcmc_json["loggers"] = create_loggers(parameters, arg)
 
-    return hmc_json
+    return mcmc_json
 
 
 def build_mcmc(arg):
@@ -85,7 +94,9 @@ def build_mcmc(arg):
     jacobians_list = create_jacobians(json_list)
     if arg.clock is not None and arg.heights == "ratio":
         jacobians_list.append("tree")
-    if arg.coalescent in ("skygrid", "skyride"):
+    if arg.coalescent in ("skygrid", "skyride") or arg.coalescent.startswith(
+        "piecewise"
+    ):
         jacobians_list.remove("coalescent.theta")
 
     joint_jacobian = {

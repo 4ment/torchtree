@@ -96,10 +96,10 @@ class ScalerOperator(MCMCOperator):
 
     @MCMCOperator.adaptable_parameter.getter
     def adaptable_parameter(self) -> float:
-        return math.log(self._scaler)
+        return math.log(1.0 / self._scaler - 1.0)
 
     def set_adaptable_parameter(self, value: float) -> None:
-        self._scaler = math.exp(value)
+        self._scaler = 1.0 / (math.exp(value) + 1.0)
 
     def _step(self) -> Tensor:
         s = self._scaler + (
@@ -183,4 +183,59 @@ class SlidingWindowOperator(MCMCOperator):
 
         return cls(
             id_, parameters, weight, target_acceptance_probability, width, **optionals
+        )
+
+
+@register_class
+class DirichletOperator(MCMCOperator):
+    def __init__(
+        self,
+        id_: ID,
+        parameters: Parameter,
+        weight: float,
+        target_acceptance_probability: float,
+        scaler: float,
+        **kwargs,
+    ) -> None:
+        super().__init__(
+            id_, parameters, weight, target_acceptance_probability, **kwargs
+        )
+        self._scaler = scaler
+
+    @property
+    def tuning_parameter(self) -> float:
+        return self._scaler
+
+    @MCMCOperator.adaptable_parameter.getter
+    def adaptable_parameter(self) -> float:
+        return math.log(self._scaler)
+
+    def set_adaptable_parameter(self, value: float) -> None:
+        self._scaler = math.exp(value)
+
+    def _step(self) -> Tensor:
+        old_values = self.parameters[0].tensor
+        scaled_old = old_values * self._scaler
+        dist_old = torch.distributions.Dirichlet(scaled_old)
+        new_values = dist_old.sample()
+        scaled_new = new_values * self._scaler
+        self.parameters[0].tensor = new_values
+
+        f = dist_old.log_prob(new_values)
+        b = torch.distributions.Dirichlet(scaled_new).log_prob(old_values)
+
+        return b - f
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data["id"]
+        parameters = process_objects(data["parameters"], dic, force_list=True)
+        weight = data.get("weight", 1.0)
+        target_acceptance_probability = data.get("target_acceptance_probability", 0.24)
+        scaler = data.get("scaler", 1.0)
+        optionals = {}
+        optionals["disable_adaptation"] = data.get("disable_adaptation", False)
+
+        return cls(
+            id_, parameters, weight, target_acceptance_probability, scaler, **optionals
         )

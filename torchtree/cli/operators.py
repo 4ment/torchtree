@@ -17,7 +17,6 @@ def create_scaler_operator(id_, joint, parameters, arg):
     operator = {
         "id": f"{id_}.operator",
         "type": "ScalerOperator",
-        "joint": joint,
         "parameters": parameter_ids,
         "weight": float(length),
         "scaler": 0.001,
@@ -41,9 +40,20 @@ def create_sliding_window_operator(id_, joint, parameters, arg):
     operator = {
         "id": f"{id_}.operator",
         "type": "SlidingWindowOperator",
-        "joint": joint,
         "parameters": parameter_ids,
         "weight": float(length),
         "width": 0.5,
+    }
+    return operator
+
+
+def create_block_updating_operator(id_, gmrf, coalescent, arg):
+    operator = {
+        "id": f"{id_}.operator",
+        "type": "GMRFPiecewiseCoalescentBlockUpdatingOperator",
+        "coalescent": coalescent,
+        "gmrf": gmrf,
+        "weight": 1.0,
+        "scaler": 2.0,
     }
     return operator
