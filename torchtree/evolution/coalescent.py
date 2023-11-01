@@ -64,33 +64,22 @@ class ConstantCoalescentModel(AbstractCoalescentModel):
         id_: ID,
         theta: AbstractParameter,
         tree_model: TimeTreeModel,
-        alpha=None,
-        beta=None,
     ) -> None:
         super().__init__(id_, theta, tree_model)
-        self.alpha = alpha
-        self.beta = beta
 
     def distribution(self) -> AbstractCoalescentDistribution:
-        if self.alpha is None:
-            return ConstantCoalescent(self.theta.tensor)
-        else:
-            return ConstantCoalescentIntegrated(
-                self.theta.tensor, self.alpha, self.beta
-            )
+        return ConstantCoalescent(self.theta.tensor)
 
     @classmethod
     def from_json(cls, data, dic):
         id_ = data['id']
         theta = process_object(data['theta'], dic)
-        alpha = data.get("alpha", None)
-        beta = data.get("beta", None)
         if TreeModel.tag in data:
             tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
         else:
             node_heights = process_data_coalesent(data, theta.dtype)
             tree_model = FakeTreeModel(node_heights)
-        return cls(id_, theta, tree_model, alpha=alpha, beta=beta)
+        return cls(id_, theta, tree_model)
 
 
 class ConstantCoalescent(AbstractCoalescentDistribution):
@@ -152,7 +141,36 @@ class ConstantCoalescent(AbstractCoalescentDistribution):
         ).rsample(sample_shape)
 
 
-class ConstantCoalescentIntegrated(AbstractCoalescentDistribution):
+@register_class
+class ConstantCoalescentIntegratedModel(CallableModel):
+    def __init__(
+        self, id_: ID, tree_model: TimeTreeModel, alpha: float, beta: float
+    ) -> None:
+        super().__init__(id_)
+        self.tree_model = tree_model
+        self.alpha = alpha
+        self.beta = beta
+
+    def _sample_shape(self) -> torch.Size:
+        return self.tree_model.sample_shape
+
+    def distribution(self) -> AbstractCoalescentDistribution:
+        return ConstantCoalescentIntegrated(self.alpha, self.beta)
+
+    def _call(self, *args, **kwargs) -> torch.Tensor:
+        coalescent = self.distribution()
+        return coalescent.log_prob(self.tree_model.node_heights)
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        alpha = data["alpha"]
+        beta = data["beta"]
+        tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
+        return cls(id_, tree_model, alpha, beta)
+
+
+class ConstantCoalescentIntegrated(Distribution):
     r"""Integrated Constant size coalescent/inverse gamma distribution.
 
     Integrate the product of constant population coalescent and inverse gamma distribtions
@@ -169,12 +187,12 @@ class ConstantCoalescentIntegrated(AbstractCoalescentDistribution):
 
     The posterior distribution of the population size parameter is an inverse gamma with shape :math:`\alpha + N` and rate :math:`\beta + \sum_{i=1}^N C_i t_i`.
     """  # noqa: E501
+    arg_constraints = {}
+    support = constraints.positive
     has_rsample = False
 
-    def __init__(
-        self, theta: torch.Tensor, alpha: float, beta, validate_args=None
-    ) -> None:
-        super().__init__(theta, validate_args=validate_args)
+    def __init__(self, alpha: float, beta, validate_args=None) -> None:
+        super().__init__(validate_args=validate_args)
         self.alpha = alpha
         self.beta = beta
 

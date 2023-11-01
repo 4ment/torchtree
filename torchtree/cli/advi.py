@@ -140,9 +140,10 @@ def _unique_id(id_, dic):
 def create_tril(scales: torch.Tensor) -> torch.Tensor:
     """Create a 1 dimentional tensor containing a flatten tridiagonal matrix.
 
-    A covariance matrix is created using scales**2 for variances and the covariances
-    are set to zero. A tridiagonal is created using the cholesky decomposition and the
-    diagonal elements are replaced with their log.
+    A covariance matrix is created using scales**2 for variances and the
+    covariances are set to zero. A tridiagonal is created using the
+    cholesky decomposition and the diagonal elements are replaced with
+    their log.
 
     :param scales: standard deviations
     :return:
@@ -497,6 +498,12 @@ def create_gamma_distribution(var_id, x_unres, json_object, concentration, rate)
             **{'full_like': json_object['id'], 'tensor': rate},
         ),
     }
+
+    if isinstance(concentration, list):
+        del concentration_param["x"]["full_like"]
+    if isinstance(rate, list):
+        del rate_param["x"]["full_like"]
+
     distr = Distribution.json_factory(
         var_id + '.' + json_object['id'],
         'torch.distributions.Gamma',
@@ -572,10 +579,9 @@ def create_meanfield(
                     return distributions, var_parameters
                 elif distribution == 'Normal':
                     tensor = np.array(json_object['tensor'])
-                    loc = np.log(tensor / np.sqrt(1 + 0.001 / tensor**2)).tolist()
-                    scale_log = np.log(
-                        np.sqrt(np.log(1 + 0.001 / tensor**2))
-                    ).tolist()
+                    var = tensor * 0.01
+                    loc = np.log(tensor / np.sqrt(1 + var / tensor**2)).tolist()
+                    scale_log = np.log(np.sqrt(np.log(1 + var / tensor**2))).tolist()
                     unres_id = apply_exp_transform(json_object)
                     distr, loc, scale = create_normal_distribution(
                         var_id, unres_id, json_object, loc, scale_log
@@ -583,8 +589,17 @@ def create_meanfield(
                     var_parameters.extend((loc['id'], scale['x']['id']))
                 elif distribution in ('Gamma', 'Weibull'):
                     if distribution == 'Gamma':
+                        # solve mean \alpha/\beta=tensor and
+                        # variance \alpha/\beta^2=0.01*tensor
+                        tensor = torch.tensor(json_object["tensor"])
+                        log_concentration = (tensor / 0.01).log().tolist()
+                        log_rate = torch.log(1.0 / 0.01).tolist()
                         distr, concentration, rate = create_gamma_distribution(
-                            var_id, json_object['id'], json_object, 0, 2.3
+                            var_id,
+                            json_object['id'],
+                            json_object,
+                            log_concentration,
+                            log_rate,
                         )
                     elif distribution == 'Weibull':
                         distr, scale, concentration = create_weibull_distribution(
@@ -688,7 +703,9 @@ def apply_transforms_for_fullrank(
 
 def create_variational_model(id_, joint, arg) -> tuple[dict, list[str]]:
     variational = {'id': id_, 'type': 'JointDistributionModel'}
-    if len(arg.variational) == 1 and arg.variational[0] == 'meanfield':
+    if isinstance(arg.variational, str) or (
+        len(arg.variational) == 1 and arg.variational[0] == 'meanfield'
+    ):
         distributions, parameters = create_meanfield(id_, joint, arg.distribution)
     elif (
         arg.variational == 'fullrank'
@@ -750,7 +767,7 @@ def create_advi(joint, variational, parameters, arg):
     else:
         elbo_samples = arg.elbo_samples
 
-    if elbo_samples > 0:
+    if isinstance(elbo_samples, list) or elbo_samples > 0:
         if arg.divergence == 'ELBO':
             loss2 = 'elbo'
         elif arg.divergence == 'KLpq':
@@ -954,7 +971,9 @@ def build_advi(arg):
         parameters = ['tree.blens']
 
     if arg.coalescent is not None:
-        parameters.append("coalescent.theta")
+        if arg.coalescent_integrated is None:
+            parameters.append("coalescent.theta")
+
         if (
             arg.coalescent
             in (
