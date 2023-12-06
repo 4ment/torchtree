@@ -138,8 +138,8 @@ Functions
       Returns the log of the probability density/mass function evaluated at
       `value`.
 
-      Args:
-          value (Tensor):
+      :param value:
+      :type value: Tensor
 
 
    .. py:method:: rsample(sample_shape=torch.Size())
@@ -217,8 +217,8 @@ Functions
       Returns the log of the probability density/mass function evaluated at
       `value`.
 
-      Args:
-          value (Tensor):
+      :param value:
+      :type value: Tensor
 
 
 
@@ -277,8 +277,8 @@ Functions
       Returns the log of the probability density/mass function evaluated at
       `value`.
 
-      Args:
-          value (Tensor):
+      :param value:
+      :type value: Tensor
 
 
 
@@ -294,8 +294,8 @@ Functions
       Returns the log of the probability density/mass function evaluated at
       `value`.
 
-      Args:
-          value (Tensor):
+      :param value:
+      :type value: Tensor
 
 
    .. py:method:: maximum_likelihood(node_heights: torch.Tensor) -> torch.Tensor
@@ -345,8 +345,8 @@ Functions
       Returns the log of the probability density/mass function evaluated at
       `value`.
 
-      Args:
-          value (Tensor):
+      :param value:
+      :type value: Tensor
 
 
 
@@ -362,8 +362,8 @@ Functions
       Returns the log of the probability density/mass function evaluated at
       `value`.
 
-      Args:
-          value (Tensor):
+      :param value:
+      :type value: Tensor
 
 
 
@@ -436,8 +436,8 @@ Functions
       Returns the log of the probability density/mass function evaluated at
       `value`.
 
-      Args:
-          value (Tensor):
+      :param value:
+      :type value: Tensor
 
 
 
@@ -496,8 +496,8 @@ Functions
       Returns the log of the probability density/mass function evaluated at
       `value`.
 
-      Args:
-          value (Tensor):
+      :param value:
+      :type value: Tensor
 
 
 

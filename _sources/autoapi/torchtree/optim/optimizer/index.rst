@@ -17,10 +17,10 @@ Classes
 
 
 
-.. py:class:: Optimizer(parameters: torchtree.typing.ListParameter, loss: torchtree.core.model.CallableModel, optimizer: torch.optim.Optimizer, iterations: int, **kwargs)
+.. py:class:: Optimizer(id_: torchtree.typing.ID, parameters: torchtree.typing.ListParameter, loss: torchtree.core.model.CallableModel, optimizer: torch.optim.Optimizer, iterations: int, **kwargs)
 
 
-   Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
+   Bases: :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`torchtree.core.runnable.Runnable`
 
    A wrapper for torch.optim.Optimizer objects.
 
@@ -34,7 +34,16 @@ Classes
    .. py:method:: run() -> None
 
 
-   .. py:method:: from_json(data: dict[str, any], dic: dict[str, any]) -> Optimizer
+   .. py:method:: state_dict() -> dict[str, Any]
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
+
+   .. py:method:: save_full_state(checkpoint, safely=True, overwrite=False) -> None
+
+
+   .. py:method:: from_json(data: dict[str, Any], dic: dict[str, Any]) -> Optimizer
       :classmethod:
 
       Abstract method to create object from a dictionary.

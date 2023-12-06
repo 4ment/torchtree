@@ -86,7 +86,7 @@ Classes
 .. py:class:: GMRFCovariate(id_: torchtree.typing.ID, field: torchtree.core.abstractparameter.AbstractParameter, precision: torchtree.core.abstractparameter.AbstractParameter, covariates: torchtree.core.abstractparameter.AbstractParameter, beta: torchtree.core.abstractparameter.AbstractParameter)
 
 
-   Bases: :py:obj:`torchtree.core.model.CallableModel`
+   Bases: :py:obj:`GMRF`
 
    Gaussian Markov random field with covariates.
 

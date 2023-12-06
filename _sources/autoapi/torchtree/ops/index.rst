@@ -16,6 +16,7 @@ Submodules
    :maxdepth: 1
 
    dual_averaging/index.rst
+   smooth/index.rst
    welford/index.rst
 
 

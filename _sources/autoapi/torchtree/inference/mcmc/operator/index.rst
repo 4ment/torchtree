@@ -55,6 +55,12 @@ Classes
    .. py:method:: tune(acceptance_prob: torch.Tensor, sample: int, accepted: bool) -> None
 
 
+   .. py:method:: state_dict() -> dict[str, Any]
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
+
 
 .. py:class:: ScalerOperator(id_: torchtree.typing.ID, parameters: list[torchtree.typing.Parameter], weight: float, target_acceptance_probability: float, scaler: float, **kwargs)
 

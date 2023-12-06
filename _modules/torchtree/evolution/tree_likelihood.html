@@ -1,0 +1,908 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>torchtree.evolution.tree_likelihood &#8212; torchtree 1.0.2-dev2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/tabs.js"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchtree/evolution/tree_likelihood';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">torchtree 1.0.2-dev2 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/torchtree/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/cli/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/advi/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.advi</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/argparse_utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.argparse_utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/cli/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.cli</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/evolution/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.evolution</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.hmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/jacobians/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.jacobians</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/loggers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.loggers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/map/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.map</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/mcmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.mcmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/operators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.operators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/plugin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.plugin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/plugin_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.plugin_manager</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/priors/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.priors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/core/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/abstractparameter/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.abstractparameter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/classproperty_decorator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.classproperty_decorator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/container/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.container</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/identifiable/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.identifiable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parameter/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parameter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parameter_encoder/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parameter_encoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parameter_utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parameter_utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parametric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parametric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/runnable/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.runnable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/serializable/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.serializable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/distributions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/bayesian_bridge/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.bayesian_bridge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/ctmc_scale/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.ctmc_scale</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/deterministic_normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.deterministic_normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/distributions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.distributions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/gmrf/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.gmrf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/gmrf_integrated/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.gmrf_integrated</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/inverse_gamma/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.inverse_gamma</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/joint_distribution/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.joint_distribution</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/log_normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.log_normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/multivariate_normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.multivariate_normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/one_on_x/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.one_on_x</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/scale_mixture/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.scale_mixture</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/transforms/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.transforms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/tree_prior/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.tree_prior</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/evolution/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/abstract/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.abstract</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.amino_acid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/codon/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.codon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/general/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.general</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/nucleotide/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.nucleotide</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/attribute_pattern/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.attribute_pattern</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/bdsk/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.bdsk</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/birth_death/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.birth_death</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/branch_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.branch_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.coalescent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/datatype/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.datatype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/poisson_tree_likelihood/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.poisson_tree_likelihood</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/rate_transform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.rate_transform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/root_transform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.root_transform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/site_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.site_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/site_pattern/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.site_pattern</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/taxa/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.taxa</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_height_transform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_height_transform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_likelihood</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_model_flexible/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_model_flexible</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_regression/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_regression</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/inference/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/adaptation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.adaptation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/adaptors/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.adaptors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/hamiltonian/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.hamiltonian</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.hmc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/integrator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.integrator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/operator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.operator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/stan_adaptation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.stan_adaptation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.gmrf_block_updating</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/mcmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.mcmc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/operator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.operator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/inference/sampler/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.sampler</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/inference/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/nf/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/energy_functions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.energy_functions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/flow/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.flow</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/planar/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.planar</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/realnvp/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.realnvp</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/nn/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nn</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nn/module/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nn.module</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/ops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/ops/dual_averaging/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops.dual_averaging</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/ops/smooth/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops.smooth</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/ops/welford/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops.welford</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/optim/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/optim/convergence/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim.convergence</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/optim/lr_scheduler/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim.lr_scheduler</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/optim/optimizer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim.optimizer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/variational/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/variational/chi/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational.chi</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/variational/kl/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational.kl</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/variational/renyi/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational.renyi</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autoapi/torchtree/torchtree/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.torchtree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autoapi/torchtree/typing/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.typing</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography/bib.html">Bibliography</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/4ment/torchtree" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for torchtree.evolution.tree_likelihood</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.distributions</span>
+
+<span class="kn">from</span> <span class="nn">..core.model</span> <span class="kn">import</span> <span class="n">CallableModel</span>
+<span class="kn">from</span> <span class="nn">..core.utils</span> <span class="kn">import</span> <span class="n">process_object</span><span class="p">,</span> <span class="n">register_class</span>
+<span class="kn">from</span> <span class="nn">..typing</span> <span class="kn">import</span> <span class="n">ID</span>
+<span class="kn">from</span> <span class="nn">.branch_model</span> <span class="kn">import</span> <span class="n">BranchModel</span>
+<span class="kn">from</span> <span class="nn">.site_model</span> <span class="kn">import</span> <span class="n">SiteModel</span>
+<span class="kn">from</span> <span class="nn">.site_pattern</span> <span class="kn">import</span> <span class="n">SitePattern</span>
+<span class="kn">from</span> <span class="nn">.substitution_model.abstract</span> <span class="kn">import</span> <span class="n">SubstitutionModel</span>
+<span class="kn">from</span> <span class="nn">.tree_model</span> <span class="kn">import</span> <span class="n">TreeModel</span>
+
+
+<div class="viewcode-block" id="calculate_treelikelihood"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.calculate_treelikelihood">[docs]</a><span class="k">def</span> <span class="nf">calculate_treelikelihood</span><span class="p">(</span>
+    <span class="n">partials</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">post_indexing</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">mats</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple function for calculating the log tree likelihood.</span>
+
+<span class="sd">    :param partials: list of tensors of partials [S,N] leaves and [...,S,N] internals</span>
+<span class="sd">    :param weights: [N]</span>
+<span class="sd">    :param post_indexing: list of indexes in postorder</span>
+<span class="sd">    :param mats: tensor of probability matrices [...,B,S,S]</span>
+<span class="sd">    :param freqs: tensor of frequencies [...,S]</span>
+<span class="sd">    :return: tree log likelihood [batch]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="n">post_indexing</span><span class="p">:</span>
+        <span class="n">partials</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">left</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">right</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">freqs</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">post_indexing</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span> <span class="o">*</span> <span class="n">weights</span><span class="p">,</span>
+        <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_treelikelihood_discrete"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.calculate_treelikelihood_discrete">[docs]</a><span class="k">def</span> <span class="nf">calculate_treelikelihood_discrete</span><span class="p">(</span>
+    <span class="n">partials</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">post_indexing</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">mats</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">props</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate log tree likelihood with rate categories</span>
+
+<span class="sd">    number of tips: T,</span>
+<span class="sd">    number of internal nodes: I=T-1,</span>
+<span class="sd">    number of branches: B=2T-2,</span>
+<span class="sd">    number of states: S,</span>
+<span class="sd">    number of sites: N,</span>
+<span class="sd">    number of rate categories: K.</span>
+
+<span class="sd">    The shape of internal partials after peeling is [...,K,S,N].</span>
+
+<span class="sd">    :param partials: list of T tip partial tensors [S,N] and I internals [None]</span>
+<span class="sd">    :param weights: [N]</span>
+<span class="sd">    :param post_indexing: list of indexes in postorder</span>
+<span class="sd">    :param mats: tensor of probability matrices [...,B,K,S,S]</span>
+<span class="sd">    :param freqs: tensor of frequencies [...,1,S]</span>
+<span class="sd">    :param props: tensor of proportions [...,K,1,1]</span>
+<span class="sd">    :return: tree log likelihood [batch]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="n">post_indexing</span><span class="p">:</span>
+        <span class="n">partials</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">left</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">right</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">freqs</span> <span class="o">@</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">props</span> <span class="o">*</span> <span class="n">partials</span><span class="p">[</span><span class="n">post_indexing</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="o">-</span><span class="mi">3</span><span class="p">))</span>
+        <span class="o">*</span> <span class="n">weights</span><span class="p">,</span>
+        <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_treelikelihood_tip_states_discrete"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.calculate_treelikelihood_tip_states_discrete">[docs]</a><span class="k">def</span> <span class="nf">calculate_treelikelihood_tip_states_discrete</span><span class="p">(</span>
+    <span class="n">partials</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">post_indexing</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">mats</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">props</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate log tree likelihood with rate categories using tip states</span>
+
+<span class="sd">    number of tips: T,</span>
+<span class="sd">    number of internal nodes: I=T-1,</span>
+<span class="sd">    number of branches: B=2T-2,</span>
+<span class="sd">    number of states: S,</span>
+<span class="sd">    number of sites: N,</span>
+<span class="sd">    number of rate categories: K.</span>
+
+<span class="sd">    The shape of internal partials after peeling is [...,K,S,N].</span>
+
+<span class="sd">    :param partials: list of T tip state tensors [N] and I internals [None]</span>
+<span class="sd">    :param weights: [N]</span>
+<span class="sd">    :param post_indexing: list of indexes in postorder</span>
+<span class="sd">    :param mats: tensor of probability matrices [...,B,K,S,S]</span>
+<span class="sd">    :param freqs: tensor of frequencies [...,1,S]</span>
+<span class="sd">    :param props: tensor of proportions [...,K,1,1]</span>
+<span class="sd">    :return: tree log likelihood [batch]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tip_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">post_indexing</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">mat_tips</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">tip_count</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">tip_count</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)),</span>
+        <span class="p">),</span>
+        <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="n">post_indexing</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">left</span> <span class="o">&lt;</span> <span class="n">tip_count</span><span class="p">:</span>
+            <span class="n">p_left</span> <span class="o">=</span> <span class="n">mat_tips</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">partials</span><span class="p">[</span><span class="n">left</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p_left</span> <span class="o">=</span> <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">left</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">right</span> <span class="o">&lt;</span> <span class="n">tip_count</span><span class="p">:</span>
+            <span class="n">p_right</span> <span class="o">=</span> <span class="n">mat_tips</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">partials</span><span class="p">[</span><span class="n">right</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p_right</span> <span class="o">=</span> <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">right</span><span class="p">]</span>
+
+        <span class="n">partials</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_left</span> <span class="o">*</span> <span class="n">p_right</span>
+
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">freqs</span> <span class="o">@</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">props</span> <span class="o">*</span> <span class="n">partials</span><span class="p">[</span><span class="n">post_indexing</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="o">-</span><span class="mi">3</span><span class="p">))</span>
+        <span class="o">*</span> <span class="n">weights</span><span class="p">,</span>
+        <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_treelikelihood_discrete_safe"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.calculate_treelikelihood_discrete_safe">[docs]</a><span class="k">def</span> <span class="nf">calculate_treelikelihood_discrete_safe</span><span class="p">(</span>
+    <span class="n">partials</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">post_indexing</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">mats</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">props</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate log tree likelihood with rate categories using rescaling.</span>
+
+<span class="sd">    This function is used when an underflow is detected for the first time (i.e. inf)</span>
+<span class="sd">    since it is not recalculating partials that are above the threshold.</span>
+
+<span class="sd">    :param partials: list of tensors of partials [S,N] leaves and [...,K,S,N] internals</span>
+<span class="sd">    :param weights: [N]</span>
+<span class="sd">    :param post_indexing:</span>
+<span class="sd">    :param mats: tensor of matrices [...,B,K,S,S]</span>
+<span class="sd">    :param freqs: tensor of frequencies [...,1,S]</span>
+<span class="sd">    :param props: tensor of proportions [...,K,1,1]</span>
+<span class="sd">    :param threshold: threshold for rescaling</span>
+<span class="sd">    :return: tree log likelihood [batch]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scalers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">rescaled</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">post_indexing</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="n">post_indexing</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">rescaled</span><span class="p">[</span><span class="n">left</span><span class="p">]</span>
+            <span class="ow">or</span> <span class="n">rescaled</span><span class="p">[</span><span class="n">right</span><span class="p">]</span>
+            <span class="ow">or</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">partials</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">partial</span> <span class="o">=</span> <span class="p">(</span><span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">left</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">right</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">scaler</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
+                <span class="n">partial</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">*</span><span class="n">partial</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">partial</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]),</span>
+                <span class="o">-</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">scalers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scaler</span><span class="p">)</span>
+            <span class="n">partials</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial</span> <span class="o">/</span> <span class="n">scaler</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">rescaled</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">freqs</span> <span class="o">@</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">props</span> <span class="o">*</span> <span class="n">partials</span><span class="p">[</span><span class="n">post_indexing</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">3</span><span class="p">))</span>
+            <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">scalers</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="o">*</span> <span class="n">weights</span><span class="p">,</span>
+        <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_treelikelihood_discrete_rescaled"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.calculate_treelikelihood_discrete_rescaled">[docs]</a><span class="k">def</span> <span class="nf">calculate_treelikelihood_discrete_rescaled</span><span class="p">(</span>
+    <span class="n">partials</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">post_indexing</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">mats</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">props</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate log tree likelihood with rate categories using rescaling</span>
+
+<span class="sd">    :param partials: list of tensors of partials [S,N] leaves and [...,K,S,N] internals</span>
+<span class="sd">    :param weights: [N]</span>
+<span class="sd">    :param post_indexing:</span>
+<span class="sd">    :param mats: tensor of matrices [...,B,K,S,S]</span>
+<span class="sd">    :param freqs: tensor of frequencies [...,1,S]</span>
+<span class="sd">    :param props: tensor of proportions [...,K,1,1]</span>
+<span class="sd">    :return: tree log likelihood [batch]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scalers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="n">post_indexing</span><span class="p">:</span>
+        <span class="n">partial</span> <span class="o">=</span> <span class="p">(</span><span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">left</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">right</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">scaler</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
+            <span class="n">partial</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">*</span><span class="n">partial</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">partial</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]),</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">scalers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scaler</span><span class="p">)</span>
+        <span class="n">partials</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial</span> <span class="o">/</span> <span class="n">scaler</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">freqs</span> <span class="o">@</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">props</span> <span class="o">*</span> <span class="n">partials</span><span class="p">[</span><span class="n">post_indexing</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">3</span><span class="p">))</span>
+            <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">scalers</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="o">*</span> <span class="n">weights</span><span class="p">,</span>
+        <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_treelikelihood_tip_states_discrete_rescaled"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.calculate_treelikelihood_tip_states_discrete_rescaled">[docs]</a><span class="k">def</span> <span class="nf">calculate_treelikelihood_tip_states_discrete_rescaled</span><span class="p">(</span>
+    <span class="n">partials</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">weights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">post_indexing</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="n">mats</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">props</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate rescaled log tree likelihood with rate categories using tip states</span>
+<span class="sd">    and rescaling.</span>
+
+<span class="sd">    :param partials: list of tensors of tip states [N] leaves and [...,K,S,N] internals</span>
+<span class="sd">    :param weights: [N]</span>
+<span class="sd">    :param post_indexing:</span>
+<span class="sd">    :param mats: tensor of matrices [...,B,K,S,S]</span>
+<span class="sd">    :param freqs: tensor of frequencies [...,1,S]</span>
+<span class="sd">    :param props: tensor of proportions [...,K,1,1]</span>
+<span class="sd">    :return: tree log likelihood [batch]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tip_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">post_indexing</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">mat_tips</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">tip_count</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="n">tip_count</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)),</span>
+        <span class="p">),</span>
+        <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">scalers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="n">post_indexing</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">left</span> <span class="o">&lt;</span> <span class="n">tip_count</span><span class="p">:</span>
+            <span class="n">p_left</span> <span class="o">=</span> <span class="n">mat_tips</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">partials</span><span class="p">[</span><span class="n">left</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p_left</span> <span class="o">=</span> <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">left</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">right</span> <span class="o">&lt;</span> <span class="n">tip_count</span><span class="p">:</span>
+            <span class="n">p_right</span> <span class="o">=</span> <span class="n">mat_tips</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">partials</span><span class="p">[</span><span class="n">right</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p_right</span> <span class="o">=</span> <span class="n">mats</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">partials</span><span class="p">[</span><span class="n">right</span><span class="p">]</span>
+
+        <span class="n">partial</span> <span class="o">=</span> <span class="n">p_left</span> <span class="o">*</span> <span class="n">p_right</span>
+
+        <span class="n">scaler</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
+            <span class="n">partial</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">*</span><span class="n">partial</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">partial</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]),</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">scalers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scaler</span><span class="p">)</span>
+        <span class="n">partials</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial</span> <span class="o">/</span> <span class="n">scaler</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">freqs</span> <span class="o">@</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">props</span> <span class="o">*</span> <span class="n">partials</span><span class="p">[</span><span class="n">post_indexing</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">3</span><span class="p">))</span>
+            <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">scalers</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="o">*</span> <span class="n">weights</span><span class="p">,</span>
+        <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TreeLikelihoodModel"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel">[docs]</a><span class="nd">@register_class</span>
+<span class="k">class</span> <span class="nc">TreeLikelihoodModel</span><span class="p">(</span><span class="n">CallableModel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
+        <span class="n">site_pattern</span><span class="p">:</span> <span class="n">SitePattern</span><span class="p">,</span>
+        <span class="n">tree_model</span><span class="p">:</span> <span class="n">TreeModel</span><span class="p">,</span>
+        <span class="n">subst_model</span><span class="p">:</span> <span class="n">SubstitutionModel</span><span class="p">,</span>
+        <span class="n">site_model</span><span class="p">:</span> <span class="n">SiteModel</span><span class="p">,</span>
+        <span class="n">clock_model</span><span class="p">:</span> <span class="n">BranchModel</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_ambiguities</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_tip_states</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">site_pattern</span> <span class="o">=</span> <span class="n">site_pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span> <span class="o">=</span> <span class="n">tree_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subst_model</span> <span class="o">=</span> <span class="n">subst_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">site_model</span> <span class="o">=</span> <span class="n">site_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock_model</span> <span class="o">=</span> <span class="n">clock_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_tip_states</span> <span class="o">=</span> <span class="n">use_tip_states</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mf">1.0e-20</span> <span class="k">if</span> <span class="n">subst_model</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">float32</span> <span class="k">else</span> <span class="mf">1.0e-40</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_tip_states</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">site_pattern</span><span class="o">.</span><span class="n">compute_tips_states</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">site_pattern</span><span class="o">.</span><span class="n">compute_tips_partials</span><span class="p">(</span>
+                <span class="n">use_ambiguities</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tree_model</span><span class="o">.</span><span class="n">taxa</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">branch_lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">branch_lengths</span><span class="p">()</span>
+        <span class="n">sample_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_shape</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">site_model</span><span class="o">.</span><span class="n">rates</span><span class="p">()</span>
+        <span class="c1"># for models like JC69 rates is always tensor([1.0])  (i.e. sample_shape == [])</span>
+        <span class="k">if</span> <span class="n">rates</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">rates</span> <span class="o">=</span> <span class="n">rates</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">sample_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rates</span> <span class="o">=</span> <span class="n">rates</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sample_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">site_model</span><span class="o">.</span><span class="n">probabilities</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bls</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">branch_lengths</span><span class="p">,</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                        <span class="n">sample_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,),</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">branch_lengths</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                        <span class="n">device</span><span class="o">=</span><span class="n">branch_lengths</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+                <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">branch_lengths</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">bls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock_model</span><span class="o">.</span><span class="n">rates</span> <span class="o">*</span> <span class="n">branch_lengths</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span>
+                    <span class="n">sample_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock_model</span><span class="o">.</span><span class="n">rates</span> <span class="o">*</span> <span class="n">branch_lengths</span>
+
+        <span class="n">mats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subst_model</span><span class="o">.</span><span class="n">p_t</span><span class="p">(</span><span class="n">bls</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sample_shape</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">rates</span><span class="p">)</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subst_model</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subst_model</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_tip_states</span><span class="p">:</span>
+            <span class="n">log_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_with_tip_states</span><span class="p">(</span><span class="n">mats</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">probs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_with_tip_partials</span><span class="p">(</span><span class="n">mats</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">probs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">log_p</span>
+
+<div class="viewcode-block" id="TreeLikelihoodModel.calculate_with_tip_partials"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.calculate_with_tip_partials">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_with_tip_partials</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mats</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">probs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span><span class="p">:</span>
+            <span class="n">log_p</span> <span class="o">=</span> <span class="n">calculate_treelikelihood_discrete_rescaled</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">postorder</span><span class="p">,</span>
+                <span class="n">mats</span><span class="p">,</span>
+                <span class="n">frequencies</span><span class="p">,</span>
+                <span class="n">probs</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log_p</span> <span class="o">=</span> <span class="n">calculate_treelikelihood_discrete</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">postorder</span><span class="p">,</span>
+                <span class="n">mats</span><span class="p">,</span>
+                <span class="n">frequencies</span><span class="p">,</span>
+                <span class="n">probs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">log_p</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">log_p</span> <span class="o">=</span> <span class="n">calculate_treelikelihood_discrete_safe</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">postorder</span><span class="p">,</span>
+                    <span class="n">mats</span><span class="p">,</span>
+                    <span class="n">frequencies</span><span class="p">,</span>
+                    <span class="n">probs</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">log_p</span></div>
+
+<div class="viewcode-block" id="TreeLikelihoodModel.calculate_with_tip_states"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.calculate_with_tip_states">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_with_tip_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mats</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">probs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span><span class="p">:</span>
+            <span class="n">log_p</span> <span class="o">=</span> <span class="n">calculate_treelikelihood_tip_states_discrete_rescaled</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">postorder</span><span class="p">,</span>
+                <span class="n">mats</span><span class="p">,</span>
+                <span class="n">frequencies</span><span class="p">,</span>
+                <span class="n">probs</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log_p</span> <span class="o">=</span> <span class="n">calculate_treelikelihood_tip_states_discrete</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">postorder</span><span class="p">,</span>
+                <span class="n">mats</span><span class="p">,</span>
+                <span class="n">frequencies</span><span class="p">,</span>
+                <span class="n">probs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">log_p</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rescale</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">log_p</span> <span class="o">=</span> <span class="n">calculate_treelikelihood_tip_states_discrete_rescaled</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">postorder</span><span class="p">,</span>
+                    <span class="n">mats</span><span class="p">,</span>
+                    <span class="n">frequencies</span><span class="p">,</span>
+                    <span class="n">probs</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">log_p</span></div>
+
+<div class="viewcode-block" id="TreeLikelihoodModel.handle_parameter_changed"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.handle_parameter_changed">[docs]</a>    <span class="k">def</span> <span class="nf">handle_parameter_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">model</span><span class="o">.</span><span class="n">sample_shape</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="o">.</span><span class="n">values</span><span class="p">()],</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TreeLikelihoodModel.from_json"><a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.from_json">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+        <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">tree_model</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">TreeModel</span><span class="o">.</span><span class="n">tag</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
+        <span class="n">site_model</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">SiteModel</span><span class="o">.</span><span class="n">tag</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
+        <span class="n">subst_model</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">SubstitutionModel</span><span class="o">.</span><span class="n">tag</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
+        <span class="n">site_pattern</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">SitePattern</span><span class="o">.</span><span class="n">tag</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
+        <span class="n">use_ambiguities</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;use_ambiguities&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">use_tip_states</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;use_tip_states&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">clock_model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">BranchModel</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">clock_model</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">BranchModel</span><span class="o">.</span><span class="n">tag</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">id_</span><span class="p">,</span>
+            <span class="n">site_pattern</span><span class="p">,</span>
+            <span class="n">tree_model</span><span class="p">,</span>
+            <span class="n">subst_model</span><span class="p">,</span>
+            <span class="n">site_model</span><span class="p">,</span>
+            <span class="n">clock_model</span><span class="p">,</span>
+            <span class="n">use_ambiguities</span><span class="p">,</span>
+            <span class="n">use_tip_states</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Mathieu Fourment
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023, Mathieu Fourment.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

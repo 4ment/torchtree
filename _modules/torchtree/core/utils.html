@@ -1,0 +1,891 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>torchtree.core.utils &#8212; torchtree 1.0.2-dev2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/tabs.js"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchtree/core/utils';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">torchtree 1.0.2-dev2 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/torchtree/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/cli/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/advi/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.advi</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/argparse_utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.argparse_utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/cli/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.cli</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/evolution/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.evolution</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.hmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/jacobians/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.jacobians</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/loggers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.loggers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/map/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.map</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/mcmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.mcmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/operators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.operators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/plugin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.plugin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/plugin_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.plugin_manager</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/priors/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.priors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/core/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/abstractparameter/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.abstractparameter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/classproperty_decorator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.classproperty_decorator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/container/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.container</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/identifiable/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.identifiable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parameter/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parameter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parameter_encoder/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parameter_encoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parameter_utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parameter_utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parametric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parametric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/runnable/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.runnable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/serializable/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.serializable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/distributions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/bayesian_bridge/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.bayesian_bridge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/ctmc_scale/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.ctmc_scale</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/deterministic_normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.deterministic_normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/distributions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.distributions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/gmrf/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.gmrf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/gmrf_integrated/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.gmrf_integrated</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/inverse_gamma/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.inverse_gamma</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/joint_distribution/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.joint_distribution</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/log_normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.log_normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/multivariate_normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.multivariate_normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/one_on_x/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.one_on_x</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/scale_mixture/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.scale_mixture</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/transforms/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.transforms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/tree_prior/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.tree_prior</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/evolution/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/abstract/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.abstract</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.amino_acid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/codon/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.codon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/general/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.general</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/nucleotide/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.nucleotide</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/attribute_pattern/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.attribute_pattern</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/bdsk/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.bdsk</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/birth_death/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.birth_death</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/branch_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.branch_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.coalescent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/datatype/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.datatype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/poisson_tree_likelihood/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.poisson_tree_likelihood</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/rate_transform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.rate_transform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/root_transform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.root_transform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/site_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.site_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/site_pattern/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.site_pattern</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/taxa/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.taxa</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_height_transform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_height_transform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_likelihood</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_model_flexible/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_model_flexible</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_regression/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_regression</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/inference/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/adaptation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.adaptation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/adaptors/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.adaptors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/hamiltonian/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.hamiltonian</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.hmc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/integrator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.integrator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/operator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.operator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/stan_adaptation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.stan_adaptation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.gmrf_block_updating</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/mcmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.mcmc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/operator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.operator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/inference/sampler/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.sampler</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/inference/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/nf/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/energy_functions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.energy_functions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/flow/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.flow</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/planar/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.planar</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/realnvp/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.realnvp</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/nn/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nn</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nn/module/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nn.module</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/ops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/ops/dual_averaging/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops.dual_averaging</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/ops/smooth/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops.smooth</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/ops/welford/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops.welford</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/optim/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/optim/convergence/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim.convergence</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/optim/lr_scheduler/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim.lr_scheduler</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/optim/optimizer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim.optimizer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/variational/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/variational/chi/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational.chi</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/variational/kl/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational.kl</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/variational/renyi/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational.renyi</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autoapi/torchtree/torchtree/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.torchtree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autoapi/torchtree/typing/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.typing</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography/bib.html">Bibliography</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/4ment/torchtree" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for torchtree.core.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numbers</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">REGISTERED_CLASSES</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="TensorEncoder"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.TensorEncoder">[docs]</a><span class="k">class</span> <span class="nc">TensorEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
+<div class="viewcode-block" id="TensorEncoder.default"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.TensorEncoder.default">[docs]</a>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="n">dic</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;torch.Tensor&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                <span class="s2">&quot;dtype&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
+                <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;nn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="n">dic</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TensorDecoder"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.TensorDecoder">[docs]</a><span class="k">class</span> <span class="nc">TensorDecoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">object_hook</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TensorDecoder.object_hook"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.TensorDecoder.object_hook">[docs]</a>    <span class="k">def</span> <span class="nf">object_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">dic</span> <span class="ow">and</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;torch.Tensor&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">dic</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;dtype&quot;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
+                <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">torch</span><span class="p">,</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">nn</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="s2">&quot;nn&quot;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;nn&quot;</span><span class="p">]</span>
+                <span class="n">nn</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+            <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="o">**</span><span class="n">dic</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nn</span><span class="p">:</span>
+                <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tensor</span>
+        <span class="k">return</span> <span class="n">dic</span></div></div>
+
+
+<div class="viewcode-block" id="as_tensor"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.as_tensor">[docs]</a><span class="k">def</span> <span class="nf">as_tensor</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">dct</span> <span class="ow">and</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;torch&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">dct</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dct</span></div>
+
+
+<div class="viewcode-block" id="tensor_rand"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.tensor_rand">[docs]</a><span class="k">def</span> <span class="nf">tensor_rand</span><span class="p">(</span><span class="n">distribution</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a tensor with the given dtype and shape and initialize it using a</span>
+<span class="sd">    distribution.</span>
+
+<span class="sd">    Continuous distributions: normal, log_normal, uniform.</span>
+<span class="sd">    Discrete distributions: random, bernoulli</span>
+
+<span class="sd">    :param distribution: distribution as a string (e.g. &#39;normal(1.0,2.0)&#39;, &#39;normal&#39;,</span>
+<span class="sd">     &#39;normal()&#39;).</span>
+<span class="sd">    :type distribution: str</span>
+<span class="sd">    :param shape: shape of the tensor</span>
+<span class="sd">    :type shape: Sequence[int]</span>
+<span class="sd">    :param dtype: dtype of the tensor</span>
+<span class="sd">    :type dtype: torch.dtype</span>
+<span class="sd">    :param device: device of the tensor</span>
+<span class="sd">    :type device: torch.device</span>
+<span class="sd">    :return: tensor</span>
+<span class="sd">    :rtype: torch.Tensor</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">    &gt;&gt;&gt; _ = torch.manual_seed(0)</span>
+<span class="sd">    &gt;&gt;&gt; t1 = tensor_rand(&#39;normal(1.0, 2.0)&#39;, (1,2), dtype=torch.float64)</span>
+<span class="sd">    &gt;&gt;&gt; t1</span>
+<span class="sd">    tensor([[4.0820, 0.4131]], dtype=torch.float64)</span>
+<span class="sd">    &gt;&gt;&gt; _ = torch.manual_seed(0)</span>
+<span class="sd">    &gt;&gt;&gt; t2 = tensor_rand(&#39;normal(0.0, 1.0)&#39;, (1,2), dtype=torch.float64)</span>
+<span class="sd">    &gt;&gt;&gt; _ = torch.manual_seed(0)</span>
+<span class="sd">    &gt;&gt;&gt; t3 = tensor_rand(&#39;normal()&#39;, (1,2), dtype=torch.float64)</span>
+<span class="sd">    &gt;&gt;&gt; t2 == t3</span>
+<span class="sd">    tensor([[True, True]])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">temp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[(),]&#39;</span><span class="p">,</span> <span class="n">distribution</span><span class="p">)))</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;normal&#39;</span><span class="p">:</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">normal_</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;log_normal&#39;</span><span class="p">:</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">log_normal_</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;uniform&#39;</span><span class="p">:</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;random&#39;</span><span class="p">:</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">random_</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;bernoulli&#39;</span><span class="p">:</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="n">bernoulli_</span><span class="p">(</span><span class="o">*</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid distribution to initialize tensor. input: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">distribution</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">requires_grad</span><span class="p">:</span>
+        <span class="n">tensor</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tensor</span></div>
+
+
+<div class="viewcode-block" id="get_class"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.get_class">[docs]</a><span class="k">def</span> <span class="nf">get_class</span><span class="p">(</span><span class="n">full_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">full_name</span> <span class="ow">in</span> <span class="n">REGISTERED_CLASSES</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">REGISTERED_CLASSES</span><span class="p">[</span><span class="n">full_name</span><span class="p">]</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">full_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">class_name</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">module_name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+    <span class="n">klass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">klass</span></div>
+
+
+<div class="viewcode-block" id="JSONParseError"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.JSONParseError">[docs]</a><span class="k">class</span> <span class="nc">JSONParseError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="process_objects"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.process_objects">[docs]</a><span class="k">def</span> <span class="nf">process_objects</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">force_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">force_list</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">process_object</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">force_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="process_object"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.process_object">[docs]</a><span class="k">def</span> <span class="nf">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># for references such as branches.{0:3}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;{&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">stem</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">)</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">stop</span><span class="p">)):</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="n">stem</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">dic</span><span class="p">[</span><span class="n">data</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">JSONParseError</span><span class="p">(</span>
+                <span class="s1">&#39;Object with ID `</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1"> not found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">id_</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">JSONParseError</span><span class="p">(</span><span class="s1">&#39;Object with ID `</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1"> already exists&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">id_</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">JSONParseError</span><span class="p">(</span>
+                <span class="s1">&#39;Object with ID `</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1"> does not have a type&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">klass</span> <span class="o">=</span> <span class="n">get_class</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">JSONParseError</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; in object with ID &#39;&quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">JSONParseError</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; in object with ID &#39;&quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">JSONParseError</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; in object with ID &#39;&quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">klass</span><span class="o">.</span><span class="n">from_json_safe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">)</span>
+        <span class="n">dic</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">JSONParseError</span><span class="p">(</span>
+            <span class="s1">&#39;Object is not valid (should be str or object)</span><span class="se">\n</span><span class="s1">Provided: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="SignalHandler"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.SignalHandler">[docs]</a><span class="k">class</span> <span class="nc">SignalHandler</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SignalHandler.exit"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.SignalHandler.exit">[docs]</a>    <span class="k">def</span> <span class="nf">exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">default_int_handler</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="validate"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.validate">[docs]</a><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rules</span><span class="p">):</span>
+    <span class="n">allowed_keys_set</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;instanceof&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="s1">&#39;constraint&#39;</span><span class="p">,</span> <span class="s1">&#39;optional&#39;</span><span class="p">}</span>
+
+    <span class="c1"># check rules were written properly</span>
+    <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">[</span><span class="n">rule</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">rules</span><span class="p">[</span><span class="n">rule</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">allowed_keys_set</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Not allowed&#39;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span>
+
+    <span class="c1"># check missing keys in json</span>
+    <span class="k">for</span> <span class="n">rule_key</span> <span class="ow">in</span> <span class="n">rules</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">rule_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">rules</span><span class="p">[</span><span class="n">rule_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;optional&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Missing key: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rule_key</span><span class="p">))</span>
+
+    <span class="c1"># check keys in json</span>
+    <span class="k">for</span> <span class="n">datum_key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">datum_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">datum_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Key not allowed: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datum_key</span><span class="p">))</span>
+
+    <span class="n">types</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="nb">zip</span><span class="p">(</span>
+            <span class="p">[</span><span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;bool&#39;</span><span class="p">,</span> <span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;numbers.Number&#39;</span><span class="p">],</span>
+            <span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">datum_key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">datum_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">):</span>
+            <span class="c1"># if not isinstance(datum_key, str):</span>
+            <span class="c1">#     raise ValueError(&#39;{} should be a string&#39;.format(datum_key))</span>
+            <span class="c1"># continue</span>
+
+            <span class="c1"># check type</span>
+            <span class="n">type_found</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">rule_type</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">[</span><span class="n">datum_key</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">rules</span><span class="p">[</span><span class="n">datum_key</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">all_ok</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span>
+                        <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rule_type</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">datum_key</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">all_ok</span><span class="p">:</span>
+                        <span class="n">type_found</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">datum_key</span><span class="p">],</span> <span class="n">types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rule_type</span><span class="p">)):</span>
+                    <span class="n">type_found</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">type_found</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">type</span><span class="se">\&#39;</span><span class="s1"> is not valid: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">datum_key</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="remove_comments"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.remove_comments">[docs]</a><span class="k">def</span> <span class="nf">remove_comments</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">remove_comments</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+                <span class="n">remove_comments</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="replace_wildcard_with_str"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.replace_wildcard_with_str">[docs]</a><span class="k">def</span> <span class="nf">replace_wildcard_with_str</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">wildcard</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">replace_wildcard_with_str</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">wildcard</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
+            <span class="n">replace_wildcard_with_str</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">wildcard</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;id&#39;</span> <span class="ow">and</span> <span class="n">wildcard</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">wildcard</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="replace_star_with_str"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.replace_star_with_str">[docs]</a><span class="k">def</span> <span class="nf">replace_star_with_str</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">replace_star_with_str</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
+            <span class="n">replace_star_with_str</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;id&#39;</span> <span class="ow">and</span> <span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span>
+                <span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="n">key</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="expand_plates"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.expand_plates">[docs]</a><span class="k">def</span> <span class="nf">expand_plates</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="n">expand_plates</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">obj</span> <span class="ow">and</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;Plate&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;range&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;range&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)))</span>
+                <span class="n">objects</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">r</span><span class="p">):</span>
+                    <span class="n">clone</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="s1">&#39;var&#39;</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">:</span>
+                        <span class="n">replace_wildcard_with_str</span><span class="p">(</span><span class="n">clone</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;$</span><span class="se">{{</span><span class="si">{</span><span class="n">obj</span><span class="p">[</span><span class="s1">&#39;var&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">}}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">replace_star_with_str</span><span class="p">(</span><span class="n">clone</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                    <span class="n">objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clone</span><span class="p">)</span>
+                <span class="c1"># replace plate dict with object list in parent list</span>
+                <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">parent</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                    <span class="n">parent</span><span class="p">[</span><span class="n">idx</span><span class="p">:</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">objects</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">JSONParseError</span><span class="p">(</span><span class="s1">&#39;plate works only when part of a list&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">expand_plates</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="update_parameters"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.update_parameters">[docs]</a><span class="k">def</span> <span class="nf">update_parameters</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively replace tensor in json_object with tensors present in</span>
+<span class="sd">    parameters.</span>
+
+<span class="sd">    :param dict json_object: json object</span>
+<span class="sd">    :param parameters: list of Parameters</span>
+<span class="sd">    :type parameters: list(Parameter)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">json_object</span><span class="p">:</span>
+            <span class="n">update_parameters</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">json_object</span> <span class="ow">and</span> <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s1">&#39;torchtree.core.parameter.Parameter&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;torchtree.Parameter&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Parameter&#39;</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+                <span class="c1"># get rid of full, full_like, tensor...</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">json_object</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;dtype&#39;</span><span class="p">,</span> <span class="s1">&#39;nn&#39;</span><span class="p">):</span>
+                        <span class="k">del</span> <span class="n">json_object</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="c1"># set new tensor</span>
+                <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;tensor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]][</span><span class="s1">&#39;tensor&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">json_object</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">update_parameters</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="print_graph"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.print_graph">[docs]</a><span class="k">def</span> <span class="nf">print_graph</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Print computation graph.</span>
+
+<span class="sd">    :param torch.Tensor g: a tensor</span>
+<span class="sd">    :param level: indentation level</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">g</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*&#39;</span> <span class="o">*</span> <span class="n">level</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">subg</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">next_functions</span><span class="p">:</span>
+            <span class="n">print_graph</span><span class="p">(</span><span class="n">subg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AlternativeAttributeError"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.AlternativeAttributeError">[docs]</a><span class="k">class</span> <span class="nc">AlternativeAttributeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom exception for debugging conflicts between @property and</span>
+<span class="sd">    __getattr__</span>
+
+<span class="sd">    https://stackoverflow.com/questions/36575068/attributeerrors-undesired-interaction-between-property-and-getattr</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AlternativeAttributeError.wrapper"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.AlternativeAttributeError.wrapper">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">err_type</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wraps a function to reraise an AttributeError as the alternate</span>
+<span class="sd">        type.&quot;&quot;&quot;</span>
+
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">alt_AttrError_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">new_err</span> <span class="o">=</span> <span class="n">err_type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">new_err</span><span class="o">.</span><span class="n">__traceback__</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="o">.</span><span class="n">tb_next</span>
+                <span class="k">raise</span> <span class="n">new_err</span> <span class="kn">from</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">alt_AttrError_wrapper</span></div></div>
+
+
+<div class="viewcode-block" id="string_to_list_index"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.string_to_list_index">[docs]</a><span class="k">def</span> <span class="nf">string_to_list_index</span><span class="p">(</span><span class="n">index_str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]:</span>
+    <span class="n">slice_indexes_str</span> <span class="o">=</span> <span class="n">index_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slice_indexes_str</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_indexes_str</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># [ &lt;first element to include&gt; : &lt;first element to exclude&gt; : &lt;step&gt; ]</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">slice_indexes_str</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_indexes_str</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">end_excluded</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slice_indexes_str</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slice_indexes_str</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">end_excluded</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_indexes_str</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slice_indexes_str</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">slice_indexes_str</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">slice_indexes_str</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end_excluded</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">index</span></div>
+
+
+<div class="viewcode-block" id="package_contents"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.package_contents">[docs]</a><span class="k">def</span> <span class="nf">package_contents</span><span class="p">(</span><span class="n">package_name</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">importlib.util</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">find_spec</span><span class="p">(</span><span class="n">package_name</span><span class="p">)</span>
+    <span class="c1"># origin is None for namespace packages (no __init__.py)</span>
+    <span class="k">if</span> <span class="n">spec</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">spec</span><span class="o">.</span><span class="n">origin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="n">pathname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">origin</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="n">pathname</span><span class="p">)</span> <span class="k">as</span> <span class="n">entries</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">package_name</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">):</span>
+                    <span class="n">ret</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">entry</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+                <span class="n">ret</span> <span class="o">|=</span> <span class="n">package_contents</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="register_class"><a class="viewcode-back" href="../../../autoapi/torchtree/core/utils/index.html#torchtree.core.utils.register_class">[docs]</a><span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="n">_cls</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;register_class: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_cls</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">REGISTERED_CLASSES</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cls</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">REGISTERED_CLASSES</span><span class="p">[</span><span class="n">_cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cls</span>
+    <span class="k">return</span> <span class="n">_cls</span></div>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Mathieu Fourment
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023, Mathieu Fourment.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

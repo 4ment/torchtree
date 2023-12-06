@@ -33,9 +33,7 @@ Submodules
    :titlesonly:
    :maxdepth: 1
 
-   math/index.rst
    torchtree/index.rst
-   treeregression/index.rst
    typing/index.rst
 
 

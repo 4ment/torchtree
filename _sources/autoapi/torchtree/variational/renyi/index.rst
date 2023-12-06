@@ -22,31 +22,41 @@ Classes
 
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
-   Class representing the variational Renyi bound (VR) [#Li2016]_.
-   VR extends traditional variational inference to Rényi’s :math:`\alpha`-divergences.
+   Class representing the variational Renyi bound.
 
-   :param id_: unique identifier of object.
-   :type id_: str or None
+   VR extends traditional variational inference to Rényi’s
+   :math:`\alpha`-divergences :footcite:p:`li2016renyi`.
+
+   :param str id_: identifier of object.
    :param DistributionModel q: variational distribution.
    :param CallableModel p: joint distribution.
    :param torch.Size samples: number of samples to form estimator.
    :param float alpha: order of :math:`\alpha`-divergence.
 
-   .. [#Li2016] Yingzhen Li, Richard E. Turner. Rényi Divergence Variational Inference.
+   .. footbibliography::
 
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
-   .. py:method:: from_json(data, dic) -> VR
+   .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> VR
       :classmethod:
 
-      Abstract method to create object from a dictionary.
+      Creates a VR object from a dictionary.
 
-      :param dict[str, Any] data: dictionary representation of a torchtree object.
-      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
-          by their ID.
-      :return: torchtree object.
-      :rtype: Any
+      :param dict[str, Any] data: dictionary representation of a VR object.
+      :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+          keyed by their ID.
+
+      **JSON attributes**:
+
+      Mandatory:
+        - id (str): unique string identifier.
+        - variational (dict or str): variational distribution.
+        - joint (dict or str): joint distribution.
+
+      Optional:
+        - samples (int or list of ints): number of samples
+        - alpha (float): order of :math:`\alpha`-divergence (Default: 0).
 
 
 

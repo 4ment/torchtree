@@ -198,8 +198,12 @@ Functions
 
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
+      Move tensors to CUDA using torch.cuda.
+
 
    .. py:method:: cpu() -> None
+
+      Move tensors to CPU memory using ~torch.cpu.
 
 
    .. py:method:: json_factory(id_: str, newick: str, internal_heights: Union[dict, list, str], taxa: Union[dict, list, str], **kwargs)
@@ -259,8 +263,12 @@ Functions
 
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
+      Move tensors to CUDA using torch.cuda.
+
 
    .. py:method:: cpu() -> None
+
+      Move tensors to CPU memory using ~torch.cpu.
 
 
    .. py:method:: json_factory(id_: str, newick: str, taxa: Union[dict, list, str], ratios: Union[dict, list, str] = None, root_height: Union[dict, list, str] = None, shifts: Union[dict, list, str] = None, **kwargs)

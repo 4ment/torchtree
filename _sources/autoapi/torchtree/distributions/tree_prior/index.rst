@@ -27,31 +27,41 @@ Classes
 
    Bases: :py:obj:`torchtree.core.model.CallableModel`
 
-   Compound gamma-Dirichlet prior on an unrooted tree [rannala2011]_
+   Compound gamma-Dirichlet prior on an unrooted tree
+   :footcite:t:`rannala2012tail`.
 
-   :param id_: ID of object
+   :param str id_: identifier of object
    :param UnRootedTreeModel tree_model: unrooted tree model
    :param AbstractParameter alpha: concentration parameter of Dirichlet distribution
    :param AbstractParameter c: ratio of the mean internal/external branch lengths
    :param AbstractParameter shape: shape parameter of the gamma distribution
    :param AbstractParameter rate: rate parameter of the gamma distribution
 
-   .. [rannala2011]  Rannala, Zhu, and Ziheng Yang. Tail Paradox, Partial
-    Identifiability, and Influential Priors in Bayesian Branch Length Inference. 2011
+   .. footbibliography::
 
    .. py:method:: handle_parameter_changed(variable, index, event) -> None
 
 
-   .. py:method:: from_json(data, dic)
+   .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> CompoundGammaDirichletPrior
       :classmethod:
 
-      Abstract method to create object from a dictionary.
+      Creates a CompoundGammaDirichletPrior object from a dictionary.
 
-      :param dict[str, Any] data: dictionary representation of a torchtree object.
-      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
-          by their ID.
-      :return: torchtree object.
-      :rtype: Any
+      :param dict[str, Any] data: dictionary representation of a
+          CompoundGammaDirichletPrior object.
+      :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+          keyed by their ID.
+
+      **JSON attributes**:
+
+       Mandatory:
+        - id (str): unique string identifier.
+        - tree_model (dict or str): a tree model of type
+          :class:`~torchtree.evolution.tree_model.UnRootedTreeModel`.
+        - alpha (dict or float): concentration parameter of Dirichlet distribution.
+        - c (dict or float): ratio of the mean internal/external branch lengths.
+        - shape (dict or float): shape parameter of the gamma distribution.
+        - rate (dict or float): rate parameter of the gamma distribution.
 
 
 

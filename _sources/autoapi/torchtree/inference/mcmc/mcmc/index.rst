@@ -17,20 +17,28 @@ Classes
 
 
 
-.. py:class:: MCMC(joint: torchtree.core.model.CallableModel, operators: List[torchtree.inference.mcmc.operator.MCMCOperator], iterations: int, **kwargs)
+.. py:class:: MCMC(id_: torchtree.typing.ID, joint: torchtree.core.model.CallableModel, operators: List[torchtree.inference.mcmc.operator.MCMCOperator], iterations: int, **kwargs)
 
 
-   Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
+   Bases: :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`torchtree.core.runnable.Runnable`
 
-   Interface making an object JSON serializable.
+   Abstract class making an object identifiable.
 
-   Serializable base class establishing
-   :meth:`~torch.core.serializable.JSONSerializable.from_json` abstract method.
+   :param str or None id_: identifier of object
 
    .. py:method:: run() -> None
 
 
-   .. py:method:: from_json(data: dict[str, any], dic: dict[str, any]) -> MCMC
+   .. py:method:: state_dict() -> dict[str, Any]
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
+
+   .. py:method:: save_full_state() -> None
+
+
+   .. py:method:: from_json(data: dict[str, Any], dic: dict[str, Any]) -> MCMC
       :classmethod:
 
       Abstract method to create object from a dictionary.

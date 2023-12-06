@@ -42,5 +42,6 @@ Submodules
    tree_likelihood/index.rst
    tree_model/index.rst
    tree_model_flexible/index.rst
+   tree_regression/index.rst
 
 

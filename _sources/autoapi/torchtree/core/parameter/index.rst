@@ -46,7 +46,6 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
-
    .. py:property:: requires_grad
       :type: bool
 
@@ -56,13 +55,11 @@ Classes
       :setter: Sets the flag.
       :rtype: bool
 
-
    .. py:property:: grad_fn
 
       The grad_fn property of the tensor.
 
       :rtype: torch.autograd.graph.node
-
 
    .. py:property:: grad
       :type: torch.Tensor
@@ -70,7 +67,6 @@ Classes
       The grad property of the Tensor.
 
       :rtype: Tensor
-
 
    .. py:method:: detach()
 
@@ -224,7 +220,6 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
-
    .. py:property:: requires_grad
       :type: bool
 
@@ -234,14 +229,12 @@ Classes
       :setter: Sets the flag.
       :rtype: bool
 
-
    .. py:property:: shape
       :type: torch.Size
 
       The shape of the tensor.
 
       :rtype: Size
-
 
    .. py:property:: sample_shape
       :type: torch.Size
@@ -341,7 +334,6 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
-
    .. py:property:: shape
       :type: torch.Size
 
@@ -349,14 +341,12 @@ Classes
 
       :rtype: Size
 
-
    .. py:property:: dtype
       :type: torch.dtype
 
       The dtype of the tensor.
 
       :rtype: torch.dtype
-
 
    .. py:property:: requires_grad
       :type: bool
@@ -366,7 +356,6 @@ Classes
       :getter: Returns the flag.
       :setter: Sets the flag.
       :rtype: bool
-
 
    .. py:method:: assign(parameter)
 
@@ -439,7 +428,6 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
-
    .. py:property:: requires_grad
       :type: bool
 
@@ -449,14 +437,12 @@ Classes
       :setter: Sets the flag.
       :rtype: bool
 
-
    .. py:property:: device
       :type: torch.device
 
       Returns the torch.device where the Tensor is.
 
       :rtype: torch.device
-
 
    .. py:method:: update()
 
@@ -517,7 +503,6 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
-
    .. py:property:: requires_grad
       :type: bool
 
@@ -527,14 +512,12 @@ Classes
       :setter: Sets the flag.
       :rtype: bool
 
-
    .. py:property:: shape
       :type: torch.Size
 
       The shape of the tensor.
 
       :rtype: Size
-
 
    .. py:property:: sample_shape
       :type: torch.Size

@@ -13,6 +13,7 @@ Classes
 .. autoapisummary::
 
    torchtree.core.utils.TensorEncoder
+   torchtree.core.utils.TensorDecoder
    torchtree.core.utils.SignalHandler
 
 
@@ -104,6 +105,43 @@ Attributes
               # Let the base class default method raise the TypeError
               return JSONEncoder.default(self, o)
 
+
+
+
+.. py:class:: TensorDecoder(*args, **kwargs)
+
+
+   Bases: :py:obj:`json.JSONDecoder`
+
+   Simple JSON <http://json.org> decoder
+
+   Performs the following translations in decoding by default:
+
+   +---------------+-------------------+
+   | JSON          | Python            |
+   +===============+===================+
+   | object        | dict              |
+   +---------------+-------------------+
+   | array         | list              |
+   +---------------+-------------------+
+   | string        | str               |
+   +---------------+-------------------+
+   | number (int)  | int               |
+   +---------------+-------------------+
+   | number (real) | float             |
+   +---------------+-------------------+
+   | true          | True              |
+   +---------------+-------------------+
+   | false         | False             |
+   +---------------+-------------------+
+   | null          | None              |
+   +---------------+-------------------+
+
+   It also understands ``NaN``, ``Infinity``, and ``-Infinity`` as
+   their corresponding ``float`` values, which is outside the JSON spec.
+
+
+   .. py:method:: object_hook(dic)
 
 
 

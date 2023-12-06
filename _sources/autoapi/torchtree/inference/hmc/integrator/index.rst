@@ -38,6 +38,13 @@ Functions
 
    :param str or None id_: identifier of object
 
+   .. py:method:: state_dict() -> dict[str, Any]
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+      :abstractmethod:
+
+
 
 .. py:class:: LeapfrogIntegrator(id_, steps: int, step_size: float)
 
@@ -47,6 +54,9 @@ Functions
    Abstract class making an object identifiable.
 
    :param str or None id_: identifier of object
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
 
    .. py:method:: from_json(data, dic)
       :classmethod:

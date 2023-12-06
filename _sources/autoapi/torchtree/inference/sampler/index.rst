@@ -17,10 +17,10 @@ Classes
 
 
 
-.. py:class:: Sampler(model: torchtree.distributions.distributions.DistributionModel, samples: int, loggers: list[torchtree.core.logger.LoggerInterface])
+.. py:class:: Sampler(id_: torchtree.typing.ID, model: torchtree.distributions.distributions.DistributionModel, samples: int, loggers: list[torchtree.core.logger.LoggerInterface])
 
 
-   Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
+   Bases: :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`torchtree.core.runnable.Runnable`
 
    Class for sampling a distribution and optionally logging things.
 
@@ -39,14 +39,10 @@ Classes
 
       Create a Sampler object.
 
-      :param data: json representation of Sampler object.
-      :type data: dict[str,Any]
-      :param dic: dictionary containing additional objects that can be referenced
-      in data.
-      :type dic: dict[str,Any]
-
+      :param dict[str, Any] data: dictionary representation of a Sampler object.
+      :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+          keyed by their ID.
       :return: a :class:`~torchtree.inference.sampler.Sampler` object.
-      :rtype: Sampler
 
 
 

@@ -1,0 +1,566 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>torchtree.evolution.substitution_model.amino_acid &#8212; torchtree 1.0.2-dev2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/tabs.js"></script>
+    <script src="../../../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchtree/evolution/substitution_model/amino_acid';</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">torchtree 1.0.2-dev2 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/cli/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/advi/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.advi</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/argparse_utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.argparse_utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/cli/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.cli</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/evolution/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.evolution</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.hmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/jacobians/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.jacobians</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/loggers/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.loggers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/map/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.map</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/mcmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.mcmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/operators/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.operators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/plugin/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.plugin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/plugin_manager/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.plugin_manager</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/priors/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.priors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/cli/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/core/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/abstractparameter/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.abstractparameter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/classproperty_decorator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.classproperty_decorator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/container/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.container</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/identifiable/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.identifiable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/logger/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.logger</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/parameter/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parameter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/parameter_encoder/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parameter_encoder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/parameter_utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parameter_utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/parametric/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.parametric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/runnable/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.runnable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/serializable/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.serializable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/core/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.core.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/bayesian_bridge/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.bayesian_bridge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/ctmc_scale/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.ctmc_scale</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/deterministic_normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.deterministic_normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/distributions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.distributions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/gmrf/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.gmrf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/gmrf_integrated/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.gmrf_integrated</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/inverse_gamma/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.inverse_gamma</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/joint_distribution/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.joint_distribution</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/log_normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.log_normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/multivariate_normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.multivariate_normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/normal/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.normal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/one_on_x/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.one_on_x</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/scale_mixture/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.scale_mixture</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/transforms/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.transforms</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/distributions/tree_prior/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.distributions.tree_prior</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/abstract/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.abstract</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.amino_acid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/codon/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.codon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/general/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.general</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/nucleotide/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.nucleotide</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/alignment/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.alignment</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/attribute_pattern/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.attribute_pattern</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/bdsk/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.bdsk</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/birth_death/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.birth_death</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/branch_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.branch_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/coalescent/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.coalescent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/datatype/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.datatype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/io/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.io</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/poisson_tree_likelihood/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.poisson_tree_likelihood</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/rate_transform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.rate_transform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/root_transform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.root_transform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/site_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.site_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/site_pattern/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.site_pattern</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/taxa/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.taxa</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/tree_height_transform/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_height_transform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/tree_likelihood/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_likelihood</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/tree_model/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/tree_model_flexible/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_model_flexible</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/tree_regression/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.evolution.tree_regression</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/inference/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/inference/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/hmc/adaptation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.adaptation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/hmc/adaptors/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.adaptors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/hmc/hamiltonian/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.hamiltonian</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/hmc/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.hmc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/hmc/integrator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.integrator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/hmc/operator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.operator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/hmc/stan_adaptation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.stan_adaptation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/inference/mcmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.gmrf_block_updating</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/mcmc/mcmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.mcmc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/inference/mcmc/operator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.mcmc.operator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/inference/sampler/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.sampler</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/inference/utils/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.utils</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/nf/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/nf/energy_functions/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.energy_functions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/nf/flow/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.flow</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/nf/planar/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.planar</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/nf/realnvp/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nf.realnvp</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/nn/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nn</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/nn/module/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.nn.module</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/ops/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/ops/dual_averaging/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops.dual_averaging</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/ops/smooth/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops.smooth</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/ops/welford/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.ops.welford</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/optim/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/optim/convergence/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim.convergence</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/optim/lr_scheduler/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim.lr_scheduler</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/optim/optimizer/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.optim.optimizer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/variational/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/variational/chi/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational.chi</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/variational/kl/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational.kl</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/variational/renyi/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.variational.renyi</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/torchtree/torchtree/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.torchtree</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/torchtree/typing/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.typing</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bibliography/bib.html">Bibliography</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/4ment/torchtree" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for torchtree.evolution.substitution_model.amino_acid</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+
+<span class="kn">from</span> <span class="nn">...typing</span> <span class="kn">import</span> <span class="n">ID</span>
+<span class="kn">from</span> <span class="nn">.general</span> <span class="kn">import</span> <span class="n">EmpiricalSubstitutionModel</span>
+
+
+<div class="viewcode-block" id="LG"><a class="viewcode-back" href="../../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html#torchtree.evolution.substitution_model.amino_acid.LG">[docs]</a><span class="k">class</span> <span class="nc">LG</span><span class="p">(</span><span class="n">EmpiricalSubstitutionModel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">):</span>
+        <span class="c1"># fmt: off</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+            <span class="p">[</span><span class="mf">0.079066</span><span class="p">,</span> <span class="mf">0.012937</span><span class="p">,</span> <span class="mf">0.053052</span><span class="p">,</span> <span class="mf">0.071586</span><span class="p">,</span> <span class="mf">0.042302</span><span class="p">,</span> <span class="mf">0.057337</span><span class="p">,</span> <span class="mf">0.022355</span><span class="p">,</span>
+             <span class="mf">0.062157</span><span class="p">,</span> <span class="mf">0.064600</span><span class="p">,</span> <span class="mf">0.099081</span><span class="p">,</span> <span class="mf">0.022951</span><span class="p">,</span> <span class="mf">0.041977</span><span class="p">,</span> <span class="mf">0.044040</span><span class="p">,</span> <span class="mf">0.040767</span><span class="p">,</span>
+             <span class="mf">0.055941</span><span class="p">,</span> <span class="mf">0.061197</span><span class="p">,</span> <span class="mf">0.053287</span><span class="p">,</span> <span class="mf">0.069147</span><span class="p">,</span> <span class="mf">0.012066</span><span class="p">,</span> <span class="mf">0.034155</span><span class="p">,</span> <span class="p">])</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+            <span class="p">[</span><span class="mf">2.489084</span><span class="p">,</span> <span class="mf">0.395144</span><span class="p">,</span> <span class="mf">1.038545</span><span class="p">,</span> <span class="mf">0.253701</span><span class="p">,</span> <span class="mf">2.066040</span><span class="p">,</span> <span class="mf">0.358858</span><span class="p">,</span> <span class="mf">0.149830</span><span class="p">,</span>
+             <span class="mf">0.536518</span><span class="p">,</span> <span class="mf">0.395337</span><span class="p">,</span> <span class="mf">1.124035</span><span class="p">,</span> <span class="mf">0.276818</span><span class="p">,</span> <span class="mf">1.177651</span><span class="p">,</span> <span class="mf">0.969894</span><span class="p">,</span> <span class="mf">0.425093</span><span class="p">,</span>
+             <span class="mf">4.727182</span><span class="p">,</span> <span class="mf">2.139501</span><span class="p">,</span> <span class="mf">2.547870</span><span class="p">,</span> <span class="mf">0.180717</span><span class="p">,</span> <span class="mf">0.218959</span><span class="p">,</span> <span class="mf">0.062556</span><span class="p">,</span> <span class="mf">0.003499</span><span class="p">,</span>
+             <span class="mf">1.105251</span><span class="p">,</span> <span class="mf">0.569265</span><span class="p">,</span> <span class="mf">0.640543</span><span class="p">,</span> <span class="mf">0.320627</span><span class="p">,</span> <span class="mf">0.013266</span><span class="p">,</span> <span class="mf">0.594007</span><span class="p">,</span> <span class="mf">0.893680</span><span class="p">,</span>
+             <span class="mf">0.528768</span><span class="p">,</span> <span class="mf">0.075382</span><span class="p">,</span> <span class="mf">0.084808</span><span class="p">,</span> <span class="mf">0.534551</span><span class="p">,</span> <span class="mf">2.784478</span><span class="p">,</span> <span class="mf">1.143480</span><span class="p">,</span> <span class="mf">1.959291</span><span class="p">,</span>
+             <span class="mf">0.670128</span><span class="p">,</span> <span class="mf">1.165532</span><span class="p">,</span> <span class="mf">5.243870</span><span class="p">,</span> <span class="mf">0.017416</span><span class="p">,</span> <span class="mf">0.844926</span><span class="p">,</span> <span class="mf">0.927114</span><span class="p">,</span> <span class="mf">0.010690</span><span class="p">,</span>
+             <span class="mf">0.282959</span><span class="p">,</span> <span class="mf">0.015076</span><span class="p">,</span> <span class="mf">0.025548</span><span class="p">,</span> <span class="mf">5.076149</span><span class="p">,</span> <span class="mf">0.394456</span><span class="p">,</span> <span class="mf">0.523386</span><span class="p">,</span> <span class="mf">0.123954</span><span class="p">,</span>
+             <span class="mf">1.240275</span><span class="p">,</span> <span class="mf">0.425860</span><span class="p">,</span> <span class="mf">0.037967</span><span class="p">,</span> <span class="mf">0.029890</span><span class="p">,</span> <span class="mf">0.135107</span><span class="p">,</span> <span class="mf">0.018811</span><span class="p">,</span> <span class="mf">0.348847</span><span class="p">,</span>
+             <span class="mf">0.423881</span><span class="p">,</span> <span class="mf">0.044265</span><span class="p">,</span> <span class="mf">1.807177</span><span class="p">,</span> <span class="mf">0.069673</span><span class="p">,</span> <span class="mf">0.173735</span><span class="p">,</span> <span class="mf">0.541712</span><span class="p">,</span> <span class="mf">0.419409</span><span class="p">,</span>
+             <span class="mf">4.128591</span><span class="p">,</span> <span class="mf">0.363970</span><span class="p">,</span> <span class="mf">0.611973</span><span class="p">,</span> <span class="mf">0.604545</span><span class="p">,</span> <span class="mf">0.245034</span><span class="p">,</span> <span class="mf">0.077852</span><span class="p">,</span> <span class="mf">0.120037</span><span class="p">,</span>
+             <span class="mf">0.089586</span><span class="p">,</span> <span class="mf">0.682139</span><span class="p">,</span> <span class="mf">1.112727</span><span class="p">,</span> <span class="mf">0.023918</span><span class="p">,</span> <span class="mf">2.592692</span><span class="p">,</span> <span class="mf">1.798853</span><span class="p">,</span> <span class="mf">0.089525</span><span class="p">,</span>
+             <span class="mf">0.094464</span><span class="p">,</span> <span class="mf">0.035855</span><span class="p">,</span> <span class="mf">0.052722</span><span class="p">,</span> <span class="mf">0.361819</span><span class="p">,</span> <span class="mf">0.165001</span><span class="p">,</span> <span class="mf">0.654683</span><span class="p">,</span> <span class="mf">2.457121</span><span class="p">,</span>
+             <span class="mf">7.803902</span><span class="p">,</span> <span class="mf">0.311484</span><span class="p">,</span> <span class="mf">0.008705</span><span class="p">,</span> <span class="mf">0.296636</span><span class="p">,</span> <span class="mf">0.044261</span><span class="p">,</span> <span class="mf">0.139538</span><span class="p">,</span> <span class="mf">1.437645</span><span class="p">,</span>
+             <span class="mf">0.196961</span><span class="p">,</span> <span class="mf">0.267959</span><span class="p">,</span> <span class="mf">0.390192</span><span class="p">,</span> <span class="mf">1.739990</span><span class="p">,</span> <span class="mf">0.129836</span><span class="p">,</span> <span class="mf">0.076701</span><span class="p">,</span> <span class="mf">0.268491</span><span class="p">,</span>
+             <span class="mf">0.054679</span><span class="p">,</span> <span class="mf">0.108882</span><span class="p">,</span> <span class="mf">0.697264</span><span class="p">,</span> <span class="mf">0.366317</span><span class="p">,</span> <span class="mf">0.442472</span><span class="p">,</span> <span class="mf">4.509238</span><span class="p">,</span> <span class="mf">0.508851</span><span class="p">,</span>
+             <span class="mf">4.813505</span><span class="p">,</span> <span class="mf">2.426601</span><span class="p">,</span> <span class="mf">0.990012</span><span class="p">,</span> <span class="mf">0.584262</span><span class="p">,</span> <span class="mf">0.119013</span><span class="p">,</span> <span class="mf">0.597054</span><span class="p">,</span> <span class="mf">5.306834</span><span class="p">,</span>
+             <span class="mf">0.159069</span><span class="p">,</span> <span class="mf">4.145067</span><span class="p">,</span> <span class="mf">4.273607</span><span class="p">,</span> <span class="mf">0.191503</span><span class="p">,</span> <span class="mf">0.078281</span><span class="p">,</span> <span class="mf">0.072854</span><span class="p">,</span> <span class="mf">0.126991</span><span class="p">,</span>
+             <span class="mf">0.064105</span><span class="p">,</span> <span class="mf">1.033739</span><span class="p">,</span> <span class="mf">10.649107</span><span class="p">,</span> <span class="mf">0.111660</span><span class="p">,</span> <span class="mf">0.232523</span><span class="p">,</span> <span class="mf">0.137500</span><span class="p">,</span> <span class="mf">0.656604</span><span class="p">,</span>
+             <span class="mf">2.145078</span><span class="p">,</span> <span class="mf">0.390322</span><span class="p">,</span> <span class="mf">3.234294</span><span class="p">,</span> <span class="mf">6.326067</span><span class="p">,</span> <span class="mf">0.748683</span><span class="p">,</span> <span class="mf">1.136863</span><span class="p">,</span> <span class="mf">0.185202</span><span class="p">,</span>
+             <span class="mf">0.049906</span><span class="p">,</span> <span class="mf">0.131932</span><span class="p">,</span> <span class="mf">6.312358</span><span class="p">,</span> <span class="mf">0.068427</span><span class="p">,</span> <span class="mf">0.249060</span><span class="p">,</span> <span class="mf">0.582457</span><span class="p">,</span> <span class="mf">0.301848</span><span class="p">,</span>
+             <span class="mf">0.182287</span><span class="p">,</span> <span class="mf">0.302936</span><span class="p">,</span> <span class="mf">1.702745</span><span class="p">,</span> <span class="mf">0.619632</span><span class="p">,</span> <span class="mf">0.299648</span><span class="p">,</span> <span class="mf">0.371004</span><span class="p">,</span> <span class="mf">0.099849</span><span class="p">,</span>
+             <span class="mf">1.672569</span><span class="p">,</span> <span class="mf">0.484133</span><span class="p">,</span> <span class="mf">0.346960</span><span class="p">,</span> <span class="mf">2.020366</span><span class="p">,</span> <span class="mf">1.898718</span><span class="p">,</span> <span class="mf">0.696175</span><span class="p">,</span> <span class="mf">0.481306</span><span class="p">,</span>
+             <span class="mf">0.161787</span><span class="p">,</span> <span class="mf">1.695752</span><span class="p">,</span> <span class="mf">0.751878</span><span class="p">,</span> <span class="mf">4.008358</span><span class="p">,</span> <span class="mf">2.000679</span><span class="p">,</span> <span class="mf">0.083688</span><span class="p">,</span> <span class="mf">0.045376</span><span class="p">,</span>
+             <span class="mf">0.612025</span><span class="p">,</span> <span class="mf">0.624294</span><span class="p">,</span> <span class="mf">0.332533</span><span class="p">,</span> <span class="mf">1.338132</span><span class="p">,</span> <span class="mf">0.571468</span><span class="p">,</span> <span class="mf">0.296501</span><span class="p">,</span> <span class="mf">0.095131</span><span class="p">,</span>
+             <span class="mf">0.089613</span><span class="p">,</span> <span class="mf">2.807908</span><span class="p">,</span> <span class="mf">1.223828</span><span class="p">,</span> <span class="mf">1.080136</span><span class="p">,</span> <span class="mf">0.210332</span><span class="p">,</span> <span class="mf">0.236199</span><span class="p">,</span> <span class="mf">0.257336</span><span class="p">,</span>
+             <span class="mf">0.858151</span><span class="p">,</span> <span class="mf">0.578987</span><span class="p">,</span> <span class="mf">0.170887</span><span class="p">,</span> <span class="mf">0.593607</span><span class="p">,</span> <span class="mf">0.314440</span><span class="p">,</span> <span class="mf">6.472279</span><span class="p">,</span> <span class="mf">0.098369</span><span class="p">,</span>
+             <span class="mf">0.248862</span><span class="p">,</span> <span class="mf">0.400547</span><span class="p">,</span> <span class="mf">2.188158</span><span class="p">,</span> <span class="mf">0.140825</span><span class="p">,</span> <span class="mf">0.245841</span><span class="p">,</span> <span class="mf">0.189510</span><span class="p">,</span> <span class="mf">0.249313</span><span class="p">,</span>
+             <span class="mf">3.151815</span><span class="p">,</span> <span class="p">])</span>
+        <span class="c1"># fmt: on</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">rates</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="LG.from_json"><a class="viewcode-back" href="../../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html#torchtree.evolution.substitution_model.amino_acid.LG.from_json">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="WAG"><a class="viewcode-back" href="../../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html#torchtree.evolution.substitution_model.amino_acid.WAG">[docs]</a><span class="k">class</span> <span class="nc">WAG</span><span class="p">(</span><span class="n">EmpiricalSubstitutionModel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">):</span>
+        <span class="c1"># fmt: off</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+            <span class="p">[</span><span class="mf">0.0866</span><span class="p">,</span> <span class="mf">0.0193</span><span class="p">,</span> <span class="mf">0.0570</span><span class="p">,</span> <span class="mf">0.0581</span><span class="p">,</span> <span class="mf">0.0384</span><span class="p">,</span> <span class="mf">0.0833</span><span class="p">,</span> <span class="mf">0.0244</span><span class="p">,</span> <span class="mf">0.0485</span><span class="p">,</span> <span class="mf">0.0620</span><span class="p">,</span>
+             <span class="mf">0.0862</span><span class="p">,</span> <span class="mf">0.0195</span><span class="p">,</span> <span class="mf">0.0391</span><span class="p">,</span> <span class="mf">0.0458</span><span class="p">,</span> <span class="mf">0.0367</span><span class="p">,</span> <span class="mf">0.0440</span><span class="p">,</span> <span class="mf">0.0695</span><span class="p">,</span> <span class="mf">0.0610</span><span class="p">,</span> <span class="mf">0.0709</span><span class="p">,</span>
+             <span class="mf">0.0144</span><span class="p">,</span> <span class="mf">0.0353</span><span class="p">,</span> <span class="p">])</span>
+        <span class="n">rates</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+            <span class="p">[</span><span class="mf">1.141050</span><span class="p">,</span> <span class="mf">0.821500</span><span class="p">,</span> <span class="mf">1.756410</span><span class="p">,</span> <span class="mf">0.233492</span><span class="p">,</span> <span class="mf">1.572160</span><span class="p">,</span> <span class="mf">0.354813</span><span class="p">,</span> <span class="mf">0.219023</span><span class="p">,</span>
+             <span class="mf">1.005440</span><span class="p">,</span> <span class="mf">0.443935</span><span class="p">,</span> <span class="mf">0.989475</span><span class="p">,</span> <span class="mf">0.569079</span><span class="p">,</span> <span class="mf">1.594890</span><span class="p">,</span> <span class="mf">1.011980</span><span class="p">,</span> <span class="mf">0.610810</span><span class="p">,</span>
+             <span class="mf">3.733380</span><span class="p">,</span> <span class="mf">2.349220</span><span class="p">,</span> <span class="mf">2.221870</span><span class="p">,</span> <span class="mf">0.125227</span><span class="p">,</span> <span class="mf">0.268987</span><span class="p">,</span> <span class="mf">0.033379</span><span class="p">,</span> <span class="mf">0.023920</span><span class="p">,</span>
+             <span class="mf">0.441300</span><span class="p">,</span> <span class="mf">0.341086</span><span class="p">,</span> <span class="mf">0.275403</span><span class="p">,</span> <span class="mf">0.189890</span><span class="p">,</span> <span class="mf">0.083649</span><span class="p">,</span> <span class="mf">0.428414</span><span class="p">,</span> <span class="mf">0.437393</span><span class="p">,</span>
+             <span class="mf">0.296524</span><span class="p">,</span> <span class="mf">0.122303</span><span class="p">,</span> <span class="mf">0.109261</span><span class="p">,</span> <span class="mf">0.585809</span><span class="p">,</span> <span class="mf">1.560590</span><span class="p">,</span> <span class="mf">0.570186</span><span class="p">,</span> <span class="mf">1.114570</span><span class="p">,</span>
+             <span class="mf">0.795736</span><span class="p">,</span> <span class="mf">0.604634</span><span class="p">,</span> <span class="mf">6.833400</span><span class="p">,</span> <span class="mf">0.052004</span><span class="p">,</span> <span class="mf">0.961142</span><span class="p">,</span> <span class="mf">1.032910</span><span class="p">,</span> <span class="mf">0.043523</span><span class="p">,</span>
+             <span class="mf">0.533362</span><span class="p">,</span> <span class="mf">0.093930</span><span class="p">,</span> <span class="mf">0.116813</span><span class="p">,</span> <span class="mf">6.013660</span><span class="p">,</span> <span class="mf">0.472601</span><span class="p">,</span> <span class="mf">0.691268</span><span class="p">,</span> <span class="mf">0.165074</span><span class="p">,</span>
+             <span class="mf">1.192810</span><span class="p">,</span> <span class="mf">0.417372</span><span class="p">,</span> <span class="mf">0.169417</span><span class="p">,</span> <span class="mf">0.146348</span><span class="p">,</span> <span class="mf">0.363243</span><span class="p">,</span> <span class="mf">0.092310</span><span class="p">,</span> <span class="mf">0.630832</span><span class="p">,</span>
+             <span class="mf">0.635025</span><span class="p">,</span> <span class="mf">0.141320</span><span class="p">,</span> <span class="mf">2.867580</span><span class="p">,</span> <span class="mf">0.172579</span><span class="p">,</span> <span class="mf">0.353912</span><span class="p">,</span> <span class="mf">1.056790</span><span class="p">,</span> <span class="mf">0.755791</span><span class="p">,</span>
+             <span class="mf">6.048790</span><span class="p">,</span> <span class="mf">0.488649</span><span class="p">,</span> <span class="mf">0.782467</span><span class="p">,</span> <span class="mf">0.914814</span><span class="p">,</span> <span class="mf">0.655045</span><span class="p">,</span> <span class="mf">0.172682</span><span class="p">,</span> <span class="mf">0.217549</span><span class="p">,</span>
+             <span class="mf">0.055288</span><span class="p">,</span> <span class="mf">0.756080</span><span class="p">,</span> <span class="mf">1.177640</span><span class="p">,</span> <span class="mf">0.098843</span><span class="p">,</span> <span class="mf">2.348200</span><span class="p">,</span> <span class="mf">1.320870</span><span class="p">,</span> <span class="mf">0.110793</span><span class="p">,</span>
+             <span class="mf">0.179896</span><span class="p">,</span> <span class="mf">0.110744</span><span class="p">,</span> <span class="mf">0.116821</span><span class="p">,</span> <span class="mf">0.606814</span><span class="p">,</span> <span class="mf">0.191467</span><span class="p">,</span> <span class="mf">0.725096</span><span class="p">,</span> <span class="mf">1.699780</span><span class="p">,</span>
+             <span class="mf">7.154480</span><span class="p">,</span> <span class="mf">0.276379</span><span class="p">,</span> <span class="mf">0.034151</span><span class="p">,</span> <span class="mf">0.415992</span><span class="p">,</span> <span class="mf">0.068651</span><span class="p">,</span> <span class="mf">0.194220</span><span class="p">,</span> <span class="mf">1.253910</span><span class="p">,</span>
+             <span class="mf">0.273149</span><span class="p">,</span> <span class="mf">0.366510</span><span class="p">,</span> <span class="mf">0.650469</span><span class="p">,</span> <span class="mf">1.486700</span><span class="p">,</span> <span class="mf">0.251477</span><span class="p">,</span> <span class="mf">0.209108</span><span class="p">,</span> <span class="mf">0.374321</span><span class="p">,</span>
+             <span class="mf">0.114187</span><span class="p">,</span> <span class="mf">0.152215</span><span class="p">,</span> <span class="mf">0.992083</span><span class="p">,</span> <span class="mf">0.555096</span><span class="p">,</span> <span class="mf">0.450867</span><span class="p">,</span> <span class="mf">4.378930</span><span class="p">,</span> <span class="mf">0.771387</span><span class="p">,</span>
+             <span class="mf">4.749460</span><span class="p">,</span> <span class="mf">2.362040</span><span class="p">,</span> <span class="mf">0.822459</span><span class="p">,</span> <span class="mf">0.525511</span><span class="p">,</span> <span class="mf">0.131869</span><span class="p">,</span> <span class="mf">0.289998</span><span class="p">,</span> <span class="mf">4.290350</span><span class="p">,</span>
+             <span class="mf">0.360574</span><span class="p">,</span> <span class="mf">3.517820</span><span class="p">,</span> <span class="mf">4.714220</span><span class="p">,</span> <span class="mf">0.615636</span><span class="p">,</span> <span class="mf">0.111502</span><span class="p">,</span> <span class="mf">0.131046</span><span class="p">,</span> <span class="mf">0.206722</span><span class="p">,</span>
+             <span class="mf">0.353443</span><span class="p">,</span> <span class="mf">1.615050</span><span class="p">,</span> <span class="mf">8.659740</span><span class="p">,</span> <span class="mf">0.234326</span><span class="p">,</span> <span class="mf">0.468951</span><span class="p">,</span> <span class="mf">0.287583</span><span class="p">,</span> <span class="mf">1.032220</span><span class="p">,</span>
+             <span class="mf">3.334390</span><span class="p">,</span> <span class="mf">0.619503</span><span class="p">,</span> <span class="mf">4.308310</span><span class="p">,</span> <span class="mf">5.925170</span><span class="p">,</span> <span class="mf">1.073780</span><span class="p">,</span> <span class="mf">1.537920</span><span class="p">,</span> <span class="mf">0.342012</span><span class="p">,</span>
+             <span class="mf">0.152232</span><span class="p">,</span> <span class="mf">0.147411</span><span class="p">,</span> <span class="mf">5.375250</span><span class="p">,</span> <span class="mf">0.147156</span><span class="p">,</span> <span class="mf">0.462018</span><span class="p">,</span> <span class="mf">0.964886</span><span class="p">,</span> <span class="mf">0.551450</span><span class="p">,</span>
+             <span class="mf">0.382421</span><span class="p">,</span> <span class="mf">0.364222</span><span class="p">,</span> <span class="mf">1.997370</span><span class="p">,</span> <span class="mf">0.740259</span><span class="p">,</span> <span class="mf">0.443205</span><span class="p">,</span> <span class="mf">0.224747</span><span class="p">,</span> <span class="mf">0.194864</span><span class="p">,</span>
+             <span class="mf">1.705070</span><span class="p">,</span> <span class="mf">0.758446</span><span class="p">,</span> <span class="mf">0.556353</span><span class="p">,</span> <span class="mf">1.681970</span><span class="p">,</span> <span class="mf">2.282020</span><span class="p">,</span> <span class="mf">0.570369</span><span class="p">,</span> <span class="mf">0.473810</span><span class="p">,</span>
+             <span class="mf">0.217538</span><span class="p">,</span> <span class="mf">1.716740</span><span class="p">,</span> <span class="mf">0.711690</span><span class="p">,</span> <span class="mf">4.394450</span><span class="p">,</span> <span class="mf">2.257930</span><span class="p">,</span> <span class="mf">0.221176</span><span class="p">,</span> <span class="mf">0.078463</span><span class="p">,</span>
+             <span class="mf">1.208560</span><span class="p">,</span> <span class="mf">1.036370</span><span class="p">,</span> <span class="mf">0.753467</span><span class="p">,</span> <span class="mf">1.786490</span><span class="p">,</span> <span class="mf">0.885349</span><span class="p">,</span> <span class="mf">0.351250</span><span class="p">,</span> <span class="mf">0.156619</span><span class="p">,</span>
+             <span class="mf">0.239607</span><span class="p">,</span> <span class="mf">3.360330</span><span class="p">,</span> <span class="mf">1.141210</span><span class="p">,</span> <span class="mf">0.954144</span><span class="p">,</span> <span class="mf">0.333890</span><span class="p">,</span> <span class="mf">0.243615</span><span class="p">,</span> <span class="mf">0.252457</span><span class="p">,</span>
+             <span class="mf">1.357640</span><span class="p">,</span> <span class="mf">0.613776</span><span class="p">,</span> <span class="mf">0.280336</span><span class="p">,</span> <span class="mf">1.294610</span><span class="p">,</span> <span class="mf">0.423612</span><span class="p">,</span> <span class="mf">4.847130</span><span class="p">,</span> <span class="mf">0.258861</span><span class="p">,</span>
+             <span class="mf">0.578784</span><span class="p">,</span> <span class="mf">0.872519</span><span class="p">,</span> <span class="mf">1.547670</span><span class="p">,</span> <span class="mf">0.126678</span><span class="p">,</span> <span class="mf">0.325490</span><span class="p">,</span> <span class="mf">0.409817</span><span class="p">,</span> <span class="mf">0.347826</span><span class="p">,</span>
+             <span class="mf">2.763540</span><span class="p">,</span> <span class="p">])</span>
+        <span class="c1"># fmt: on</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">rates</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="WAG.from_json"><a class="viewcode-back" href="../../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html#torchtree.evolution.substitution_model.amino_acid.WAG.from_json">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span></div></div>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Mathieu Fourment
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023, Mathieu Fourment.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

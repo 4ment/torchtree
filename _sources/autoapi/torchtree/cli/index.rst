@@ -17,6 +17,7 @@ Submodules
    :maxdepth: 1
 
    advi/index.rst
+   argparse_utils/index.rst
    cli/index.rst
    evolution/index.rst
    hmc/index.rst

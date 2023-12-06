@@ -16,8 +16,6 @@ Functions
    torchtree.cli.evolution.create_evolution_parser
    torchtree.cli.evolution.add_birth_death
    torchtree.cli.evolution.add_coalescent
-   torchtree.cli.evolution.zero_or_path
-   torchtree.cli.evolution.str_or_float
    torchtree.cli.evolution.distribution_type
    torchtree.cli.evolution.run_tree_regression
    torchtree.cli.evolution.create_tree_model
@@ -74,15 +72,6 @@ Attributes
 
 
 .. py:function:: add_coalescent(parser)
-
-
-.. py:function:: zero_or_path(arg)
-
-
-.. py:function:: str_or_float(arg, choices)
-
-   Used by argparse when the argument can be either a number or a string
-   from a prespecified list of options.
 
 
 .. py:function:: distribution_type(arg, choices)

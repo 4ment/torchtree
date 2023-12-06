@@ -34,21 +34,22 @@ Classes
 
    Bases: :py:obj:`torch.distributions.Transform`
 
-   Transform a 1D tensor to a triangular tensor. The diagonal of the
-   triangular matrix is exponentiated. Useful for variational inference with
-   the multivariate normal distribution as the variational distribution and it
-   is parameterized with scale_tril, a lower-triangular matrix with positive
-   diagonal.
+   Transform a 1D tensor to a triangular tensor.
 
-   Example:
+   The diagonal of the triangular matrix is exponentiated. Useful for variational
+   inference with the multivariate normal distribution as the variational
+   distribution and it is parameterized with scale_tril, a lower-triangular matrix
+   with positive diagonal.
 
-       >>> x = torch.tensor([1., 2., 3.])
-       >>> y = TrilExpDiagonalTransform()(x)
-       >>> y
-       tensor([[ 2.7183,  0.0000],
-               [ 2.0000, 20.0855]])
-       >>> torch.allclose(TrilExpDiagonalTransform().inv(y), x)
-       True
+   .. rubric:: Example
+
+   >>> x = torch.tensor([1., 2., 3.])
+   >>> y = TrilExpDiagonalTransform()(x)
+   >>> y
+   tensor([[ 2.7183,  0.0000],
+           [ 2.0000, 20.0855]])
+   >>> torch.allclose(TrilExpDiagonalTransform().inv(y), x)
+   True
 
    .. py:attribute:: bijective
       :value: True
@@ -167,8 +168,7 @@ Classes
 
    Bases: :py:obj:`torch.distributions.Transform`
 
-   Transform via the mapping :math:`y_i = \log(\exp(\sum_{j=0}^i x_j) +
-   1)`.
+   Transform via the mapping :math:`y_i = \log(\exp(\sum_{j=0}^i x_j) +1)`.
 
    .. py:attribute:: domain
 
@@ -198,8 +198,9 @@ Classes
 
    Bases: :py:obj:`torch.distributions.Transform`
 
-   Transform from unconstrained space to constrained space via :math:`y =
-   \frac{x}{\sum_{i=1}^K \alpha_i x_i}` in order to satisfy
+   Transform via the mapping :math:`y = \frac{x}{\sum_{i=1}^K \alpha_i x_i}`.
+
+   The transformation satisfies
    :math:`\sum_{i=1}^K \alpha_i y_i = 1` where :math:`\alpha_i \geq 0` and
    :math:`\sum_{i=1}^K \alpha_i = 1`.
 
@@ -249,12 +250,21 @@ Classes
 
 
 
-.. py:class:: LinearTransform(A: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor], b: torchtree.core.abstractparameter.AbstractParameter, cache_size=0)
+.. py:class:: LinearTransform(weight: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor], bias: Optional[Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor]] = None, cache_size=0)
 
 
    Bases: :py:obj:`torch.distributions.Transform`
 
-   Transform via the mapping :math:`y = Ax + b`.
+   Transform via the mapping :math:`y = xA' + b`.
+
+   :example:
+   >>> x = torch.rand(3,2)
+   >>> weight = torch.rand(5, 2)
+   >>> bias = torch.rand(5)
+   >>> transform = LinearTransform(weight, bias)
+   >>> y = transform(x)
+   >>> torch.all(y == torch.nn.functional.linear(x, weight, bias))
+   tensor(True)
 
    .. py:attribute:: domain
 
@@ -263,20 +273,5 @@ Classes
    .. py:attribute:: codomain
 
       
-
-   .. py:attribute:: bijective
-      :value: True
-
-      
-
-   .. py:attribute:: sign
-
-      
-
-   .. py:method:: log_abs_det_jacobian(x, y)
-      :abstractmethod:
-
-      Computes the log det jacobian `log |dy/dx|` given input and output.
-
 
 

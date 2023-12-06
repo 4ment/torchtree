@@ -66,11 +66,11 @@ Functions
 
    Split tree in newick format around (),;
 
-   Example:
+   .. rubric:: Example
 
-       >>> newick = '((a:1[&a={1,2}],b:1):1,c:1);'
-       >>> split_newick('((a:1,b:1):1,c:1);')
-       ['(', '(', 'a:1', ',', 'b:1', ')', ':1', ',', 'c:1', ')', ';']
+   >>> newick = '((a:1[&a={1,2}],b:1):1,c:1);'
+   >>> split_newick('((a:1,b:1):1,c:1);')
+   ['(', '(', 'a:1', ',', 'b:1', ')', ':1', ',', 'c:1', ')', ';']
 
    :param str newick: newick tree
    :return List[str]: list of strings

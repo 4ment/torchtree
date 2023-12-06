@@ -38,7 +38,6 @@ Classes
 
       :rtype: torch.device
 
-
    .. py:method:: to(*args, **kwargs) -> None
       :abstractmethod:
 
@@ -75,7 +74,6 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
-
    .. py:property:: shape
       :type: torch.Size
 
@@ -83,14 +81,12 @@ Classes
 
       :rtype: Size
 
-
    .. py:property:: dtype
       :type: torch.dtype
 
       The dtype of the tensor.
 
       :rtype: torch.dtype
-
 
    .. py:property:: requires_grad
       :type: bool
@@ -101,14 +97,12 @@ Classes
       :setter: Sets the flag.
       :rtype: bool
 
-
    .. py:property:: device
       :type: torch.device
 
       Returns the torch.device where the Tensor is.
 
       :rtype: torch.device
-
 
    .. py:method:: dim() -> int
 

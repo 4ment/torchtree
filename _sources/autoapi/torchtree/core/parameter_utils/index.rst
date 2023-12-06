@@ -18,7 +18,7 @@ Functions
 
 
 
-.. py:function:: save_parameters(file_name: str, parameters: list[torchtree.core.parameter.Parameter], safely=True)
+.. py:function:: save_parameters(file_name: str, parameters: list[torchtree.core.parameter.Parameter], safely=True, overwrite=False)
 
    Save a list of parameters to a json file.
 

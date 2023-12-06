@@ -45,8 +45,8 @@ Classes
       Returns the log of the probability density/mass function evaluated at
       `value`.
 
-      Args:
-          value (Tensor):
+      :param value:
+      :type value: Tensor
 
 
 

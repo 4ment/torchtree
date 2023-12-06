@@ -40,7 +40,6 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
-
    .. py:method:: parameters() -> list[torchtree.core.parameter.Parameter]
 
       Returns parameters of instance Parameter.

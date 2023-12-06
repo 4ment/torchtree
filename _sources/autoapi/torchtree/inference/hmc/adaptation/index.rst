@@ -29,15 +29,14 @@ Functions
 
 
 
-.. py:class:: Adaptor
+.. py:class:: Adaptor(id_)
 
 
-   Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`abc.ABC`
+   Bases: :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`abc.ABC`
 
-   Interface making an object JSON serializable.
+   Abstract class making an object identifiable.
 
-   Serializable base class establishing
-   :meth:`~torch.core.serializable.JSONSerializable.from_json` abstract method.
+   :param str or None id_: identifier of object
 
    .. py:method:: learn(acceptance_prob: torch.Tensor, sample: int, accepted: bool) -> None
       :abstractmethod:
@@ -47,21 +46,30 @@ Functions
       :abstractmethod:
 
 
+   .. py:method:: state_dict() -> dict[str, Any]
 
-.. py:class:: AdaptiveStepSize(integrator: torchtree.inference.hmc.integrator.LeapfrogIntegrator, target_acceptance_probability: float, **kwargs)
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+      :abstractmethod:
+
+
+
+.. py:class:: AdaptiveStepSize(id_: torchtree.typing.ID, integrator: torchtree.inference.hmc.integrator.LeapfrogIntegrator, target_acceptance_probability: float, **kwargs)
 
 
    Bases: :py:obj:`Adaptor`
 
-   Interface making an object JSON serializable.
+   Abstract class making an object identifiable.
 
-   Serializable base class establishing
-   :meth:`~torch.core.serializable.JSONSerializable.from_json` abstract method.
+   :param str or None id_: identifier of object
 
    .. py:method:: restart() -> None
 
 
    .. py:method:: learn(acceptance_prob: torch.Tensor, sample: int, accepted: bool) -> None
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
 
 
    .. py:method:: from_json(data, dic)
@@ -77,7 +85,7 @@ Functions
 
 
 
-.. py:class:: DualAveragingStepSize(integrator: torchtree.inference.hmc.integrator.LeapfrogIntegrator, mu=0.5, delta=0.8, gamma=0.05, kappa=0.75, t0=10, **kwargs)
+.. py:class:: DualAveragingStepSize(id_: torchtree.typing.ID, integrator: torchtree.inference.hmc.integrator.LeapfrogIntegrator, mu=0.5, delta=0.8, gamma=0.05, kappa=0.75, t0=10, **kwargs)
 
 
    Bases: :py:obj:`Adaptor`
@@ -92,6 +100,9 @@ Functions
    .. py:method:: learn(acceptance_prob: torch.Tensor, sample: int, accepted: bool) -> None
 
 
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
+
    .. py:method:: from_json(data, dic)
       :classmethod:
 
@@ -105,15 +116,14 @@ Functions
 
 
 
-.. py:class:: MassMatrixAdaptor(parameters: torchtree.typing.ListParameter, mass_matrix: torchtree.core.abstractparameter.AbstractParameter, regularize=True, **kwargs)
+.. py:class:: MassMatrixAdaptor(id_: torchtree.typing.ID, parameters: torchtree.typing.ListParameter, mass_matrix: torchtree.core.abstractparameter.AbstractParameter, regularize=True, **kwargs)
 
 
    Bases: :py:obj:`Adaptor`
 
-   Interface making an object JSON serializable.
+   Abstract class making an object identifiable.
 
-   Serializable base class establishing
-   :meth:`~torch.core.serializable.JSONSerializable.from_json` abstract method.
+   :param str or None id_: identifier of object
 
    .. py:property:: mass_matrix
 
@@ -122,6 +132,9 @@ Functions
 
 
    .. py:method:: restart() -> None
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
 
 
    .. py:method:: from_json(data, dic)
@@ -140,15 +153,14 @@ Functions
 .. py:function:: find_reasonable_step_size(integrator, parameters, hamiltonian, mass_matrix, inverse_mass_matrix)
 
 
-.. py:class:: WarmupAdaptation
+.. py:class:: WarmupAdaptation(id_)
 
 
    Bases: :py:obj:`Adaptor`
 
-   Interface making an object JSON serializable.
+   Abstract class making an object identifiable.
 
-   Serializable base class establishing
-   :meth:`~torch.core.serializable.JSONSerializable.from_json` abstract method.
+   :param str or None id_: identifier of object
 
    .. py:property:: step_size
       :abstractmethod:

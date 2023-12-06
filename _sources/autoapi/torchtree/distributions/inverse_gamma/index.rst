@@ -64,14 +64,13 @@ Classes
       this does not repeat any args checking or parameter broadcasting in
       `__init__.py`, when an instance is first created.
 
-      Args:
-          batch_shape (torch.Size): the desired expanded size.
-          _instance: new instance provided by subclasses that
-              need to override `.expand`.
+      :param batch_shape: the desired expanded size.
+      :type batch_shape: torch.Size
+      :param _instance: new instance provided by subclasses that
+                        need to override `.expand`.
 
-      Returns:
-          New distribution instance with batch dimensions expanded to
-          `batch_size`.
+      :returns: New distribution instance with batch dimensions expanded to
+                `batch_size`.
 
 
 

@@ -35,14 +35,19 @@ Classes
 
       returns torch.nn.Module
 
-
    .. py:method:: to(*args, **kwargs) -> None
+
+      Performs Tensor dtype and/or device conversion using torch.to.
 
 
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
+      Move tensors to CUDA using torch.cuda.
+
 
    .. py:method:: cpu() -> None
+
+      Move tensors to CPU memory using ~torch.cpu.
 
 
    .. py:method:: from_json(data, dic)
