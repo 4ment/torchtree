@@ -1,7 +1,7 @@
 import torch
 from torch.distributions import Transform
 
-from ..math import soft_max
+from torchtree.ops.smooth import smooth_max
 
 
 class GeneralNodeHeightTransform(Transform):
@@ -121,7 +121,7 @@ class DifferenceNodeHeightTransform(Transform):
         if self.k <= 0:
             self.max = lambda input: torch.max(input, dim=-1, keepdim=True)[0]
         else:
-            self.max = lambda input: soft_max(input, self.k, dim=-1, keepdim=True)
+            self.max = lambda input: smooth_max(input, self.k, dim=-1, keepdim=True)
 
     def _call(self, x: torch.Tensor) -> torch.Tensor:
         """Transform node height differences to internal node heights."""

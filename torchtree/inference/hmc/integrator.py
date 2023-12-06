@@ -1,13 +1,14 @@
+from __future__ import annotations
+
 import abc
-from typing import List
+from typing import Any, List
 
 import torch
 
 from torchtree.core.identifiable import Identifiable
 from torchtree.core.model import CallableModel
 from torchtree.core.parameter import Parameter
-
-from ...core.utils import register_class
+from torchtree.core.utils import register_class
 
 
 def set_tensor(parameters, tensor: torch.Tensor) -> None:
@@ -31,6 +32,19 @@ class Integrator(Identifiable, abc.ABC):
         params: torch.Tensor,
         momentum: torch.Tensor,
     ) -> torch.Tensor:
+        pass
+
+    def state_dict(self) -> dict[str, Any]:
+        state_dict = {"id": self.id}
+        state_dict.update(self._state_dict())
+        return state_dict
+
+    @abc.abstractmethod
+    def _state_dict(self) -> dict[str, Any]:
+        pass
+
+    @abc.abstractmethod
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
         pass
 
 
@@ -77,6 +91,12 @@ class LeapfrogIntegrator(Integrator):
 
         momentum += self.step_size / 2 * dU
         return momentum
+
+    def _state_dict(self) -> dict[str, Any]:
+        return {"step_size": self.step_size}
+
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self.step_size = state_dict["step_size"]
 
     @classmethod
     def from_json(cls, data, dic):

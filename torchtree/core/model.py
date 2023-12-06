@@ -7,10 +7,9 @@ import torch.distributions
 from torch import Tensor
 
 from torchtree.core.abstractparameter import AbstractParameter
-
-from .classproperty_decorator import classproperty
-from .identifiable import Identifiable
-from .parametric import ModelListener, ParameterListener, Parametric
+from torchtree.core.classproperty_decorator import classproperty
+from torchtree.core.identifiable import Identifiable
+from torchtree.core.parametric import ModelListener, ParameterListener, Parametric
 
 
 class Model(Parametric, Identifiable, ModelListener, ParameterListener):
@@ -49,12 +48,15 @@ class Model(Parametric, Identifiable, ModelListener, ParameterListener):
         return cls._tag
 
     def to(self, *args, **kwargs) -> None:
+        """Performs Tensor dtype and/or device conversion using torch.to."""
         self._apply(lambda x: x.to(*args, **kwargs))
 
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        """Move tensors to CUDA using torch.cuda."""
         self._apply(lambda x: x.cuda(device))
 
     def cpu(self) -> None:
+        """Move tensors to CPU memory using ~torch.cpu."""
         self._apply(lambda x: x.cpu())
 
     def _apply(self, fn):
@@ -64,6 +66,7 @@ class Model(Parametric, Identifiable, ModelListener, ParameterListener):
             fn(model)
 
     def models(self):
+        """Returns sub-models."""
         for model in self._models.values():
             yield model
 

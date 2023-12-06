@@ -12,6 +12,7 @@ from torchtree.evolution.coalescent import (
     PiecewiseConstantCoalescentGrid,
     PiecewiseConstantCoalescentGridModel,
     PiecewiseConstantCoalescentModel,
+    PiecewiseLinearCoalescentGrid,
     SoftPiecewiseConstantCoalescentGrid,
 )
 from torchtree.evolution.tree_model import ReparameterizedTimeTreeModel
@@ -326,3 +327,19 @@ def test_skygrid_data_json():
 
     skygrid2 = PiecewiseConstantCoalescentGridModel.from_json(example_intervals, {})
     assert -19.594893640219844 == pytest.approx(skygrid2().item(), 0.0001)
+
+
+def test_piecewise_linear(ratios_list):
+    sampling_times = torch.zeros(4, dtype=torch.float64)
+    ratios = torch.tensor(ratios_list, dtype=torch.float64)
+    thetas = torch.tensor(
+        [3.0, 10.0, 4.0, 2.0, 3.0], dtype=torch.float64, requires_grad=True
+    )
+    heights = inverse_transform_homochronous(ratios)
+    heights.requires_grad = True
+    grid = torch.tensor(np.linspace(0, 10.0, num=5)[1:], dtype=torch.float64)
+    print(grid)
+    constant = PiecewiseLinearCoalescentGrid(thetas, grid)
+    log_p = constant.log_prob(torch.cat((sampling_times, heights), -1))
+    assert -11.08185677776700117647 == pytest.approx(log_p.item(), 0.0001)
+

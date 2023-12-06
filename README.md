@@ -1,40 +1,93 @@
 # torchtree
 
 [![Python package](https://github.com/4ment/torchtree/actions/workflows/python-package.yml/badge.svg)](https://github.com/4ment/torchtree/actions/workflows/python-package.yml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![docs](https://github.com/4ment/torchtree/actions/workflows/publish_documentation.yml/badge.svg)](https://github.com/4ment/torchtree/actions/workflows/publish_documentation.yml)
+![PyPI](https://img.shields.io/pypi/v/torchtree)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/torchtree)
 
-## Installation
 
-### Use an Anaconda environment (Optional)
+torchtree is a program for inferring phylogenetic trees from molecular sequeces. It is implemented in python and uses [PyTorch] to leverage automatic differentiation. Inference algorithms include variational inference, Hamiltonian Monte Carlo, maximum a posteriori and Markov chain Monte Carlo.
+
+- [Getting Started](#getting-started)
+  - [Dependencies](#dependencies)
+  - [Installation](#installation)
+- [Quick start](#quick-start)
+
+## Getting Started
+
+### Dependencies
+ - [DendroPy]
+ - [PyTorch]
+
+ ### Installation
+Use an Anaconda environment (Optional)
 ```bash
 conda env create -f environment.yml
 conda activate torchtree
 ```
 
-### The easy way
-To install the latest stable version, run
+To install the latest stable version you can run
 ```bash
 pip install torchtree
 ```
 
-### Using the source code
+To build torchtree from source you can run
 ```bash
 git clone https://github.com/4ment/torchtree
-cd torchtree
-pip install .
+pip install torchtree/
 ```
 
-## Check install
+Check install
 ```bash
 torchtree --help
 ```
 
 ## Quick start
-torchtree will approximate the posterior distribution of an unrooted tree with a JC69 substitution model using variational inference 
+`torchtree` requires a JSON file contaning models and algorithms. A configutation file can generated using `torchtree-cli`, a command line-based tool. This two-step process allows the user to ajust values in the configuration file such as hyper prior parameters.
+
+### 1 - Generating a configuration file
+Some examples of models using variational inference:
+
+#### Unrooted tree with GTR+W4 model
+*W4* refers to a site model with 4 rates categories coming from a discretized Weibull distribution. This is similar to the more commonly used discretized Gamma distribution site model.
+
 ```bash
-torchtree examples/advi/fluA.json
+torchtree-cli advi -i data/fluA.fa -t data/fluA.tree -m GTR -C 4 > fluA.json
 ```
 
-The JSON file can be generated using the torchtree CLI
+#### Time tree with strict clock and constant coalescent model
 ```bash
-torchtree-cli advi -i data/fluA.fa -t data/fluA.tree > fluA.json
+torchtree-cli advi -i data/fluA.fa -t data/fluA.tree -m JC69 --clock strict --coalescent constant > fluA.json
 ```
+
+### 2 - Running torchtree
+This will generate `sample.csv` and `sample.trees` files containing parameter and tree samples drawn from the variational distribution
+```bash
+torchtree fluA.json
+```
+
+## torchtree plug-in
+torchtree can be easily extended without modifying the code base thanks its modular implementation. Some examples of external packages
+- [torchtree-bito]
+- [torchtree-physher]
+- [torchtree-scipy]
+- [torchtree-tensorflow]
+
+## License
+
+Distributed under the GPLv3 License. See [LICENSE](LICENSE) for more information.
+
+## Acknowledgements
+
+torchtree makes use of the following libraries and tools, which are under their own respective licenses:
+
+ - [PyTorch]
+ - [DendroPy]
+
+[DendroPy]: https://github.com/jeetsukumaran/DendroPy
+[PyTorch]: https://pytorch.org
+[torchtree-bito]: https://github.com/4ment/torchtree-bito
+[torchtree-physher]: https://github.com/4ment/torchtree-physher
+[torchtree-scipy]: https://github.com/4ment/torchtree-scipy
+[torchtree-tensorflow]: https://github.com/4ment/torchtree-tensorflow

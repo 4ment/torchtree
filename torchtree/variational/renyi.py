@@ -1,29 +1,31 @@
 from __future__ import annotations
 
 import math
+from typing import Any
 
 import torch
 
-from ..core.model import CallableModel
-from ..core.utils import process_object, register_class
-from ..distributions.distributions import DistributionModel
-from ..typing import ID
+from torchtree.core.identifiable import Identifiable
+from torchtree.core.model import CallableModel
+from torchtree.core.utils import process_object, register_class
+from torchtree.distributions.distributions import DistributionModel
+from torchtree.typing import ID
 
 
 @register_class
 class VR(CallableModel):
-    r"""
-    Class representing the variational Renyi bound (VR) [#Li2016]_.
-    VR extends traditional variational inference to Rényi’s :math:`\alpha`-divergences.
+    r"""Class representing the variational Renyi bound.
 
-    :param id_: unique identifier of object.
-    :type id_: str or None
+    VR extends traditional variational inference to Rényi’s
+    :math:`\alpha`-divergences :footcite:p:`li2016renyi`.
+
+    :param str id_: identifier of object.
     :param DistributionModel q: variational distribution.
     :param CallableModel p: joint distribution.
     :param torch.Size samples: number of samples to form estimator.
     :param float alpha: order of :math:`\alpha`-divergence.
 
-    .. [#Li2016] Yingzhen Li, Richard E. Turner. Rényi Divergence Variational Inference.
+    .. footbibliography::
     """
 
     def __init__(
@@ -54,7 +56,24 @@ class VR(CallableModel):
         return self.q.sample_shape
 
     @classmethod
-    def from_json(cls, data, dic) -> VR:
+    def from_json(cls, data: dict[str, Any], dic: dict[str, Identifiable]) -> VR:
+        r"""Creates a VR object from a dictionary.
+
+        :param dict[str, Any] data: dictionary representation of a VR object.
+        :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+            keyed by their ID.
+
+        **JSON attributes**:
+
+        Mandatory:
+          - id (str): unique string identifier.
+          - variational (dict or str): variational distribution.
+          - joint (dict or str): joint distribution.
+
+        Optional:
+          - samples (int or list of ints): number of samples
+          - alpha (float): order of :math:`\alpha`-divergence (Default: 0).
+        """
         samples = data.get('samples', 1)
         if isinstance(samples, list):
             samples = torch.Size(samples)

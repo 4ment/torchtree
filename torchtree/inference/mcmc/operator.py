@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import abc
 import math
+from typing import Any
 
 import torch
 from torch import Tensor
 
+from torchtree.core.identifiable import Identifiable
 from torchtree.core.utils import process_objects, register_class
-
-from ...core.identifiable import Identifiable
-from ...typing import ID, Parameter
+from torchtree.typing import ID, Parameter
 
 
 class MCMCOperator(Identifiable, abc.ABC):
@@ -73,6 +73,30 @@ class MCMCOperator(Identifiable, abc.ABC):
             ) / (2 + self._adapt_count)
             self.adaptable_parameter = new_parameter
 
+    def state_dict(self) -> dict[str, Any]:
+        state_dict = {
+            "id": self.id,
+            "adapt_count": self._adapt_count,
+            "accept": self._accept,
+            "reject": self._reject,
+        }
+        state_dict.update(self._state_dict())
+        return state_dict
+
+    @abc.abstractmethod
+    def _state_dict(self) -> dict[str, Any]:
+        pass
+
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self._adapt_count = state_dict["adapt_count"]
+        self._accept = state_dict["accept"]
+        self._reject = state_dict["reject"]
+        self._load_state_dict(state_dict)
+
+    @abc.abstractmethod
+    def _load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        pass
+
 
 @register_class
 class ScalerOperator(MCMCOperator):
@@ -116,6 +140,12 @@ class ScalerOperator(MCMCOperator):
         return -torch.tensor(
             s, device=self.parameters[0].device, dtype=self.parameters[0].dtype
         ).log()
+
+    def _state_dict(self) -> dict[str, Any]:
+        return {"scaler": self._scaler}
+
+    def _load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self._scaler = state_dict["scaler"]
 
     @classmethod
     def from_json(cls, data, dic):
@@ -171,6 +201,12 @@ class SlidingWindowOperator(MCMCOperator):
             0.0, device=self.parameters[0].device, dtype=self.parameters[0].dtype
         )
 
+    def _state_dict(self) -> dict[str, Any]:
+        return {"width": self._scaler}
+
+    def _load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self._scaler = state_dict["width"]
+
     @classmethod
     def from_json(cls, data, dic):
         id_ = data["id"]
@@ -225,6 +261,12 @@ class DirichletOperator(MCMCOperator):
         b = torch.distributions.Dirichlet(scaled_new).log_prob(old_values)
 
         return b - f
+
+    def _state_dict(self) -> dict[str, Any]:
+        return {"scaler": self._scaler}
+
+    def _load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self._scaler = state_dict["scaler"]
 
     @classmethod
     def from_json(cls, data, dic):

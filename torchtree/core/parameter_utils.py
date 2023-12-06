@@ -10,7 +10,9 @@ from torchtree.core.parameter import Parameter
 from torchtree.core.parameter_encoder import ParameterEncoder
 
 
-def save_parameters(file_name: str, parameters: list[Parameter], safely=True):
+def save_parameters(
+    file_name: str, parameters: list[Parameter], safely=True, overwrite=False
+):
     r"""Save a list of parameters to a json file.
 
     :param str file_name: output file path
@@ -18,7 +20,7 @@ def save_parameters(file_name: str, parameters: list[Parameter], safely=True):
     :type parameters: list(Parameter)
     :param bool safely: Create a temporary file if True
     """
-    if not safely or not os.path.lexists(file_name):
+    if overwrite or (not safely or not os.path.lexists(file_name)):
         # for var_name in self.optimizer.state_dict():
         #     print(var_name, "\t", self.optimizer.state_dict()[var_name])
         # torch.save(self.optimizer.state_dict(), 'checkpoint.json')

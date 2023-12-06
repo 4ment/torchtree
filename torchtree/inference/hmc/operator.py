@@ -1,19 +1,21 @@
 from __future__ import annotations
 
 import math
+from typing import Any
 
 import torch
 from torch import Tensor
 
-from ...core.abstractparameter import AbstractParameter
-from ...core.model import CallableModel
-from ...core.parametric import ParameterListener
-from ...core.utils import process_object, process_objects, register_class
-from ...typing import ID, ListParameter
-from ..mcmc.operator import MCMCOperator
-from .adaptation import Adaptor, find_reasonable_step_size
-from .hamiltonian import Hamiltonian
-from .integrator import Integrator
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.model import CallableModel
+from torchtree.core.parameter import Parameter
+from torchtree.core.parametric import ParameterListener
+from torchtree.core.utils import process_object, process_objects, register_class
+from torchtree.inference.hmc.adaptation import Adaptor, find_reasonable_step_size
+from torchtree.inference.hmc.hamiltonian import Hamiltonian
+from torchtree.inference.hmc.integrator import Integrator
+from torchtree.inference.mcmc.operator import MCMCOperator
+from torchtree.typing import ID, ListParameter
 
 
 @register_class
@@ -132,6 +134,29 @@ class HMCOperator(MCMCOperator, ParameterListener):
         else:
             for adaptor in self._adaptors:
                 adaptor.learn(acceptance_prob, sample, accepted)
+
+    def _state_dict(self) -> dict[str, Any]:
+        state_dict = {
+            "mass_matrix": self._mass_matrix,
+        }
+        if hasattr(self._integrator, "state_dict"):
+            state_dict["integrator"] = self._integrator.state_dict()
+        if len(self._adaptors) > 0:
+            state_dict["adaptors"] = [
+                adaptor.state_dict() for adaptor in self._adaptors
+            ]
+        return state_dict
+
+    def _load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        m = Parameter.from_json(state_dict["mass_matrix"], {})
+        self._mass_matrix.tensor = m.tensor
+        if hasattr(self._integrator, "load_state_dict"):
+            self._integrator.load_state_dict(state_dict["integrator"])
+        for adaptor in self._adaptors:
+            for adaptor_state in state_dict["adaptors"]:
+                if adaptor_state["id"] == adaptor.id:
+                    adaptor.load_state_dict(adaptor_state)
+                    break
 
     @classmethod
     def from_json(cls, data, dic):

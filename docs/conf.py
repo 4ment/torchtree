@@ -36,8 +36,12 @@ with open(os.path.join("..", "torchtree", "_version.py")) as f:
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
+    "sphinx.ext.intersphinx",
     'autoapi.extension',
     'sphinxcontrib.bibtex',
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "sphinx_tabs.tabs",
 ]
 autosummary_generate = True
 
@@ -80,3 +84,9 @@ autoapi_options = ["show-module-summary", "undoc-members", "show-inheritance"]
 autodoc_typehints = "signature"
 
 bibtex_bibfiles = ['bibliography/refs.bib']
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "torch": ("https://pytorch.org/docs/master/", None),
+}

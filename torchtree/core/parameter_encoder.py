@@ -2,13 +2,14 @@ import json
 
 import torch
 
-from .parameter import Parameter
+from torchtree.core.parameter import Parameter
+from torchtree.core.utils import TensorEncoder
 
 
 class ParameterEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, torch.Tensor):
-            pass
+            return TensorEncoder.default(self, obj)
         elif isinstance(obj, Parameter):
             return {
                 'id': obj.id,

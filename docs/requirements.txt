@@ -3,5 +3,6 @@ numpy
 sphinx
 sphinx-autoapi
 sphinx-book-theme
+sphinx-tabs
 sphinxcontrib-bibtex
 torch

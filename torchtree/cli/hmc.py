@@ -260,7 +260,9 @@ def build_hmc(arg):
     jacobians_list = create_jacobians(json_list)
     if arg.clock is not None and arg.heights == "ratio":
         jacobians_list.append("tree")
-    if arg.coalescent in ("skygrid", "skyride"):
+    if arg.coalescent in ("skygrid", "skyride") or arg.coalescent.startswith(
+        "piecewise"
+    ):
         jacobians_list.remove("coalescent.theta")
 
     joint_jacobian = {

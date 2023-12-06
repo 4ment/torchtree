@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from ..core.logger import LoggerInterface
-from ..core.runnable import Runnable
-from ..core.serializable import JSONSerializable
-from ..core.utils import process_object, process_objects, register_class
-from ..distributions.distributions import DistributionModel
+from torchtree.core.identifiable import Identifiable
+from torchtree.core.logger import LoggerInterface
+from torchtree.core.runnable import Runnable
+from torchtree.core.utils import process_object, process_objects, register_class
+from torchtree.distributions.distributions import DistributionModel
+from torchtree.typing import ID
 
 
 @register_class
-class Sampler(JSONSerializable, Runnable):
-    r"""
-    Class for sampling a distribution and optionally logging things.
+class Sampler(Identifiable, Runnable):
+    r"""Class for sampling a distribution and optionally logging things.
 
     :param DistributionModel model: model to sample from.
     :param int samples: number of sample to draw.
@@ -19,8 +19,13 @@ class Sampler(JSONSerializable, Runnable):
     """
 
     def __init__(
-        self, model: DistributionModel, samples: int, loggers: list[LoggerInterface]
+        self,
+        id_: ID,
+        model: DistributionModel,
+        samples: int,
+        loggers: list[LoggerInterface],
     ) -> None:
+        Identifiable.__init__(self, id_)
         self.model = model
         self.samples = samples
         self.loggers = loggers
@@ -40,18 +45,14 @@ class Sampler(JSONSerializable, Runnable):
     def from_json(cls, data, dic) -> Sampler:
         r"""Create a Sampler object.
 
-        :param data: json representation of Sampler object.
-        :type data: dict[str,Any]
-        :param dic: dictionary containing additional objects that can be referenced
-        in data.
-        :type dic: dict[str,Any]
-
+        :param dict[str, Any] data: dictionary representation of a Sampler object.
+        :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+            keyed by their ID.
         :return: a :class:`~torchtree.inference.sampler.Sampler` object.
-        :rtype: Sampler
         """
         model = process_object(data['model'], dic)
         loggers = process_objects(data['loggers'], dic)
         if not isinstance(loggers, list):
             loggers = [loggers]
         samples = data['samples']
-        return cls(model, samples, loggers)
+        return cls(data["id"], model, samples, loggers)

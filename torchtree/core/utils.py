@@ -18,8 +18,38 @@ REGISTERED_CLASSES = {}
 class TensorEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, torch.Tensor):
-            return {'values': obj.tolist(), 'type': str(obj.dtype)}
+            dic = {
+                "type": "torch.Tensor",
+                "values": obj.tolist(),
+                "dtype": str(obj.dtype),
+            }
+            if isinstance(obj, torch.nn.Parameter):
+                dic["nn"] = True
+            return dic
         return json.JSONEncoder.default(self, obj)
+
+
+class TensorDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        json.JSONDecoder.__init__(self, object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, dic):
+        if "type" in dic and dic["type"] == "torch.Tensor":
+            print(dic)
+            del dic["type"]
+            if "dtype" in dic:
+                dic["dtype"] = getattr(torch, dic["dtype"].split(".")[-1])
+            nn = False
+            if "nn" in dic:
+                del dic["nn"]
+                nn = True
+            values = dic["values"]
+            del dic["values"]
+            tensor = torch.tensor(values, **dic)
+            if nn:
+                tensor = torch.nn.Parameter(tensor)
+            return tensor
+        return dic
 
 
 def as_tensor(dct, dtype=torch.float64):

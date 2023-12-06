@@ -4,7 +4,6 @@ import importlib
 import logging
 import math
 import numbers
-import os
 import re
 import sys
 
@@ -14,6 +13,7 @@ from dendropy import TaxonNamespace, Tree
 
 from torchtree import Parameter, ViewParameter
 from torchtree.cli import PLUGIN_MANAGER
+from torchtree.cli.argparse_utils import list_of_float, str_or_float, zero_or_path
 from torchtree.cli.priors import create_clock_horseshoe_prior, create_one_on_x_prior
 from torchtree.cli.utils import convert_date_to_real, read_dates_from_csv
 from torchtree.core.utils import process_object
@@ -40,7 +40,7 @@ from torchtree.evolution.tree_model import (
     initialize_dates_from_taxa,
     setup_indexes,
 )
-from torchtree.treeregression import regression
+from torchtree.evolution.tree_regression import linear_regression
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +90,12 @@ def create_evolution_parser(parser):
         choices=['exponential', 'gammadir'],
         default='exponential',
         help="""prior on branch lengths of an unrooted tree [default: %(default)s]""",
+    )
+    parser.add_argument(
+        '--brlens_init',
+        type=lambda x: str_or_float(x, 'tree'),
+        help="""initialize branch lengths using input tree file or the same
+        value for every branch""",
     )
     parser.add_argument(
         '--clock',
@@ -251,6 +257,13 @@ def add_coalescent(parser):
         help="""use non-centered parameterization of population size parameters""",
     )
     parser.add_argument(
+        '--coalescent_integrated',
+        type=lambda x: list_of_float(x, 2),
+        help="""provide the two parameters of the inverse-gamma distribution to
+        integrate the population size out in constant coalescent. Values must be
+        separated by a comma""",
+    )
+    parser.add_argument(
         '--coalescent_init',
         type=lambda x: str_or_float(x, ("tree", "constant")),
         help="""initialize coalescent parameter from input tree using MLE.
@@ -262,34 +275,6 @@ def add_coalescent(parser):
         help="""Soft coalescent""",
     )
     return parser
-
-
-def zero_or_path(arg):
-    if arg == '0':
-        return 0
-    elif arg is not None and not os.path.exists(arg):
-        raise argparse.ArgumentTypeError(
-            'invalid choice (choose from 0 or a path to a text file)'
-        )
-    else:
-        return arg
-
-
-def str_or_float(arg, choices):
-    """Used by argparse when the argument can be either a number or a string
-    from a prespecified list of options."""
-    try:
-        return float(arg)
-    except ValueError:
-        if (isinstance(choices, tuple) and arg in choices) or choices == arg:
-            return arg
-        else:
-            if isinstance(choices, str):
-                choices = (choices,)
-            message = "'" + "','".join(choices) + '"'
-            raise argparse.ArgumentTypeError(
-                'invalid choice (choose from a number or ' + message + ')'
-            )
 
 
 def distribution_type(arg, choices):
@@ -334,7 +319,8 @@ def run_tree_regression(arg, taxa):
     setup_indexes(tree, False)
     taxa2 = [{'date': taxon['attributes']['date']} for taxon in taxa['taxa']]
     initialize_dates_from_taxa(tree, taxa2)
-    return regression(tree)
+    rate, root_height = linear_regression(tree)
+    return rate.item(), root_height.item()
 
 
 def create_tree_model(id_: str, taxa: dict, arg):
@@ -376,7 +362,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
             if arg.root_height_init is not None:
                 root_height['tensor'] = [arg.root_height_init]
             elif arg.cutoff is not None:
-                root_height['tensor'] = [arg.cutoff]
+                root_height['tensor'] = [max(arg.cutoff, offset)]
 
             root_height['lower'] = offset
             tree_model = ReparameterizedTimeTreeModel.json_factory(
@@ -460,13 +446,33 @@ def create_tree_model(id_: str, taxa: dict, arg):
                 tree_model_obj.node_heights
             ).item()
     else:
+        brlens = 0.1
+        if isinstance(arg.brlens_init, float):
+            brlens = arg.brlens_init
+
         branch_lengths = Parameter.json_factory(
-            f'{id_}.blens', **{'tensor': 0.1, 'full': [len(taxa['taxa']) * 2 - 3]}
+            f'{id_}.blens', **{'tensor': brlens, 'full': [len(taxa['taxa']) * 2 - 3]}
         )
         branch_lengths['lower'] = 0.0
         tree_model = UnRootedTreeModel.json_factory(
             id_, newick, branch_lengths, 'taxa', **kwargs
         )
+
+        if arg.keep or arg.brlens_init == "tree":
+            tree_model = UnRootedTreeModel.json_factory(
+                id_, newick, branch_lengths, "taxa", **kwargs
+            )
+            taxa_obj = Taxa.from_json(taxa, {})
+            tree_model_obj: UnRootedTreeModel = UnRootedTreeModel.from_json(
+                tree_model, {"taxa": taxa_obj}
+            )
+            blens = torch.clamp(tree_model_obj._branch_lengths.tensor, min=1.0e-7)
+            tree_model["branch_lengths"] = Parameter.json_factory(
+                f"{id_}.blens",
+                **{"tensor": blens.tolist()},
+            )
+            tree_model["branch_lengths"]["lower"] = 0.0
+
     return tree_model
 
 
@@ -1150,8 +1156,10 @@ def create_coalesent(id_, tree_id, taxa, arg):
 
         theta = Parameter.json_factory(f'{id_}.theta', **{'tensor': [theta_value]})
         theta['lower'] = 0.0
-
-        joint_list.append(create_one_on_x_prior(f'{id_}.theta.prior', f'{id_}.theta'))
+        if arg.coalescent != "constant" or arg.coalescent_integrated is None:
+            joint_list.append(
+                create_one_on_x_prior(f'{id_}.theta.prior', f'{id_}.theta')
+            )
     if arg.coalescent == 'exponential':
         growth = Parameter.json_factory(f'{id_}.growth', **{'tensor': [0.01]})
         params['growth'] = growth
@@ -1278,12 +1286,23 @@ def create_coalesent(id_, tree_id, taxa, arg):
             )
 
     if arg.coalescent == 'constant':
-        coalescent = {
-            'id': id_,
-            'type': 'ConstantCoalescentModel',
-            'theta': theta,
-            'tree_model': tree_id,
-        }
+        if arg.coalescent_integrated is not None:
+            # alhpa 3 beta 0.003
+            alpha, beta = arg.coalescent_integrated.split(",")
+            coalescent = {
+                "id": id_,
+                "type": 'ConstantCoalescentIntegratedModel',
+                "tree_model": tree_id,
+                "alpha": float(alpha),
+                "beta": float(beta),
+            }
+        else:
+            coalescent = {
+                'id': id_,
+                'type': 'ConstantCoalescentModel',
+                'theta': theta,
+                'tree_model': tree_id,
+            }
     elif arg.coalescent == 'exponential':
         coalescent = {
             'id': id_,

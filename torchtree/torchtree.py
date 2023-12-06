@@ -9,6 +9,7 @@ import torch
 from .core.runnable import Runnable
 from .core.utils import (
     JSONParseError,
+    TensorDecoder,
     expand_plates,
     get_class,
     package_contents,
@@ -31,7 +32,7 @@ def main():
         help='JSON configuration file',
     )
     parser.add_argument(
-        '-c', '--checkpoint', required=False, default=None, help='JSON checkpoint file'
+        '-c', '--checkpoint', action='append', help='JSON checkpoint file'
     )
     parser.add_argument(
         '--dry',
@@ -76,18 +77,31 @@ def main():
     remove_comments(data)
     expand_plates(data)
 
+    others = {}
+    # update the parameters of the models first
     if arg.checkpoint is not None:
-        with open(arg.checkpoint) as file_pointer:
-            checkpoint = json.load(file_pointer)
-            tensors = {}
-            for param in checkpoint:
-                tensors[param['id']] = param
-            update_parameters(data, tensors)
-
+        for checkpoint_file in arg.checkpoint:
+            with open(checkpoint_file) as file_pointer:
+                checkpoint = json.load(file_pointer, cls=TensorDecoder)
+                tensors = {}
+                for param in checkpoint:
+                    if param["type"] in ("torchtree.Parameter", "Parameter"):
+                        tensors[param['id']] = param
+                    else:
+                        others[param['id']] = param
+                update_parameters(data, tensors)
     dic = {}
     try:
         for element in data:
             obj = process_objects(element, dic)
+            # now we update the state_dict of the algorithms (e.g. Optimizer, MCMC)
+            if (
+                arg.checkpoint is not None
+                and obj.id in others
+                and hasattr(obj, "load_state_dict")
+            ):
+                obj.load_state_dict(others[obj.id])
+
             if isinstance(obj, Runnable) and not arg.dry:
                 obj.run()
     except JSONParseError as error:

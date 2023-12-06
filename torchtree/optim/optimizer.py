@@ -2,28 +2,28 @@ from __future__ import annotations
 
 import copy
 import inspect
+from typing import Any
 
 import torch
 from torch.optim import Optimizer as TorchOptimizer
 
-from torchtree.inference.utils import extract_tensors_and_parameters
-
-from ..core.model import CallableModel
-from ..core.parameter_utils import save_parameters
-from ..core.runnable import Runnable
-from ..core.serializable import JSONSerializable
-from ..core.utils import (
+from torchtree.core.identifiable import Identifiable
+from torchtree.core.model import CallableModel
+from torchtree.core.parameter_utils import save_parameters
+from torchtree.core.runnable import Runnable
+from torchtree.core.utils import (
     JSONParseError,
     SignalHandler,
     get_class,
     process_objects,
     register_class,
 )
-from ..typing import ListParameter
+from torchtree.inference.utils import extract_tensors_and_parameters
+from torchtree.typing import ID, ListParameter
 
 
 @register_class
-class Optimizer(JSONSerializable, Runnable):
+class Optimizer(Identifiable, Runnable):
     r"""A wrapper for torch.optim.Optimizer objects.
 
     :param list parameters: list of Parameter
@@ -36,12 +36,14 @@ class Optimizer(JSONSerializable, Runnable):
 
     def __init__(
         self,
+        id_: ID,
         parameters: ListParameter,
         loss: CallableModel,
         optimizer: TorchOptimizer,
         iterations: int,
         **kwargs,
     ) -> None:
+        Identifiable.__init__(self, id_)
         self.parameters = parameters
         self.loss = loss
         self.optimizer = optimizer
@@ -52,7 +54,9 @@ class Optimizer(JSONSerializable, Runnable):
         self.maximize = kwargs.get('maximize', True)
         self.checkpoint = kwargs.get('checkpoint', None)
         self.checkpoint_frequency = kwargs.get('checkpoint_frequency', 1000)
+        self.checkpoint_all = kwargs.get('checkpoint_all', False)
         self.distributions = kwargs.get('distributions', None)
+        self._epoch = 1
 
     def _run_closure(self) -> None:
         def closure():
@@ -71,7 +75,7 @@ class Optimizer(JSONSerializable, Runnable):
         for p in self.parameters:
             p.requires_grad = True
 
-        for epoch in range(self.iterations):
+        while self._epoch <= self.iterations:
             if handler.stop:
                 break
             self.optimizer.step(closure)
@@ -84,7 +88,19 @@ class Optimizer(JSONSerializable, Runnable):
             n_iter = state["n_iter"]
             print(f"{n_iter:>4} {loss:.5f} evaluations: {func_evals}")
 
-            save_parameters(self.checkpoint, self.parameters)
+            if (
+                self.checkpoint is not None
+                and self._epoch % self.checkpoint_frequency == 0
+            ):
+                if self.checkpoint_all:
+                    checkpoint_file = self.checkpoint.replace(
+                        ".json", f"-{self._epoch}.json"
+                    )
+                    self.save_full_state(checkpoint_file, overwrite=True)
+                else:
+                    self.save_full_state(self.checkpoint)
+
+            self._epoch += 1
 
     def _run(self) -> None:
         for logger in self.loggers:
@@ -105,7 +121,7 @@ class Optimizer(JSONSerializable, Runnable):
 
         trials = 10
 
-        for epoch in range(1, self.iterations + 1):
+        while self._epoch < self.iterations:
             if handler.stop:
                 break
 
@@ -140,21 +156,32 @@ class Optimizer(JSONSerializable, Runnable):
                 self.scheduler.step()
 
             for logger in self.loggers:
-                logger(epoch)
+                logger(self._epoch)
 
             if self.convergence is not None:
                 if self.distributions:
                     for distr in self.distributions:
                         distr.sample(self.convergence.samples)
-                res = self.convergence.check(epoch)
+                res = self.convergence.check(self._epoch)
                 if not res:
                     break
                 # x of the variational distribution has changed due to sampling
                 for p in self.parameters:
                     p.fire_parameter_changed()
 
-            if self.checkpoint is not None and epoch % self.checkpoint_frequency == 0:
-                save_parameters(self.checkpoint, self.parameters)
+            if (
+                self.checkpoint is not None
+                and self._epoch % self.checkpoint_frequency == 0
+            ):
+                if self.checkpoint_all:
+                    checkpoint_file = self.checkpoint.replace(
+                        ".json", f"-{self._epoch}.json"
+                    )
+                    self.save_full_state(checkpoint_file, overwrite=True)
+                else:
+                    self.save_full_state(self.checkpoint)
+
+            self._epoch += 1
 
         for logger in self.loggers:
             logger.close()
@@ -165,8 +192,24 @@ class Optimizer(JSONSerializable, Runnable):
         else:
             self._run()
 
+    def state_dict(self) -> dict[str, Any]:
+        return {"iteration": self._epoch, "optimizer": self.optimizer.state_dict()}
+
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self._epoch = state_dict["iteration"]
+        self.optimizer.load_state_dict(state_dict["optimizer"])
+
+    def save_full_state(self, checkpoint, safely=True, overwrite=False) -> None:
+        optimizer_state = {
+            "id": self.id,
+            "type": "Optimizer",
+        }
+        optimizer_state.update(self.state_dict())
+        full_state = [optimizer_state] + self.parameters
+        save_parameters(checkpoint, full_state, safely, overwrite)
+
     @classmethod
-    def from_json(cls, data: dict[str, any], dic: dict[str, any]) -> Optimizer:
+    def from_json(cls, data: dict[str, Any], dic: dict[str, Any]) -> Optimizer:
         rules = {  # noqa: F841
             'loss': {'type': 'object|string', 'instanceof': 'CallableModel'},
             'parameters': {
@@ -214,6 +257,8 @@ class Optimizer(JSONSerializable, Runnable):
 
         if 'checkpoint_frequency' in data:
             optionals['checkpoint_frequency'] = data['checkpoint_frequency']
+        if "checkpoint_all" in data:
+            optionals["checkpoint_all"] = data["checkpoint_all"]
 
         if 'loggers' in data:
             loggers = process_objects(data["loggers"], dic)
@@ -246,7 +291,7 @@ class Optimizer(JSONSerializable, Runnable):
 
         # instanciate torch.optim.optimizer
         optim_class = get_class(data['algorithm'])
-        optim_options = data['options']
+        optim_options = data.get("options", {})
         signature_params = list(inspect.signature(optim_class.__init__).parameters)
         # 'maximize' is specified in some Optimizers (e.g. Adam but not LBFGS)
         # from pytorch 1.11. Here we never provide maximize to Adam and
@@ -287,4 +332,4 @@ class Optimizer(JSONSerializable, Runnable):
         if 'distributions' in data:
             optionals['distributions'] = process_objects(data["distributions"], dic)
 
-        return cls(parameters, loss, optimizer, iterations, **optionals)
+        return cls(data["id"], parameters, loss, optimizer, iterations, **optionals)

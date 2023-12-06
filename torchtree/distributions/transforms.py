@@ -1,6 +1,6 @@
 """Invertible transformations inheriting from torch.distributions.Transform."""
 import math
-from typing import Union
+from typing import Optional, Union
 
 import torch
 from torch.autograd.functional import jacobian
@@ -13,11 +13,12 @@ from torchtree.core.utils import register_class
 
 @register_class
 class TrilExpDiagonalTransform(Transform):
-    r"""Transform a 1D tensor to a triangular tensor. The diagonal of the
-    triangular matrix is exponentiated. Useful for variational inference with
-    the multivariate normal distribution as the variational distribution and it
-    is parameterized with scale_tril, a lower-triangular matrix with positive
-    diagonal.
+    r"""Transform a 1D tensor to a triangular tensor.
+
+    The diagonal of the triangular matrix is exponentiated. Useful for variational
+    inference with the multivariate normal distribution as the variational
+    distribution and it is parameterized with scale_tril, a lower-triangular matrix
+    with positive diagonal.
 
     Example:
 
@@ -124,8 +125,7 @@ class SoftPlusTransform(Transform):
 
 
 class CumSumSoftPlusTransform(Transform):
-    r"""Transform via the mapping :math:`y_i = \log(\exp(\sum_{j=0}^i x_j) +
-    1)`."""
+    r"""Transform via the mapping :math:`y_i = \log(\exp(\sum_{j=0}^i x_j) +1)`."""
     domain = constraints.real
     codomain = constraints.positive
     bijective = True
@@ -144,8 +144,9 @@ class CumSumSoftPlusTransform(Transform):
 
 @register_class
 class ConvexCombinationTransform(Transform):
-    r"""Transform from unconstrained space to constrained space via :math:`y =
-    \frac{x}{\sum_{i=1}^K \alpha_i x_i}` in order to satisfy
+    r"""Transform via the mapping :math:`y = \frac{x}{\sum_{i=1}^K \alpha_i x_i}`.
+
+    The transformation satisfies
     :math:`\sum_{i=1}^K \alpha_i y_i = 1` where :math:`\alpha_i \geq 0` and
     :math:`\sum_{i=1}^K \alpha_i = 1`.
 
@@ -188,41 +189,41 @@ class LogTransform(Transform):
 
 @register_class
 class LinearTransform(Transform):
-    r"""Transform via the mapping :math:`y = Ax + b`."""
+    r"""Transform via the mapping :math:`y = xA' + b`.
+
+    :example:
+    >>> x = torch.rand(3,2)
+    >>> weight = torch.rand(5, 2)
+    >>> bias = torch.rand(5)
+    >>> transform = LinearTransform(weight, bias)
+    >>> y = transform(x)
+    >>> torch.all(y == torch.nn.functional.linear(x, weight, bias))
+    tensor(True)
+    """
+
     domain = constraints.real
     codomain = constraints.real
-    bijective = True
-    sign = +1
 
     def __init__(
         self,
-        A: Union[AbstractParameter, torch.Tensor],
-        b: AbstractParameter,
+        weight: Union[AbstractParameter, torch.Tensor],
+        bias: Optional[Union[AbstractParameter, torch.Tensor]] = None,
         cache_size=0,
     ) -> None:
         super().__init__(cache_size=cache_size)
-        self.A = A
-        self.b = b
+        self.weight = weight
+        self.bias = bias
 
     def _call(self, x):
-        if isinstance(self.A, torch.Tensor):
-            if self.A.dim() == 1:
-                return self.A * x + self.b.tensor
-            else:
-                return torch.squeeze(self.A.t() @ x.unsqueeze(-1), -1) + self.b.tensor
-        else:
-            return (
-                torch.squeeze(self.A.tensor.t() @ x.unsqueeze(-1), -1) + self.b.tensor
-            )
+        bias = (
+            self.bias.tensor if isinstance(self.bias, AbstractParameter) else self.bias
+        )
+        weight = (
+            self.weight.tensor
+            if isinstance(self.weight, AbstractParameter)
+            else self.weight
+        )
+        return torch.nn.functional.linear(x, weight, bias)
 
     def _inverse(self, y):
-        if isinstance(self.A, torch.Tensor):
-            if self.A.dim() == 1:
-                return (y - self.b) / self.A
-            else:
-                return self.A.t().inverse() @ (y - self.b)
-        else:
-            return self.A.t().tensor.inverse() @ (y - self.b)
-
-    def log_abs_det_jacobian(self, x, y):
         raise NotImplementedError

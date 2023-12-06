@@ -2,25 +2,33 @@ from __future__ import annotations
 
 import torch
 
-from ..core.abstractparameter import AbstractParameter
-from ..core.model import CallableModel
-from ..core.utils import process_object, process_objects, register_class
-from ..distributions.distributions import DistributionModel
-from ..typing import ID
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.model import CallableModel
+from torchtree.core.utils import process_object, process_objects, register_class
+from torchtree.distributions.distributions import DistributionModel
+from torchtree.typing import ID
 
 
 @register_class
 class ELBO(CallableModel):
-    r"""Class representing the evidence lower bound (ELBO) objective. Maximizing
-    the ELBO is equivalent to minimizing exclusive Kullback-Leibler divergence
-    from p to q :math:`KL(q\|p)`.
+    r"""Class representing the evidence lower bound (ELBO) objective.
+
+    The ELBO is defined as
+
+    .. math::
+        \mathcal{L}(q) = \mathbb{E}_q[\log(p(z, x)] - \mathbb{E}_q[\log(q(z; \phi))]
+
+    Maximizing the ELBO wrt variational parameters :math:`\phi` is equivalent
+    to minimizing the exclusive Kullback-Leibler divergence from the
+    posterior distribution :math:`p` to the variational distribution :math:`q`
+    :math:`\text{KL}(q\|p) = \mathbb{E}_q[\log q(z; \phi)]-\mathbb{E}_q[\log p(z| x)]`.
 
     The shape of ``samples`` is at most 2 dimensional.
 
     - 0 or 1 dimension N or [N]: standard ELBO.
     - 2 dimensions [N,K]: multi sample ELBO.
 
-    :param id_: ID of KLqp object.
+    :param id_: ID of ELBO object.
     :type id_: str or None
     :param DistributionModel q: variational distribution.
     :param CallableModel p: joint distribution.
@@ -88,9 +96,25 @@ class ELBO(CallableModel):
 
 @register_class
 class KLpq(CallableModel):
-    r"""
-    Calculate inclusive Kullback-Leibler divergence from q to p :math:`KL(p\|q)`
-    using self-normalized importance sampling gradient estimator [#oh1992]_.
+    r"""Calculate inclusive Kullback-Leibler divergence from q to p
+    :math:`\text{KL}(p\|q)` using self-normalized importance sampling
+    gradient estimator.
+
+    The self-normalized importance sampling :footcite:p:`murphy2012machine` estimate
+    of :math:`\text{KL}(p \|q)` using the instrument distribution :math:`q` is
+
+    .. math::
+        \widehat{KL}(p||q) & = \sum_{s=1}^S \log\left(\frac{p(\tilde{z}_s | x)}
+          {q(\tilde{z}_s ; \phi)}\right) w_s , \quad \tilde{z}_s \sim q(z; \phi) \\
+        & \propto \sum_{s=1}^S \log\left(\frac{p(\tilde{z}_s)}
+          {q(\tilde{z}_s;\phi)}\right) w_s
+
+    where
+
+    .. math::
+        w_s = \frac{p(\tilde{z}_s, D, \tau)}{ q(\tilde{z}_s; \phi)} /
+          \sum_{i=1}^N \frac{p(\tilde{z}_i, D, \tau)}{q(\tilde{z}_i; \phi)}.
+
 
     :param id_: ID of KLpq object.
     :type id_: str or None
@@ -98,9 +122,7 @@ class KLpq(CallableModel):
     :param CallableModel p: joint distribution.
     :param torch.Size samples: number of samples.
 
-    .. [#oh1992] Oh, M.-S., & Berger, J. O. (1992). Adaptive importance sampling in
-     Monte Carlo integration.
-     Journal of Statistical Computation and Simulation, 41(3-4), 143–168.
+    .. footbibliography::
     """
 
     def __init__(
@@ -131,10 +153,19 @@ class KLpq(CallableModel):
 
 @register_class
 class KLpqImportance(CallableModel):
-    r"""
-    Class for minimizing inclusive Kullback-Leibler divergence
-    from q to p :math:`KL(p\|q)`
-    using self-normalized importance sampling gradient estimator [#oh1992]_.
+    r"""Class for minimizing inclusive Kullback-Leibler divergence
+    from q to p :math:`\text{KL}(p\|q)` using self-normalized importance
+    sampling gradient estimator.
+
+    .. math::
+        \nabla \widehat{\text{KL}}(p\|q) = -\sum_{s=1}^S w_s
+          \nabla\log q(\tilde{z}_s ; \phi) , \quad \tilde{z}_s \sim q(z; \phi)
+
+    where
+
+    .. math::
+        w_s = \frac{p(\tilde{z}_s, D, \tau)}{ q(\tilde{z}_s; \phi)} /
+          \sum_{i=1}^N \frac{p(\tilde{z}_i, D, \tau)}{q(\tilde{z}_i; \phi)}.
 
     :param id_: ID of object.
     :type id_: str or None
@@ -193,10 +224,11 @@ def _from_json(cls, data, dic):
 
 @register_class
 class SELBO(CallableModel):
-    r"""
-    Class representing the stratified evidence lower bound (SELBO) objective.
+    r"""Class representing the stratified evidence lower bound (SELBO) objective.
+
     Maximizing the SELBO is equivalent to minimizing exclusive Kullback-Leibler
-    divergence from p to q :math:`KL(q\|p)` where :math:`q=\sum_i \alpha_i q_i`.
+    divergence from p to q :math:`\text{KL}(q\|p)` where :math:`q=\sum_i \alpha_i q_i`
+    :footcite:p:`morningstar2021automatic`.
 
     The shape of ``samples`` is at most 2 dimensional.
 
@@ -211,6 +243,8 @@ class SELBO(CallableModel):
     :param torch.Size samples: number of samples.
     :param bool entropy: use entropy instead of Monte Carlo approximation
         for variational distribution
+
+    .. footbibliography::
     """
 
     def __init__(

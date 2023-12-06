@@ -7,11 +7,12 @@ import torch
 from torch.distributions import constraints
 from torch.distributions.distribution import Distribution
 
-from ..core.abstractparameter import AbstractParameter
-from ..core.model import CallableModel
-from ..core.parameter import Parameter
-from ..core.utils import process_object, process_objects, register_class
-from ..math import soft_sort
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.model import CallableModel
+from torchtree.core.parameter import Parameter
+from torchtree.core.utils import process_object, process_objects, register_class
+from torchtree.ops.smooth import soft_sort
+
 from ..typing import ID
 from .tree_model import TimeTreeModel, TreeModel
 

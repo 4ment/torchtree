@@ -10,6 +10,7 @@ import torch
 
 from torchtree import Parameter
 from torchtree.cli import PLUGIN_MANAGER
+from torchtree.cli.argparse_utils import list_or_int
 from torchtree.cli.evolution import (
     create_alignment,
     create_evolution_joint,
@@ -52,13 +53,13 @@ def create_variational_parser(subprasers):
     )
     parser.add_argument(
         '--elbo_samples',
-        type=int,
+        type=list_or_int,
         default=100,
         help="""number of samples for Monte Carlo estimate of ELBO""",
     )
     parser.add_argument(
         '--grad_samples',
-        type=int,
+        type=list_or_int,
         default=1,
         help="""number of samples for Monte Carlo estimate of gradients""",
     )
@@ -123,6 +124,11 @@ def create_variational_parser(subprasers):
         choices=['ELBO', 'KLpq'],
         default='ELBO',
         help="""divergence to optimize""",
+    )
+    parser.add_argument(
+        "--checkpoint_all",
+        action='store_true',
+        help="""log a new checkpoint file periodically""",
     )
     parser.set_defaults(func=build_advi)
     return parser
@@ -761,6 +767,9 @@ def create_advi(joint, variational, parameters, arg):
         'loss': loss,
         'parameters': parameters,
     }
+
+    if arg.checkpoint_all:
+        advi_dic["checkpoint_all"] = True
 
     if arg.K_elbo_samples > 1:
         elbo_samples = [arg.elbo_samples, arg.K_elbo_samples]

@@ -1,28 +1,33 @@
 """Phylogenetic tree priors."""
+from __future__ import annotations
+
+from typing import Any
+
 import torch
 from torch import Tensor
 
-from ..core.abstractparameter import AbstractParameter
-from ..core.model import CallableModel
-from ..core.parameter import Parameter
-from ..core.utils import process_object, register_class
-from ..evolution.tree_model import UnRootedTreeModel
-from ..typing import ID
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.identifiable import Identifiable
+from torchtree.core.model import CallableModel
+from torchtree.core.parameter import Parameter
+from torchtree.core.utils import process_object, register_class
+from torchtree.evolution.tree_model import UnRootedTreeModel
+from torchtree.typing import ID
 
 
 @register_class
 class CompoundGammaDirichletPrior(CallableModel):
-    """Compound gamma-Dirichlet prior on an unrooted tree [rannala2011]_
+    r"""Compound gamma-Dirichlet prior on an unrooted tree
+    :footcite:t:`rannala2012tail`.
 
-    :param id_: ID of object
+    :param str id_: identifier of object
     :param UnRootedTreeModel tree_model: unrooted tree model
     :param AbstractParameter alpha: concentration parameter of Dirichlet distribution
     :param AbstractParameter c: ratio of the mean internal/external branch lengths
     :param AbstractParameter shape: shape parameter of the gamma distribution
     :param AbstractParameter rate: rate parameter of the gamma distribution
 
-    .. [rannala2011]  Rannala, Zhu, and Ziheng Yang. Tail Paradox, Partial
-     Identifiability, and Influential Priors in Bayesian Branch Length Inference. 2011
+    .. footbibliography::
     """
 
     def __init__(
@@ -73,7 +78,27 @@ class CompoundGammaDirichletPrior(CallableModel):
         pass
 
     @classmethod
-    def from_json(cls, data, dic):
+    def from_json(
+        cls, data: dict[str, Any], dic: dict[str, Identifiable]
+    ) -> CompoundGammaDirichletPrior:
+        r"""Creates a CompoundGammaDirichletPrior object from a dictionary.
+
+        :param dict[str, Any] data: dictionary representation of a
+            CompoundGammaDirichletPrior object.
+        :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+            keyed by their ID.
+
+        **JSON attributes**:
+
+         Mandatory:
+          - id (str): unique string identifier.
+          - tree_model (dict or str): a tree model of type
+            :class:`~torchtree.evolution.tree_model.UnRootedTreeModel`.
+          - alpha (dict or float): concentration parameter of Dirichlet distribution.
+          - c (dict or float): ratio of the mean internal/external branch lengths.
+          - shape (dict or float): shape parameter of the gamma distribution.
+          - rate (dict or float): rate parameter of the gamma distribution.
+        """
         id_ = data['id']
         tree_model = process_object(data['tree_model'], dic)
         if isinstance(data['alpha'], (float, int)):

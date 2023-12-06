@@ -1,21 +1,26 @@
+from __future__ import annotations
+
 import abc
 import math
+from typing import Any
 
 import torch
 from torch import Tensor
 
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.identifiable import Identifiable
+from torchtree.core.utils import process_object, register_class
+from torchtree.inference.hmc.integrator import LeapfrogIntegrator
+from torchtree.inference.utils import extract_tensors_and_parameters
 from torchtree.ops.dual_averaging import DualAveraging
 from torchtree.ops.welford import WelfordVariance
-from torchtree.typing import ListParameter
-
-from ...core.abstractparameter import AbstractParameter
-from ...core.serializable import JSONSerializable
-from ...core.utils import process_object, register_class
-from ..utils import extract_tensors_and_parameters
-from .integrator import LeapfrogIntegrator
+from torchtree.typing import ID, ListParameter
 
 
-class Adaptor(JSONSerializable, abc.ABC):
+class Adaptor(Identifiable, abc.ABC):
+    def __init__(self, id_):
+        Identifiable.__init__(self, id_)
+
     @abc.abstractmethod
     def learn(self, acceptance_prob: Tensor, sample: int, accepted: bool) -> None:
         ...
@@ -24,15 +29,30 @@ class Adaptor(JSONSerializable, abc.ABC):
     def restart(self) -> None:
         pass
 
+    def state_dict(self) -> dict[str, Any]:
+        state_dict = {"id": self.id}
+        state_dict.update(self._state_dict())
+        return state_dict
+
+    @abc.abstractmethod
+    def _state_dict(self) -> dict[str, Any]:
+        pass
+
+    @abc.abstractmethod
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        pass
+
 
 @register_class
 class AdaptiveStepSize(Adaptor):
     def __init__(
         self,
+        id_: ID,
         integrator: LeapfrogIntegrator,
         target_acceptance_probability: float,
         **kwargs,
     ):
+        Adaptor.__init__(self, id_)
         self._integrator = integrator
         self.target_acceptance_probability = target_acceptance_probability
         self._start = kwargs.get("start", 1)
@@ -62,6 +82,17 @@ class AdaptiveStepSize(Adaptor):
             ) / (2 + self._call_counter)
             self._integrator.step_size = math.exp(new_parameter)
 
+    def _state_dict(self) -> dict[str, Any]:
+        state_dict = {
+            "call_counter": self._call_counter,
+            "accepted": self._accepted,
+        }
+        return state_dict
+
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self._call_counter = state_dict["call_counter"]
+        self._accepted = state_dict["accepted"]
+
     @classmethod
     def from_json(cls, data, dic):
         integrator = process_object(data["integrator"], dic)
@@ -72,7 +103,7 @@ class AdaptiveStepSize(Adaptor):
         if "end" in data:
             options["end"] = data["end"]
         options["use_acceptance_rate"] = data.get("use_acceptance_rate", False)
-        return cls(integrator, target_acceptance_probability, **options)
+        return cls(data["id"], integrator, target_acceptance_probability, **options)
 
 
 @register_class
@@ -84,6 +115,7 @@ class DualAveragingStepSize(Adaptor):
 
     def __init__(
         self,
+        id_: ID,
         integrator: LeapfrogIntegrator,
         mu=0.5,
         delta=0.8,
@@ -92,6 +124,7 @@ class DualAveragingStepSize(Adaptor):
         t0=10,
         **kwargs,
     ):
+        Adaptor.__init__(self, id_)
         self.integrator = integrator
         self._dual_avg = DualAveraging(mu=mu, gamma=gamma, kappa=kappa, t0=t0)
         self._delta = delta
@@ -112,6 +145,26 @@ class DualAveragingStepSize(Adaptor):
         elif self._call_counter >= self._end:
             self.integrator.step_size = math.exp(self._dual_avg.x_bar)
 
+    def _state_dict(self) -> dict[str, Any]:
+        state_dict = {
+            "call_counter": self._call_counter,
+        }
+        state_dict_dual = {
+            "counter": self._dual_abg._counter,
+            "x": self._dual_avg.x,
+            "x_bar": self._dual_avg.x_bar,
+            "s_bar": self._dual_avg.s_bar,
+        }
+        state_dict.update(state_dict_dual)
+        return state_dict
+
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self._call_counter = state_dict["call_counter"]
+        self._accepted = state_dict["accepted"]
+        self._dual_avg.x = state_dict["x"]
+        self._dual_avg.x_bar = state_dict["x_bar"]
+        self._dual_avg.s_bar = state_dict["s_bar"]
+
     @classmethod
     def from_json(cls, data, dic):
         integrator = process_object(data["integrator"], dic)
@@ -126,6 +179,7 @@ class DualAveragingStepSize(Adaptor):
         if "end" in data:
             options["end"] = data["end"]
         return cls(
+            data["id"],
             integrator,
             mu=mu,
             delta=target_acceptance_probability,
@@ -140,11 +194,13 @@ class DualAveragingStepSize(Adaptor):
 class MassMatrixAdaptor(Adaptor):
     def __init__(
         self,
+        id_: ID,
         parameters: ListParameter,
         mass_matrix: AbstractParameter,
         regularize=True,
         **kwargs,
     ):
+        Adaptor.__init__(self, id_)
         self._mass_matrix = mass_matrix
         self._parameters = parameters
         dim = mass_matrix.shape[0]
@@ -194,6 +250,28 @@ class MassMatrixAdaptor(Adaptor):
     def restart(self) -> None:
         self.variance_estimator.reset()
 
+    def _state_dict(self) -> dict[str, Any]:
+        state_dict = {
+            "call_counter": self._call_counter,
+        }
+        state_dict_estimator = {
+            "mean": self.variance_estimator._mean.tolist(),
+            "variance": self.variance_estimator._variance.tolist(),
+            "samples": self.variance_estimator.samples,
+        }
+        state_dict.update(state_dict_estimator)
+        return state_dict
+
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self._call_counter = state_dict["call_counter"]
+        self.variance_estimator.samples = state_dict["samples"]
+        info = {
+            "dtype": self.variance_estimator._mean.dtype,
+            "device": self.variance_estimator._mean.device,
+        }
+        self.variance_estimator._mean = torch.tensor(state_dict["mean"], **info)
+        self.variance_estimator._variance = torch.tensor(state_dict["variance"], **info)
+
     @classmethod
     def from_json(cls, data, dic):
         _, parameters = extract_tensors_and_parameters(data["parameters"], dic)
@@ -209,7 +287,7 @@ class MassMatrixAdaptor(Adaptor):
             options["update_frequency"] = data["update_frequency"]
         if "restart_frequency" in data:
             options["restart_frequency"] = data["restart_frequency"]
-        return cls(parameters, mass_matrix, regularize, **options)
+        return cls(data["id"], parameters, mass_matrix, regularize, **options)
 
 
 def find_reasonable_step_size(

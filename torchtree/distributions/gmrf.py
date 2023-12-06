@@ -101,8 +101,8 @@ class GMRF(CallableModel):
 
         precision_matrix[..., range(1, dim - 1), range(1, dim - 1)] = 2.0 * precision
         precision_matrix[..., 0, 0] = precision_matrix[
-            ..., dim - 1, dim - 1
-        ] = precision
+            ..., (dim - 1), (dim - 1)
+        ] = precision.squeeze(-1)
         return precision_matrix
 
     @classmethod
@@ -152,7 +152,7 @@ class GMRF(CallableModel):
 
 
 @register_class
-class GMRFCovariate(CallableModel):
+class GMRFCovariate(GMRF):
     r"""Gaussian Markov random field with covariates.
 
     Creates the Gaussian Markov random field with covariates prior proposed
@@ -192,9 +192,7 @@ class GMRFCovariate(CallableModel):
         covariates: AbstractParameter,
         beta: AbstractParameter,
     ) -> None:
-        super().__init__(id_)
-        self.field = field
-        self.precision = precision
+        super().__init__(id_, field, precision)
         self.covariates = covariates
         self.beta = beta
 
@@ -206,21 +204,11 @@ class GMRFCovariate(CallableModel):
             if self.covariates.shape[:-2] == self.beta.shape[:-1]
             else self.covariates.tensor.expand(self.beta.shape[:-1], (-1,))
         )
-        design_matrix = torch.zeros(
-            self.field.shape[:-1] + (dim, dim),
-            dtype=self.field.dtype,
-            device=self.field.device,
-        )
-        design_matrix[..., range(dim - 1), range(1, dim)] = design_matrix[
-            ..., range(1, dim), range(dim - 1)
-        ] = -precision.expand(self.field.shape[:-1] + (dim - 1,))
-
-        design_matrix[..., range(1, dim - 1), range(1, dim - 1)] = 2.0 * precision
-        design_matrix[..., 0, 0] = design_matrix[..., dim - 1, dim - 1] = precision
+        precision_matrix = self.precision_matrix()
         field_z_beta = self.field.tensor - (covariates @ self.beta.tensor)
         return (
             0.5 * (dim - 1) * precision.log()
-            - 0.5 * field_z_beta.t() @ design_matrix @ field_z_beta
+            - 0.5 * field_z_beta.t() @ precision_matrix @ field_z_beta
             - (dim - 1) / 2.0 * 1.8378770664093453
         )
 
