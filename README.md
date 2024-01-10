@@ -7,12 +7,13 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/torchtree)
 
 
-torchtree is a program for inferring phylogenetic trees from molecular sequeces. It is implemented in python and uses [PyTorch] to leverage automatic differentiation. Inference algorithms include variational inference, Hamiltonian Monte Carlo, maximum a posteriori and Markov chain Monte Carlo.
+torchtree is a program designed for inferring phylogenetic trees from molecular sequences. Implemented in Python, it leverages [PyTorch] for automatic differentiation. The suite of inference algorithms encompasses variational inference, Hamiltonian Monte Carlo, maximum *a posteriori*, and Markov chain Monte Carlo.
 
 - [Getting Started](#getting-started)
   - [Dependencies](#dependencies)
   - [Installation](#installation)
 - [Quick start](#quick-start)
+- [Plug-ins](#torchtree-plug-in)
 
 ## Getting Started
 
@@ -44,7 +45,7 @@ torchtree --help
 ```
 
 ## Quick start
-`torchtree` requires a JSON file contaning models and algorithms. A configutation file can generated using `torchtree-cli`, a command line-based tool. This two-step process allows the user to ajust values in the configuration file such as hyper prior parameters.
+`torchtree` requires a JSON file containing models and algorithms. A configuration file can be generated using `torchtree-cli`, a command line-based tool. This two-step process allows the user to adjust values in the configuration file, such as hyperparameters.
 
 ### 1 - Generating a configuration file
 Some examples of models using variational inference:

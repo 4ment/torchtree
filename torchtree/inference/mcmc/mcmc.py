@@ -55,7 +55,9 @@ class MCMC(Identifiable, Runnable):
         handler = SignalHandler()
 
         if self.every != 0:
-            print("  iter             logP   accept ratio   step size ")
+            print(
+                "  iter             logP   accept ratio   smoothed accept   step size "
+            )
             print(f"  {0:>4}  {log_joint:>15.3f}")
 
         while self._epoch <= self.iterations:
@@ -69,23 +71,23 @@ class MCMC(Identifiable, Runnable):
             hastings_ratio = operator.step()
 
             if torch.isinf(hastings_ratio):
-                log_alpha = torch.finfo(hastings_ratio.dtype).min
+                log_alpha = torch.tensor(torch.finfo(hastings_ratio.dtype).min)
                 acceptance_prob = torch.zeros_like(hastings_ratio)
                 accepted = False
             else:
                 with torch.no_grad():
                     log_joint_proposed = self.joint()
-                if torch.isnan(log_joint_proposed):
-                    log_alpha = torch.finfo(hastings_ratio.dtype).min
+                if torch.isnan(log_joint_proposed) or torch.isinf(log_joint_proposed):
+                    log_alpha = torch.tensor(torch.finfo(hastings_ratio.dtype).min)
                     acceptance_prob = torch.zeros_like(hastings_ratio)
                     accepted = False
                 else:
                     log_alpha = (log_joint_proposed - log_joint) + hastings_ratio
-                    acceptance_prob = min(torch.zeros(1), log_alpha).exp()
+                    acceptance_prob = min(torch.zeros_like(log_alpha), log_alpha).exp()
                     accepted = (acceptance_prob > torch.rand(1)).item()
 
             if accepted:
-                log_joint = log_joint_proposed
+                log_joint = log_joint_proposed.clone()
                 accept += 1
                 operator.accept()
             else:
@@ -114,9 +116,6 @@ class MCMC(Identifiable, Runnable):
 
             self._epoch += 1
 
-            if self.checkpoint is not None and epoch % self.checkpoint_frequency == 0:
-                save_parameters(self.checkpoint, self.parameters)
-
         for logger in self.loggers:
             logger.close()
 
@@ -124,6 +123,7 @@ class MCMC(Identifiable, Runnable):
             print(
                 op.id,
                 op._accept / (op._accept + op._reject),
+                op.smoothed_acceptance_rate(),
                 op._accept + op._reject,
                 op.tuning_parameter,
             )

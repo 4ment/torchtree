@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import abc
+import copy
 import math
+from collections import deque
 from typing import Any
 
 import torch
@@ -150,7 +152,7 @@ class DualAveragingStepSize(Adaptor):
             "call_counter": self._call_counter,
         }
         state_dict_dual = {
-            "counter": self._dual_abg._counter,
+            "counter": self._dual_avg._counter,
             "x": self._dual_avg.x,
             "x_bar": self._dual_avg.x_bar,
             "s_bar": self._dual_avg.s_bar,
@@ -214,7 +216,15 @@ class MassMatrixAdaptor(Adaptor):
         self._end = kwargs.get("end", float("inf"))
         self._frequency = kwargs.get("update_frequency", 10)
         self._restart_frequency = kwargs.get("restart_frequency", float("inf"))
+        self._variance_window = kwargs.get("variance_window", 0)
+        self._swap_every = kwargs.get("swap_every", 0)
+        self.variance_estimator2 = None
+        if self._swap_every != 0:
+            self.variance_estimator2 = WelfordVariance(
+                torch.zeros([dim]), torch.zeros_like(mass_matrix.tensor)
+            )
         self._call_counter = 0
+        self._values = deque()
 
     @property
     def mass_matrix(self):
@@ -228,9 +238,25 @@ class MassMatrixAdaptor(Adaptor):
                 self.variance_estimator.reset()
                 return
 
-            x = torch.cat([parameter.tensor for parameter in self._parameters], -1)
+            x = torch.cat(
+                [parameter.tensor.detach().clone() for parameter in self._parameters],
+                -1,
+            )
+
             self.variance_estimator.add_sample(x)
-            if self._call_counter % self._frequency == 0:
+
+            if self._variance_window != 0:
+                self._values.append(x)
+                if len(self._values) > 100:
+                    removed = self._values.popleft()
+                    self.variance_estimator.remove_sample(removed)
+            elif self._swap_every != 0:
+                self.variance_estimator2.add_sample(x)
+
+            if (
+                self._call_counter % self._frequency == 0
+                and self.variance_estimator.samples > 4
+            ):
                 inverse_mass_matrix = self.variance_estimator.variance()
                 if self._regularize:
                     n = self.variance_estimator.samples
@@ -246,6 +272,10 @@ class MassMatrixAdaptor(Adaptor):
                     self._mass_matrix.tensor = 1.0 / inverse_mass_matrix
                 else:
                     self._mass_matrix.tensor = torch.inverse(inverse_mass_matrix)
+
+            if self._swap_every != 0 and self._call_counter % self._swap_every == 0:
+                self.variance_estimator = copy.deepcopy(self.variance_estimator2)
+                self.variance_estimator2.reset()
 
     def restart(self) -> None:
         self.variance_estimator.reset()
@@ -287,6 +317,11 @@ class MassMatrixAdaptor(Adaptor):
             options["update_frequency"] = data["update_frequency"]
         if "restart_frequency" in data:
             options["restart_frequency"] = data["restart_frequency"]
+        if "variance_window" in data:
+            options["variance_window"] = data["variance_window"]
+        elif "swap_every" in data:
+            options["swap_every"] = data["swap_every"]
+
         return cls(data["id"], parameters, mass_matrix, regularize, **options)
 
 

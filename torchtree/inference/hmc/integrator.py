@@ -70,9 +70,12 @@ class LeapfrogIntegrator(Integrator):
         momentum = momentum.clone()
         set_tensor(parameters, params)
         U = model()
+        if torch.isnan(U):
+            raise ValueError("potential energy is NAN")
         U.backward()
         dU = -torch.cat([parameter.grad for parameter in parameters], -1)
-
+        if torch.isnan(dU).any():
+            raise ValueError("gradient of potential energy contains NANs")
         momentum = momentum - self.step_size / 2.0 * dU
 
         for _ in range(self.steps):
@@ -82,8 +85,12 @@ class LeapfrogIntegrator(Integrator):
                 params = params + self.step_size * (inverse_mass_matrix @ momentum)
             set_tensor(parameters, params.detach())
             U = model()
+            if torch.isnan(U):
+                raise ValueError("potential energy is NAN")
             U.backward()
             dU = -torch.cat([parameter.grad for parameter in parameters], -1)
+            if torch.isnan(dU).any():
+                raise ValueError("gradient of potential energy contains NANs")
             momentum -= self.step_size * dU
 
         for parameter in parameters:
@@ -93,10 +100,11 @@ class LeapfrogIntegrator(Integrator):
         return momentum
 
     def _state_dict(self) -> dict[str, Any]:
-        return {"step_size": self.step_size}
+        return {"step_size": self.step_size, "steps": self.steps}
 
     def load_state_dict(self, state_dict: dict[str, Any]) -> None:
         self.step_size = state_dict["step_size"]
+        self.steps = state_dict["steps"]
 
     @classmethod
     def from_json(cls, data, dic):

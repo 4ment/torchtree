@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import abc
 import math
+import statistics
+from collections import deque
 from typing import Any
 
 import torch
@@ -29,6 +31,8 @@ class MCMCOperator(Identifiable, abc.ABC):
         self._accept = 0
         self._reject = 0
         self._disable_adaptation = kwargs.get("disable_adaptation", False)
+        self._accept_window_length = kwargs.get("acceptance_window_length", 100)
+        self._accept_window = deque()
 
     @property
     @abc.abstractmethod
@@ -59,11 +63,22 @@ class MCMCOperator(Identifiable, abc.ABC):
 
     def accept(self) -> None:
         self._accept += 1
+        self._accept_window.append(1)
+        if len(self._accept_window) > self._accept_window_length:
+            self._accept_window.popleft()
 
     def reject(self) -> None:
         for parameter, saved_tensor in zip(self.parameters, self.saved_tensors):
             parameter.tensor = saved_tensor
         self._reject += 1
+        self._accept_window.append(0)
+        if len(self._accept_window) > self._accept_window_length:
+            self._accept_window.popleft()
+
+    def smoothed_acceptance_rate(self) -> float:
+        if len(self._accept_window) == 0:
+            return math.nan
+        return statistics.mean(self._accept_window)
 
     def tune(self, acceptance_prob: Tensor, sample: int, accepted: bool) -> None:
         if not self._disable_adaptation:
@@ -79,6 +94,7 @@ class MCMCOperator(Identifiable, abc.ABC):
             "adapt_count": self._adapt_count,
             "accept": self._accept,
             "reject": self._reject,
+            "accept_window": list(self._accept_window),
         }
         state_dict.update(self._state_dict())
         return state_dict
@@ -91,11 +107,25 @@ class MCMCOperator(Identifiable, abc.ABC):
         self._adapt_count = state_dict["adapt_count"]
         self._accept = state_dict["accept"]
         self._reject = state_dict["reject"]
+        self._accept_window = deque(state_dict["accept_window"])
         self._load_state_dict(state_dict)
 
     @abc.abstractmethod
     def _load_state_dict(self, state_dict: dict[str, Any]) -> None:
         pass
+
+    @staticmethod
+    def _parse_json(data, dic):
+        id_ = data["id"]
+        parameters = process_objects(data["parameters"], dic, force_list=True)
+        weight = data.get("weight", 1.0)
+        target_acceptance_probability = data.get("target_acceptance_probability", 0.24)
+        optionals = {}
+        optionals["disable_adaptation"] = data.get("disable_adaptation", False)
+        optionals["acceptance_window_length"] = data.get(
+            "acceptance_window_length", False
+        )
+        return id_, parameters, weight, target_acceptance_probability, optionals
 
 
 @register_class
@@ -149,13 +179,14 @@ class ScalerOperator(MCMCOperator):
 
     @classmethod
     def from_json(cls, data, dic):
-        id_ = data["id"]
-        parameters = process_objects(data["parameters"], dic, force_list=True)
-        weight = data.get("weight", 1.0)
+        (
+            id_,
+            parameters,
+            weight,
+            target_acceptance_probability,
+            optionals,
+        ) = MCMCOperator._parse_json(data, dic)
         scaler = data.get("scaler", 0.1)
-        target_acceptance_probability = data.get("target_acceptance_probability", 0.24)
-        optionals = {}
-        optionals["disable_adaptation"] = data.get("disable_adaptation", False)
 
         return cls(
             id_, parameters, weight, target_acceptance_probability, scaler, **optionals
@@ -209,13 +240,14 @@ class SlidingWindowOperator(MCMCOperator):
 
     @classmethod
     def from_json(cls, data, dic):
-        id_ = data["id"]
-        parameters = process_objects(data["parameters"], dic, force_list=True)
-        weight = data.get("weight", 1.0)
-        target_acceptance_probability = data.get("target_acceptance_probability", 0.24)
+        (
+            id_,
+            parameters,
+            weight,
+            target_acceptance_probability,
+            optionals,
+        ) = MCMCOperator._parse_json(data, dic)
         width = data.get("width", 0.1)
-        optionals = {}
-        optionals["disable_adaptation"] = data.get("disable_adaptation", False)
 
         return cls(
             id_, parameters, weight, target_acceptance_probability, width, **optionals
@@ -270,13 +302,14 @@ class DirichletOperator(MCMCOperator):
 
     @classmethod
     def from_json(cls, data, dic):
-        id_ = data["id"]
-        parameters = process_objects(data["parameters"], dic, force_list=True)
-        weight = data.get("weight", 1.0)
-        target_acceptance_probability = data.get("target_acceptance_probability", 0.24)
+        (
+            id_,
+            parameters,
+            weight,
+            target_acceptance_probability,
+            optionals,
+        ) = MCMCOperator._parse_json(data, dic)
         scaler = data.get("scaler", 1.0)
-        optionals = {}
-        optionals["disable_adaptation"] = data.get("disable_adaptation", False)
 
         return cls(
             id_, parameters, weight, target_acceptance_probability, scaler, **optionals

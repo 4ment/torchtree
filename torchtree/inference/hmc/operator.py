@@ -90,14 +90,18 @@ class HMCOperator(MCMCOperator, ParameterListener):
         self._integrator.step_size = math.exp(value)
 
     def _step(self) -> Tensor:
-        for i in range(10):
+        max_trials  = 10
+        trial = 0
+        while trial < max_trials:
             momentum = self._hamiltonian.sample_momentum(self.mass_matrix)
             ok = True
             try:
                 kinetic_energy0 = self._hamiltonian.kinetic_energy(
                     momentum, self.inverse_mass_matrix
                 )
-                ham0 = self._hamiltonian.potential_energy() + kinetic_energy0
+                with torch.no_grad():
+                    potential_energy0 = self._hamiltonian.potential_energy()
+                ham0 = potential_energy0 + kinetic_energy0
 
                 momentum = self._integrator(
                     self._hamiltonian.joint,
@@ -109,22 +113,25 @@ class HMCOperator(MCMCOperator, ParameterListener):
                 kinetic_energy = self._hamiltonian.kinetic_energy(
                     momentum, self.inverse_mass_matrix
                 )
-                ham = self._hamiltonian.potential_energy() + kinetic_energy
+                with torch.no_grad():
+                    potential_energy = self._hamiltonian.potential_energy()
+                ham = potential_energy + kinetic_energy
             except ValueError:
                 for parameter, saved_tensor in zip(self.parameters, self.saved_tensors):
                     parameter.tensor = saved_tensor
-                ok = False
-            if ok:
+                    assert parameter.tensor.requires_grad is False
+            else:
                 break
+            trial += 1
 
-        if not ok:
+        for parameter in self.parameters:
+            parameter.requires_grad = False
+
+        if trial == max_trials:
             return torch.tensor(float("inf"))
 
         if ham - ham0 > self._divergence_threshold:
             print(f"Hamiltonian divergence - {self.id}: {ham0} -> {ham} = {ham-ham0}")
-
-        for parameter in self.parameters:
-            parameter.requires_grad = False
 
         return kinetic_energy0 - kinetic_energy
 

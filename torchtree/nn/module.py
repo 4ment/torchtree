@@ -7,11 +7,11 @@ from typing import Optional, Union
 import torch
 from torch import Tensor, nn
 
-from ..core.abstractparameter import AbstractParameter
-from ..core.container import Container
-from ..core.model import CallableModel
-from ..core.utils import get_class, process_objects, register_class
-from ..typing import ID, OrderedDictType
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.container import Container
+from torchtree.core.model import CallableModel
+from torchtree.core.utils import get_class, process_objects, register_class
+from torchtree.typing import ID, OrderedDictType
 
 
 @register_class

@@ -1,4 +1,4 @@
-"""Torchtree distribution classes."""
+"""torchtree distribution classes."""
 from __future__ import annotations
 
 import abc
@@ -9,14 +9,17 @@ from typing import Any, Optional, Type, Union
 import torch
 import torch.distributions
 
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.container import Container
 from torchtree.core.identifiable import Identifiable
-
-from .. import Parameter
-from ..core.abstractparameter import AbstractParameter
-from ..core.container import Container
-from ..core.model import CallableModel
-from ..core.parameter import CatParameter
-from ..core.utils import get_class, process_object, process_objects, register_class
+from torchtree.core.model import CallableModel
+from torchtree.core.parameter import CatParameter, Parameter
+from torchtree.core.utils import (
+    get_class,
+    process_object,
+    process_objects,
+    register_class,
+)
 
 
 class DistributionModel(CallableModel):
@@ -58,7 +61,7 @@ class DistributionModel(CallableModel):
 
 @register_class
 class Distribution(DistributionModel):
-    """Wrapper for torch.distributions.Distribution.
+    """Wrapper for :class:`torch.distributions.distribution.Distribution`.
 
     :param id_: ID of distribution
     :param dist: class of torch Distribution
@@ -178,11 +181,57 @@ class Distribution(DistributionModel):
 
          Mandatory:
           - id (str): unique string identifier.
-          - distribution (str): full name of torch distribution class.
+          - distribution (str): complete path to the torch distribution class,
+            including package and module.
           - x (dict or str): parameter.
 
          Optional:
           - parameters (dict): parameters of the underlying torch Distribution.
+
+        **JSON examples**:
+
+        .. code-block:: json
+
+          {
+            "id": "exp",
+            "distribution": "torch.distributions.Exponential",
+            "x": {
+                "id": "y",
+                "type": "Parameter",
+                "tensor": 0.1
+            },
+            "parameters": {
+              "rate": {
+                "id": "rate",
+                "type": "Parameter",
+                "tensor": 0.1
+              }
+            }
+          }
+
+        .. code-block:: json
+
+          {
+            "id": "normal",
+            "distribution": "torch.distributions.Normal",
+            "x": {
+                "id": "y",
+                "type": "Parameter",
+                "tensor": 0.1
+            },
+            "parameters": {
+              "loc": {
+                "id": "loc",
+                "type": "Parameter",
+                "tensor": 0.0
+              },
+              "scale": {
+                "id": "scale",
+                "type": "Parameter",
+                "tensor": 0.1
+              }
+            }
+          }
 
         :example:
         >>> x_dict = {"id": "x", "type": "Parameter", "tensor": [1., 2.]}

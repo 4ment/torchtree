@@ -254,12 +254,25 @@ def validate(data, rules):
 
 
 def remove_comments(obj):
+    """Remove comments in dictionary representation of objects.
+
+    - A key starting with an underscore results in the key/value pair to be removed.
+    - A dictionary with key equal to *ignore* and value set to *True* results in its
+      removal.
+    """
     if isinstance(obj, list):
-        for element in obj:
-            remove_comments(element)
+        for i in range(len(obj) - 1, -1, -1):
+            if isinstance(obj[i], dict) and "ignore" in obj[i] and obj[i]["ignore"]:
+                del obj[i]
+            else:
+                remove_comments(obj[i])
     elif isinstance(obj, dict):
         for key in list(obj.keys()).copy():
-            if not key.startswith('_'):
+            if not key.startswith('_') and not (
+                isinstance(obj[key], dict)
+                and "ignore" in obj[key]
+                and obj[key]["ignore"]
+            ):
                 remove_comments(obj[key])
             else:
                 del obj[key]

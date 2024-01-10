@@ -9,11 +9,11 @@ from typing import Any, Optional, Union, overload
 import torch
 from torch import Tensor, nn
 
-from .abstractparameter import AbstractParameter
-from .container import Container
-from .identifiable import Identifiable
-from .parametric import ParameterListener, Parametric
-from .utils import (
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.container import Container
+from torchtree.core.identifiable import Identifiable
+from torchtree.core.parametric import ParameterListener, Parametric
+from torchtree.core.utils import (
     JSONParseError,
     get_class,
     process_object,
@@ -195,30 +195,29 @@ class Parameter(AbstractParameter):
 
         **JSON attributes**:
 
-         Only one of :attr:`tensor`, :attr:`full_like` :attr:`full`,
-         :attr:`zeros_like`, :attr:`zeros`, :attr:`ones_like`, :attr:`ones`,
-         :attr:`eye_like`, :attr:`eye`, :attr:`arange` can be specified.
+         Only one of ``tensor``, ``full_like``, ``full``, ``zeros_like``, ``zeros``,
+         ``ones_like``, ``ones``, ``eye_like``, ``eye``, ``arange`` can be specified.
 
-         - tensor (list): list of values.
-         - full_like (AbstractParameter): parameter used to determine the size of
+         - tensor (list): list of scalars.
+         - full_like (str or dict): parameter used to determine the size of
            the tensor.
 
            - value (float or int or bool): the number to fill the tensor with.
          - full (int or list): size of the tensor.
 
            - value (float or int or bool): the number to fill the tensor with.
-         - ones_like (AbstractParameter): parameter used to determine the size of
+         - ones_like (str or dict): parameter used to determine the size of
            the tensor filled with the scalar value 1.
          - ones (int or list): size of the tensor.
-         - zeros_like (AbstractParameter): parameter used to determine the size of
+         - zeros_like (str or dict): parameter used to determine the size of
            the tensor filled with the scalar value 0.
          - zeros (int or list): size of the tensor.
-         - eye_like (AbstractParameter): parameter used to create a 2-D tensor with
+         - eye_like (str or dict): parameter used to create a 2-D tensor with
            ones on the diagonal and zeros elsewhere.
          - eye (int or list): size of the 2D tensor with ones on the diagonal and
            zeros elsewhere. The list can only contain 2 integers.
          - arange (int or list): emulate torch.arange. If a int is provided it is
-           equiavalent to torch.arange(x). If a list is provided it is equivalient to
+           equivalent to torch.arange(x). If a list is provided it is equivalent to
            torch.arange(x[0], x[1], x[2]). The list can be of size 2 or 3.
 
          Optional:
@@ -229,7 +228,26 @@ class Parameter(AbstractParameter):
             tensor then the result tensor is constructed on the CPU.
           - requires_grad (bool): If autograd should record operations on the returned
             tensor. Default: False.
-          - nn (bool): If the tensor should wrapped in a torch.nn.Parameter object.
+          - nn (bool): If the tensor should be wrapped in a torch.nn.Parameter object.
+
+        **JSON Examples**
+
+        .. code-block:: json
+
+          {
+            "id": "param",
+            "type": "Parameter",
+            "tensor": [1.0, 2.0, 3.0]
+          }
+
+        .. code-block:: json
+
+          {
+            "id": "param2",
+            "type": "Parameter",
+            "full_like": "param",
+            "value": 0.1
+          }
 
         :example:
         >>> p_dic = {"id": "parameter", "type": "Parameter", "tensor": [1., 2., 3.]}
@@ -356,7 +374,7 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
 
     def __call__(self, *args, **kwargs) -> Tensor:
         if self.need_update:
-            self.apply_transform()
+            self._apply_transform()
             self.need_update = False
 
         return self.transform.log_abs_det_jacobian(self.x.tensor, self._tensor)
@@ -364,7 +382,7 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
     @property
     def tensor(self) -> Tensor:
         if self.need_update:
-            self.apply_transform()
+            self._apply_transform()
             self.need_update = False
         return self._tensor
 
@@ -374,6 +392,9 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
 
     @property
     def requires_grad(self) -> bool:
+        if self.need_update:
+            self._apply_transform()
+            self.need_update = False
         return self._tensor.requires_grad
 
     @requires_grad.setter
@@ -383,11 +404,11 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
     @property
     def shape(self) -> torch.Size:
         if self.need_update:
-            self.apply_transform()
+            self._apply_transform()
             self.need_update = False
         return self._tensor.shape
 
-    def apply_transform(self) -> None:
+    def _apply_transform(self) -> None:
         self._tensor = self.transform(self.x.tensor)
 
     def handle_parameter_changed(self, variable, index, event) -> None:
@@ -437,13 +458,28 @@ class TransformedParameter(AbstractParameter, Parametric, collections.abc.Callab
         **JSON attributes**:
 
          Mandatory:
-          - id (str): identidifer of object.
-          - x (AbstractParameter): parameter to transform.
-          - transform (str): torch transform class name, including package
-            and module names.
+          - id (str): identifier of object.
+          - x (str or dict): ID or dict representation of a parameter.
+          - transform (str): complete path of the torch transform class,
+            including package and module names.
 
          Optional:
-          - parameters (dic): parameter of torch transform.
+          - parameters (dic): parameters of torch transform.
+
+        **JSON Example**
+
+        .. code-block:: json
+
+          {
+            "id": "positive",
+            "type": "TransformedParameter",
+            "transform": "torch.distributions.ExpTransform",
+            "x" {
+              "id": "unconstrained",
+              "type": "Parameter",
+              "tensor": -1.0
+            }
+          }
 
         :example:
         >>> tensor = torch.tensor([1.,2.])

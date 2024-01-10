@@ -188,7 +188,7 @@ def create_hmc_operator(id_, joint, parameters, arg):
                 "type": "AdaptiveStepSize",
                 "integrator": f"{id_}.leapfrog",
                 "target_acceptance_probability": arg.target_acc_prob,
-                "use_acceptance_rate": True,
+                # "use_acceptance_rate": True,
             }
         )
     return operator
