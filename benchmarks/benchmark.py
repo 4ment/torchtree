@@ -10,7 +10,10 @@ from torch.distributions import StickBreakingTransform
 
 from torchtree import Parameter, TransformedParameter
 from torchtree.evolution.alignment import Alignment, Sequence
-from torchtree.evolution.coalescent import ConstantCoalescent
+from torchtree.evolution.coalescent import (
+    ConstantCoalescent,
+    PiecewiseLinearCoalescentGrid,
+)
 from torchtree.evolution.datatype import NucleotideDataType
 from torchtree.evolution.io import read_tree, read_tree_and_alignment
 from torchtree.evolution.site_pattern import compress_alignment
@@ -786,6 +789,61 @@ def constant_coalescent(args):
         print(f'  {args.replicates} gradient evaluations: {total_time}')
 
 
+def skyglide_coalescent(args):
+    tree = read_tree(args.tree, True, True)
+    taxa_count = len(tree.taxon_namespace)
+    taxa = []
+    for node in tree.leaf_node_iter():
+        taxa.append(Taxon(node.label, {"date": node.date}))
+    internal_heights = Parameter(
+        "internal_heights", torch.tensor([0.5] * (taxa_count - 2) + [20.0])
+    )
+    tree_model = TimeTreeModel("tree", tree, Taxa("taxa", taxa), internal_heights)
+    tree_model._internal_heights.tensor = heights_from_branch_lengths(tree)
+    pop_size = torch.arange(0.0, args.intervals, step=1) + 5
+    grid = torch.linspace(0, args.cutoff, pop_size.shape[-1])[1:]
+
+    @benchmark
+    def fn(tree_model, pop_size):
+        return PiecewiseLinearCoalescentGrid(pop_size, grid).log_prob(
+            tree_model.node_heights
+        )
+
+    @benchmark
+    def fn_grad(tree_model, pop_size):
+        log_p = PiecewiseLinearCoalescentGrid(pop_size, grid).log_prob(
+            tree_model.node_heights
+        )
+        log_p.backward()
+        internal_heights.tensor.grad.data.zero_()
+        pop_size.grad.data.zero_()
+        return log_p
+
+    total_time, log_p = fn(args.replicates, tree_model, pop_size)
+    print(f"  {args.replicates} evaluations: {total_time} {log_p}")
+
+    internal_heights.requires_grad = True
+    pop_size.requires_grad_(True)
+    grad_total_time, grad_log_p = fn_grad(args.replicates, tree_model, pop_size)
+    print(f"  {args.replicates} gradient evaluations: {grad_total_time}")
+
+    if args.output:
+        args.output.write(
+            f"skyglide,evaluation,off,{total_time},{log_p.squeeze().item()}\n"
+        )
+        args.output.write(
+            f"skyglide,gradient,off,{grad_total_time},{grad_log_p.squeeze().item()}\n"
+        )
+
+    if args.debug:
+        log_p = PiecewiseLinearCoalescentGrid(pop_size, grid).log_prob(
+            tree_model.node_heights
+        )
+        log_p.backward()
+        print("gradient ratios: ", internal_heights.grad)
+        print("gradient pop size: ", pop_size.grad)
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', required=True, help="""Alignment file""")
 parser.add_argument('-t', '--tree', required=True, help="""Tree file""")
@@ -825,6 +883,16 @@ parser.add_argument(
     required=False,
     action='store_true',
     help="""Include gradient calculation of GTR parameters""",
+)
+parser.add_argument(
+    "--cutoff",
+    type=float,
+    help="""cutoff for piecewise coalescent""",
+)
+parser.add_argument(
+    "--intervals",
+    type=int,
+    help="""number of intervals in piecewise coalescent""",
 )
 parser.add_argument("--all", required=False, action="store_true", help="""Run all""")
 parser.add_argument('--cuda', required=False, action='store_true', help="""Use GPU""")
@@ -878,6 +946,11 @@ ratio_transform(args)
 print()
 print('Constant coalescent:')
 constant_coalescent(args)
+
+if args.cutoff is not None and args.intervals is not None:
+    print()
+    print("Piecewise linear coalescent:")
+    skyglide_coalescent(args)
 
 if args.output:
     args.output.close()

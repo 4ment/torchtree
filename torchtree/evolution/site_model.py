@@ -2,21 +2,28 @@ from abc import abstractmethod
 from typing import Optional, Union
 
 import torch
-from torch.distributions import LogNormal
 
-from ..core.abstractparameter import AbstractParameter
-from ..core.model import Model
-from ..core.parameter import Parameter
-from ..core.utils import process_object, register_class
-from ..typing import ID
+from torchtree.core.abstractparameter import AbstractParameter
+from torchtree.core.model import Model
+from torchtree.core.parameter import Parameter
+from torchtree.core.utils import process_object, process_object_with_key, register_class
+from torchtree.typing import ID
 
 
 class SiteModel(Model):
-    _tag = 'site_model'
+    _tag = "site_model"
 
     def __init__(self, id_: ID, mu: AbstractParameter = None) -> None:
         super().__init__(id_)
         self._mu = mu
+        self.needs_update = True
+
+    def handle_parameter_changed(self, variable, index, event):
+        self.needs_update = True
+        self.fire_model_changed()
+
+    def handle_model_changed(self, model, obj, index):
+        pass
 
     @abstractmethod
     def rates(self) -> torch.Tensor:
@@ -35,35 +42,35 @@ class ConstantSiteModel(SiteModel):
         self._probability = torch.ones_like(self._rate.tensor)
 
     def rates(self) -> torch.Tensor:
+        self.needs_update = False
         return self._rate.tensor
 
     def probabilities(self) -> torch.Tensor:
+        self.needs_update = False
         return self._probability
-
-    def handle_model_changed(self, model, obj, index):
-        pass
-
-    def handle_parameter_changed(self, variable, index, event):
-        self.fire_model_changed()
 
     def _sample_shape(self) -> torch.Size:
         return self._rate.shape[:-1]
 
+    def to(self, *args, **kwargs) -> None:
+        super().to(*args, **kwargs)
+        self._probability = self._probability.to(*args, **kwargs)
+        self.needs_update = True
+
     def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
-        self._rate.cuda(device)
+        super().cuda(device)
         self._probability = self._probability.cuda(device)
+        self.needs_update = True
 
     def cpu(self) -> None:
-        self._rate.cpu()
+        super().cpu()
         self._probability = self._probability.cpu()
+        self.needs_update = True
 
     @classmethod
     def from_json(cls, data, dic):
-        if 'mu' in data:
-            mu = process_object(data['mu'], dic)
-        else:
-            mu = None
-        return cls(data['id'], mu)
+        mu = process_object_with_key("mu", data, dic)
+        return cls(data["id"], mu)
 
 
 @register_class
@@ -74,15 +81,14 @@ class InvariantSiteModel(SiteModel):
         super().__init__(id_, mu)
         self._invariant = invariant
         self._rates = None
-        self._probs = None
-        self.need_update = True
+        self._probabilities = None
 
     @property
     def invariant(self) -> torch.Tensor:
         return self._invariant.tensor
 
     def update_rates_probs(self, invariant: torch.Tensor):
-        self._probs = torch.cat((invariant, 1.0 - invariant), -1)
+        self._probabilities = torch.cat((invariant, 1.0 - invariant), -1)
         self._rates = torch.cat(
             (
                 torch.zeros_like(invariant, device=invariant.device),
@@ -94,35 +100,40 @@ class InvariantSiteModel(SiteModel):
             self._rates *= self._mu.tensor
 
     def rates(self) -> torch.Tensor:
-        if self.need_update:
+        if self.needs_update:
             self.update_rates_probs(self.invariant)
-            self.need_update = False
+            self.needs_update = False
         return self._rates
 
     def probabilities(self) -> torch.Tensor:
-        if self.need_update:
+        if self.needs_update:
             self.update_rates_probs(self.invariant)
-            self.need_update = False
-        return self._probs
+            self.needs_update = False
+        return self._probabilities
 
-    def handle_model_changed(self, model, obj, index):
-        pass
+    def to(self, *args, **kwargs) -> None:
+        super().to(*args, **kwargs)
+        self._probabilities = self._probabilities.to(*args, **kwargs)
+        self.needs_update = True
 
-    def handle_parameter_changed(self, variable, index, event):
-        self.need_update = True
-        self.fire_model_changed()
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        super().cuda(device)
+        self._probabilities = self._probabilities.cuda(device)
+        self.needs_update = True
+
+    def cpu(self) -> None:
+        super().cpu()
+        self._probabilities = self._probabilities.cpu()
+        self.needs_update = True
 
     def _sample_shape(self) -> torch.Size:
         return self._invariant.shape[:-1]
 
     @classmethod
     def from_json(cls, data, dic):
-        id_ = data['id']
-        invariant = process_object(data['invariant'], dic)
-        if 'mu' in data:
-            mu = process_object(data['mu'], dic)
-        else:
-            mu = None
+        id_ = data["id"]
+        invariant = process_object(data["invariant"], dic)
+        mu = process_object_with_key("mu", data, dic)
         return cls(id_, invariant, mu)
 
 
@@ -139,14 +150,13 @@ class UnivariateDiscretizedSiteModel(SiteModel):
         self._parameter = parameter
         self._categories = categories
         self._invariant = invariant
-        self.probs = torch.full(
+        self._probabilities = torch.full(
             (categories,),
             1.0 / categories,
             dtype=parameter.dtype,
             device=parameter.device,
         )
         self._rates = None
-        self.need_update = True
         if invariant is not None:
             self._categories += 1
 
@@ -166,7 +176,7 @@ class UnivariateDiscretizedSiteModel(SiteModel):
             quantile = (2.0 * torch.arange(cat, device=parameter.device) + 1.0) / (
                 2.0 * cat
             )
-            self.probs = torch.cat(
+            self._probabilities = torch.cat(
                 (
                     invariant,
                     ((1.0 - invariant) / cat).expand(invariant.shape[:-1] + (cat,)),
@@ -180,28 +190,21 @@ class UnivariateDiscretizedSiteModel(SiteModel):
             ) / (2.0 * self._categories)
             rates = self.inverse_cdf(parameter, quantile, invariant)
 
-        self._rates = rates / (rates * self.probs).sum(-1, keepdim=True)
+        self._rates = rates / (rates * self._probabilities).sum(-1, keepdim=True)
         if self._mu is not None:
             self._rates *= self._mu.tensor
 
     def rates(self) -> torch.Tensor:
-        if self.need_update:
+        if self.needs_update:
             self.update_rates(self._parameter.tensor, self.invariant)
-            self.need_update = False
+            self.needs_update = False
         return self._rates
 
     def probabilities(self) -> torch.Tensor:
-        if self.need_update:
+        if self.needs_update:
             self.update_rates(self._parameter.tensor, self.invariant)
-            self.need_update = False
-        return self.probs
-
-    def handle_model_changed(self, model, obj, index):
-        pass
-
-    def handle_parameter_changed(self, variable, index, event):
-        self.need_update = True
-        self.fire_model_changed()
+            self.needs_update = False
+        return self._probabilities
 
     def _sample_shape(self) -> torch.Size:
         return max(
@@ -209,13 +212,20 @@ class UnivariateDiscretizedSiteModel(SiteModel):
             key=len,
         )
 
-    def cuda(self, device: Optional[Union[int, torch.device]] = None):
-        super().cuda()
-        self.need_update = True
+    def to(self, *args, **kwargs) -> None:
+        super().to(*args, **kwargs)
+        self._probabilities = self._probabilities.to(*args, **kwargs)
+        self.needs_update = True
+
+    def cuda(self, device: Optional[Union[int, torch.device]] = None) -> None:
+        super().cuda(device)
+        self._probabilities = self._probabilities.cuda(device)
+        self.needs_update = True
 
     def cpu(self) -> None:
         super().cpu()
-        self.need_update = True
+        self._probabilities = self._probabilities.cpu()
+        self.needs_update = True
 
 
 @register_class
@@ -238,33 +248,9 @@ class WeibullSiteModel(UnivariateDiscretizedSiteModel):
 
     @classmethod
     def from_json(cls, data, dic):
-        id_ = data['id']
-        shape = process_object(data['shape'], dic)
-        categories = data['categories']
-        invariant = None
-        if 'invariant' in data:
-            invariant = process_object(data['invariant'], dic)
-        if 'mu' in data:
-            mu = process_object(data['mu'], dic)
-        else:
-            mu = None
+        id_ = data["id"]
+        categories = data["categories"]
+        shape = process_object(data["shape"], dic)
+        invariant = process_object_with_key("invariant", data, dic)
+        mu = process_object_with_key("mu", data, dic)
         return cls(id_, shape, categories, invariant, mu)
-
-
-class LogNormalSiteModel(UnivariateDiscretizedSiteModel):
-    @property
-    def scale(self) -> torch.Tensor:
-        return self._parameter.tensor
-
-    def update_rates(self, value):
-        rates = LogNormal(-value * value / 2.0, value).icdf(self.quantile)
-        self._rates = rates / (rates.sum() * self.probs)
-        if self._mu is not None:
-            self._rates *= self._mu.tensor
-
-    @classmethod
-    def from_json(cls, data, dic):
-        id_ = data['id']
-        scale = process_object(data['scale'], dic)
-        categories = int(data['categories'])
-        return cls(id_, scale, categories)

@@ -60,9 +60,9 @@ class Model(Parametric, Identifiable, ModelListener, ParameterListener):
         self._apply(lambda x: x.cpu())
 
     def _apply(self, fn):
-        for param in self._parameters:
+        for param in self._parameters.values():
             fn(param)
-        for model in self._models:
+        for model in self._models.values():
             fn(model)
 
     def models(self):

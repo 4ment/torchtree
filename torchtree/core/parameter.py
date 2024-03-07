@@ -147,7 +147,7 @@ class Parameter(AbstractParameter):
         """
         if len(args) == 0:
             self._tensor = self._tensor.to(
-                device=kwargs['device'], dtype=kwargs['dtype']
+                device=kwargs.get("device", None), dtype=kwargs.get("dtype", None)
             )
         else:
             self._tensor = self._tensor.to(args[0])

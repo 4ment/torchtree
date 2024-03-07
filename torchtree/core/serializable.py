@@ -1,11 +1,12 @@
 """Interface for serializable objects."""
+
 from __future__ import annotations
 
 import abc
 import logging
 from typing import Any
 
-from .utils import JSONParseError
+from torchtree.core.utils import JSONParseError
 
 
 class JSONSerializable(abc.ABC):
@@ -41,6 +42,20 @@ class JSONSerializable(abc.ABC):
         """
         try:
             return cls.from_json(data, dic)
+        except KeyError as e:
+            type_ = cls.__name__
+            key = e.args[0]
+            if key == "id" or "id" not in data:
+                raise JSONParseError(f"Missing `id' key for object of type `{type_}'")
+            else:
+                id_ = data["id"]
+                raise JSONParseError(
+                    f"Missing key `{key}' for object of type `{type_}' with ID `{id_}'"
+                )
         except JSONParseError as e:
             logging.error(e)
-            raise JSONParseError("Calling object with ID '{}'".format(data['id']))
+            raise JSONParseError(
+                "Calling object of type `{}' with ID `{}'".format(
+                    cls.__name__, data["id"]
+                )
+            )

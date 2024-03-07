@@ -27,13 +27,13 @@ def create_hmc_parser(subprasers):
         "--step_size",
         default=0.01,
         type=float,
-        help="""step size for leafrog integrator [default: %(default)f]""",
+        help="""step size for leapfrog integrator [default: %(default)f]""",
     )
     parser.add_argument(
         "--steps",
         type=int,
         default=10,
-        help="""number of steps for leafrog integrator [default: %(default)d]""",
+        help="""number of steps for leapfrog integrator [default: %(default)d]""",
     )
     parser.add_argument(
         "--log_every",

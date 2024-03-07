@@ -6,14 +6,16 @@ import numpy as np
 import torch
 from torch.distributions import MultivariateNormal, Normal
 
-from ...core.model import CallableModel
-from ...core.parameter_utils import pack_tensor, save_parameters
-from ...core.runnable import Runnable
-from ...core.serializable import JSONSerializable
-from ...core.utils import process_object, process_objects, register_class
-from ...typing import ListParameter
-from ..utils import extract_tensors_and_parameters
-from .integrator import Integrator
+from torchtree.core.model import CallableModel
+from torchtree.core.parameter_utils import pack_tensor, save_parameters
+from torchtree.core.runnable import Runnable
+from torchtree.core.serializable import JSONSerializable
+from torchtree.core.utils import process_object, process_objects, register_class
+from torchtree.inference.hmc.adaptation import find_reasonable_step_size
+from torchtree.inference.hmc.hamiltonian import Hamiltonian
+from torchtree.inference.hmc.integrator import Integrator
+from torchtree.inference.utils import extract_tensors_and_parameters
+from torchtree.typing import ListParameter
 
 
 @register_class
@@ -34,9 +36,14 @@ class HMC(JSONSerializable, Runnable):
             [parameter.tensor.shape[0] for parameter in self.parameters]
         )
 
+        self._hamiltonian = Hamiltonian(None, joint)
+
         if 'mass_matrix' in kwargs:
             self.mass_matrix = kwargs['mass_matrix']
-            self.inverse_mass_matrix = 1.0 / self.mass_matrix  # only works for diagonal
+            if self.mass_matrix.dim() == 1:
+                self.inverse_mass_matrix = 1.0 / self.mass_matrix
+            else:
+                self.inverse_mass_matrix = torch.inverse(self.mass_matrix)
             self.sqrt_mass_matrix = self.mass_matrix.sqrt()
         else:
             self.mass_matrix = torch.ones(self.dimension)
@@ -48,7 +55,7 @@ class HMC(JSONSerializable, Runnable):
         self.checkpoint = kwargs.get('checkpoint', None)
         self.checkpoint_frequency = kwargs.get('checkpoint_frequency', 1000)
         self.every = kwargs.get('every', 100)
-        self.find_step_size = kwargs.get('find_set_size', True)
+        self.find_step_size = kwargs.get('find_step_size', False)
 
     def sample_momentum(self, params):
         if self.sqrt_mass_matrix.dim() == 1:
@@ -94,15 +101,20 @@ class HMC(JSONSerializable, Runnable):
 
         for epoch in range(1, self.iterations + 1):
             params = torch.cat(
-                [parameter.tensor.clone() for parameter in self.parameters], -1
+                [parameter.tensor.detach().clone() for parameter in self.parameters], -1
             )
-            momentum = self.sample_momentum(params)
-            hamiltonian = self.hamiltonian(momentum)
-
+            momentum = self._hamiltonian.sample_momentum(self.mass_matrix)
+            with torch.no_grad():
+                hamiltonian = self._hamiltonian(
+                    momentum=momentum, inverse_mass_matrix=self.inverse_mass_matrix
+                )
             momentum = self.integrator(
                 self.joint, self.parameters, momentum, self.inverse_mass_matrix
             )
-            proposed_hamiltonian = self.hamiltonian(momentum)
+            with torch.no_grad():
+                proposed_hamiltonian = self._hamiltonian(
+                    momentum=momentum, inverse_mass_matrix=self.inverse_mass_matrix
+                )
 
             alpha = -proposed_hamiltonian + hamiltonian
 

@@ -90,7 +90,7 @@ class HMCOperator(MCMCOperator, ParameterListener):
         self._integrator.step_size = math.exp(value)
 
     def _step(self) -> Tensor:
-        max_trials  = 10
+        max_trials = 10
         trial = 0
         while trial < max_trials:
             momentum = self._hamiltonian.sample_momentum(self.mass_matrix)

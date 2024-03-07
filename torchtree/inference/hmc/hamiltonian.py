@@ -4,9 +4,9 @@ import torch
 from torch import Tensor
 from torch.distributions import MultivariateNormal, Normal
 
-from ...core.model import CallableModel
-from ...core.utils import process_object, register_class
-from ...typing import ID
+from torchtree.core.model import CallableModel
+from torchtree.core.utils import process_object, register_class
+from torchtree.typing import ID
 
 
 @register_class
@@ -48,8 +48,9 @@ class Hamiltonian(CallableModel):
         return momentum
 
     def potential_energy(self) -> Tensor:
-        with torch.no_grad():
-            potential_energy = -self.joint()
+        potential_energy = -self.joint()
+        if torch.isnan(potential_energy):
+            raise ValueError("potential energy is NAN")
         return potential_energy
 
     def kinetic_energy(self, momentum: Tensor, inverse_mass_matrix: Tensor) -> Tensor:
@@ -69,4 +70,4 @@ class Hamiltonian(CallableModel):
     @classmethod
     def from_json(cls, data, dic) -> Hamiltonian:
         joint = process_object(data["joint"], dic)
-        return cls(data['id'], joint)
+        return cls(data["id"], joint)

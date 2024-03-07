@@ -121,7 +121,7 @@ class Optimizer(Identifiable, Runnable):
 
         trials = 10
 
-        while self._epoch < self.iterations:
+        while self._epoch <= self.iterations:
             if handler.stop:
                 break
 

@@ -146,50 +146,60 @@ def process_objects(data, dic, force_list=False, key=None):
             return obj
 
 
+def process_object_with_key(key, data, dic, default=None):
+    if key in data:
+        return process_object(data[key], dic)
+    else:
+        return default
+
+
 def process_object(data, dic):
     if isinstance(data, str):
         # for references such as branches.{0:3}
         try:
-            if '{' in data:
-                stem, indices = data.split('{')
-                start, stop = indices.rstrip('}').split(':')
+            if "{" in data:
+                stem, indices = data.split("{")
+                start, stop = indices.rstrip("}").split(":")
                 for i in range(int(start), int(stop)):
                     obj = dic[stem + str(i)]
             else:
                 obj = dic[data]
         except KeyError:
             raise JSONParseError(
-                'Object with ID `{}\' not found'.format(data)
+                "Object with ID `{}\' not found".format(data)
             ) from None
     elif isinstance(data, dict):
-        id_ = data['id']
+        try:
+            id_ = data["id"]
+        except KeyError as e:
+            logging.error(e)
+            if "type" in data:
+                type_ = data["type"]
+                raise JSONParseError(
+                    f"Missing `id' key for object of type `{type_}'"
+                ) from None
+            else:
+                raise JSONParseError("Missing `id' and `type' keys") from None
+
         if id_ in dic:
-            raise JSONParseError('Object with ID `{}\' already exists'.format(id_))
-        if 'type' not in data:
-            raise JSONParseError(
-                'Object with ID `{}\' does not have a type'.format(id_)
-            )
+            raise JSONParseError("Object with ID `{id_}' already exists")
+        if "type" not in data:
+            raise JSONParseError("Object with ID `{id_}' does not have a type")
 
         try:
-            klass = get_class(data['type'])
+            klass = get_class(data["type"])
         except ModuleNotFoundError as e:
-            raise JSONParseError(
-                str(e) + " in object with ID '" + data['id'] + "'"
-            ) from None
+            raise JSONParseError(str(e) + f" in object with ID `{id_}'") from None
         except AttributeError as e:
-            raise JSONParseError(
-                str(e) + " in object with ID '" + data['id'] + "'"
-            ) from None
+            raise JSONParseError(str(e) + f" in object with ID `{id_}'") from None
         except ValueError as e:
-            raise JSONParseError(
-                str(e) + " in object with ID '" + data['id'] + "'"
-            ) from None
+            raise JSONParseError(str(e) + f" in object with ID `{id_}'") from None
 
         obj = klass.from_json_safe(data, dic)
         dic[id_] = obj
     else:
         raise JSONParseError(
-            'Object is not valid (should be str or object)\nProvided: {}'.format(data)
+            "Object is not valid (should be str or object)\nProvided: {}".format(data)
         )
     return obj
 

@@ -33,7 +33,7 @@ class MCMC(Identifiable, Runnable):
         self.joint = joint
         self.iterations = iterations
         self.loggers = kwargs.get("loggers", ())
-        self.checkpoint = kwargs.get("checkpoint", None)
+        self.checkpoint = kwargs.get("checkpoint", "checkpoint.json")
         self.checkpoint_frequency = kwargs.get("checkpoint_frequency", 1000)
         self.every = kwargs.get("every", 100)
         self._epoch = 1
