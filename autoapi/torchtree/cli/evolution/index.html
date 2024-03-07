@@ -1,15 +1,14 @@
 
-
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" >
+<html lang="en" data-content_root="../../../../" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>torchtree.cli.evolution &#8212; torchtree 1.0.2-dev2 documentation</title>
+    <title>torchtree.cli.evolution &#8212; torchtree 1.0.2-dev3 documentation</title>
   
   
   
@@ -19,30 +18,30 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../../../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../../../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
 
   
-  <link href="../../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../../../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
-    <link rel="stylesheet" href="../../../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css?v=a5c4661c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/sphinx_highlight.js"></script>
-    <script src="../../../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script src="../../../../_static/documentation_options.js?v=14d244e0"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/torchtree/cli/evolution/index';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -57,10 +56,9 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>
@@ -101,11 +99,14 @@
 </form></div>
   </div>
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-    </nav>
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -130,10 +131,21 @@
   
   
   
-    <p class="title logo__title">torchtree 1.0.2-dev2 documentation</p>
+    <p class="title logo__title">torchtree 1.0.2-dev3 documentation</p>
   
 </a></div>
-        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current nav bd-sidenav">
@@ -222,7 +234,6 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../inference/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../inference/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc</span></code></a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../inference/hmc/adaptation/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.adaptation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../inference/hmc/adaptors/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.adaptors</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../inference/hmc/hamiltonian/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.hamiltonian</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../inference/hmc/hmc/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.hmc</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../inference/hmc/integrator/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.inference.hmc.integrator</span></code></a></li>
@@ -443,14 +454,14 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <section id="module-torchtree.cli.evolution">
-<span id="torchtree-cli-evolution"></span><h1><a class="reference internal" href="#module-torchtree.cli.evolution" title="torchtree.cli.evolution"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.evolution</span></code></a><a class="headerlink" href="#module-torchtree.cli.evolution" title="Permalink to this heading">#</a></h1>
+<span id="torchtree-cli-evolution"></span><h1><a class="reference internal" href="#module-torchtree.cli.evolution" title="torchtree.cli.evolution"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torchtree.cli.evolution</span></code></a><a class="headerlink" href="#module-torchtree.cli.evolution" title="Link to this heading">#</a></h1>
 <section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">#</a></h2>
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
 <section id="functions">
-<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">#</a></h3>
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h3>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_evolution_parser" title="torchtree.cli.evolution.create_evolution_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_evolution_parser</span></code></a>(parser)</p></td>
@@ -568,7 +579,7 @@ document.write(`
 </table>
 </section>
 <section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">#</a></h3>
+<h3>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">#</a></h3>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.logger" title="torchtree.cli.evolution.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
@@ -578,194 +589,194 @@ document.write(`
 </table>
 <dl class="py data">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.logger">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#torchtree.cli.evolution.logger" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#torchtree.cli.evolution.logger" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_evolution_parser">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_evolution_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_evolution_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_evolution_parser" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_evolution_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_evolution_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_evolution_parser" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.add_birth_death">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">add_birth_death</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#add_birth_death"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.add_birth_death" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">add_birth_death</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#add_birth_death"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.add_birth_death" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.add_coalescent">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">add_coalescent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#add_coalescent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.add_coalescent" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">add_coalescent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#add_coalescent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.add_coalescent" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.distribution_type">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">distribution_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#distribution_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.distribution_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">distribution_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#distribution_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.distribution_type" title="Link to this definition">#</a></dt>
 <dd><p>Used by argparse for specifying distributions with optional
 parameters.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.run_tree_regression">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">run_tree_regression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#run_tree_regression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.run_tree_regression" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">run_tree_regression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#run_tree_regression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.run_tree_regression" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_tree_model">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_tree_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_tree_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_tree_model" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_tree_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_tree_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_tree_model" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_poisson_tree_likelihood">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_poisson_tree_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_poisson_tree_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_poisson_tree_likelihood" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_poisson_tree_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_poisson_tree_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_poisson_tree_likelihood" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_tree_likelihood_single">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_tree_likelihood_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">substitution_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_tree_likelihood_single"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_tree_likelihood_single" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_tree_likelihood_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">substitution_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_tree_likelihood_single"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_tree_likelihood_single" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_tree_likelihood_general">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_tree_likelihood_general</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trait</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../evolution/taxa/index.html#torchtree.evolution.taxa.Taxa" title="torchtree.evolution.taxa.Taxa"><span class="pre">torchtree.evolution.taxa.Taxa</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_tree_likelihood_general"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_tree_likelihood_general" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_tree_likelihood_general</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trait</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../evolution/taxa/index.html#torchtree.evolution.taxa.Taxa" title="torchtree.evolution.taxa.Taxa"><span class="pre">torchtree.evolution.taxa.Taxa</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_tree_likelihood_general"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_tree_likelihood_general" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_tree_likelihood">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_tree_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_tree_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_tree_likelihood" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_tree_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_tree_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_tree_likelihood" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_site_model">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_site_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_site_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_site_model" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_site_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_site_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_site_model" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_site_model_srd06_mus">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_site_model_srd06_mus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_site_model_srd06_mus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_site_model_srd06_mus" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_site_model_srd06_mus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_site_model_srd06_mus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_site_model_srd06_mus" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.is_float">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">is_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#is_float"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.is_float" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">is_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#is_float"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.is_float" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_branch_model">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_branch_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_branch_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_branch_model" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_branch_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa_count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_branch_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_branch_model" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.build_alignment">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">build_alignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#build_alignment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.build_alignment" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">build_alignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#build_alignment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.build_alignment" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_substitution_model">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_substitution_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_substitution_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_substitution_model" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_substitution_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_substitution_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_substitution_model" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_site_pattern">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_site_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_site_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_site_pattern" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_site_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_site_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_site_pattern" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_data_type">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_data_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_data_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_data_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_data_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_data_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_data_type" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_general_data_type">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_general_data_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trait</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_general_data_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_general_data_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_general_data_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trait</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_general_data_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_general_data_type" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_alignment">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_alignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_alignment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_alignment" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_alignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_alignment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_alignment" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_taxa">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_taxa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_taxa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_taxa" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_taxa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_taxa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_taxa" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_birth_death">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_birth_death</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_birth_death"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_birth_death" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_birth_death</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_birth_death"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_birth_death" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_constant_birth_death">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_constant_birth_death</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_constant_birth_death"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_constant_birth_death" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_constant_birth_death</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_constant_birth_death"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_constant_birth_death" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_bdsk">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_bdsk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_bdsk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_bdsk" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_bdsk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_bdsk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_bdsk" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_coalesent">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_coalesent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_coalesent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_coalesent" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_coalesent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_coalesent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_coalesent" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_substitution_model_priors">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_substitution_model_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substmodel_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_substitution_model_priors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_substitution_model_priors" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_substitution_model_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substmodel_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_substitution_model_priors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_substitution_model_priors" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_ucln_prior">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_ucln_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch_model_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_ucln_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_ucln_prior" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_ucln_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch_model_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_ucln_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_ucln_prior" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.parse_distribution">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">parse_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">desc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#parse_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.parse_distribution" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">parse_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">desc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#parse_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.parse_distribution" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_clock_prior">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_clock_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_clock_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_clock_prior" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_clock_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_clock_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_clock_prior" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_evolution_priors">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_evolution_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_evolution_priors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_evolution_priors" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_evolution_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_evolution_priors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_evolution_priors" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_time_tree_prior">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_time_tree_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_time_tree_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_time_tree_prior" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_time_tree_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_time_tree_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_time_tree_prior" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_bd_prior">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_bd_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_bd_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_bd_prior" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_bd_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_bd_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_bd_prior" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_constant_bd_prior">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_constant_bd_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_constant_bd_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_constant_bd_prior" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_constant_bd_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_constant_bd_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_constant_bd_prior" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_bdsk_prior">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_bdsk_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_bdsk_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_bdsk_prior" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_bdsk_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birth_death_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_bdsk_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_bdsk_prior" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_poisson_evolution_joint">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_poisson_evolution_joint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_poisson_evolution_joint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_poisson_evolution_joint" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_poisson_evolution_joint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_poisson_evolution_joint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_poisson_evolution_joint" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.create_evolution_joint">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_evolution_joint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_evolution_joint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_evolution_joint" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">create_evolution_joint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">taxa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#create_evolution_joint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.create_evolution_joint" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.get_engine">
-<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">get_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#get_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.get_engine" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">get_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#get_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.get_engine" title="Link to this definition">#</a></dt>
 <dd><p>Import module or use cashed module if engine is specified in
 arguments.</p>
 </dd></dl>
@@ -811,6 +822,7 @@ arguments.</p>
             
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
 
   <div class="sidebar-secondary-item">
   <div class="page-toc tocsection onthispage">
@@ -887,7 +899,7 @@ By Mathieu Fourment
 
   <p class="copyright">
     
-      © Copyright 2023, Mathieu Fourment.
+      © Copyright 2024, Mathieu Fourment.
       <br/>
     
   </p>
@@ -911,8 +923,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../../../../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
 
   <footer class="bd-footer">
   </footer>

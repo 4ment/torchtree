@@ -17,7 +17,6 @@ Classes
    torchtree.evolution.site_model.InvariantSiteModel
    torchtree.evolution.site_model.UnivariateDiscretizedSiteModel
    torchtree.evolution.site_model.WeibullSiteModel
-   torchtree.evolution.site_model.LogNormalSiteModel
 
 
 
@@ -32,6 +31,12 @@ Classes
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
+   .. py:method:: handle_parameter_changed(variable, index, event)
+
+
+   .. py:method:: handle_model_changed(model, obj, index)
+
 
    .. py:method:: rates() -> torch.Tensor
       :abstractmethod:
@@ -59,10 +64,9 @@ Classes
    .. py:method:: probabilities() -> torch.Tensor
 
 
-   .. py:method:: handle_model_changed(model, obj, index)
+   .. py:method:: to(*args, **kwargs) -> None
 
-
-   .. py:method:: handle_parameter_changed(variable, index, event)
+      Performs Tensor dtype and/or device conversion using torch.to.
 
 
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
@@ -112,10 +116,19 @@ Classes
    .. py:method:: probabilities() -> torch.Tensor
 
 
-   .. py:method:: handle_model_changed(model, obj, index)
+   .. py:method:: to(*args, **kwargs) -> None
+
+      Performs Tensor dtype and/or device conversion using torch.to.
 
 
-   .. py:method:: handle_parameter_changed(variable, index, event)
+   .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
+
+      Move tensors to CUDA using torch.cuda.
+
+
+   .. py:method:: cpu() -> None
+
+      Move tensors to CPU memory using ~torch.cpu.
 
 
    .. py:method:: from_json(data, dic)
@@ -159,13 +172,12 @@ Classes
    .. py:method:: probabilities() -> torch.Tensor
 
 
-   .. py:method:: handle_model_changed(model, obj, index)
+   .. py:method:: to(*args, **kwargs) -> None
+
+      Performs Tensor dtype and/or device conversion using torch.to.
 
 
-   .. py:method:: handle_parameter_changed(variable, index, event)
-
-
-   .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None)
+   .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
       Move tensors to CUDA using torch.cuda.
 
@@ -192,37 +204,6 @@ Classes
 
 
    .. py:method:: inverse_cdf(parameter, quantile, invariant)
-
-
-   .. py:method:: from_json(data, dic)
-      :classmethod:
-
-      Abstract method to create object from a dictionary.
-
-      :param dict[str, Any] data: dictionary representation of a torchtree object.
-      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
-          by their ID.
-      :return: torchtree object.
-      :rtype: Any
-
-
-
-.. py:class:: LogNormalSiteModel(id_: torchtree.typing.ID, parameter: torchtree.core.abstractparameter.AbstractParameter, categories: int, invariant: torchtree.core.abstractparameter.AbstractParameter = None, mu: torchtree.core.abstractparameter.AbstractParameter = None)
-
-
-   Bases: :py:obj:`UnivariateDiscretizedSiteModel`
-
-   Parametric model.
-
-   A Model can contain parameters and models and can monitor any
-   changes. A Model is the building block of more complex models. This
-   class is abstract.
-
-   .. py:property:: scale
-      :type: torch.Tensor
-
-
-   .. py:method:: update_rates(value)
 
 
    .. py:method:: from_json(data, dic)

@@ -52,6 +52,9 @@ Classes
    .. py:method:: reject() -> None
 
 
+   .. py:method:: smoothed_acceptance_rate() -> float
+
+
    .. py:method:: tune(acceptance_prob: torch.Tensor, sample: int, accepted: bool) -> None
 
 

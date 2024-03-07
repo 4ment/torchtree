@@ -27,6 +27,7 @@ Functions
    torchtree.core.utils.tensor_rand
    torchtree.core.utils.get_class
    torchtree.core.utils.process_objects
+   torchtree.core.utils.process_object_with_key
    torchtree.core.utils.process_object
    torchtree.core.utils.validate
    torchtree.core.utils.remove_comments
@@ -195,6 +196,9 @@ Attributes
 .. py:function:: process_objects(data, dic, force_list=False, key=None)
 
 
+.. py:function:: process_object_with_key(key, data, dic, default=None)
+
+
 .. py:function:: process_object(data, dic)
 
 
@@ -209,6 +213,12 @@ Attributes
 
 
 .. py:function:: remove_comments(obj)
+
+   Remove comments in dictionary representation of objects.
+
+   - A key starting with an underscore results in the key/value pair to be removed.
+   - A dictionary with key equal to *ignore* and value set to *True* results in its
+     removal.
 
 
 .. py:function:: replace_wildcard_with_str(obj, wildcard, value)

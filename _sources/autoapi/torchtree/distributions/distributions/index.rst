@@ -5,7 +5,7 @@
 
 .. autoapi-nested-parse::
 
-   Torchtree distribution classes.
+   torchtree distribution classes.
 
 
 
@@ -71,7 +71,7 @@ Classes
 
    Bases: :py:obj:`DistributionModel`
 
-   Wrapper for torch.distributions.Distribution.
+   Wrapper for :class:`torch.distributions.distribution.Distribution`.
 
    :param id_: ID of distribution
    :param dist: class of torch Distribution
@@ -140,11 +140,57 @@ Classes
 
        Mandatory:
         - id (str): unique string identifier.
-        - distribution (str): full name of torch distribution class.
+        - distribution (str): complete path to the torch distribution class,
+          including package and module.
         - x (dict or str): parameter.
 
        Optional:
         - parameters (dict): parameters of the underlying torch Distribution.
+
+      **JSON examples**:
+
+      .. code-block:: json
+
+        {
+          "id": "exp",
+          "distribution": "torch.distributions.Exponential",
+          "x": {
+              "id": "y",
+              "type": "Parameter",
+              "tensor": 0.1
+          },
+          "parameters": {
+            "rate": {
+              "id": "rate",
+              "type": "Parameter",
+              "tensor": 0.1
+            }
+          }
+        }
+
+      .. code-block:: json
+
+        {
+          "id": "normal",
+          "distribution": "torch.distributions.Normal",
+          "x": {
+              "id": "y",
+              "type": "Parameter",
+              "tensor": 0.1
+          },
+          "parameters": {
+            "loc": {
+              "id": "loc",
+              "type": "Parameter",
+              "tensor": 0.0
+            },
+            "scale": {
+              "id": "scale",
+              "type": "Parameter",
+              "tensor": 0.1
+            }
+          }
+        }
 
       :example:
       >>> x_dict = {"id": "x", "type": "Parameter", "tensor": [1., 2.]}
