@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=384b581d" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -38,7 +38,7 @@
   <script src="../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
     <script src="../../../_static/documentation_options.js?v=14d244e0"></script>
-    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/tabs.js?v=3030b3cb"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -404,6 +404,7 @@ document.write(`
                   
   <h1>Source code for torchtree.cli.priors</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">torchtree</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">torchtree.cli.utils</span> <span class="kn">import</span> <span class="n">CONSTRAINT</span>
 <span class="kn">from</span> <span class="nn">torchtree.distributions</span> <span class="kn">import</span> <span class="n">Distribution</span>
 <span class="kn">from</span> <span class="nn">torchtree.distributions.ctmc_scale</span> <span class="kn">import</span> <span class="n">CTMCScale</span>
 <span class="kn">from</span> <span class="nn">torchtree.distributions.scale_mixture</span> <span class="kn">import</span> <span class="n">ScaleMixtureNormal</span>
@@ -439,8 +440,8 @@ document.write(`
         <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s1">.local.scales&#39;</span><span class="p">,</span>
         <span class="o">**</span><span class="p">{</span><span class="s1">&#39;tensor&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;full_like&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s1">.rates.unscaled&#39;</span><span class="p">},</span>
     <span class="p">)</span>
-    <span class="n">global_scale</span><span class="p">[</span><span class="s1">&#39;lower&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">local_scale</span><span class="p">[</span><span class="s1">&#39;lower&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">global_scale</span><span class="p">[</span><span class="n">CONSTRAINT</span><span class="o">.</span><span class="n">LOWER</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">local_scale</span><span class="p">[</span><span class="n">CONSTRAINT</span><span class="o">.</span><span class="n">LOWER</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="n">prior_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="n">ScaleMixtureNormal</span><span class="o">.</span><span class="n">json_factory</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s1">.scale.mixture.prior&#39;</span><span class="p">,</span>
