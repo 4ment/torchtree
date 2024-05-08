@@ -14,7 +14,7 @@ from torchtree import Parameter, ViewParameter
 from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.argparse_utils import list_of_float, str_or_float, zero_or_path
 from torchtree.cli.priors import create_clock_horseshoe_prior, create_one_on_x_prior
-from torchtree.cli.utils import convert_date_to_real, read_dates_from_csv
+from torchtree.cli.utils import CONSTRAINT, convert_date_to_real, read_dates_from_csv
 from torchtree.core.utils import process_object
 from torchtree.distributions import Distribution
 from torchtree.distributions.ctmc_scale import CTMCScale
@@ -354,8 +354,8 @@ def create_tree_model(id_: str, taxa: dict, arg):
             ratios = Parameter.json_factory(
                 f"{id_}.ratios", **{"tensor": 0.1, "full": [len(dates) - 2]}
             )
-            ratios["lower"] = 0.0
-            ratios["upper"] = 1.0
+            ratios[CONSTRAINT.LOWER.value] = 0.0
+            ratios[CONSTRAINT.UPPER.value] = 1.0
 
             root_height = Parameter.json_factory(
                 f"{id_}.root_height", **{"tensor": [offset + 1.0]}
@@ -365,7 +365,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
             elif arg.cutoff is not None:
                 root_height["tensor"] = [max(arg.cutoff, offset)]
 
-            root_height["lower"] = offset
+            root_height[CONSTRAINT.LOWER.value] = offset
             tree_model = ReparameterizedTimeTreeModel.json_factory(
                 id_, newick, "taxa", ratios=ratios, root_height=root_height, **kwargs
             )
@@ -384,14 +384,14 @@ def create_tree_model(id_: str, taxa: dict, arg):
                     f"{id_}.ratios",
                     **{"tensor": tree_model_obj._internal_heights.tensor[:-1].tolist()},
                 )
-                ratios["lower"] = 0.0
-                ratios["upper"] = 1.0
+                ratios[CONSTRAINT.LOWER.value] = 0.0
+                ratios[CONSTRAINT.UPPER.value] = 1.0
 
                 root_height = Parameter.json_factory(
                     f"{id_}.root_height",
                     **{"tensor": tree_model_obj._internal_heights.tensor[-1:].tolist()},
                 )
-                root_height["lower"] = offset
+                root_height[CONSTRAINT.LOWER.value] = offset
                 tree_model = ReparameterizedTimeTreeModel.json_factory(
                     id_,
                     newick,
@@ -404,7 +404,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
             shifts = Parameter.json_factory(
                 f"{id_}.shifts", **{"tensor": 0.1, "full": [len(dates) - 1]}
             )
-            shifts["lower"] = 0.0
+            shifts[CONSTRAINT.LOWER.value] = 0.0
 
             tree_model = ReparameterizedTimeTreeModel.json_factory(
                 id_, newick, "taxa", shifts=shifts, **kwargs
@@ -454,7 +454,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
         branch_lengths = Parameter.json_factory(
             f"{id_}.blens", **{"tensor": brlens, "full": [len(taxa["taxa"]) * 2 - 3]}
         )
-        branch_lengths["lower"] = 0.0
+        branch_lengths[CONSTRAINT.LOWER.value] = 0.0
         tree_model = UnRootedTreeModel.json_factory(
             id_, newick, branch_lengths, "taxa", **kwargs
         )
@@ -472,7 +472,7 @@ def create_tree_model(id_: str, taxa: dict, arg):
                 f"{id_}.blens",
                 **{"tensor": blens.tolist()},
             )
-            tree_model["branch_lengths"]["lower"] = 0.0
+            tree_model["branch_lengths"][CONSTRAINT.LOWER.value] = 0.0
 
     return tree_model
 
@@ -530,16 +530,16 @@ def create_tree_likelihood_general(trait: str, data_type: dict, taxa: Taxa, arg)
             "type": "Parameter",
             "full": [len(mapping)],
             "tensor": 1.0,
-            "lower": 0.0,
+            CONSTRAINT.LOWER.value: 0.0,
         },
         "frequencies": {
             "id": f"substmodel.{trait}.freqs",
             "type": "Parameter",
             "full": [state_count],
             "tensor": 1.0 / state_count,
-            "lower": 0.0,
-            "upper": 0.0,
-            # "simplex": True
+            CONSTRAINT.LOWER.value: 0.0,
+            CONSTRAINT.UPPER.value: 0.0,
+            # CONSTRAINT.SIMPLEX.value: True
         },
         "state_count": state_count,
     }
@@ -673,14 +673,14 @@ def create_site_model(id_, arg, w=None):
     if arg.categories == 1:
         if arg.invariant:
             prop = Parameter.json_factory(f"{id_}.pinv", **{"tensor": [0.1]})
-            prop["lower"] = 0
-            prop["upper"] = 1
+            prop[CONSTRAINT.LOWER.value] = 0
+            prop[CONSTRAINT.UPPER.value] = 1
             site_model = {"id": id_, "type": "InvariantSiteModel", "invariant": prop}
         else:
             site_model = {"id": id_, "type": "ConstantSiteModel"}
     else:
         shape = Parameter.json_factory(f"{id_}.shape", **{"tensor": [0.1]})
-        shape["lower"] = 0.0
+        shape[CONSTRAINT.LOWER.value] = 0.0
         site_model = {
             "id": id_,
             "type": "WeibullSiteModel",
@@ -689,8 +689,8 @@ def create_site_model(id_, arg, w=None):
         }
         if arg.invariant:
             prop = Parameter.json_factory(f"{id_}.pinv", **{"tensor": [0.1]})
-            prop["lower"] = 0
-            prop["upper"] = 1
+            prop[CONSTRAINT.LOWER.value] = 0
+            prop[CONSTRAINT.UPPER.value] = 1
             site_model["invariant"] = prop
 
     if arg.model == "SRD06":
@@ -701,7 +701,7 @@ def create_site_model(id_, arg, w=None):
 def create_site_model_srd06_mus(id_):
     weights = [2 / 3, 1 / 3]
     y = Parameter.json_factory("srd06.mu", **{"tensor": [0.5, 0.5]})
-    y["simplex"] = True
+    y[CONSTRAINT.SIMPLEX.value] = True
     mus = {
         "id": id_,
         "type": "TransformedParameter",
@@ -730,10 +730,12 @@ def create_branch_model(id_, tree_id, taxa_count, arg, rate_init=None):
     else:
         rate = [0.001]
     rate_parameter = Parameter.json_factory(f"{id_}.rate", **{"tensor": rate})
-    rate_parameter["lower"] = 0.0
+    rate_parameter[CONSTRAINT.LOWER.value] = 0.0
 
     if arg.rate is not None:
-        rate_parameter["lower"] = rate_parameter["upper"] = arg.rate
+        rate_parameter[CONSTRAINT.LOWER.value] = rate_parameter[
+            CONSTRAINT.UPPER.value
+        ] = arg.rate
 
     if arg.clock == "strict":
         return {
@@ -746,7 +748,7 @@ def create_branch_model(id_, tree_id, taxa_count, arg, rate_init=None):
         rates = Parameter.json_factory(
             f"{id_}.rates.unscaled", **{"tensor": 1.0, "full": [2 * taxa_count - 2]}
         )
-        rates["lower"] = 0.0
+        rates[CONSTRAINT.LOWER.value] = 0.0
         rescaled_rates = {
             "id": f"{id_}.rates",
             "type": "TransformedParameter",
@@ -767,7 +769,7 @@ def create_branch_model(id_, tree_id, taxa_count, arg, rate_init=None):
         rate = Parameter.json_factory(
             f"{id_}.rates", **{"tensor": 0.001, "full": [2 * taxa_count - 2]}
         )
-        rate["lower"] = 0.0
+        rate[CONSTRAINT.LOWER.value] = 0.0
         return {
             "id": id_,
             "type": "SimpleClockModel",
@@ -789,8 +791,15 @@ def create_substitution_model(id_, model, arg):
         frequencies = Parameter.json_factory(
             f"{id_}.frequencies", **{"tensor": [0.25] * 4}
         )
-        frequencies["simplex"] = True
+        frequencies[CONSTRAINT.SIMPLEX.value] = True
         alignment = None
+
+        # These models have equal frequencies and should not be estimated
+        # frequencies can be adjusted below but will remain fixed
+        if model in ("K80", "SYM"):
+            frequencies[CONSTRAINT.LOWER.value] = frequencies[
+                CONSTRAINT.UPPER.value
+            ] = 1
 
         if arg.frequencies is not None:
             if arg.frequencies == "empirical":
@@ -808,11 +817,13 @@ def create_substitution_model(id_, model, arg):
 
         if model in ("K80", "HKY"):
             kappa = Parameter.json_factory(f"{id_}.kappa", **{"tensor": [3.0]})
-            kappa["lower"] = 0.0
+            kappa[CONSTRAINT.LOWER.value] = 0.0
             if alignment is not None:
                 kappa["tensor"] = [calculate_kappa(alignment, frequencies["tensor"])]
             if model == "SYM":
-                frequencies["lower"] = frequencies["upper"] = 1
+                frequencies[CONSTRAINT.LOWER.value] = frequencies[
+                    CONSTRAINT.UPPER.value
+                ] = 1
             return {
                 "id": id_,
                 "type": "HKY",
@@ -823,13 +834,15 @@ def create_substitution_model(id_, model, arg):
             rates = Parameter.json_factory(
                 f"{id_}.rates", **{"tensor": 1 / 6, "full": [6]}
             )
-            rates["simplex"] = True
+            rates[CONSTRAINT.SIMPLEX.value] = True
             mapping = ((6, 0, 1, 2), (0, 6, 3, 4), (1, 3, 6, 5), (2, 4, 5, 6))
             if alignment is not None:
                 rel_rates = torch.tensor(calculate_substitutions(alignment, mapping))
                 rates["tensor"] = (rel_rates[:-1] / rel_rates[:-1].sum()).tolist()
             if model == "SYM":
-                frequencies["lower"] = frequencies["upper"] = 1
+                frequencies[CONSTRAINT.LOWER.value] = frequencies[
+                    CONSTRAINT.UPPER.value
+                ] = 1
             return {
                 "id": id_,
                 "type": "GTR",
@@ -838,11 +851,11 @@ def create_substitution_model(id_, model, arg):
             }
     elif model == "MG94":
         alpha = Parameter.json_factory(f"{id_}.alpha", **{"tensor": [1.0]})
-        alpha["lower"] = 0.0
+        alpha[CONSTRAINT.LOWER.value] = 0.0
         beta = Parameter.json_factory(f"{id_}.beta", **{"tensor": [1.0]})
-        beta["lower"] = 0.0
+        beta[CONSTRAINT.LOWER.value] = 0.0
         kappa = Parameter.json_factory(f"{id_}.kappa", **{"tensor": [1.0]})
-        kappa["lower"] = 0.0
+        kappa[CONSTRAINT.LOWER.value] = 0.0
 
         data_type_json = "data_type"
         if not hasattr(arg, "_data_type"):
@@ -854,7 +867,7 @@ def create_substitution_model(id_, model, arg):
             **{"tensor": 1 / data_type.state_count, "full": [data_type.state_count]},
         )
         # it is a simplex but it is fixed
-        frequencies["lower"] = frequencies["upper"] = 1
+        frequencies[CONSTRAINT.LOWER.value] = frequencies[CONSTRAINT.UPPER.value] = 1
 
         if arg.frequencies is not None and arg.frequencies != "equal":
             if arg.frequencies == "F3x4":
@@ -1044,25 +1057,25 @@ def create_constant_birth_death(birth_death_id, tree_id, arg):
         f"{birth_death_id}.lambda",
         **{"tensor": [3.0]},
     )
-    lambda_["lower"] = 0.0
+    lambda_[CONSTRAINT.LOWER.value] = 0.0
     mu = Parameter.json_factory(
         f"{birth_death_id}.mu",
         **{"tensor": [2.0]},
     )
-    mu["lower"] = 0.0
+    mu[CONSTRAINT.LOWER.value] = 0.0
     psi = Parameter.json_factory(
         f"{birth_death_id}.psi",
         **{"tensor": [1.0]},
     )
-    psi["lower"] = 0.0
+    psi[CONSTRAINT.LOWER.value] = 0.0
     rho = Parameter.json_factory(
         f"{birth_death_id}.rho",
         **{
             "tensor": [1.0e-6],
         },
     )
-    rho["lower"] = 0.0
-    rho["upper"] = 1.0
+    rho[CONSTRAINT.LOWER.value] = 0.0
+    rho[CONSTRAINT.UPPER.value] = 1.0
 
     origin = {
         "id": f"{birth_death_id}.origin",
@@ -1072,7 +1085,7 @@ def create_constant_birth_death(birth_death_id, tree_id, arg):
             "id": f"{birth_death_id}.origin.unshifted",
             "type": "Parameter",
             "tensor": [1.0],
-            "lower": 0.0,
+            CONSTRAINT.LOWER.value: 0.0,
         },
         "parameters": {
             "loc": f"{tree_id}.root_height",
@@ -1098,21 +1111,21 @@ def create_bdsk(birth_death_id, tree_id, arg):
         f"{birth_death_id}.R",
         **{"tensor": 3.0, "full": [arg.grid]},
     )
-    R["lower"] = 0.0
+    R[CONSTRAINT.LOWER.value] = 0.0
     delta = Parameter.json_factory(
         f"{birth_death_id}.delta",
         **{"tensor": 3.0, "full": [arg.grid]},
     )
-    delta["lower"] = 0.0
+    delta[CONSTRAINT.LOWER.value] = 0.0
     s = Parameter.json_factory(
         f"{birth_death_id}.s",
         **{"tensor": 0.0, "full": [arg.grid]},
     )
-    s["lower"] = 0.0
-    s["upper"] = 1.0
+    s[CONSTRAINT.LOWER.value] = 0.0
+    s[CONSTRAINT.UPPER.value] = 1.0
     # fixed to 0 for contemporaneous data
     if arg.dates == 0:
-        s["upper"] = 0.0
+        s[CONSTRAINT.UPPER.value] = 0.0
 
     rho = Parameter.json_factory(
         f"{birth_death_id}.rho",
@@ -1120,8 +1133,8 @@ def create_bdsk(birth_death_id, tree_id, arg):
             "tensor": [1.0e-6],
         },
     )
-    rho["lower"] = 0.0
-    rho["upper"] = 1.0
+    rho[CONSTRAINT.LOWER.value] = 0.0
+    rho[CONSTRAINT.UPPER.value] = 1.0
 
     origin = {
         "id": f"{birth_death_id}.origin",
@@ -1131,7 +1144,7 @@ def create_bdsk(birth_death_id, tree_id, arg):
             "id": f"{birth_death_id}.origin.unshifted",
             "type": "Parameter",
             "tensor": [1.0],
-            "lower": 0.0,
+            CONSTRAINT.LOWER.value: 0.0,
         },
         "parameters": {
             "loc": f"{tree_id}.root_height",
@@ -1158,7 +1171,7 @@ def create_coalesent(id_, tree_id, taxa, arg):
         theta_value = arg._coalescent_init if "_coalescent_init" in arg else 100.0
 
         theta = Parameter.json_factory(f"{id_}.theta", **{"tensor": [theta_value]})
-        theta["lower"] = 0.0
+        theta[CONSTRAINT.LOWER.value] = 0.0
         if arg.coalescent != "constant" or arg.coalescent_integrated is None:
             joint_list.append(
                 create_one_on_x_prior(f"{id_}.theta.prior", f"{id_}.theta")
@@ -1277,7 +1290,7 @@ def create_coalesent(id_, tree_id, taxa, arg):
                 gmrf["rescale"] = False
 
         if not arg.gmrf_integrated:
-            gmrf["precision"]["lower"] = 0.0
+            gmrf["precision"][CONSTRAINT.LOWER.value] = 0.0
             joint_list.append(
                 Distribution.json_factory(
                     "gmrf.precision.prior",
@@ -1431,8 +1444,8 @@ def create_ucln_prior(branch_model_id):
     scale = Parameter.json_factory(
         f"{branch_model_id}.rates.prior.scale", **{"tensor": [1.0]}
     )
-    mean["lower"] = 0.0
-    scale["lower"] = 0.0
+    mean[CONSTRAINT.LOWER.value] = 0.0
+    scale[CONSTRAINT.LOWER.value] = 0.0
     joint_list.append(
         Distribution.json_factory(
             f"{branch_model_id}.rates.prior",

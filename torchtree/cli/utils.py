@@ -2,9 +2,18 @@ from __future__ import annotations
 
 import csv
 import re
+from enum import Enum
 from typing import Union
 
 import torch
+
+CONSTRAINT_PREFIX = '@'
+
+
+class CONSTRAINT(Enum):
+    LOWER = f"{CONSTRAINT_PREFIX}lower"
+    UPPER = f"{CONSTRAINT_PREFIX}upper"
+    SIMPLEX = f"{CONSTRAINT_PREFIX}simplex"
 
 
 def convert_date_to_real(day, month, year):
@@ -62,8 +71,14 @@ def make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[
             parameters.extend(params)
     elif isinstance(json_object, dict):
         if 'type' in json_object and json_object['type'] == 'Parameter':
-            if 'lower' in json_object and 'upper' in json_object:
-                if json_object['lower'] == 0 and json_object['upper'] == 1:
+            if (
+                CONSTRAINT.LOWER.value in json_object
+                and CONSTRAINT.UPPER.value in json_object
+            ):
+                if (
+                    json_object[CONSTRAINT.LOWER.value] == 0
+                    and json_object[CONSTRAINT.UPPER.value] == 1
+                ):
                     json_object['type'] = 'TransformedParameter'
                     json_object['transform'] = 'torch.distributions.SigmoidTransform'
                     json_object['x'] = {
@@ -93,18 +108,21 @@ def make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[
 
                     parameters.append(json_object['id'])
                     parameters_unres.append(json_object['x'])
-                elif json_object['lower'] != json_object['upper']:
+                elif (
+                    json_object[CONSTRAINT.LOWER.value]
+                    != json_object[CONSTRAINT.UPPER.value]
+                ):
                     raise NotImplementedError
-            elif 'lower' in json_object:
-                if json_object['lower'] > 0:
+            elif CONSTRAINT.LOWER.value in json_object:
+                if json_object[CONSTRAINT.LOWER.value] > 0:
                     json_object['type'] = 'TransformedParameter'
                     json_object['transform'] = 'torch.distributions.AffineTransform'
                     json_object['parameters'] = {
-                        'loc': json_object['lower'],
+                        'loc': json_object[CONSTRAINT.LOWER.value],
                         'scale': 1.0,
                     }
                     transform = torch.distributions.AffineTransform(
-                        json_object['lower'], 1.0
+                        json_object[CONSTRAINT.LOWER.value], 1.0
                     )
                     new_value = (
                         transform.inv(torch.tensor(json_object['tensor']))
@@ -114,7 +132,7 @@ def make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[
                         'id': json_object['id'] + '.unshifted',
                         'type': 'Parameter',
                         'tensor': new_value,
-                        'lower': 0.0,
+                        CONSTRAINT.LOWER.value: 0.0,
                     }
                     del json_object['tensor']
 
@@ -152,7 +170,7 @@ def make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[
 
                     parameters.append(json_object['id'])
                     parameters_unres.append(json_object['x'])
-            elif 'simplex' in json_object and json_object['simplex']:
+            elif json_object.get(CONSTRAINT.SIMPLEX.value, False):
                 json_object['type'] = 'TransformedParameter'
                 json_object['transform'] = 'torch.distributions.StickBreakingTransform'
                 transform = torch.distributions.StickBreakingTransform()
@@ -199,3 +217,16 @@ def length_of_tensor_in_dict_parameter(param: dict) -> int:
     else:
         raise NotImplementedError
     return length
+
+
+def remove_constraints(obj):
+    """Remove constraint keys starting with CONSTRAINST_PREFIX."""
+    if isinstance(obj, list):
+        for element in obj:
+            remove_constraints(element)
+    elif isinstance(obj, dict):
+        for key in list(obj.keys()):
+            if key.startswith(CONSTRAINT_PREFIX):
+                del obj[key]
+            else:
+                remove_constraints(obj[key])

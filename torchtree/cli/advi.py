@@ -5,7 +5,6 @@ import logging
 import sys
 from typing import Union
 
-import numpy as np
 import torch
 
 from torchtree import Parameter
@@ -20,6 +19,7 @@ from torchtree.cli.evolution import (
     create_taxa,
 )
 from torchtree.cli.jacobians import create_jacobians
+from torchtree.cli.utils import CONSTRAINT
 from torchtree.distributions import Distribution
 
 logger = logging.getLogger(__name__)
@@ -339,9 +339,10 @@ def gather_parameters(json_object: dict, group_map: dict, parameters: dict):
     elif isinstance(json_object, dict):
         if 'type' in json_object and json_object['type'] == 'Parameter':
             if (
-                'lower' not in json_object
-                or 'upper' not in json_object
-                or json_object['lower'] != json_object['upper']
+                CONSTRAINT.LOWER.value not in json_object
+                or CONSTRAINT.UPPER.value not in json_object
+                or json_object[CONSTRAINT.LOWER.value]
+                != json_object[CONSTRAINT.UPPER.value]
             ):
                 if json_object['id'] in group_map:
                     parameters[group_map[json_object['id']]].append(json_object)
@@ -405,9 +406,9 @@ def apply_affine_transform(json_object, loc, scale):
     json_object['x'] = {
         'id': unshifted_id,
         'type': 'Parameter',
-        'tensor': (np.array(json_object['tensor']) - loc).tolist(),
+        'tensor': (torch.tensor(json_object['tensor']) - loc).tolist(),
     }
-    json_object['x']['lower'] = 0
+    json_object['x'][CONSTRAINT.LOWER.value] = 0
     del json_object['tensor']
     return unshifted_id
 
@@ -419,7 +420,7 @@ def apply_exp_transform(json_object):
     json_object['x'] = {
         'id': unres_id,
         'type': 'Parameter',
-        'tensor': np.log(json_object['tensor']).tolist(),
+        'tensor': torch.tensor(json_object['tensor']).log().tolist(),
     }
     if 'full' in json_object:
         json_object['x']['full'] = json_object['full']
@@ -560,8 +561,14 @@ def create_meanfield(
             var_parameters.extend(params)
     elif isinstance(json_object, dict):
         if 'type' in json_object and json_object['type'] == 'Parameter':
-            if 'lower' in json_object and 'upper' in json_object:
-                if json_object['lower'] != json_object['upper']:
+            if (
+                CONSTRAINT.LOWER.value in json_object
+                and CONSTRAINT.UPPER.value in json_object
+            ):
+                if (
+                    json_object[CONSTRAINT.LOWER.value]
+                    != json_object[CONSTRAINT.UPPER.value]
+                ):
                     apply_sigmoid_transformed(json_object)
                     distrs, params = create_meanfield(
                         var_id, json_object['x'], distribution
@@ -569,9 +576,11 @@ def create_meanfield(
                     distributions.extend(distrs)
                     var_parameters.extend(params)
                     return distributions, var_parameters
-            elif 'lower' in json_object:
-                if json_object['lower'] > 0:
-                    apply_affine_transform(json_object, json_object['lower'], 1.0)
+            elif CONSTRAINT.LOWER.value in json_object:
+                if json_object[CONSTRAINT.LOWER.value] > 0:
+                    apply_affine_transform(
+                        json_object, json_object[CONSTRAINT.LOWER.value], 1.0
+                    )
 
                     # now id becomes id.unshifted with a lower bound of 0 so another
                     # round of create_meanfield to create a id.unshifted.unres
@@ -584,10 +593,12 @@ def create_meanfield(
                     var_parameters.extend(params)
                     return distributions, var_parameters
                 elif distribution == 'Normal':
-                    tensor = np.array(json_object['tensor'])
+                    tensor = torch.tensor(json_object['tensor'])
                     var = tensor * 0.01
-                    loc = np.log(tensor / np.sqrt(1 + var / tensor**2)).tolist()
-                    scale_log = np.log(np.sqrt(np.log(1 + var / tensor**2))).tolist()
+                    loc = torch.log(tensor / torch.sqrt(1 + var / tensor**2)).tolist()
+                    scale_log = torch.log(
+                        torch.sqrt(torch.log(1 + var / tensor**2))
+                    ).tolist()
                     unres_id = apply_exp_transform(json_object)
                     distr, loc, scale = create_normal_distribution(
                         var_id, unres_id, json_object, loc, scale_log
@@ -616,7 +627,7 @@ def create_meanfield(
                     )
                 distributions.append(distr)
                 parameters.append(json_object['id'])
-            elif 'simplex' in json_object and json_object['simplex']:
+            elif json_object.get(CONSTRAINT.SIMPLEX.value, False):
                 unres_id = apply_simplex_transform(json_object)
                 distr, loc, scale = create_normal_distribution(
                     var_id, unres_id, json_object, 0.5, -1.89712
@@ -625,7 +636,7 @@ def create_meanfield(
                 var_parameters.extend((loc['id'], scale['x']['id']))
                 parameters.append(json_object['id'])
             else:
-                tensor = np.array(json_object['tensor'])
+                tensor = torch.tensor(json_object['tensor'])
                 distr, loc, scale = create_normal_distribution(
                     var_id,
                     json_object['id'],
@@ -655,8 +666,14 @@ def apply_transforms_for_fullrank(
             var_parameters.extend(params)
     elif isinstance(json_object, dict):
         if 'type' in json_object and json_object['type'] == 'Parameter':
-            if 'lower' in json_object and 'upper' in json_object:
-                if json_object['lower'] != json_object['upper']:
+            if (
+                CONSTRAINT.LOWER.value in json_object
+                and CONSTRAINT.UPPER.value in json_object
+            ):
+                if (
+                    json_object[CONSTRAINT.LOWER.value]
+                    != json_object[CONSTRAINT.UPPER.value]
+                ):
                     unres_id = apply_sigmoid_transformed(json_object)
                     tensor_list = json_object['x']['tensor']
                     # full is list representing the shape/length of the tensor
@@ -666,13 +683,15 @@ def apply_transforms_for_fullrank(
                             json_object['x']['full'] * json_object['x']['tensor']
                         )
                     var_parameters.append((json_object['id'], unres_id, tensor_list))
-            elif 'lower' in json_object:
-                if json_object['lower'] > 0:
-                    apply_affine_transform(json_object, json_object['lower'], 1.0)
+            elif CONSTRAINT.LOWER.value in json_object:
+                if json_object[CONSTRAINT.LOWER.value] > 0:
+                    apply_affine_transform(
+                        json_object, json_object[CONSTRAINT.LOWER.value], 1.0
+                    )
                     unres_id = apply_exp_transform(json_object['x'])
                     tensor_list = json_object['x']['x']['tensor']
                     var_parameters.append((json_object['id'], unres_id, tensor_list))
-                elif json_object['lower'] == 0:
+                elif json_object[CONSTRAINT.LOWER.value] == 0:
                     unres_id = apply_exp_transform(json_object)
                     tensor_list = json_object['x']['tensor']
                     if 'full' in json_object['x']:
@@ -682,7 +701,7 @@ def apply_transforms_for_fullrank(
                     var_parameters.append((json_object['id'], unres_id, tensor_list))
                 else:
                     raise NotImplementedError
-            elif 'simplex' in json_object and json_object['simplex']:
+            elif json_object.get(CONSTRAINT.SIMPLEX.value, False):
                 unres_id = apply_simplex_transform(json_object)
                 tensor_list = json_object['x']['tensor']
                 if 'full' in json_object['x']:
@@ -917,9 +936,11 @@ def build_advi(arg):
     if arg.clock is not None and arg.heights == 'ratio':
         jacobians_list.append('tree')
     if arg.coalescent in (
+        "skyglide",
         "skygrid",
         "skyride",
         "piecewise-exponential",
+        "piecewise-constant",
         "piecewise-linear",
     ):
         jacobians_list.remove("coalescent.theta")
@@ -986,8 +1007,10 @@ def build_advi(arg):
         if (
             arg.coalescent
             in (
+                "skyglide",
                 "skygrid",
                 "skyride",
+                "piecewise-constant",
                 "piecewise-exponential",
                 "piecewise-linear",
             )
@@ -1009,8 +1032,12 @@ def build_advi(arg):
             parameters.extend(
                 [f"substmodel.{tag}.kappa", f"substmodel.{tag}.frequencies"]
             )
+    elif arg.model == "SYM":
+        parameters.append("substmodel.rates")
     elif arg.model == 'GTR':
         parameters.extend(["substmodel.rates", "substmodel.frequencies"])
+    elif arg.model == 'K80':
+        parameters.append("substmodel.kappa")
     elif arg.model == 'HKY':
         parameters.extend(["substmodel.kappa", "substmodel.frequencies"])
     elif arg.model == 'MG94':

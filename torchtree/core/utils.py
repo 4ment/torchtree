@@ -35,7 +35,6 @@ class TensorDecoder(json.JSONDecoder):
 
     def object_hook(self, dic):
         if "type" in dic and dic["type"] == "torch.Tensor":
-            print(dic)
             del dic["type"]
             if "dtype" in dic:
                 dic["dtype"] = getattr(torch, dic["dtype"].split(".")[-1])

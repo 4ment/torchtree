@@ -1,4 +1,5 @@
 from torchtree import Parameter
+from torchtree.cli.utils import CONSTRAINT
 from torchtree.distributions import Distribution
 from torchtree.distributions.ctmc_scale import CTMCScale
 from torchtree.distributions.scale_mixture import ScaleMixtureNormal
@@ -29,8 +30,8 @@ def create_clock_horseshoe_prior(branch_model_id, tree_id):
         f'{branch_model_id}.local.scales',
         **{'tensor': 1.0, 'full_like': f'{branch_model_id}.rates.unscaled'},
     )
-    global_scale['lower'] = 0.0
-    local_scale['lower'] = 0.0
+    global_scale[CONSTRAINT.LOWER.value] = 0.0
+    local_scale[CONSTRAINT.LOWER.value] = 0.0
     prior_list.append(
         ScaleMixtureNormal.json_factory(
             f'{branch_model_id}.scale.mixture.prior',

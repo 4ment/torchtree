@@ -9,6 +9,7 @@ from torchtree.cli.advi import create_variational_parser
 from torchtree.cli.hmc import create_hmc_parser
 from torchtree.cli.map import create_map_parser
 from torchtree.cli.mcmc import create_mcmc_parser
+from torchtree.cli.utils import remove_constraints
 
 
 def main():
@@ -20,6 +21,8 @@ def main():
     parser.add_argument(
         "--version", action="version", version=f"%(prog)s {__version__}"
     )
+    parser.add_argument('--debug', action="store_true", help=argparse.SUPPRESS)
+
     subprasers = parser.add_subparsers()
 
     create_variational_parser(subprasers)
@@ -39,5 +42,8 @@ def main():
         exit(2)
 
     json_dic = arg.func(arg)
+
+    if not arg.debug:
+        remove_constraints(json_dic)
 
     print(json.dumps(json_dic, indent=2))
