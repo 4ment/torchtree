@@ -193,11 +193,16 @@ class Optimizer(Identifiable, Runnable):
             self._run()
 
     def state_dict(self) -> dict[str, Any]:
-        return {"iteration": self._epoch, "optimizer": self.optimizer.state_dict()}
+        state = {"iteration": self._epoch, "optimizer": self.optimizer.state_dict()}
+        if self.scheduler is not None:
+            state["scheduler"] = self.scheduler.state_dict()
+        return state
 
     def load_state_dict(self, state_dict: dict[str, Any]) -> None:
         self._epoch = state_dict["iteration"]
         self.optimizer.load_state_dict(state_dict["optimizer"])
+        if self.scheduler is not None:
+            self.scheduler.load_state_dict(state_dict["scheduler"])
 
     def save_full_state(self, checkpoint, safely=True, overwrite=False) -> None:
         optimizer_state = {

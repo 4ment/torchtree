@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+from typing import Any
 
 from torch.optim.lr_scheduler import _LRScheduler as TorchScheduler
 
@@ -20,6 +21,12 @@ class Scheduler(JSONSerializable):
 
     def step(self, *args) -> None:
         self.scheduler.step(*args)
+
+    def state_dict(self) -> dict[str, Any]:
+        return self.scheduler.state_dict()
+
+    def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self.scheduler.load_state_dict(state_dict)
 
     @classmethod
     def from_json(

@@ -219,6 +219,12 @@ class GMRFPiecewiseCoalescentBlockUpdatingOperator(MCMCOperator):
         )
         return log_q_backward - log_q_forward
 
+    def _state_dict(self) -> dict[str, Any]:
+        return {"scaler": self._scaler}
+
+    def _load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        self._scaler = state_dict["scaler"]
+
     @classmethod
     def from_json(
         cls, data: dict[str, Any], dic: dict[str, Identifiable]

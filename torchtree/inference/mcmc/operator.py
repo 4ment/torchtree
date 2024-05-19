@@ -233,10 +233,10 @@ class SlidingWindowOperator(MCMCOperator):
         )
 
     def _state_dict(self) -> dict[str, Any]:
-        return {"width": self._scaler}
+        return {"width": self._width}
 
     def _load_state_dict(self, state_dict: dict[str, Any]) -> None:
-        self._scaler = state_dict["width"]
+        self._width = state_dict["width"]
 
     @classmethod
     def from_json(cls, data, dic):

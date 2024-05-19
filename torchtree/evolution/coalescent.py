@@ -302,36 +302,82 @@ class ExponentialCoalescent(Distribution):
             self.theta * self.growth
         )
         lchoose2 = lineage_count * (lineage_count - 1) / 2.0
-        log_thetas = torch.where(
-            node_mask_sorted == -1,
-            torch.log(self.theta * torch.exp(-heights_sorted * self.growth)),
-            torch.zeros(1, dtype=heights_sorted.dtype),
-        )
+        log_thetas = torch.log(
+            self.theta * torch.exp(-heights_sorted * self.growth)
+        ) * (node_mask_sorted == -1)
         return torch.sum(-lchoose2 * integral - log_thetas[..., 1:], -1, keepdim=True)
 
 
 class PiecewiseConstantCoalescent(AbstractCoalescentDistribution):
-    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
-        taxa_shape = node_heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
+    def _sorted_terms(self, node_heights):
+        batch_shape = max(node_heights.shape, self.theta.shape, key=len)[:-1]
+        # if node_heights is fixed there is no batch dimension
+        if node_heights.dim() < self.theta.dim():
+            heights = node_heights.expand(batch_shape + torch.Size([-1]))
+        else:
+            heights = node_heights
+
+        taxa_shape = heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
         node_mask = torch.cat(
             [
-                torch.full(taxa_shape, 1, dtype=torch.int),  # sampling event
+                # sampling event
+                torch.full(taxa_shape, 1, dtype=torch.int),
+                # coalescent event
                 torch.full(
                     taxa_shape[:-1] + (taxa_shape[-1] - 1,),
                     -1,
                     dtype=torch.int,
                 ),
-            ],  # coalescent event
+            ],
             dim=-1,
         )
-
-        indices = torch.argsort(node_heights, descending=False)
-        heights_sorted = torch.gather(node_heights, -1, indices)
+        indices = torch.argsort(heights, descending=False)
+        heights_sorted = torch.gather(heights, -1, indices)
         node_mask_sorted = torch.gather(node_mask, -1, indices)
         lineage_count = node_mask_sorted.cumsum(-1)[..., :-1]
 
-        durations = heights_sorted[..., 1:] - heights_sorted[..., :-1]
         lchoose2 = lineage_count * (lineage_count - 1) / 2.0
+        intervals = heights_sorted[..., 1:] - heights_sorted[..., :-1]
+        return node_mask_sorted, lchoose2, intervals
+
+    def sufficient_statistics(
+        self, node_heights: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Returns sorted sufficient statistics and number of coalescent events
+        per interval.
+
+        This method is used by the block updating MCMC operator.
+
+        :param torch.Tensor node_heights: node heights.
+        :return: sufficient statistics and number of coalescent events
+            per interval.
+        :rtype tuple[torch.Tensor, torch.Tensor]
+        """
+        node_mask_sorted, lchoose2, intervals = self._sorted_terms(node_heights)
+
+        if self.theta.dim() > 1:
+            sufficient_statistics = []
+            for i in range(self.theta.shape[-2]):
+                groups = torch.tensor_split(
+                    lchoose2[i] * intervals[i],
+                    torch.where(node_mask_sorted[i] == -1)[0],
+                )
+                ss = torch.tensor(list(map(torch.sum, groups[:-1])))
+                sufficient_statistics.append(ss)
+            sufficient_statistics = torch.stack(sufficient_statistics)
+        else:
+            groups = torch.tensor_split(
+                lchoose2 * intervals, torch.where(node_mask_sorted == -1)[0]
+            )
+            sufficient_statistics = torch.tensor(list(map(torch.sum, groups[:-1])))
+
+        internal_shape = sufficient_statistics.shape[:-1] + (
+            int((node_heights.shape[-1] + 1) / 2) - 1,
+        )
+        return sufficient_statistics, torch.ones(internal_shape)
+
+    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+        node_mask_sorted, lchoose2, durations = self._sorted_terms(node_heights)
 
         thetas_indices = torch.where(
             node_mask_sorted == -1,
@@ -394,7 +440,7 @@ class PiecewiseConstantCoalescent(AbstractCoalescentDistribution):
 
 
 @register_class
-class PiecewiseConstantCoalescentModel(ConstantCoalescentModel):
+class PiecewiseConstantCoalescentModel(AbstractCoalescentModel):
     def distribution(self) -> AbstractCoalescentDistribution:
         return PiecewiseConstantCoalescent(self.theta.tensor)
 
@@ -420,12 +466,8 @@ class PiecewiseConstantCoalescentGrid(AbstractCoalescentDistribution):
         super().__init__(thetas, validate_args)
         self.grid = grid
 
-    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+    def _sorted_terms(self, node_heights: torch.Tensor):
         batch_shape = max(node_heights.shape, self.theta.shape, key=len)[:-1]
-        if node_heights.dim() > self.theta.dim():
-            thetas = self.theta.expand(batch_shape + torch.Size([-1]))
-        else:
-            thetas = self.theta
 
         grid = self.grid.expand(batch_shape + torch.Size([-1]))
 
@@ -464,6 +506,24 @@ class PiecewiseConstantCoalescentGrid(AbstractCoalescentDistribution):
         durations = heights_sorted[..., 1:] - heights_sorted[..., :-1]
         lchoose2 = lineage_count * (lineage_count - 1) / 2.0
 
+        return node_mask_sorted, lchoose2, durations
+
+    def sufficient_statistics(self, node_heights: torch.Tensor):
+        node_mask_sorted, lchoose2, durations = self._sorted_terms(node_heights)
+        groups = torch.tensor_split(
+            lchoose2 * durations, torch.where(node_mask_sorted == 0)[0]
+        )
+        sufficient_statistics = torch.tensor(list(map(torch.sum, groups)))
+        groups = torch.tensor_split(
+            node_mask_sorted == -1, torch.where(node_mask_sorted == 0)[0]
+        )
+        coalescent_counts = torch.tensor(list(map(torch.sum, groups)))
+        return sufficient_statistics, coalescent_counts
+
+    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+        batch_shape = max(node_heights.shape, self.theta.shape, key=len)[:-1]
+        node_mask_sorted, lchoose2, durations = self._sorted_terms(node_heights)
+
         thetas_indices = torch.where(
             node_mask_sorted == 0,
             torch.tensor([1], dtype=torch.long),
@@ -480,7 +540,7 @@ class PiecewiseConstantCoalescentGrid(AbstractCoalescentDistribution):
         log_thetas = torch.where(
             node_mask_sorted == -1,
             torch.log(thetas),
-            torch.zeros(1, dtype=heights.dtype),
+            torch.zeros(1, dtype=node_heights.dtype, device=node_heights.device),
         )
         return torch.sum(
             -lchoose2 * durations / thetas[..., :-1] - log_thetas[..., 1:],
@@ -925,7 +985,9 @@ class PiecewiseLinearCoalescentGrid(Distribution):
         indices = torch.argsort(grid_heights, descending=False)
         grid_heights_sorted = torch.gather(grid_heights, -1, indices)
         grid_heights_sorted[..., 0] = 0
-        grid[..., 0] = 0
+        grid = torch.cat((torch.tensor([0.0]), self.grid)).expand(
+            batch_shape + torch.Size([-1])
+        )
         event_mask_sorted = torch.gather(event_mask, -1, indices)
         lineage_count = event_mask_sorted.cumsum(-1)[..., :-1]
 
@@ -937,10 +999,10 @@ class PiecewiseLinearCoalescentGrid(Distribution):
         pop_sizes = torch.zeros_like(grid_heights)
 
         # set population size at every grid point
-        indices_grid = torch.zeros(grid_heights_sorted.shape, dtype=torch.long)
-        indices_grid[..., 1:] = 1
-        indices_grid = indices_grid.cumsum(-1)[event_mask_sorted == 0].reshape(
-            grid.shape
+        indices_grid = (
+            torch.arange(grid_heights_sorted.shape[-1])
+            .expand(batch_shape + (-1,))[event_mask_sorted == 0]
+            .reshape(grid.shape)
         )
 
         pop_sizes = pop_sizes.scatter(-1, indices_grid, thetas)
@@ -969,10 +1031,10 @@ class PiecewiseLinearCoalescentGrid(Distribution):
             end_grid[idx] - start_grid[idx]
         )
 
-        p = torch.zeros(pop_sizes.shape, dtype=torch.long)
-        p[..., 1:] = 1
-        indices = p.cumsum(-1)[event_mask_sorted != 0].reshape(
-            pop_size_node_heights.shape
+        indices = (
+            torch.arange(pop_sizes.shape[-1])
+            .expand(batch_shape + (-1,))[event_mask_sorted != 0]
+            .reshape(pop_size_node_heights.shape)
         )
 
         pop_sizes = pop_sizes.scatter(-1, indices, pop_size_node_heights)

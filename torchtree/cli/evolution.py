@@ -47,6 +47,16 @@ logger = logging.getLogger(__name__)
 _engine = None
 
 
+COALESCENT_PIECEWISE = [
+    "piecewise-constant",
+    "piecewise-exponential",
+    "piecewise-linear",
+    "skyglide",
+    "skygrid",
+    "skyride",
+]
+
+
 def create_evolution_parser(parser):
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-i", "--input", required=False, help="""alignment file""")
@@ -232,13 +242,8 @@ def add_coalescent(parser):
         choices=[
             "constant",
             "exponential",
-            "skyride",
-            "skygrid",
-            "skyglide",
-            "piecewise-constant",
-            "piecewise-exponential",
-            "piecewise-linear",
-        ],
+        ]
+        + COALESCENT_PIECEWISE,
         default=None,
         help="""type of coalescent""",
     )
@@ -276,6 +281,25 @@ def add_coalescent(parser):
         help="""Soft coalescent""",
     )
     return parser
+
+
+def check_arguments(arg, parser):
+    if arg.coalescent in COALESCENT_PIECEWISE:
+        piecewise_grid = COALESCENT_PIECEWISE.copy()
+        piecewise_grid.remove("skyride")
+        if arg.coalescent == "skyride" and (
+            arg.cutoff is not None or arg.grid is not None
+        ):
+            parser.error(
+                "skyride coalescent model does not require cutoff or grid arguments"
+            )
+        elif arg.coalescent in piecewise_grid and (
+            arg.cutoff is None or arg.grid is None
+        ):
+            parser.error(
+                ", ".join(piecewise_grid)
+                + " coalescent models require cutoff and grid arguments"
+            )
 
 
 def distribution_type(arg, choices):
@@ -1191,14 +1215,7 @@ def create_coalesent(id_, tree_id, taxa, arg):
                 },
             )
         )
-    elif arg.coalescent in (
-        "skyride",
-        "skygrid",
-        "skyglide",
-        "piecewise-constant",
-        "piecewise-exponential",
-        "piecewise-linear",
-    ):
+    elif arg.coalescent in COALESCENT_PIECEWISE:
         if arg.coalescent == "skyride":
             theta_shape = [len(taxa["taxa"]) - 1]
         else:

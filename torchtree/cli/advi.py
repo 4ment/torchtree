@@ -11,6 +11,7 @@ from torchtree import Parameter
 from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.argparse_utils import list_or_int
 from torchtree.cli.evolution import (
+    COALESCENT_PIECEWISE,
     create_alignment,
     create_evolution_joint,
     create_evolution_parser,
@@ -833,12 +834,7 @@ def create_logger(id_, parameters, arg):
     models = ['joint', 'like', 'prior']
     if arg.coalescent:
         models.append('coalescent')
-        if arg.coalescent in (
-            "skyride",
-            "skygrid",
-            "piecewise-exponential",
-            "piecewise-linear",
-        ):
+        if arg.coalescent in COALESCENT_PIECEWISE:
             models.append('gmrf')
             models.append(
                 {
@@ -866,7 +862,7 @@ def create_sampler(id_, var_id, parameters, arg):
         tree_file_name = 'samples.trees'
 
     parameters2 = list(filter(lambda x: 'tree.ratios' != x, parameters))
-    models = ['joint', 'like', 'prior', var_id]
+    models = ['joint.jacobian', 'joint', 'like', 'prior', var_id]
 
     if arg.location_regex:
         models.append('like.location')
@@ -875,7 +871,7 @@ def create_sampler(id_, var_id, parameters, arg):
 
     if arg.coalescent:
         models.append('coalescent')
-        if arg.coalescent in ('skyride', 'skygrid'):
+        if arg.coalescent in COALESCENT_PIECEWISE:
             models.append('gmrf')
             models.append(
                 {
@@ -935,14 +931,8 @@ def build_advi(arg):
     jacobians_list = create_jacobians(json_list)
     if arg.clock is not None and arg.heights == 'ratio':
         jacobians_list.append('tree')
-    if arg.coalescent in (
-        "skyglide",
-        "skygrid",
-        "skyride",
-        "piecewise-exponential",
-        "piecewise-constant",
-        "piecewise-linear",
-    ):
+
+    if arg.coalescent in COALESCENT_PIECEWISE:
         jacobians_list.remove("coalescent.theta")
 
     joint_jacobian = {
@@ -1004,18 +994,7 @@ def build_advi(arg):
         if arg.coalescent_integrated is None:
             parameters.append("coalescent.theta")
 
-        if (
-            arg.coalescent
-            in (
-                "skyglide",
-                "skygrid",
-                "skyride",
-                "piecewise-constant",
-                "piecewise-exponential",
-                "piecewise-linear",
-            )
-            and not arg.gmrf_integrated
-        ):
+        if arg.coalescent in COALESCENT_PIECEWISE and not arg.gmrf_integrated:
             parameters.append('gmrf.precision')
         elif arg.coalescent == 'exponential':
             parameters.append('coalescent.growth')

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.evolution import (
+    COALESCENT_PIECEWISE,
     create_alignment,
     create_evolution_joint,
     create_evolution_parser,
@@ -14,7 +15,7 @@ from torchtree.cli.operators import (
     create_block_updating_operator,
     create_sliding_window_operator,
 )
-from torchtree.cli.utils import make_unconstrained
+from torchtree.cli.utils import CONSTRAINT, make_unconstrained
 
 
 def create_mcmc_parser(subprasers):
@@ -59,17 +60,20 @@ def create_mcmc(joint, parameters, parameters_unres, arg):
     }
 
     for param in parameters_unres:
-        if param["id"].endswith("theta.log"):
+        if param["id"].endswith("theta.log") and arg.coalescent in (
+            "skygrid",
+            "piecewise-constant",
+        ):
             operator = create_block_updating_operator(
                 param["id"], "gmrf", "coalescent", arg
             )
-            mcmc_json["operators"].append(operator)
         else:
             operator = create_sliding_window_operator(param["id"], joint, param, arg)
-            mcmc_json["operators"].append(operator)
+        mcmc_json["operators"].append(operator)
 
     if arg.stem:
-        mcmc_json["loggers"] = create_loggers(parameters, arg)
+        parameters2 = list(filter(lambda x: 'tree.ratios' != x, parameters))
+        mcmc_json["loggers"] = create_loggers(parameters2, arg)
 
     return mcmc_json
 
@@ -94,9 +98,7 @@ def build_mcmc(arg):
     jacobians_list = create_jacobians(json_list)
     if arg.clock is not None and arg.heights == "ratio":
         jacobians_list.append("tree")
-    if arg.coalescent in ("skygrid", "skyride") or arg.coalescent.startswith(
-        "piecewise"
-    ):
+    if arg.coalescent in COALESCENT_PIECEWISE:
         jacobians_list.remove("coalescent.theta")
 
     joint_jacobian = {

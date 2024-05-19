@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from torchtree.cli import PLUGIN_MANAGER
 from torchtree.cli.evolution import (
+    COALESCENT_PIECEWISE,
     create_alignment,
     create_evolution_joint,
     create_evolution_parser,
@@ -260,9 +261,7 @@ def build_hmc(arg):
     jacobians_list = create_jacobians(json_list)
     if arg.clock is not None and arg.heights == "ratio":
         jacobians_list.append("tree")
-    if arg.coalescent in ("skygrid", "skyride") or arg.coalescent.startswith(
-        "piecewise"
-    ):
+    if arg.coalescent in COALESCENT_PIECEWISE:
         jacobians_list.remove("coalescent.theta")
 
     joint_jacobian = {

@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from torchtree.cli.evolution import COALESCENT_PIECEWISE
+
 
 def create_loggers(parameters: list[str], arg) -> dict:
     models = ["joint.jacobian", "joint", "like", "prior"]
     if arg.coalescent:
         models.append("coalescent")
+        if arg.coalescent in COALESCENT_PIECEWISE:
+            models.append('gmrf')
     return [
         {
             "id": "logger",
