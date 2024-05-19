@@ -289,6 +289,19 @@ Functions
 
    Distribution is the abstract base class for probability distributions.
 
+   .. py:method:: sufficient_statistics(node_heights: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]
+
+      Returns sorted sufficient statistics and number of coalescent events
+      per interval.
+
+      This method is used by the block updating MCMC operator.
+
+      :param torch.Tensor node_heights: node heights.
+      :return: sufficient statistics and number of coalescent events
+          per interval.
+      :rtype tuple[torch.Tensor, torch.Tensor]
+
+
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
 
       Returns the log of the probability density/mass function evaluated at
@@ -306,7 +319,7 @@ Functions
 .. py:class:: PiecewiseConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
 
-   Bases: :py:obj:`ConstantCoalescentModel`
+   Bases: :py:obj:`AbstractCoalescentModel`
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -339,6 +352,9 @@ Functions
    Bases: :py:obj:`AbstractCoalescentDistribution`
 
    Distribution is the abstract base class for probability distributions.
+
+   .. py:method:: sufficient_statistics(node_heights: torch.Tensor)
+
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
 

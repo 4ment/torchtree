@@ -29,6 +29,12 @@ Classes
    .. py:method:: step(*args) -> None
 
 
+   .. py:method:: state_dict() -> dict[str, Any]
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
+
    .. py:method:: from_json(data: dict[str, any], dic: dict[str, any], **kwargs) -> Scheduler
       :classmethod:
 

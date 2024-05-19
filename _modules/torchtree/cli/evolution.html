@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchtree.cli.evolution &#8212; torchtree 1.0.2-dev4 documentation</title>
+    <title>torchtree.cli.evolution &#8212; torchtree 1.0.2-dev5 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../../_static/documentation_options.js?v=81c7c631"></script>
+    <script src="../../../_static/documentation_options.js?v=3a3b442c"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/tabs.js?v=3030b3cb"></script>
@@ -131,7 +131,7 @@
   
   
   
-    <p class="title logo__title">torchtree 1.0.2-dev4 documentation</p>
+    <p class="title logo__title">torchtree 1.0.2-dev5 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -452,6 +452,16 @@ document.write(`
 <span class="n">_engine</span> <span class="o">=</span> <span class="kc">None</span>
 
 
+<span class="n">COALESCENT_PIECEWISE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;piecewise-constant&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;piecewise-exponential&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;piecewise-linear&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;skyglide&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;skygrid&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;skyride&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
 <div class="viewcode-block" id="create_evolution_parser">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_evolution_parser">[docs]</a>
 <span class="k">def</span> <span class="nf">create_evolution_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
@@ -645,13 +655,8 @@ document.write(`
         <span class="n">choices</span><span class="o">=</span><span class="p">[</span>
             <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
             <span class="s2">&quot;exponential&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;skyride&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;skygrid&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;skyglide&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;piecewise-constant&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;piecewise-exponential&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;piecewise-linear&quot;</span><span class="p">,</span>
-        <span class="p">],</span>
+        <span class="p">]</span>
+        <span class="o">+</span> <span class="n">COALESCENT_PIECEWISE</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;type of coalescent&quot;&quot;&quot;</span><span class="p">,</span>
     <span class="p">)</span>
@@ -689,6 +694,28 @@ document.write(`
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Soft coalescent&quot;&quot;&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span></div>
+
+
+
+<div class="viewcode-block" id="check_arguments">
+<a class="viewcode-back" href="../../../autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.check_arguments">[docs]</a>
+<span class="k">def</span> <span class="nf">check_arguments</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="n">COALESCENT_PIECEWISE</span><span class="p">:</span>
+        <span class="n">piecewise_grid</span> <span class="o">=</span> <span class="n">COALESCENT_PIECEWISE</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">piecewise_grid</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;skyride&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="o">==</span> <span class="s2">&quot;skyride&quot;</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">arg</span><span class="o">.</span><span class="n">cutoff</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">arg</span><span class="o">.</span><span class="n">grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;skyride coalescent model does not require cutoff or grid arguments&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="n">piecewise_grid</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">arg</span><span class="o">.</span><span class="n">cutoff</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">arg</span><span class="o">.</span><span class="n">grid</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">piecewise_grid</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot; coalescent models require cutoff and grid arguments&quot;</span>
+            <span class="p">)</span></div>
 
 
 
@@ -1670,14 +1697,7 @@ document.write(`
                 <span class="p">},</span>
             <span class="p">)</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="p">(</span>
-        <span class="s2">&quot;skyride&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;skygrid&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;skyglide&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;piecewise-constant&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;piecewise-exponential&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;piecewise-linear&quot;</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="k">elif</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="n">COALESCENT_PIECEWISE</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="o">==</span> <span class="s2">&quot;skyride&quot;</span><span class="p">:</span>
             <span class="n">theta_shape</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">taxa</span><span class="p">[</span><span class="s2">&quot;taxa&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>

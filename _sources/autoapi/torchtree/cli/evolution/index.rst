@@ -16,6 +16,7 @@ Functions
    torchtree.cli.evolution.create_evolution_parser
    torchtree.cli.evolution.add_birth_death
    torchtree.cli.evolution.add_coalescent
+   torchtree.cli.evolution.check_arguments
    torchtree.cli.evolution.distribution_type
    torchtree.cli.evolution.run_tree_regression
    torchtree.cli.evolution.create_tree_model
@@ -59,9 +60,15 @@ Attributes
 .. autoapisummary::
 
    torchtree.cli.evolution.logger
+   torchtree.cli.evolution.COALESCENT_PIECEWISE
 
 
 .. py:data:: logger
+
+   
+
+.. py:data:: COALESCENT_PIECEWISE
+   :value: ['piecewise-constant', 'piecewise-exponential', 'piecewise-linear', 'skyglide', 'skygrid', 'skyride']
 
    
 
@@ -72,6 +79,9 @@ Attributes
 
 
 .. py:function:: add_coalescent(parser)
+
+
+.. py:function:: check_arguments(arg, parser)
 
 
 .. py:function:: distribution_type(arg, choices)

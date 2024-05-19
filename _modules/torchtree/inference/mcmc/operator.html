@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchtree.inference.mcmc.operator &#8212; torchtree 1.0.2-dev4 documentation</title>
+    <title>torchtree.inference.mcmc.operator &#8212; torchtree 1.0.2-dev5 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../../../_static/documentation_options.js?v=81c7c631"></script>
+    <script src="../../../../_static/documentation_options.js?v=3a3b442c"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/tabs.js?v=3030b3cb"></script>
@@ -131,7 +131,7 @@
   
   
   
-    <p class="title logo__title">torchtree 1.0.2-dev4 documentation</p>
+    <p class="title logo__title">torchtree 1.0.2-dev5 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -679,10 +679,10 @@ document.write(`
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scaler</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scaler</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="SlidingWindowOperator.from_json">
 <a class="viewcode-back" href="../../../../autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.SlidingWindowOperator.from_json">[docs]</a>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>torchtree.cli.evolution &#8212; torchtree 1.0.2-dev4 documentation</title>
+    <title>torchtree.cli.evolution &#8212; torchtree 1.0.2-dev5 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../../../_static/documentation_options.js?v=81c7c631"></script>
+    <script src="../../../../_static/documentation_options.js?v=3a3b442c"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -131,7 +131,7 @@
   
   
   
-    <p class="title logo__title">torchtree 1.0.2-dev4 documentation</p>
+    <p class="title logo__title">torchtree 1.0.2-dev5 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -404,9 +404,11 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attributes">Attributes</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.COALESCENT_PIECEWISE"><code class="docutils literal notranslate"><span class="pre">COALESCENT_PIECEWISE</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.create_evolution_parser"><code class="docutils literal notranslate"><span class="pre">create_evolution_parser()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.add_birth_death"><code class="docutils literal notranslate"><span class="pre">add_birth_death()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.add_coalescent"><code class="docutils literal notranslate"><span class="pre">add_coalescent()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.check_arguments"><code class="docutils literal notranslate"><span class="pre">check_arguments()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.distribution_type"><code class="docutils literal notranslate"><span class="pre">distribution_type()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.run_tree_regression"><code class="docutils literal notranslate"><span class="pre">run_tree_regression()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.create_tree_model"><code class="docutils literal notranslate"><span class="pre">create_tree_model()</span></code></a></li>
@@ -473,106 +475,109 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.add_coalescent" title="torchtree.cli.evolution.add_coalescent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_coalescent</span></code></a>(parser)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.distribution_type" title="torchtree.cli.evolution.distribution_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distribution_type</span></code></a>(arg, choices)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.check_arguments" title="torchtree.cli.evolution.check_arguments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_arguments</span></code></a>(arg, parser)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.distribution_type" title="torchtree.cli.evolution.distribution_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distribution_type</span></code></a>(arg, choices)</p></td>
 <td><p>Used by argparse for specifying distributions with optional</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.run_tree_regression" title="torchtree.cli.evolution.run_tree_regression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_tree_regression</span></code></a>(arg, taxa)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.run_tree_regression" title="torchtree.cli.evolution.run_tree_regression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_tree_regression</span></code></a>(arg, taxa)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_tree_model" title="torchtree.cli.evolution.create_tree_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_tree_model</span></code></a>(id_, taxa, arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_tree_model" title="torchtree.cli.evolution.create_tree_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_tree_model</span></code></a>(id_, taxa, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_poisson_tree_likelihood" title="torchtree.cli.evolution.create_poisson_tree_likelihood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_poisson_tree_likelihood</span></code></a>(id_, taxa, arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_poisson_tree_likelihood" title="torchtree.cli.evolution.create_poisson_tree_likelihood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_poisson_tree_likelihood</span></code></a>(id_, taxa, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_tree_likelihood_single" title="torchtree.cli.evolution.create_tree_likelihood_single"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_tree_likelihood_single</span></code></a>(id_, tree_model, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_tree_likelihood_single" title="torchtree.cli.evolution.create_tree_likelihood_single"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_tree_likelihood_single</span></code></a>(id_, tree_model, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_tree_likelihood_general" title="torchtree.cli.evolution.create_tree_likelihood_general"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_tree_likelihood_general</span></code></a>(trait, data_type, taxa, arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_tree_likelihood_general" title="torchtree.cli.evolution.create_tree_likelihood_general"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_tree_likelihood_general</span></code></a>(trait, data_type, taxa, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_tree_likelihood" title="torchtree.cli.evolution.create_tree_likelihood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_tree_likelihood</span></code></a>(id_, taxa, alignment, arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_tree_likelihood" title="torchtree.cli.evolution.create_tree_likelihood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_tree_likelihood</span></code></a>(id_, taxa, alignment, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_site_model" title="torchtree.cli.evolution.create_site_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_site_model</span></code></a>(id_, arg[, w])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_site_model" title="torchtree.cli.evolution.create_site_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_site_model</span></code></a>(id_, arg[, w])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_site_model_srd06_mus" title="torchtree.cli.evolution.create_site_model_srd06_mus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_site_model_srd06_mus</span></code></a>(id_)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_site_model_srd06_mus" title="torchtree.cli.evolution.create_site_model_srd06_mus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_site_model_srd06_mus</span></code></a>(id_)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.is_float" title="torchtree.cli.evolution.is_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_float</span></code></a>(value)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.is_float" title="torchtree.cli.evolution.is_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_float</span></code></a>(value)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_branch_model" title="torchtree.cli.evolution.create_branch_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_branch_model</span></code></a>(id_, tree_id, taxa_count, arg[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_branch_model" title="torchtree.cli.evolution.create_branch_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_branch_model</span></code></a>(id_, tree_id, taxa_count, arg[, ...])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.build_alignment" title="torchtree.cli.evolution.build_alignment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_alignment</span></code></a>(file_name, data_type)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.build_alignment" title="torchtree.cli.evolution.build_alignment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_alignment</span></code></a>(file_name, data_type)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_substitution_model" title="torchtree.cli.evolution.create_substitution_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_substitution_model</span></code></a>(id_, model, arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_substitution_model" title="torchtree.cli.evolution.create_substitution_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_substitution_model</span></code></a>(id_, model, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_site_pattern" title="torchtree.cli.evolution.create_site_pattern"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_site_pattern</span></code></a>(id_, alignment[, indices])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_site_pattern" title="torchtree.cli.evolution.create_site_pattern"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_site_pattern</span></code></a>(id_, alignment[, indices])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_data_type" title="torchtree.cli.evolution.create_data_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_data_type</span></code></a>(id_, arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_data_type" title="torchtree.cli.evolution.create_data_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_data_type</span></code></a>(id_, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_general_data_type" title="torchtree.cli.evolution.create_general_data_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_general_data_type</span></code></a>(id_, trait, taxa)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_general_data_type" title="torchtree.cli.evolution.create_general_data_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_general_data_type</span></code></a>(id_, trait, taxa)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_alignment" title="torchtree.cli.evolution.create_alignment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_alignment</span></code></a>(id_, taxa, arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_alignment" title="torchtree.cli.evolution.create_alignment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_alignment</span></code></a>(id_, taxa, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_taxa" title="torchtree.cli.evolution.create_taxa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_taxa</span></code></a>(id_, arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_taxa" title="torchtree.cli.evolution.create_taxa"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_taxa</span></code></a>(id_, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_birth_death" title="torchtree.cli.evolution.create_birth_death"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_birth_death</span></code></a>(birth_death_id, tree_id, arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_birth_death" title="torchtree.cli.evolution.create_birth_death"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_birth_death</span></code></a>(birth_death_id, tree_id, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_constant_birth_death" title="torchtree.cli.evolution.create_constant_birth_death"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_constant_birth_death</span></code></a>(birth_death_id, tree_id, arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_constant_birth_death" title="torchtree.cli.evolution.create_constant_birth_death"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_constant_birth_death</span></code></a>(birth_death_id, tree_id, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_bdsk" title="torchtree.cli.evolution.create_bdsk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_bdsk</span></code></a>(birth_death_id, tree_id, arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_bdsk" title="torchtree.cli.evolution.create_bdsk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_bdsk</span></code></a>(birth_death_id, tree_id, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_coalesent" title="torchtree.cli.evolution.create_coalesent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_coalesent</span></code></a>(id_, tree_id, taxa, arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_coalesent" title="torchtree.cli.evolution.create_coalesent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_coalesent</span></code></a>(id_, tree_id, taxa, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_substitution_model_priors" title="torchtree.cli.evolution.create_substitution_model_priors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_substitution_model_priors</span></code></a>(substmodel_id, model)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_substitution_model_priors" title="torchtree.cli.evolution.create_substitution_model_priors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_substitution_model_priors</span></code></a>(substmodel_id, model)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_ucln_prior" title="torchtree.cli.evolution.create_ucln_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_ucln_prior</span></code></a>(branch_model_id)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_ucln_prior" title="torchtree.cli.evolution.create_ucln_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_ucln_prior</span></code></a>(branch_model_id)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.parse_distribution" title="torchtree.cli.evolution.parse_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_distribution</span></code></a>(desc)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.parse_distribution" title="torchtree.cli.evolution.parse_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_distribution</span></code></a>(desc)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_clock_prior" title="torchtree.cli.evolution.create_clock_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_clock_prior</span></code></a>(arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_clock_prior" title="torchtree.cli.evolution.create_clock_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_clock_prior</span></code></a>(arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_evolution_priors" title="torchtree.cli.evolution.create_evolution_priors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_evolution_priors</span></code></a>(taxa, arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_evolution_priors" title="torchtree.cli.evolution.create_evolution_priors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_evolution_priors</span></code></a>(taxa, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_time_tree_prior" title="torchtree.cli.evolution.create_time_tree_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_time_tree_prior</span></code></a>(taxa, arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_time_tree_prior" title="torchtree.cli.evolution.create_time_tree_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_time_tree_prior</span></code></a>(taxa, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_bd_prior" title="torchtree.cli.evolution.create_bd_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_bd_prior</span></code></a>(id_, parameters)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_bd_prior" title="torchtree.cli.evolution.create_bd_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_bd_prior</span></code></a>(id_, parameters)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_constant_bd_prior" title="torchtree.cli.evolution.create_constant_bd_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_constant_bd_prior</span></code></a>(birth_death_id)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_constant_bd_prior" title="torchtree.cli.evolution.create_constant_bd_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_constant_bd_prior</span></code></a>(birth_death_id)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_bdsk_prior" title="torchtree.cli.evolution.create_bdsk_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_bdsk_prior</span></code></a>(birth_death_id)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_bdsk_prior" title="torchtree.cli.evolution.create_bdsk_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_bdsk_prior</span></code></a>(birth_death_id)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_poisson_evolution_joint" title="torchtree.cli.evolution.create_poisson_evolution_joint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_poisson_evolution_joint</span></code></a>(taxa, arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_poisson_evolution_joint" title="torchtree.cli.evolution.create_poisson_evolution_joint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_poisson_evolution_joint</span></code></a>(taxa, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_evolution_joint" title="torchtree.cli.evolution.create_evolution_joint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_evolution_joint</span></code></a>(taxa, alignment, arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.create_evolution_joint" title="torchtree.cli.evolution.create_evolution_joint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_evolution_joint</span></code></a>(taxa, alignment, arg)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.get_engine" title="torchtree.cli.evolution.get_engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_engine</span></code></a>(arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.get_engine" title="torchtree.cli.evolution.get_engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_engine</span></code></a>(arg)</p></td>
 <td><p>Import module or use cashed module if engine is specified in</p></td>
 </tr>
 </tbody>
@@ -585,11 +590,19 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.cli.evolution.logger" title="torchtree.cli.evolution.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchtree.cli.evolution.COALESCENT_PIECEWISE" title="torchtree.cli.evolution.COALESCENT_PIECEWISE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COALESCENT_PIECEWISE</span></code></a></p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py data">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.logger">
 <span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#torchtree.cli.evolution.logger" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="torchtree.cli.evolution.COALESCENT_PIECEWISE">
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">COALESCENT_PIECEWISE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['piecewise-constant',</span> <span class="pre">'piecewise-exponential',</span> <span class="pre">'piecewise-linear',</span> <span class="pre">'skyglide',</span> <span class="pre">'skygrid',</span> <span class="pre">'skyride']</span></em><a class="headerlink" href="#torchtree.cli.evolution.COALESCENT_PIECEWISE" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -605,6 +618,11 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="torchtree.cli.evolution.add_coalescent">
 <span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">add_coalescent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#add_coalescent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.add_coalescent" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="torchtree.cli.evolution.check_arguments">
+<span class="sig-prename descclassname"><span class="pre">torchtree.cli.evolution.</span></span><span class="sig-name descname"><span class="pre">check_arguments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/cli/evolution.html#check_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.cli.evolution.check_arguments" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -834,9 +852,11 @@ arguments.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attributes">Attributes</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.COALESCENT_PIECEWISE"><code class="docutils literal notranslate"><span class="pre">COALESCENT_PIECEWISE</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.create_evolution_parser"><code class="docutils literal notranslate"><span class="pre">create_evolution_parser()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.add_birth_death"><code class="docutils literal notranslate"><span class="pre">add_birth_death()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.add_coalescent"><code class="docutils literal notranslate"><span class="pre">add_coalescent()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.check_arguments"><code class="docutils literal notranslate"><span class="pre">check_arguments()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.distribution_type"><code class="docutils literal notranslate"><span class="pre">distribution_type()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.run_tree_regression"><code class="docutils literal notranslate"><span class="pre">run_tree_regression()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.cli.evolution.create_tree_model"><code class="docutils literal notranslate"><span class="pre">create_tree_model()</span></code></a></li>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchtree.evolution.coalescent &#8212; torchtree 1.0.2-dev4 documentation</title>
+    <title>torchtree.evolution.coalescent &#8212; torchtree 1.0.2-dev5 documentation</title>
   
   
   
@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../../_static/documentation_options.js?v=81c7c631"></script>
+    <script src="../../../_static/documentation_options.js?v=3a3b442c"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/tabs.js?v=3030b3cb"></script>
@@ -131,7 +131,7 @@
   
   
   
-    <p class="title logo__title">torchtree 1.0.2-dev4 documentation</p>
+    <p class="title logo__title">torchtree 1.0.2-dev5 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -768,11 +768,9 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth</span>
         <span class="p">)</span>
         <span class="n">lchoose2</span> <span class="o">=</span> <span class="n">lineage_count</span> <span class="o">*</span> <span class="p">(</span><span class="n">lineage_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
-        <span class="n">log_thetas</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-            <span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">heights_sorted</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth</span><span class="p">)),</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">heights_sorted</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
-        <span class="p">)</span>
+        <span class="n">log_thetas</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">heights_sorted</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="n">lchoose2</span> <span class="o">*</span> <span class="n">integral</span> <span class="o">-</span> <span class="n">log_thetas</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 </div>
 
@@ -781,29 +779,80 @@ document.write(`
 <div class="viewcode-block" id="PiecewiseConstantCoalescent">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent">[docs]</a>
 <span class="k">class</span> <span class="nc">PiecewiseConstantCoalescent</span><span class="p">(</span><span class="n">AbstractCoalescentDistribution</span><span class="p">):</span>
-<div class="viewcode-block" id="PiecewiseConstantCoalescent.log_prob">
-<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="n">taxa_shape</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),)</span>
+    <span class="k">def</span> <span class="nf">_sorted_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">):</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># if node_heights is fixed there is no batch dimension</span>
+        <span class="k">if</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">dim</span><span class="p">():</span>
+            <span class="n">heights</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_shape</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">heights</span> <span class="o">=</span> <span class="n">node_heights</span>
+
+        <span class="n">taxa_shape</span> <span class="o">=</span> <span class="n">heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),)</span>
         <span class="n">node_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">taxa_shape</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int</span><span class="p">),</span>  <span class="c1"># sampling event</span>
+                <span class="c1"># sampling event</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">taxa_shape</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int</span><span class="p">),</span>
+                <span class="c1"># coalescent event</span>
                 <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
                     <span class="n">taxa_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">taxa_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,),</span>
                     <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
                     <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int</span><span class="p">,</span>
                 <span class="p">),</span>
-            <span class="p">],</span>  <span class="c1"># coalescent event</span>
+            <span class="p">],</span>
             <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">node_heights</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">heights_sorted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">node_heights</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">heights_sorted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
         <span class="n">node_mask_sorted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">node_mask</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
         <span class="n">lineage_count</span> <span class="o">=</span> <span class="n">node_mask_sorted</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="n">durations</span> <span class="o">=</span> <span class="n">heights_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">heights_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">lchoose2</span> <span class="o">=</span> <span class="n">lineage_count</span> <span class="o">*</span> <span class="p">(</span><span class="n">lineage_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">intervals</span> <span class="o">=</span> <span class="n">heights_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">heights_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">intervals</span>
+
+<div class="viewcode-block" id="PiecewiseConstantCoalescent.sufficient_statistics">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.sufficient_statistics">[docs]</a>
+    <span class="k">def</span> <span class="nf">sufficient_statistics</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns sorted sufficient statistics and number of coalescent events</span>
+<span class="sd">        per interval.</span>
+
+<span class="sd">        This method is used by the block updating MCMC operator.</span>
+
+<span class="sd">        :param torch.Tensor node_heights: node heights.</span>
+<span class="sd">        :return: sufficient statistics and number of coalescent events</span>
+<span class="sd">            per interval.</span>
+<span class="sd">        :rtype tuple[torch.Tensor, torch.Tensor]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">intervals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_terms</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">sufficient_statistics</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]):</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor_split</span><span class="p">(</span>
+                    <span class="n">lchoose2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">intervals</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">node_mask_sorted</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">ss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span> <span class="n">groups</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+                <span class="n">sufficient_statistics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ss</span><span class="p">)</span>
+            <span class="n">sufficient_statistics</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">sufficient_statistics</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">groups</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor_split</span><span class="p">(</span>
+                <span class="n">lchoose2</span> <span class="o">*</span> <span class="n">intervals</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">sufficient_statistics</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span> <span class="n">groups</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+
+        <span class="n">internal_shape</span> <span class="o">=</span> <span class="n">sufficient_statistics</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+            <span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">sufficient_statistics</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">internal_shape</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PiecewiseConstantCoalescent.log_prob">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.log_prob">[docs]</a>
+    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_terms</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
 
         <span class="n">thetas_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
             <span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
@@ -873,7 +922,7 @@ document.write(`
 <div class="viewcode-block" id="PiecewiseConstantCoalescentModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">PiecewiseConstantCoalescentModel</span><span class="p">(</span><span class="n">ConstantCoalescentModel</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">PiecewiseConstantCoalescentModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
 <div class="viewcode-block" id="PiecewiseConstantCoalescentModel.distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel.distribution">[docs]</a>
     <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
@@ -908,14 +957,8 @@ document.write(`
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">thetas</span><span class="p">,</span> <span class="n">validate_args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
 
-<div class="viewcode-block" id="PiecewiseConstantCoalescentGrid.log_prob">
-<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_sorted_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
         <span class="n">batch_shape</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">dim</span><span class="p">():</span>
-            <span class="n">thetas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_shape</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">thetas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span>
 
         <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_shape</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
 
@@ -954,6 +997,29 @@ document.write(`
         <span class="n">durations</span> <span class="o">=</span> <span class="n">heights_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">heights_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">lchoose2</span> <span class="o">=</span> <span class="n">lineage_count</span> <span class="o">*</span> <span class="p">(</span><span class="n">lineage_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
 
+        <span class="k">return</span> <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">durations</span>
+
+<div class="viewcode-block" id="PiecewiseConstantCoalescentGrid.sufficient_statistics">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.sufficient_statistics">[docs]</a>
+    <span class="k">def</span> <span class="nf">sufficient_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_terms</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor_split</span><span class="p">(</span>
+            <span class="n">lchoose2</span> <span class="o">*</span> <span class="n">durations</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">sufficient_statistics</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span> <span class="n">groups</span><span class="p">)))</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor_split</span><span class="p">(</span>
+            <span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">coalescent_counts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span> <span class="n">groups</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">sufficient_statistics</span><span class="p">,</span> <span class="n">coalescent_counts</span></div>
+
+
+<div class="viewcode-block" id="PiecewiseConstantCoalescentGrid.log_prob">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.log_prob">[docs]</a>
+    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_terms</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
+
         <span class="n">thetas_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
             <span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">),</span>
@@ -970,7 +1036,7 @@ document.write(`
         <span class="n">log_thetas</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
             <span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">thetas</span><span class="p">),</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">heights</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">node_heights</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">node_heights</span><span class="o">.</span><span class="n">device</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
             <span class="o">-</span><span class="n">lchoose2</span> <span class="o">*</span> <span class="n">durations</span> <span class="o">/</span> <span class="n">thetas</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">log_thetas</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:],</span>
@@ -1457,7 +1523,9 @@ document.write(`
         <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">grid_heights</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">grid_heights_sorted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">grid_heights</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
         <span class="n">grid_heights_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">grid</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">))</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span>
+            <span class="n">batch_shape</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="p">)</span>
         <span class="n">event_mask_sorted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">event_mask</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
         <span class="n">lineage_count</span> <span class="o">=</span> <span class="n">event_mask_sorted</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
@@ -1469,10 +1537,10 @@ document.write(`
         <span class="n">pop_sizes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">grid_heights</span><span class="p">)</span>
 
         <span class="c1"># set population size at every grid point</span>
-        <span class="n">indices_grid</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">grid_heights_sorted</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
-        <span class="n">indices_grid</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">indices_grid</span> <span class="o">=</span> <span class="n">indices_grid</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="n">event_mask_sorted</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-            <span class="n">grid</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">indices_grid</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">grid_heights_sorted</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_shape</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))[</span><span class="n">event_mask_sorted</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">pop_sizes</span> <span class="o">=</span> <span class="n">pop_sizes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices_grid</span><span class="p">,</span> <span class="n">thetas</span><span class="p">)</span>
@@ -1501,10 +1569,10 @@ document.write(`
             <span class="n">end_grid</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">start_grid</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="n">p</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">pop_sizes</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
-        <span class="n">p</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="n">event_mask_sorted</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
-            <span class="n">pop_size_node_heights</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">pop_sizes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_shape</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))[</span><span class="n">event_mask_sorted</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">pop_size_node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">pop_sizes</span> <span class="o">=</span> <span class="n">pop_sizes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">pop_size_node_heights</span><span class="p">)</span>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>torchtree.evolution.coalescent &#8212; torchtree 1.0.2-dev4 documentation</title>
+    <title>torchtree.evolution.coalescent &#8212; torchtree 1.0.2-dev5 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script src="../../../../_static/documentation_options.js?v=81c7c631"></script>
+    <script src="../../../../_static/documentation_options.js?v=3a3b442c"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
@@ -132,7 +132,7 @@
   
   
   
-    <p class="title logo__title">torchtree 1.0.2-dev4 documentation</p>
+    <p class="title logo__title">torchtree 1.0.2-dev5 documentation</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -452,6 +452,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.sufficient_statistics"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent.sufficient_statistics()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.log_prob"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent.log_prob()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.maximum_likelihood"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent.maximum_likelihood()</span></code></a></li>
 </ul>
@@ -462,6 +463,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGrid</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.sufficient_statistics"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGrid.sufficient_statistics()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.log_prob"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGrid.log_prob()</span></code></a></li>
 </ul>
 </li>
@@ -877,6 +879,24 @@ by their ID.</p></li>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.coalescent.AbstractCoalescentDistribution" title="torchtree.evolution.coalescent.AbstractCoalescentDistribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractCoalescentDistribution</span></code></a></p>
 <p>Distribution is the abstract base class for probability distributions.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.coalescent.PiecewiseConstantCoalescent.sufficient_statistics">
+<span class="sig-name descname"><span class="pre">sufficient_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_heights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/torchtree/evolution/coalescent.html#PiecewiseConstantCoalescent.sufficient_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.sufficient_statistics" title="Link to this definition">#</a></dt>
+<dd><p>Returns sorted sufficient statistics and number of coalescent events
+per interval.</p>
+<p>This method is used by the block updating MCMC operator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node_heights</strong> (<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><em>torch.Tensor</em></a>) – node heights.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sufficient statistics and number of coalescent events
+per interval.</p>
+</dd>
+</dl>
+<p>:rtype tuple[torch.Tensor, torch.Tensor]</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="torchtree.evolution.coalescent.PiecewiseConstantCoalescent.log_prob">
 <span class="sig-name descname"><span class="pre">log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_heights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/evolution/coalescent.html#PiecewiseConstantCoalescent.log_prob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.log_prob" title="Link to this definition">#</a></dt>
 <dd><p>Returns the log of the probability density/mass function evaluated at
@@ -898,7 +918,7 @@ by their ID.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.coalescent.</span></span><span class="sig-name descname"><span class="pre">PiecewiseConstantCoalescentModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel" title="torchtree.evolution.tree_model.TimeTreeModel"><span class="pre">torchtree.evolution.tree_model.TimeTreeModel</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/evolution/coalescent.html#PiecewiseConstantCoalescentModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.coalescent.ConstantCoalescentModel" title="torchtree.evolution.coalescent.ConstantCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConstantCoalescentModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.coalescent.AbstractCoalescentModel" title="torchtree.evolution.coalescent.AbstractCoalescentModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractCoalescentModel</span></code></a></p>
 <p>Classes inheriting from <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code> and
 <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Callable</span></code></a>.</p>
 <p>CallableModel are Callable and the returned value is cached in case
@@ -938,6 +958,11 @@ by their ID.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.coalescent.</span></span><span class="sig-name descname"><span class="pre">PiecewiseConstantCoalescentGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thetas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/evolution/coalescent.html#PiecewiseConstantCoalescentGrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.evolution.coalescent.AbstractCoalescentDistribution" title="torchtree.evolution.coalescent.AbstractCoalescentDistribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AbstractCoalescentDistribution</span></code></a></p>
 <p>Distribution is the abstract base class for probability distributions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.sufficient_statistics">
+<span class="sig-name descname"><span class="pre">sufficient_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_heights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/evolution/coalescent.html#PiecewiseConstantCoalescentGrid.sufficient_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.sufficient_statistics" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.log_prob">
 <span class="sig-name descname"><span class="pre">log_prob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_heights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.Tensor</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/evolution/coalescent.html#PiecewiseConstantCoalescentGrid.log_prob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.log_prob" title="Link to this definition">#</a></dt>
@@ -1273,6 +1298,7 @@ by their ID.</p></li>
 </ul>
 </li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.sufficient_statistics"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent.sufficient_statistics()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.log_prob"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent.log_prob()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.maximum_likelihood"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescent.maximum_likelihood()</span></code></a></li>
 </ul>
@@ -1283,6 +1309,7 @@ by their ID.</p></li>
 </ul>
 </li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGrid</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.sufficient_statistics"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGrid.sufficient_statistics()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.log_prob"><code class="docutils literal notranslate"><span class="pre">PiecewiseConstantCoalescentGrid.log_prob()</span></code></a></li>
 </ul>
 </li>
