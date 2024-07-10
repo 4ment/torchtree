@@ -1458,11 +1458,11 @@ def create_ucln_prior(branch_model_id):
     mean = Parameter.json_factory(
         f"{branch_model_id}.rates.prior.mean", **{"tensor": [0.001]}
     )
-    scale = Parameter.json_factory(
-        f"{branch_model_id}.rates.prior.scale", **{"tensor": [1.0]}
+    stdev = Parameter.json_factory(
+        f"{branch_model_id}.rates.prior.stdev", **{"tensor": [0.1]}
     )
     mean[CONSTRAINT.LOWER.value] = 0.0
-    scale[CONSTRAINT.LOWER.value] = 0.0
+    stdev[CONSTRAINT.LOWER.value] = 0.0
     joint_list.append(
         Distribution.json_factory(
             f"{branch_model_id}.rates.prior",
@@ -1470,7 +1470,7 @@ def create_ucln_prior(branch_model_id):
             f"{branch_model_id}.rates",
             {
                 "mean": mean,
-                "scale": scale,
+                "stdev": stdev,
             },
         )
     )
@@ -1485,7 +1485,7 @@ def create_ucln_prior(branch_model_id):
         Distribution.json_factory(
             f"{branch_model_id}.rates.scale.prior",
             "torch.distributions.Gamma",
-            f"{branch_model_id}.rates.prior.scale",
+            f"{branch_model_id}.rates.prior.stdev",
             {
                 "concentration": 0.5396,
                 "rate": 2.6184,

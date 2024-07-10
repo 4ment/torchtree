@@ -181,9 +181,9 @@ def process_object(data, dic):
                 raise JSONParseError("Missing `id' and `type' keys") from None
 
         if id_ in dic:
-            raise JSONParseError("Object with ID `{id_}' already exists")
+            raise JSONParseError(f"Object with ID `{id_}' already exists")
         if "type" not in data:
-            raise JSONParseError("Object with ID `{id_}' does not have a type")
+            raise JSONParseError(f"Object with ID `{id_}' does not have a type")
 
         try:
             klass = get_class(data["type"])

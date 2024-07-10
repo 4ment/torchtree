@@ -18,26 +18,26 @@ class LogNormal(torch.distributions.LogNormal):
     :attr:`scale`.
 
     :param mean: mean of the distribution
-    :param scale: standard deviation of log of the distribution
-    :param scale_real: standard deviation of the distribution
+    :param scale: scale (sigma) parameter of log of the distribution
+    :param stdev: standard deviation of the distribution
     """
 
     def __init__(
         self,
         mean: Union[Tensor, float],
         scale: Union[Tensor, float, None] = None,
-        scale_real: Union[Tensor, float, None] = None,
+        stdev: Union[Tensor, float, None] = None,
         validate_args=None,
     ) -> None:
-        if (scale is not None) + (scale_real is not None) != 1:
-            raise ValueError("Exactly one of scale or scale_real may be specified.")
+        if (scale is not None) + (stdev is not None) != 1:
+            raise ValueError("Exactly one of scale or stdev may be specified.")
 
         if scale is not None:
             log_mean = log(mean) if isinstance(mean, Number) else mean.log()
             var = scale * scale if isinstance(scale, Number) else scale.pow(2)
             loc = log_mean - var * 0.5
         else:
-            temp = 1.0 + scale_real * scale_real / (mean * mean)
+            temp = 1.0 + stdev * stdev / (mean * mean)
             if isinstance(temp, Number):
                 loc = math.log(mean / math.sqrt(temp))
                 scale = math.sqrt(math.log(temp))
