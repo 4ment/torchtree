@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.normal`
-========================================
+torchtree.distributions.normal
+==============================
 
 .. py:module:: torchtree.distributions.normal
 
@@ -9,23 +9,21 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.distributions.normal.Normal
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Normal(loc: Union[float, torch.Tensor], scale: Union[float, torch.Tensor, None] = None, precision: Union[float, torch.Tensor, None] = None, validate_args=None)
 
-
    Bases: :py:obj:`torch.distributions.Normal`
+
 
    Normal distribution parametrized by location and precision.
 

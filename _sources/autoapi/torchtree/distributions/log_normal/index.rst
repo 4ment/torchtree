@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.log_normal`
-============================================
+torchtree.distributions.log_normal
+==================================
 
 .. py:module:: torchtree.distributions.log_normal
 
@@ -9,23 +9,21 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.distributions.log_normal.LogNormal
 
 
+Module Contents
+---------------
 
-
-.. py:class:: LogNormal(mean: Union[torch.Tensor, float], scale: Union[torch.Tensor, float, None] = None, scale_real: Union[torch.Tensor, float, None] = None, validate_args=None)
-
+.. py:class:: LogNormal(mean: Union[torch.Tensor, float], scale: Union[torch.Tensor, float, None] = None, stdev: Union[torch.Tensor, float, None] = None, validate_args=None)
 
    Bases: :py:obj:`torch.distributions.LogNormal`
+
 
    Lognormal distribution parametrized by mean and scale.
 
@@ -33,7 +31,7 @@ Classes
    :attr:`scale`.
 
    :param mean: mean of the distribution
-   :param scale: standard deviation of log of the distribution
-   :param scale_real: standard deviation of the distribution
+   :param scale: scale (sigma) parameter of log of the distribution
+   :param stdev: standard deviation of the distribution
 
 

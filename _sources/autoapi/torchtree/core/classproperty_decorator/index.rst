@@ -1,26 +1,24 @@
-:py:mod:`torchtree.core.classproperty_decorator`
-================================================
+torchtree.core.classproperty_decorator
+======================================
 
 .. py:module:: torchtree.core.classproperty_decorator
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.core.classproperty_decorator.classproperty
 
 
-
+Module Contents
+---------------
 
 .. py:class:: classproperty
 
-
    Bases: :py:obj:`property`
+
 
    Property attribute.
 

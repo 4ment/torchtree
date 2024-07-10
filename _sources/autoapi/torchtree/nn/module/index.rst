@@ -1,26 +1,24 @@
-:py:mod:`torchtree.nn.module`
-=============================
+torchtree.nn.module
+===================
 
 .. py:module:: torchtree.nn.module
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.nn.module.Module
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Module(id_: torchtree.typing.ID, module: torch.nn.Module, parameters: torchtree.typing.OrderedDictType[str, torchtree.core.abstractparameter.AbstractParameter])
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Wrapper class for torch.nn.Module.
 
@@ -30,14 +28,17 @@ Classes
    :param parameters: OrderedDict of :class:`~torchtree.Parameter` keyed by their ID.
    :type parameters: OrderedDict[str,Parameter]
 
+
    .. py:property:: module
       :type: torch.nn.Module
 
       returns torch.nn.Module
 
+
    .. py:method:: to(*args, **kwargs) -> None
 
       Performs Tensor dtype and/or device conversion using torch.to.
+
 
 
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
@@ -45,13 +46,16 @@ Classes
       Move tensors to CUDA using torch.cuda.
 
 
+
    .. py:method:: cpu() -> None
 
       Move tensors to CPU memory using ~torch.cpu.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Create a Module object.
 

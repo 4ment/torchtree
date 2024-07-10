@@ -1,5 +1,5 @@
-:py:mod:`torchtree.nn`
-======================
+torchtree.nn
+============
 
 .. py:module:: torchtree.nn
 
@@ -11,24 +11,10 @@
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   module/index.rst
-
-
-Package Contents
-----------------
-
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   torchtree.nn.Module
-
-
-
+   /autoapi/torchtree/nn/module/index
 
 

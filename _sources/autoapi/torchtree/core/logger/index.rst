@@ -1,14 +1,11 @@
-:py:mod:`torchtree.core.logger`
-===============================
+torchtree.core.logger
+=====================
 
 .. py:module:: torchtree.core.logger
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -20,35 +17,39 @@ Classes
    torchtree.core.logger.ContainerLogger
 
 
-
+Module Contents
+---------------
 
 .. py:class:: LoggerInterface
 
-
    Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
+
 
    Interface for logging things like parameters or trees to a file.
 
+
    .. py:method:: log(*args, **kwargs) -> None
       :abstractmethod:
+
 
 
    .. py:method:: initialize() -> None
       :abstractmethod:
 
 
+
    .. py:method:: close() -> None
       :abstractmethod:
+
 
 
    .. py:method:: run() -> None
 
 
-
 .. py:class:: Logger(objs: list[Union[torchtree.core.abstractparameter.AbstractParameter, torchtree.core.model.CallableModel]], every: int, **kwargs)
 
-
    Bases: :py:obj:`LoggerInterface`
+
 
    Class for logging Parameter objects to a file.
 
@@ -56,6 +57,7 @@ Classes
    :type objs: list[Parameter or CallableModel]
    :param int every: logging frequency
    :param kwargs: optionals
+
 
    .. py:method:: initialize() -> None
 
@@ -68,6 +70,7 @@ Classes
 
    .. py:method:: from_json(data, dic) -> Logger
       :classmethod:
+
 
       Create a Logger object.
 
@@ -84,14 +87,15 @@ Classes
 
 .. py:class:: TreeLogger(tree_model: torchtree.evolution.tree_model.TreeModel, every: int, **kwargs)
 
-
    Bases: :py:obj:`LoggerInterface`
+
 
    Class for logging trees to a file.
 
    :param TreeModel objs: TreeModel object
    :param int every: logging frequency
    :param kwargs: optionals
+
 
    .. py:method:: initialize() -> None
 
@@ -104,6 +108,7 @@ Classes
 
    .. py:method:: from_json(data, dic) -> TreeLogger
       :classmethod:
+
 
       Create a TreeLogger object.
 
@@ -120,19 +125,21 @@ Classes
 
 .. py:class:: CSV(objs: list[torchtree.core.abstractparameter.AbstractParameter], **kwargs)
 
-
    Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
+
 
    Class for writting parameters to a CSV file.
 
    :param objs: list of Parameter objects
    :type objs: list[Parameter]
 
+
    .. py:method:: run() -> None
 
 
    .. py:method:: from_json(data, dic) -> CSV
       :classmethod:
+
 
       Create a CSV object.
 
@@ -149,21 +156,24 @@ Classes
 
 .. py:class:: Dumper(parameters: list[torchtree.core.abstractparameter.AbstractParameter], **kwargs)
 
-
    Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`torchtree.core.runnable.Runnable`
+
 
    Class for saving parameters to a json file.
 
    :param parameters: list of Parameters.
    :type parameters: list[Parameter]
 
+
    .. py:method:: run() -> None
 
       Write the parameters to the file.
 
 
+
    .. py:method:: from_json(data, dic) -> Dumper
       :classmethod:
+
 
       Create a Dumper object.
 
@@ -180,14 +190,15 @@ Classes
 
 .. py:class:: ContainerLogger(inputs: list[Union[torchtree.core.abstractparameter.AbstractParameter, torchtree.core.model.CallableModel]], container, every: int)
 
-
    Bases: :py:obj:`LoggerInterface`
+
 
    Class for logging Parameter and CallableModel values to a list.
 
    :param inputs: list of Parameter or CallableModel objects
    :type inputs: list[Parameter or CallableModel]
    :param int every: logging frequency
+
 
    .. py:method:: initialize() -> None
 
@@ -200,6 +211,7 @@ Classes
 
    .. py:method:: from_json(data, dic) -> ContainerLogger
       :classmethod:
+
 
       Create a ContainerLogger object.
 

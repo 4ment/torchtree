@@ -1,5 +1,5 @@
-:py:mod:`torchtree.nf.realnvp`
-==============================
+torchtree.nf.realnvp
+====================
 
 .. py:module:: torchtree.nf.realnvp
 
@@ -10,11 +10,8 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -24,14 +21,16 @@ Classes
    torchtree.nf.realnvp.RealNVP
 
 
-
+Module Contents
+---------------
 
 .. py:class:: LinearMaskedCoupling(input_size, hidden_size, n_hidden, mask, cond_label_size=None)
 
-
    Bases: :py:obj:`torch.nn.Module`
 
+
    Modified RealNVP Coupling Layers per the MAF paper.
+
 
    .. py:method:: forward(x, y=None)
 
@@ -39,13 +38,13 @@ Classes
    .. py:method:: inverse(u, y=None)
 
 
-
 .. py:class:: BatchNorm(input_size, momentum=0.9, eps=1e-05)
-
 
    Bases: :py:obj:`torch.nn.Module`
 
+
    RealNVP BatchNorm layer.
+
 
    .. py:method:: forward(x, cond_y=None)
 
@@ -53,14 +52,14 @@ Classes
    .. py:method:: inverse(y, cond_y=None)
 
 
-
 .. py:class:: FlowSequential(*args: torch.nn.modules.module.Module)
               FlowSequential(arg: OrderedDict[str, Module])
 
-
    Bases: :py:obj:`torch.nn.Sequential`
 
+
    Container for layers of a normalizing flow.
+
 
    .. py:method:: forward(x, y)
 
@@ -68,11 +67,10 @@ Classes
    .. py:method:: inverse(u, y)
 
 
-
 .. py:class:: RealNVP(id_: str, x: torchtree.core.abstractparameter.AbstractParameter, base: torchtree.distributions.distributions.Distribution, n_blocks: int, hidden_size: int, n_hidden: int, cond_label_size=None, batch_norm=False)
 
-
    Bases: :py:obj:`torchtree.distributions.distributions.DistributionModel`
+
 
    Class for RealNVP normalizing flows.
 
@@ -84,9 +82,6 @@ Classes
    :param n_hidden:
    :param cond_label_size:
    :param batch_norm:
-
-   .. py:property:: batch_shape
-      :type: torch.Size
 
 
    .. py:method:: forward(x, y=None)
@@ -104,11 +99,13 @@ Classes
       of samples if the distribution parameters are batched.
 
 
+
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
       Generates a sample_shape shaped reparameterized sample or
       sample_shape shaped batch of reparameterized samples if the
       distribution parameters are batched.
+
 
 
    .. py:method:: log_prob(x: torchtree.core.abstractparameter.AbstractParameter = None) -> torch.Tensor
@@ -121,9 +118,16 @@ Classes
       :rtype: Tensor
 
 
+
+   .. py:property:: batch_shape
+      :type: torch.Size
+
+
+
    .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]
 
       Returns parameters of instance Parameter.
+
 
 
    .. py:method:: entropy() -> torch.Tensor
@@ -134,8 +138,10 @@ Classes
       :rtype: Tensor
 
 
+
    .. py:method:: from_json(data, dic) -> RealNVP
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

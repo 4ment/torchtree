@@ -1,5 +1,5 @@
-:py:mod:`torchtree.optim`
-=========================
+torchtree.optim
+===============
 
 .. py:module:: torchtree.optim
 
@@ -11,32 +11,12 @@
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   convergence/index.rst
-   lr_scheduler/index.rst
-   optimizer/index.rst
-
-
-Package Contents
-----------------
-
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   torchtree.optim.StanVariationalConvergence
-   torchtree.optim.VariationalConvergence
-   torchtree.optim.Scheduler
-   torchtree.optim.Optimizer
-
-
-
-
-
-
+   /autoapi/torchtree/optim/convergence/index
+   /autoapi/torchtree/optim/lr_scheduler/index
+   /autoapi/torchtree/optim/optimizer/index
 
 

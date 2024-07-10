@@ -1,14 +1,11 @@
-:py:mod:`torchtree.evolution.bdsk`
-==================================
+torchtree.evolution.bdsk
+========================
 
 .. py:module:: torchtree.evolution.bdsk
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -16,15 +13,16 @@ Classes
    torchtree.evolution.bdsk.PiecewiseConstantBirthDeath
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    torchtree.evolution.bdsk.epidemiology_to_birth_death
 
 
+Module Contents
+---------------
 
 .. py:function:: epidemiology_to_birth_death(R, delta, s, r=None)
 
@@ -39,8 +37,8 @@ Functions
 
 .. py:class:: BDSKModel(id_: torchtree.typing.ID, tree_model: torchtree.evolution.tree_model.TimeTreeModel, R: torchtree.core.abstractparameter.AbstractParameter, delta: torchtree.core.abstractparameter.AbstractParameter, s: torchtree.core.abstractparameter.AbstractParameter, rho: torchtree.core.abstractparameter.AbstractParameter = None, origin: torchtree.core.abstractparameter.AbstractParameter = None, origin_is_root_edge: bool = False, times: torchtree.core.abstractparameter.AbstractParameter = None, relative_times: bool = False, survival: bool = True, removal_probability: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Birth–death skyline plot as a model for transmission.
 
@@ -63,8 +61,10 @@ Functions
      noninfectious immediately after sampling
    :param validate_args:
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -78,8 +78,8 @@ Functions
 
 .. py:class:: PiecewiseConstantBirthDeath(lambda_: torch.Tensor, mu: torch.Tensor, psi: torch.Tensor, *, rho: torch.Tensor = torch.zeros(1), origin: torch.Tensor = None, origin_is_root_edge: bool = False, times: torch.Tensor = None, relative_times=False, survival: bool = True, removal_probability: torch.Tensor = None, validate_args=None)
 
-
    Bases: :py:obj:`torch.distributions.distribution.Distribution`
+
 
    Piecewise constant birth death model.
 
@@ -96,18 +96,18 @@ Functions
      noninfectious immediately after sampling
    :param validate_args:
 
+
    .. py:attribute:: arg_constraints
 
-      
 
    .. py:attribute:: support
 
-      
 
    .. py:method:: log_q(A, B, t, t_i)
 
       Probability density of lineage alive between time t and t_i gives
       rise to observed clade.
+
 
 
    .. py:method:: p0(A, B, t, t_i)
@@ -117,6 +117,7 @@ Functions
 
       Probability density of lineage alive between time t and t_i has no
       descendant at time t_m.
+
 
 
    .. py:method:: log_prob(node_heights: torch.Tensor)

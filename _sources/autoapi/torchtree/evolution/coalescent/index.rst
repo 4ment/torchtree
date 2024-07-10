@@ -1,14 +1,11 @@
-:py:mod:`torchtree.evolution.coalescent`
-========================================
+torchtree.evolution.coalescent
+==============================
 
 .. py:module:: torchtree.evolution.coalescent
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -32,46 +29,47 @@ Classes
    torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    torchtree.evolution.coalescent.process_data_coalesent
 
 
+Module Contents
+---------------
 
 .. py:class:: AbstractCoalescentDistribution(theta: torch.Tensor, validate_args=None)
 
-
    Bases: :py:obj:`torch.distributions.distribution.Distribution`
+
 
    Distribution is the abstract base class for probability distributions.
 
+
    .. py:attribute:: arg_constraints
 
-      
 
    .. py:attribute:: support
 
-      
 
    .. py:attribute:: has_rsample
       :value: False
 
-      
+
 
    .. py:method:: maximum_likelihood(node_heights) -> torch.Tensor
       :classmethod:
+
       :abstractmethod:
 
 
 
 .. py:class:: AbstractCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -80,8 +78,10 @@ Functions
    we need to use this value multiple times without the need to
    recompute it.
 
+
    .. py:method:: distribution() -> AbstractCoalescentDistribution
       :abstractmethod:
+
 
       Returns underlying coalescent distribution.
 
@@ -89,8 +89,8 @@ Functions
 
 .. py:class:: ConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
-
    Bases: :py:obj:`AbstractCoalescentModel`
+
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -99,13 +99,16 @@ Functions
    we need to use this value multiple times without the need to
    recompute it.
 
+
    .. py:method:: distribution() -> AbstractCoalescentDistribution
 
       Returns underlying coalescent distribution.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -119,18 +122,20 @@ Functions
 
 .. py:class:: ConstantCoalescent(theta: torch.Tensor, validate_args=None)
 
-
    Bases: :py:obj:`AbstractCoalescentDistribution`
 
+
    Distribution is the abstract base class for probability distributions.
+
 
    .. py:attribute:: has_rsample
       :value: True
 
-      
+
 
    .. py:method:: maximum_likelihood(node_heights) -> torch.Tensor
       :classmethod:
+
 
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
@@ -140,6 +145,7 @@ Functions
 
       :param value:
       :type value: Tensor
+
 
 
    .. py:method:: rsample(sample_shape=torch.Size())
@@ -152,8 +158,8 @@ Functions
 
 .. py:class:: ConstantCoalescentIntegratedModel(id_: torchtree.typing.ID, tree_model: torchtree.evolution.tree_model.TimeTreeModel, alpha: float, beta: float)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -162,11 +168,13 @@ Functions
    we need to use this value multiple times without the need to
    recompute it.
 
+
    .. py:method:: distribution() -> AbstractCoalescentDistribution
 
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -180,8 +188,8 @@ Functions
 
 .. py:class:: ConstantCoalescentIntegrated(alpha: float, beta, validate_args=None)
 
-
    Bases: :py:obj:`torch.distributions.distribution.Distribution`
+
 
    Integrated Constant size coalescent/inverse gamma distribution.
 
@@ -199,18 +207,17 @@ Functions
 
    The posterior distribution of the population size parameter is an inverse gamma with shape :math:`\alpha + N` and rate :math:`\beta + \sum_{i=1}^N C_i t_i`.
 
+
    .. py:attribute:: arg_constraints
 
-      
 
    .. py:attribute:: support
 
-      
 
    .. py:attribute:: has_rsample
       :value: False
 
-      
+
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
 
@@ -224,8 +231,8 @@ Functions
 
 .. py:class:: ExponentialCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, growth: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
-
    Bases: :py:obj:`AbstractCoalescentModel`
+
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -234,13 +241,16 @@ Functions
    we need to use this value multiple times without the need to
    recompute it.
 
+
    .. py:method:: distribution() -> AbstractCoalescentDistribution
 
       Returns underlying coalescent distribution.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -254,23 +264,22 @@ Functions
 
 .. py:class:: ExponentialCoalescent(theta: torch.Tensor, growth: torch.Tensor, validate_args=None)
 
-
    Bases: :py:obj:`torch.distributions.distribution.Distribution`
+
 
    Distribution is the abstract base class for probability distributions.
 
+
    .. py:attribute:: arg_constraints
 
-      
 
    .. py:attribute:: support
 
-      
 
    .. py:attribute:: has_rsample
       :value: False
 
-      
+
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
 
@@ -284,10 +293,11 @@ Functions
 
 .. py:class:: PiecewiseConstantCoalescent(theta: torch.Tensor, validate_args=None)
 
-
    Bases: :py:obj:`AbstractCoalescentDistribution`
 
+
    Distribution is the abstract base class for probability distributions.
+
 
    .. py:method:: sufficient_statistics(node_heights: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]
 
@@ -302,6 +312,7 @@ Functions
       :rtype tuple[torch.Tensor, torch.Tensor]
 
 
+
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
 
       Returns the log of the probability density/mass function evaluated at
@@ -311,6 +322,7 @@ Functions
       :type value: Tensor
 
 
+
    .. py:method:: maximum_likelihood(node_heights: torch.Tensor) -> torch.Tensor
       :classmethod:
 
@@ -318,8 +330,8 @@ Functions
 
 .. py:class:: PiecewiseConstantCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
-
    Bases: :py:obj:`AbstractCoalescentModel`
+
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -328,13 +340,16 @@ Functions
    we need to use this value multiple times without the need to
    recompute it.
 
+
    .. py:method:: distribution() -> AbstractCoalescentDistribution
 
       Returns underlying coalescent distribution.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -348,10 +363,11 @@ Functions
 
 .. py:class:: PiecewiseConstantCoalescentGrid(thetas: torch.Tensor, grid: torch.Tensor, validate_args=None)
 
-
    Bases: :py:obj:`AbstractCoalescentDistribution`
 
+
    Distribution is the abstract base class for probability distributions.
+
 
    .. py:method:: sufficient_statistics(node_heights: torch.Tensor)
 
@@ -368,10 +384,11 @@ Functions
 
 .. py:class:: SoftPiecewiseConstantCoalescentGrid(thetas: torch.Tensor, grid: torch.Tensor, temperature: float = None, validate_args=None)
 
-
    Bases: :py:obj:`ConstantCoalescent`
 
+
    Distribution is the abstract base class for probability distributions.
+
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
 
@@ -385,8 +402,8 @@ Functions
 
 .. py:class:: PiecewiseConstantCoalescentGridModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, grid: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel, temperature: float = None)
 
-
    Bases: :py:obj:`AbstractCoalescentModel`
+
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -395,13 +412,16 @@ Functions
    we need to use this value multiple times without the need to
    recompute it.
 
+
    .. py:method:: distribution() -> AbstractCoalescentDistribution
 
       Returns underlying coalescent distribution.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -415,7 +435,6 @@ Functions
 
 .. py:class:: FakeTreeModel(node_heights)
 
-
    .. py:property:: node_heights
 
 
@@ -426,26 +445,24 @@ Functions
 
 .. py:function:: process_data_coalesent(data, dtype: torch.dtype) -> torchtree.core.abstractparameter.AbstractParameter
 
-
 .. py:class:: PiecewiseExponentialCoalescentGrid(theta: torch.Tensor, growth: torch.Tensor, grid: torch.Tensor, validate_args=None)
-
 
    Bases: :py:obj:`torch.distributions.distribution.Distribution`
 
+
    Distribution is the abstract base class for probability distributions.
+
 
    .. py:attribute:: arg_constraints
 
-      
 
    .. py:attribute:: support
 
-      
 
    .. py:attribute:: has_rsample
       :value: False
 
-      
+
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
 
@@ -459,8 +476,8 @@ Functions
 
 .. py:class:: PiecewiseExponentialCoalescentGridModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, growth: torchtree.core.abstractparameter.AbstractParameter, grid: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
-
    Bases: :py:obj:`AbstractCoalescentModel`
+
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -469,13 +486,16 @@ Functions
    we need to use this value multiple times without the need to
    recompute it.
 
+
    .. py:method:: distribution() -> AbstractCoalescentDistribution
 
       Returns underlying coalescent distribution.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -489,23 +509,22 @@ Functions
 
 .. py:class:: PiecewiseLinearCoalescentGrid(theta: torch.Tensor, grid: torch.Tensor, validate_args=None)
 
-
    Bases: :py:obj:`torch.distributions.distribution.Distribution`
+
 
    Distribution is the abstract base class for probability distributions.
 
+
    .. py:attribute:: arg_constraints
 
-      
 
    .. py:attribute:: support
 
-      
 
    .. py:attribute:: has_rsample
       :value: False
 
-      
+
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
 
@@ -519,8 +538,8 @@ Functions
 
 .. py:class:: PiecewiseLinearCoalescentGridModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, grid: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
 
-
    Bases: :py:obj:`AbstractCoalescentModel`
+
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -529,13 +548,16 @@ Functions
    we need to use this value multiple times without the need to
    recompute it.
 
+
    .. py:method:: distribution() -> AbstractCoalescentDistribution
 
       Returns underlying coalescent distribution.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

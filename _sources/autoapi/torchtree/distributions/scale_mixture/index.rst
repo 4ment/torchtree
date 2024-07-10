@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.scale_mixture`
-===============================================
+torchtree.distributions.scale_mixture
+=====================================
 
 .. py:module:: torchtree.distributions.scale_mixture
 
@@ -9,23 +9,21 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.distributions.scale_mixture.ScaleMixtureNormal
 
 
-
+Module Contents
+---------------
 
 .. py:class:: ScaleMixtureNormal(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, loc: Union[torchtree.core.abstractparameter.AbstractParameter, float], scale: torchtree.core.abstractparameter.AbstractParameter, gamma: torchtree.core.abstractparameter.AbstractParameter, slab: Union[torchtree.core.abstractparameter.AbstractParameter, float] = None)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Scale mixture of Normal distributions.
 
@@ -41,6 +39,7 @@ Classes
 
    .. footbibliography::
 
+
    .. py:method:: handle_model_changed(model, obj, index) -> None
 
 
@@ -48,8 +47,10 @@ Classes
       :staticmethod:
 
 
+
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> ScaleMixtureNormal
       :classmethod:
+
 
       Creates a ScaleMixtureNormal object from a dictionary.
 

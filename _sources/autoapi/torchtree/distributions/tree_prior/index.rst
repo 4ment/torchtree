@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.tree_prior`
-============================================
+torchtree.distributions.tree_prior
+==================================
 
 .. py:module:: torchtree.distributions.tree_prior
 
@@ -9,23 +9,21 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.distributions.tree_prior.CompoundGammaDirichletPrior
 
 
-
+Module Contents
+---------------
 
 .. py:class:: CompoundGammaDirichletPrior(id_: torchtree.typing.ID, tree_model: torchtree.evolution.tree_model.UnRootedTreeModel, alpha: torchtree.core.abstractparameter.AbstractParameter, c: torchtree.core.abstractparameter.AbstractParameter, shape: torchtree.core.abstractparameter.AbstractParameter, rate: torchtree.core.abstractparameter.AbstractParameter)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Compound gamma-Dirichlet prior on an unrooted tree
    :footcite:t:`rannala2012tail`.
@@ -39,11 +37,13 @@ Classes
 
    .. footbibliography::
 
+
    .. py:method:: handle_parameter_changed(variable, index, event) -> None
 
 
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> CompoundGammaDirichletPrior
       :classmethod:
+
 
       Creates a CompoundGammaDirichletPrior object from a dictionary.
 

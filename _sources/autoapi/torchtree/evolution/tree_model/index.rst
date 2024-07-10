@@ -1,14 +1,11 @@
-:py:mod:`torchtree.evolution.tree_model`
-========================================
+torchtree.evolution.tree_model
+==============================
 
 .. py:module:: torchtree.evolution.tree_model
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -19,9 +16,8 @@ Classes
    torchtree.evolution.tree_model.ReparameterizedTimeTreeModel
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -33,29 +29,25 @@ Functions
    torchtree.evolution.tree_model.parse_tree
 
 
+Module Contents
+---------------
 
 .. py:function:: heights_to_branch_lengths(node_heights, bounds, indexing)
 
-
 .. py:function:: setup_indexes(tree, indices_postorder=False)
-
 
 .. py:function:: setup_dates(tree, heterochronous=False)
 
-
 .. py:function:: initialize_dates_from_taxa(tree, taxa, tag='date')
-
 
 .. py:function:: heights_from_branch_lengths(tree, eps=1e-06)
 
-
 .. py:function:: parse_tree(taxa, data)
-
 
 .. py:class:: TreeModel(id_: Optional[str])
 
-
    Bases: :py:obj:`torchtree.core.model.Model`
+
 
    Parametric model.
 
@@ -63,18 +55,24 @@ Functions
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
+   .. py:method:: branch_lengths() -> torch.Tensor
+      :abstractmethod:
+
+
+
    .. py:property:: postorder
       :type: list[list[int]]
+
       :abstractmethod:
+
 
 
    .. py:property:: taxa
       :type: list[str]
+
       :abstractmethod:
 
-
-   .. py:method:: branch_lengths() -> torch.Tensor
-      :abstractmethod:
 
 
    .. py:method:: write_newick(steam, **kwargs) -> None
@@ -84,19 +82,14 @@ Functions
 
 .. py:class:: AbstractTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa)
 
-
    Bases: :py:obj:`TreeModel`, :py:obj:`abc.ABC`
+
 
    Parametric model.
 
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
-
-   .. py:property:: postorder
-
-
-   .. py:property:: taxa
 
 
    .. py:method:: update_traversals() -> None
@@ -105,23 +98,29 @@ Functions
    .. py:method:: handle_model_changed(model, obj, index)
 
 
+   .. py:property:: postorder
+
+
+   .. py:property:: taxa
+
+
    .. py:method:: as_newick(**kwargs)
 
 
    .. py:method:: write_newick(stream, **kwargs) -> None
 
 
-
 .. py:class:: UnRootedTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, branch_lengths: torchtree.core.abstractparameter.AbstractParameter)
 
-
    Bases: :py:obj:`AbstractTreeModel`
+
 
    Parametric model.
 
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
 
    .. py:method:: branch_lengths() -> torch.Tensor
 
@@ -131,6 +130,7 @@ Functions
 
    .. py:method:: json_factory(id_: str, newick: str, branch_lengths: Union[dict, list, str], taxa: Union[dict, list, str], **kwargs)
       :staticmethod:
+
 
       Factory for creating tree models in JSON format.
 
@@ -147,8 +147,10 @@ Functions
       :return: tree model in JSON format compatible with from_json class method
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -162,8 +164,8 @@ Functions
 
 .. py:class:: TimeTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, internal_heights: torchtree.core.abstractparameter.AbstractParameter)
 
-
    Bases: :py:obj:`AbstractTreeModel`
+
 
    Parametric model.
 
@@ -171,14 +173,16 @@ Functions
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
-   .. py:property:: node_heights
-      :type: torch.Tensor
-
 
    .. py:method:: update_leaf_heights() -> None
 
 
    .. py:method:: update_traversals()
+
+
+   .. py:property:: node_heights
+      :type: torch.Tensor
+
 
 
    .. py:method:: branch_lengths() -> torch.Tensor
@@ -193,6 +197,7 @@ Functions
       :rtype: torch.Tensor
 
 
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
@@ -201,13 +206,16 @@ Functions
       Move tensors to CUDA using torch.cuda.
 
 
+
    .. py:method:: cpu() -> None
 
       Move tensors to CPU memory using ~torch.cpu.
 
 
+
    .. py:method:: json_factory(id_: str, newick: str, internal_heights: Union[dict, list, str], taxa: Union[dict, list, str], **kwargs)
       :staticmethod:
+
 
       Factory for creating tree models in JSON format.
 
@@ -224,8 +232,10 @@ Functions
       :return: tree model in JSON format compatible with from_json class method
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -239,8 +249,8 @@ Functions
 
 .. py:class:: ReparameterizedTimeTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, ratios_root_height: torchtree.core.abstractparameter.AbstractParameter = None, shifts: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
    Bases: :py:obj:`TimeTreeModel`, :py:obj:`torchtree.core.model.CallableModel`
+
 
    Parametric model.
 
@@ -248,11 +258,13 @@ Functions
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
+   .. py:method:: update_node_heights() -> None
+
+
    .. py:property:: node_heights
       :type: torch.Tensor
 
-
-   .. py:method:: update_node_heights() -> None
 
 
    .. py:method:: handle_model_changed(model, obj, index) -> None
@@ -266,13 +278,16 @@ Functions
       Move tensors to CUDA using torch.cuda.
 
 
+
    .. py:method:: cpu() -> None
 
       Move tensors to CPU memory using ~torch.cpu.
 
 
+
    .. py:method:: json_factory(id_: str, newick: str, taxa: Union[dict, list, str], ratios: Union[dict, list, str] = None, root_height: Union[dict, list, str] = None, shifts: Union[dict, list, str] = None, **kwargs)
       :staticmethod:
+
 
       Factory for creating tree models in JSON format.
 
@@ -289,8 +304,10 @@ Functions
       :return: tree model in JSON format compatible with from_json class method
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

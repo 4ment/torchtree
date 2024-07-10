@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.transforms`
-============================================
+torchtree.distributions.transforms
+==================================
 
 .. py:module:: torchtree.distributions.transforms
 
@@ -9,11 +9,8 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -27,12 +24,13 @@ Classes
    torchtree.distributions.transforms.LinearTransform
 
 
-
+Module Contents
+---------------
 
 .. py:class:: TrilExpDiagonalTransform(cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
+
 
    Transform a 1D tensor to a triangular tensor.
 
@@ -51,17 +49,18 @@ Classes
    >>> torch.allclose(TrilExpDiagonalTransform().inv(y), x)
    True
 
+
    .. py:attribute:: bijective
       :value: True
 
-      
+
 
    .. py:attribute:: sign
 
-      
 
    .. py:method:: log_abs_det_jacobian(x, y)
       :abstractmethod:
+
 
       Computes the log det jacobian `log |dy/dx|` given input and output.
 
@@ -69,8 +68,8 @@ Classes
 
 .. py:class:: CumSumTransform(cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
+
 
    Transform via the mapping :math:`y_i = \sum_{j=0}^i x_j`.
 
@@ -80,22 +79,20 @@ Classes
    >>> all(CumSumTransform().inv(torch.tensor([1., 3., 6.])) == x)
    True
 
+
    .. py:attribute:: domain
 
-      
 
    .. py:attribute:: codomain
 
-      
 
    .. py:attribute:: bijective
       :value: True
 
-      
+
 
    .. py:attribute:: sign
 
-      
 
    .. py:method:: log_abs_det_jacobian(x, y)
 
@@ -105,27 +102,25 @@ Classes
 
 .. py:class:: CumSumExpTransform(cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
+
 
    Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.
 
+
    .. py:attribute:: domain
 
-      
 
    .. py:attribute:: codomain
 
-      
 
    .. py:attribute:: bijective
       :value: True
 
-      
+
 
    .. py:attribute:: sign
 
-      
 
    .. py:method:: log_abs_det_jacobian(x, y)
 
@@ -135,27 +130,25 @@ Classes
 
 .. py:class:: SoftPlusTransform(cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
+
 
    Transform via the mapping :math:`y_i = \log(\exp(x_i) + 1)`.
 
+
    .. py:attribute:: domain
 
-      
 
    .. py:attribute:: codomain
 
-      
 
    .. py:attribute:: bijective
       :value: True
 
-      
+
 
    .. py:attribute:: sign
 
-      
 
    .. py:method:: log_abs_det_jacobian(x, y)
 
@@ -165,27 +158,25 @@ Classes
 
 .. py:class:: CumSumSoftPlusTransform(cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
+
 
    Transform via the mapping :math:`y_i = \log(\exp(\sum_{j=0}^i x_j) +1)`.
 
+
    .. py:attribute:: domain
 
-      
 
    .. py:attribute:: codomain
 
-      
 
    .. py:attribute:: bijective
       :value: True
 
-      
+
 
    .. py:attribute:: sign
 
-      
 
    .. py:method:: log_abs_det_jacobian(x, y)
 
@@ -195,8 +186,8 @@ Classes
 
 .. py:class:: ConvexCombinationTransform(weights: torchtree.core.abstractparameter.AbstractParameter, cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
+
 
    Transform via the mapping :math:`y = \frac{x}{\sum_{i=1}^K \alpha_i x_i}`.
 
@@ -206,13 +197,12 @@ Classes
 
    :param weights: weights (sum to 1)
 
+
    .. py:attribute:: domain
 
-      
 
    .. py:attribute:: codomain
 
-      
 
    .. py:method:: log_abs_det_jacobian(x, y)
 
@@ -222,27 +212,25 @@ Classes
 
 .. py:class:: LogTransform(cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
+
 
    Transform via the mapping :math:`y = \log(x)`.
 
+
    .. py:attribute:: domain
 
-      
 
    .. py:attribute:: codomain
 
-      
 
    .. py:attribute:: bijective
       :value: True
 
-      
+
 
    .. py:attribute:: sign
 
-      
 
    .. py:method:: log_abs_det_jacobian(x, y)
 
@@ -252,8 +240,8 @@ Classes
 
 .. py:class:: LinearTransform(weight: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor], bias: Optional[Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor]] = None, cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
+
 
    Transform via the mapping :math:`y = xA' + b`.
 
@@ -266,12 +254,10 @@ Classes
    >>> torch.all(y == torch.nn.functional.linear(x, weight, bias))
    tensor(True)
 
+
    .. py:attribute:: domain
 
-      
 
    .. py:attribute:: codomain
-
-      
 
 

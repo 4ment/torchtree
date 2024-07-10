@@ -1,14 +1,11 @@
-:py:mod:`torchtree.evolution.substitution_model.general`
-========================================================
+torchtree.evolution.substitution_model.general
+==============================================
 
 .. py:module:: torchtree.evolution.substitution_model.general
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -18,12 +15,13 @@ Classes
    torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel
 
 
-
+Module Contents
+---------------
 
 .. py:class:: GeneralJC69(id_: torchtree.typing.ID, state_count: int)
 
-
    Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SubstitutionModel`
+
 
    Parametric model.
 
@@ -31,12 +29,15 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:property:: frequencies
       :type: torch.Tensor
 
 
+
    .. py:property:: rates
       :type: Union[torch.Tensor, list[torch.Tensor]]
+
 
 
    .. py:method:: handle_model_changed(model, obj, index)
@@ -50,9 +51,11 @@ Classes
       Move tensors to CUDA using torch.cuda.
 
 
+
    .. py:method:: cpu() -> None
 
       Move tensors to CPU memory using ~torch.cpu.
+
 
 
    .. py:method:: p_t(branch_lengths: torch.Tensor) -> torch.Tensor
@@ -63,6 +66,7 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -76,8 +80,8 @@ Classes
 
 .. py:class:: GeneralSymmetricSubstitutionModel(id_: torchtree.typing.ID, data_type: torchtree.evolution.datatype.DataType, mapping: torchtree.core.abstractparameter.AbstractParameter, rates: torchtree.core.abstractparameter.AbstractParameter, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
-
    Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel`
+
 
    Parametric model.
 
@@ -85,8 +89,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:property:: rates
       :type: Union[torch.Tensor, list[torch.Tensor]]
+
 
 
    .. py:method:: handle_model_changed(model, obj, index)
@@ -100,6 +106,7 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -113,8 +120,8 @@ Classes
 
 .. py:class:: GeneralNonSymmetricSubstitutionModel(id_: torchtree.typing.ID, data_type: torchtree.evolution.datatype.DataType, mapping: torchtree.core.abstractparameter.AbstractParameter, rates: torchtree.core.abstractparameter.AbstractParameter, frequencies: torchtree.core.abstractparameter.AbstractParameter, normalize: bool)
 
-
    Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.NonSymmetricSubstitutionModel`
+
 
    Parametric model.
 
@@ -122,8 +129,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:property:: rates
       :type: torch.Tensor
+
 
 
    .. py:method:: handle_model_changed(model, obj, index)
@@ -138,6 +147,7 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+
       Abstract method to create object from a dictionary.
 
       :param dict[str, Any] data: dictionary representation of a torchtree object.
@@ -150,8 +160,8 @@ Classes
 
 .. py:class:: EmpiricalSubstitutionModel(id_: torchtree.typing.ID, rates: torch.Tensor, frequencies: torch.Tensor)
 
-
    Bases: :py:obj:`torchtree.evolution.substitution_model.abstract.SubstitutionModel`
+
 
    Parametric model.
 
@@ -159,8 +169,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:property:: frequencies
       :type: torch.Tensor
+
 
 
    .. py:method:: q() -> torch.Tensor
@@ -182,8 +194,10 @@ Classes
       :staticmethod:
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

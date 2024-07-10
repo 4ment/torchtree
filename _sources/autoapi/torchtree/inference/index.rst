@@ -1,5 +1,5 @@
-:py:mod:`torchtree.inference`
-=============================
+torchtree.inference
+===================
 
 .. py:module:: torchtree.inference
 
@@ -11,21 +11,21 @@
 
 Subpackages
 -----------
-.. toctree::
-   :titlesonly:
-   :maxdepth: 3
 
-   hmc/index.rst
-   mcmc/index.rst
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/torchtree/inference/hmc/index
+   /autoapi/torchtree/inference/mcmc/index
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   sampler/index.rst
-   utils/index.rst
+   /autoapi/torchtree/inference/sampler/index
+   /autoapi/torchtree/inference/utils/index
 
 

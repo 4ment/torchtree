@@ -1,21 +1,19 @@
-:py:mod:`torchtree.torchtree`
-=============================
+torchtree.torchtree
+===================
 
 .. py:module:: torchtree.torchtree
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    torchtree.torchtree.main
 
 
+Module Contents
+---------------
 
 .. py:function:: main()
 

@@ -1,26 +1,24 @@
-:py:mod:`torchtree.variational.renyi`
-=====================================
+torchtree.variational.renyi
+===========================
 
 .. py:module:: torchtree.variational.renyi
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.variational.renyi.VR
 
 
-
+Module Contents
+---------------
 
 .. py:class:: VR(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size, alpha: float)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Class representing the variational Renyi bound.
 
@@ -35,11 +33,13 @@ Classes
 
    .. footbibliography::
 
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> VR
       :classmethod:
+
 
       Creates a VR object from a dictionary.
 

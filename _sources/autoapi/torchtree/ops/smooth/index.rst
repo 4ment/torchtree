@@ -1,5 +1,5 @@
-:py:mod:`torchtree.ops.smooth`
-==============================
+torchtree.ops.smooth
+====================
 
 .. py:module:: torchtree.ops.smooth
 
@@ -9,12 +9,8 @@
 
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -23,6 +19,8 @@ Functions
    torchtree.ops.smooth.soft_searchsorted
 
 
+Module Contents
+---------------
 
 .. py:function:: soft_sort(tensor: torch.Tensor, tau: float) -> torch.Tensor
 

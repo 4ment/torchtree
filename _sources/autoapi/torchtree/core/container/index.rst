@@ -1,26 +1,24 @@
-:py:mod:`torchtree.core.container`
-==================================
+torchtree.core.container
+========================
 
 .. py:module:: torchtree.core.container
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.core.container.Container
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Container(id_: Optional[str], objects: list[Union[torchtree.core.model.Model, torchtree.core.abstractparameter.AbstractParameter]])
 
-
    Bases: :py:obj:`torchtree.core.model.Model`
+
 
    Container for multiple objects of type Model or AbstractParameter.
 
@@ -29,6 +27,7 @@ Classes
 
    :param id_: ID of objects
    :param objects: list of Models or AbstractParameters
+
 
    .. py:method:: params()
 
@@ -44,7 +43,9 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
       :abstractmethod:
+
 
       Abstract method to create object from a dictionary.
 

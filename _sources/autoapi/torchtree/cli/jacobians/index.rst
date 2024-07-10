@@ -1,21 +1,19 @@
-:py:mod:`torchtree.cli.jacobians`
-=================================
+torchtree.cli.jacobians
+=======================
 
 .. py:module:: torchtree.cli.jacobians
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    torchtree.cli.jacobians.create_jacobians
 
 
+Module Contents
+---------------
 
 .. py:function:: create_jacobians(dict_def: dict[str, Any]) -> list[str]
 

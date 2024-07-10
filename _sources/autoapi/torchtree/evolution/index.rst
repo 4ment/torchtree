@@ -1,5 +1,5 @@
-:py:mod:`torchtree.evolution`
-=============================
+torchtree.evolution
+===================
 
 .. py:module:: torchtree.evolution
 
@@ -11,37 +11,37 @@
 
 Subpackages
 -----------
-.. toctree::
-   :titlesonly:
-   :maxdepth: 3
 
-   substitution_model/index.rst
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/torchtree/evolution/substitution_model/index
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   alignment/index.rst
-   attribute_pattern/index.rst
-   bdsk/index.rst
-   birth_death/index.rst
-   branch_model/index.rst
-   coalescent/index.rst
-   datatype/index.rst
-   io/index.rst
-   poisson_tree_likelihood/index.rst
-   rate_transform/index.rst
-   root_transform/index.rst
-   site_model/index.rst
-   site_pattern/index.rst
-   taxa/index.rst
-   tree_height_transform/index.rst
-   tree_likelihood/index.rst
-   tree_model/index.rst
-   tree_model_flexible/index.rst
-   tree_regression/index.rst
+   /autoapi/torchtree/evolution/alignment/index
+   /autoapi/torchtree/evolution/attribute_pattern/index
+   /autoapi/torchtree/evolution/bdsk/index
+   /autoapi/torchtree/evolution/birth_death/index
+   /autoapi/torchtree/evolution/branch_model/index
+   /autoapi/torchtree/evolution/coalescent/index
+   /autoapi/torchtree/evolution/datatype/index
+   /autoapi/torchtree/evolution/io/index
+   /autoapi/torchtree/evolution/poisson_tree_likelihood/index
+   /autoapi/torchtree/evolution/rate_transform/index
+   /autoapi/torchtree/evolution/root_transform/index
+   /autoapi/torchtree/evolution/site_model/index
+   /autoapi/torchtree/evolution/site_pattern/index
+   /autoapi/torchtree/evolution/taxa/index
+   /autoapi/torchtree/evolution/tree_height_transform/index
+   /autoapi/torchtree/evolution/tree_likelihood/index
+   /autoapi/torchtree/evolution/tree_model/index
+   /autoapi/torchtree/evolution/tree_model_flexible/index
+   /autoapi/torchtree/evolution/tree_regression/index
 
 

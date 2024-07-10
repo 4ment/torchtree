@@ -1,23 +1,19 @@
-:py:mod:`torchtree.evolution.site_pattern`
-==========================================
+torchtree.evolution.site_pattern
+================================
 
 .. py:module:: torchtree.evolution.site_pattern
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.evolution.site_pattern.SitePattern
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -26,17 +22,20 @@ Functions
    torchtree.evolution.site_pattern.compress_alignment_states
 
 
+Module Contents
+---------------
 
 .. py:class:: SitePattern(id_: Optional[str], alignment: torchtree.evolution.alignment.Alignment, indices: list[Union[int, slice]] = None)
 
-
    Bases: :py:obj:`torchtree.core.model.Model`
+
 
    Parametric model.
 
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
 
    .. py:method:: compute_tips_partials(use_ambiguities=False)
 
@@ -55,13 +54,16 @@ Functions
       Move tensors to CUDA using torch.cuda.
 
 
+
    .. py:method:: cpu() -> None
 
       Move tensors to CPU memory using ~torch.cpu.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

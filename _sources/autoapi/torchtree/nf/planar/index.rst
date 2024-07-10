@@ -1,26 +1,24 @@
-:py:mod:`torchtree.nf.planar`
-=============================
+torchtree.nf.planar
+===================
 
 .. py:module:: torchtree.nf.planar
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.nf.planar.PlanarTransform
 
 
-
+Module Contents
+---------------
 
 .. py:class:: PlanarTransform(u: torch.nn.Parameter, w: torch.nn.Parameter, b: torch.nn.Parameter)
 
-
    Bases: :py:obj:`torch.nn.Module`
+
 
    Implementation of the transformation used in planar flow:
 
@@ -33,6 +31,7 @@ Classes
    :param Parameter w: weight with shape (1, input_size)
    :param Parameter b: bias with shape (1)
 
+
    .. py:method:: forward(z: torch.Tensor) -> torch.Tensor
 
 
@@ -40,6 +39,5 @@ Classes
 
 
    .. py:method:: u_hat() -> torch.Tensor
-
 
 

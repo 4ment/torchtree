@@ -1,5 +1,5 @@
-:py:mod:`torchtree`
-===================
+torchtree
+=========
 
 .. py:module:: torchtree
 
@@ -11,49 +11,29 @@
 
 Subpackages
 -----------
-.. toctree::
-   :titlesonly:
-   :maxdepth: 3
 
-   cli/index.rst
-   core/index.rst
-   distributions/index.rst
-   evolution/index.rst
-   inference/index.rst
-   nf/index.rst
-   nn/index.rst
-   ops/index.rst
-   optim/index.rst
-   variational/index.rst
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/torchtree/cli/index
+   /autoapi/torchtree/core/index
+   /autoapi/torchtree/distributions/index
+   /autoapi/torchtree/evolution/index
+   /autoapi/torchtree/inference/index
+   /autoapi/torchtree/nf/index
+   /autoapi/torchtree/nn/index
+   /autoapi/torchtree/ops/index
+   /autoapi/torchtree/optim/index
+   /autoapi/torchtree/variational/index
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   torchtree/index.rst
-   typing/index.rst
-
-
-Package Contents
-----------------
-
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   torchtree.CatParameter
-   torchtree.Parameter
-   torchtree.TransformedParameter
-   torchtree.ViewParameter
-
-
-
-
-
-
+   /autoapi/torchtree/torchtree/index
+   /autoapi/torchtree/typing/index
 
 

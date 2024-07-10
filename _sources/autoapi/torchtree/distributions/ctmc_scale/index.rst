@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.ctmc_scale`
-============================================
+torchtree.distributions.ctmc_scale
+==================================
 
 .. py:module:: torchtree.distributions.ctmc_scale
 
@@ -9,23 +9,21 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.distributions.ctmc_scale.CTMCScale
 
 
-
+Module Contents
+---------------
 
 .. py:class:: CTMCScale(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TreeModel)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Continuous-time Markov chain scale prior.
 
@@ -39,17 +37,17 @@ Classes
 
    .. footbibliography::
 
+
    .. py:attribute:: shape
 
-      
 
    .. py:attribute:: log_gamma_one_half
 
-      
 
    .. py:method:: to(*args, **kwargs) -> None
 
       Performs Tensor dtype and/or device conversion using torch.to.
+
 
 
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
@@ -57,17 +55,21 @@ Classes
       Move tensors to CUDA using torch.cuda.
 
 
+
    .. py:method:: cpu() -> None
 
       Move tensors to CPU memory using ~torch.cpu.
+
 
 
    .. py:method:: json_factory(id_: str, rate: Union[str, dict], tree: Union[str, dict]) -> dict
       :staticmethod:
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

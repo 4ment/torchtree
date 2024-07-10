@@ -1,14 +1,11 @@
-:py:mod:`torchtree.evolution.substitution_model.abstract`
-=========================================================
+torchtree.evolution.substitution_model.abstract
+===============================================
 
 .. py:module:: torchtree.evolution.substitution_model.abstract
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -18,12 +15,13 @@ Classes
    torchtree.evolution.substitution_model.abstract.NonSymmetricSubstitutionModel
 
 
-
+Module Contents
+---------------
 
 .. py:class:: SubstitutionModel(id_: torchtree.typing.ID)
 
-
    Bases: :py:obj:`torchtree.core.model.Model`
+
 
    Parametric model.
 
@@ -31,18 +29,24 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:property:: frequencies
       :type: torch.Tensor
+
       :abstractmethod:
+
 
 
    .. py:property:: rates
       :type: Union[torch.Tensor, list[torch.Tensor]]
+
       :abstractmethod:
+
 
 
    .. py:method:: p_t(branch_lengths: torch.Tensor) -> torch.Tensor
       :abstractmethod:
+
 
 
    .. py:method:: q() -> torch.Tensor
@@ -52,27 +56,28 @@ Classes
 
 .. py:class:: AbstractSubstitutionModel(id_: torchtree.typing.ID, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
-
    Bases: :py:obj:`SubstitutionModel`, :py:obj:`abc.ABC`
+
 
    Parametric model.
 
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
 
    .. py:property:: frequencies
       :type: torch.Tensor
 
 
-   .. py:method:: norm(Q) -> torch.Tensor
 
+   .. py:method:: norm(Q) -> torch.Tensor
 
 
 .. py:class:: SymmetricSubstitutionModel(id_: torchtree.typing.ID, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
-
    Bases: :py:obj:`AbstractSubstitutionModel`, :py:obj:`abc.ABC`
+
 
    Parametric model.
 
@@ -80,17 +85,17 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:method:: p_t(branch_lengths: torch.Tensor) -> torch.Tensor
 
 
    .. py:method:: eigen(Q: torch.Tensor) -> torch.Tensor
-
 
 
 .. py:class:: NonSymmetricSubstitutionModel(id_: torchtree.typing.ID, frequencies: torchtree.core.abstractparameter.AbstractParameter)
 
-
    Bases: :py:obj:`SymmetricSubstitutionModel`
+
 
    Parametric model.
 
@@ -98,10 +103,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:method:: p_t(branch_lengths: torch.Tensor) -> torch.Tensor
 
 
    .. py:method:: eigen(Q: torch.Tensor) -> torch.Tensor
-
 
 

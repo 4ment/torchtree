@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.bayesian_bridge`
-=================================================
+torchtree.distributions.bayesian_bridge
+=======================================
 
 .. py:module:: torchtree.distributions.bayesian_bridge
 
@@ -9,31 +9,29 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.distributions.bayesian_bridge.BayesianBridge
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    torchtree.distributions.bayesian_bridge.process_object_number
 
 
+Module Contents
+---------------
 
 .. py:class:: BayesianBridge(id_: torchtree.typing.ID, x: torchtree.core.abstractparameter.AbstractParameter, scale: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor], alpha: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor] = None, local_scale: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor] = None, slab: Union[torchtree.core.abstractparameter.AbstractParameter, torch.Tensor] = None)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Bayesian bridge prior.
 
@@ -50,6 +48,7 @@ Functions
 
    .. footbibliography::
 
+
    .. py:method:: handle_model_changed(model, obj, index) -> None
 
 
@@ -57,8 +56,10 @@ Functions
       :staticmethod:
 
 
+
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> BayesianBridge
       :classmethod:
+
 
       Creates a BayesianBridge object from a dictionary.
 

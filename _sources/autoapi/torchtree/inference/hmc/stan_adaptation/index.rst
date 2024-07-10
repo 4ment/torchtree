@@ -1,26 +1,24 @@
-:py:mod:`torchtree.inference.hmc.stan_adaptation`
-=================================================
+torchtree.inference.hmc.stan_adaptation
+=======================================
 
 .. py:module:: torchtree.inference.hmc.stan_adaptation
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation
 
 
-
+Module Contents
+---------------
 
 .. py:class:: StanWindowedAdaptation(step_size_adaptor: torchtree.inference.hmc.adaptation.DualAveragingStepSize, mass_matrix_adaptor: torchtree.inference.hmc.adaptation.Adaptor, num_warmup: int, init_buffer: int, term_buffer: int, base_window: int)
 
-
    Bases: :py:obj:`torchtree.inference.hmc.adaptation.Adaptor`
+
 
    Adapts step size and mass matrix during a warmup period.
 
@@ -34,6 +32,7 @@ Classes
    :param int term_buffer: width of final fast adaptation interval
    :param int base window: initial width of slow adaptation interval
 
+
    .. py:method:: restart()
 
 
@@ -42,6 +41,7 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

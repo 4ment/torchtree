@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.distributions`
-===============================================
+torchtree.distributions.distributions
+=====================================
 
 .. py:module:: torchtree.distributions.distributions
 
@@ -9,11 +9,8 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -21,32 +18,39 @@ Classes
    torchtree.distributions.distributions.Distribution
 
 
-
+Module Contents
+---------------
 
 .. py:class:: DistributionModel(id_: Optional[str])
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Abstract base class for distribution models.
 
+
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
       :abstractmethod:
+
 
       Generates a sample_shape shaped reparameterized sample or
       sample_shape shaped batch of reparameterized samples if the
       distribution parameters are batched.
 
 
+
    .. py:method:: sample(sample_shape=torch.Size()) -> None
       :abstractmethod:
+
 
       Generates a sample_shape shaped sample or sample_shape shaped batch
       of samples if the distribution parameters are batched.
 
 
+
    .. py:method:: log_prob(x: torchtree.core.abstractparameter.AbstractParameter = None) -> torch.Tensor
       :abstractmethod:
+
 
       Returns the log of the probability density/mass function evaluated
       at x.
@@ -56,8 +60,10 @@ Classes
       :rtype: Tensor
 
 
+
    .. py:method:: entropy() -> torch.Tensor
       :abstractmethod:
+
 
       Returns entropy of distribution, batched over batch_shape.
 
@@ -68,8 +74,8 @@ Classes
 
 .. py:class:: Distribution(id_: Optional[str], dist: Type[torch.distributions.Distribution], x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter], parameters: dict[str, torchtree.core.abstractparameter.AbstractParameter], **kwargs)
 
-
    Bases: :py:obj:`DistributionModel`
+
 
    Wrapper for :class:`torch.distributions.distribution.Distribution`.
 
@@ -79,17 +85,6 @@ Classes
    :param dict[str, AbstractParameter] parameters: parameters of the distribution
    :param **kwargs: optional arguments for instanciating torch Distribution
 
-   .. py:property:: event_shape
-      :type: torch.Size
-
-
-   .. py:property:: batch_shape
-      :type: torch.Size
-
-
-   .. py:property:: distribution
-      :type: torch.distributions.Distribution
-
 
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
@@ -98,10 +93,12 @@ Classes
       distribution parameters are batched.
 
 
+
    .. py:method:: sample(sample_shape=torch.Size()) -> None
 
       Generates a sample_shape shaped sample or sample_shape shaped batch
       of samples if the distribution parameters are batched.
+
 
 
    .. py:method:: log_prob(x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter] = None) -> torch.Tensor
@@ -114,6 +111,7 @@ Classes
       :rtype: Tensor
 
 
+
    .. py:method:: entropy() -> torch.Tensor
 
       Returns entropy of distribution, batched over batch_shape.
@@ -122,12 +120,30 @@ Classes
       :rtype: Tensor
 
 
+
+   .. py:property:: event_shape
+      :type: torch.Size
+
+
+
+   .. py:property:: batch_shape
+      :type: torch.Size
+
+
+
+   .. py:property:: distribution
+      :type: torch.distributions.Distribution
+
+
+
    .. py:method:: json_factory(id_: str, distribution: str, x: Union[str, dict], parameters: Union[str, dict] = None) -> dict
       :staticmethod:
 
 
+
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> Distribution
       :classmethod:
+
 
       Creates a Distribution object from a dictionary.
 

@@ -1,5 +1,5 @@
-:py:mod:`torchtree.core.identifiable`
-=====================================
+torchtree.core.identifiable
+===========================
 
 .. py:module:: torchtree.core.identifiable
 
@@ -9,27 +9,26 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.core.identifiable.Identifiable
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Identifiable(id_: Optional[str])
 
-
    Bases: :py:obj:`torchtree.core.serializable.JSONSerializable`, :py:obj:`abc.ABC`
+
 
    Abstract class making an object identifiable.
 
    :param str or None id_: identifier of object
+
 
    .. py:property:: id
       :type: Optional[str]

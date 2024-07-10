@@ -1,23 +1,19 @@
-:py:mod:`torchtree.evolution.tree_likelihood`
-=============================================
+torchtree.evolution.tree_likelihood
+===================================
 
 .. py:module:: torchtree.evolution.tree_likelihood
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.evolution.tree_likelihood.TreeLikelihoodModel
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -29,6 +25,8 @@ Functions
    torchtree.evolution.tree_likelihood.calculate_treelikelihood_tip_states_discrete_rescaled
 
 
+Module Contents
+---------------
 
 .. py:function:: calculate_treelikelihood(partials: list, weights: torch.Tensor, post_indexing: list, mats: torch.Tensor, freqs: torch.Tensor) -> torch.Tensor
 
@@ -132,8 +130,8 @@ Functions
 
 .. py:class:: TreeLikelihoodModel(id_: torchtree.typing.ID, site_pattern: torchtree.evolution.site_pattern.SitePattern, tree_model: torchtree.evolution.tree_model.TreeModel, subst_model: torchtree.evolution.substitution_model.abstract.SubstitutionModel, site_model: torchtree.evolution.site_model.SiteModel, clock_model: torchtree.evolution.branch_model.BranchModel = None, use_ambiguities=False, use_tip_states=False)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Classes inheriting from :class:`Model` and
    :class:`collections.abc.Callable`.
@@ -141,6 +139,7 @@ Functions
    CallableModel are Callable and the returned value is cached in case
    we need to use this value multiple times without the need to
    recompute it.
+
 
    .. py:method:: calculate_with_tip_partials(mats, frequencies, probs)
 
@@ -153,6 +152,7 @@ Functions
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

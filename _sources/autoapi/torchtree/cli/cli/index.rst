@@ -1,15 +1,11 @@
-:py:mod:`torchtree.cli.cli`
-===========================
+torchtree.cli.cli
+=================
 
 .. py:module:: torchtree.cli.cli
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -17,10 +13,10 @@ Functions
    torchtree.cli.cli.main
 
 
+Module Contents
+---------------
 
 .. py:function:: create_show_parser(subprasers)
 
-
 .. py:function:: main()
-
 

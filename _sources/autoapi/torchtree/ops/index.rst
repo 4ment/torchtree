@@ -1,5 +1,5 @@
-:py:mod:`torchtree.ops`
-=======================
+torchtree.ops
+=============
 
 .. py:module:: torchtree.ops
 
@@ -11,12 +11,12 @@
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   dual_averaging/index.rst
-   smooth/index.rst
-   welford/index.rst
+   /autoapi/torchtree/ops/dual_averaging/index
+   /autoapi/torchtree/ops/smooth/index
+   /autoapi/torchtree/ops/welford/index
 
 

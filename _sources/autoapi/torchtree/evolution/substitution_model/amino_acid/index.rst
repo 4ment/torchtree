@@ -1,14 +1,11 @@
-:py:mod:`torchtree.evolution.substitution_model.amino_acid`
-===========================================================
+torchtree.evolution.substitution_model.amino_acid
+=================================================
 
 .. py:module:: torchtree.evolution.substitution_model.amino_acid
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -16,12 +13,13 @@ Classes
    torchtree.evolution.substitution_model.amino_acid.WAG
 
 
-
+Module Contents
+---------------
 
 .. py:class:: LG(id_: torchtree.typing.ID)
 
-
    Bases: :py:obj:`torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel`
+
 
    Parametric model.
 
@@ -29,12 +27,15 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:property:: rates
       :type: Union[torch.Tensor, list[torch.Tensor]]
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -48,8 +49,8 @@ Classes
 
 .. py:class:: WAG(id_: torchtree.typing.ID)
 
-
    Bases: :py:obj:`torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel`
+
 
    Parametric model.
 
@@ -57,12 +58,15 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:property:: rates
       :type: Union[torch.Tensor, list[torch.Tensor]]
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

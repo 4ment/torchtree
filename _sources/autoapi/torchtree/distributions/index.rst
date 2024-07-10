@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions`
-=================================
+torchtree.distributions
+=======================
 
 .. py:module:: torchtree.distributions
 
@@ -12,44 +12,24 @@
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   bayesian_bridge/index.rst
-   ctmc_scale/index.rst
-   deterministic_normal/index.rst
-   distributions/index.rst
-   gmrf/index.rst
-   gmrf_integrated/index.rst
-   inverse_gamma/index.rst
-   joint_distribution/index.rst
-   log_normal/index.rst
-   multivariate_normal/index.rst
-   normal/index.rst
-   one_on_x/index.rst
-   scale_mixture/index.rst
-   transforms/index.rst
-   tree_prior/index.rst
-
-
-Package Contents
-----------------
-
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   torchtree.distributions.Distribution
-   torchtree.distributions.InverseGamma
-   torchtree.distributions.MultivariateNormal
-   torchtree.distributions.Normal
-
-
-
-
-
-
+   /autoapi/torchtree/distributions/bayesian_bridge/index
+   /autoapi/torchtree/distributions/ctmc_scale/index
+   /autoapi/torchtree/distributions/deterministic_normal/index
+   /autoapi/torchtree/distributions/distributions/index
+   /autoapi/torchtree/distributions/gmrf/index
+   /autoapi/torchtree/distributions/gmrf_integrated/index
+   /autoapi/torchtree/distributions/inverse_gamma/index
+   /autoapi/torchtree/distributions/joint_distribution/index
+   /autoapi/torchtree/distributions/log_normal/index
+   /autoapi/torchtree/distributions/multivariate_normal/index
+   /autoapi/torchtree/distributions/normal/index
+   /autoapi/torchtree/distributions/one_on_x/index
+   /autoapi/torchtree/distributions/scale_mixture/index
+   /autoapi/torchtree/distributions/transforms/index
+   /autoapi/torchtree/distributions/tree_prior/index
 
 

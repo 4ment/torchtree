@@ -1,14 +1,11 @@
-:py:mod:`torchtree.evolution.tree_height_transform`
-===================================================
+torchtree.evolution.tree_height_transform
+=========================================
 
 .. py:module:: torchtree.evolution.tree_height_transform
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -16,23 +13,24 @@ Classes
    torchtree.evolution.tree_height_transform.DifferenceNodeHeightTransform
 
 
-
+Module Contents
+---------------
 
 .. py:class:: GeneralNodeHeightTransform(tree: TimeTreeModel, cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
 
+
    Transform from ratios to node heights.
+
 
    .. py:attribute:: bijective
       :value: True
 
-      
+
 
    .. py:attribute:: sign
 
-      
 
    .. py:method:: sort_indices()
 
@@ -40,6 +38,7 @@ Classes
    .. py:method:: update_bounds() -> None
 
       Called when topology changes.
+
 
 
    .. py:method:: log_abs_det_jacobian(x, y)
@@ -50,8 +49,8 @@ Classes
 
 .. py:class:: DifferenceNodeHeightTransform(tree_model: TimeTreeModel, k: float = 0.0, cache_size=0)
 
-
    Bases: :py:obj:`torch.distributions.Transform`
+
 
    Transform from node height differences to node heights.
 
@@ -65,14 +64,14 @@ Classes
    :math:`y_i \in \mathbb{R}^+`. Function max can be approximated using logsumexp
    in order to propagate the gradient if k > 0.
 
+
    .. py:attribute:: bijective
       :value: True
 
-      
+
 
    .. py:attribute:: sign
 
-      
 
    .. py:method:: log_abs_det_jacobian(x, y)
 

@@ -1,26 +1,24 @@
-:py:mod:`torchtree.optim.optimizer`
-===================================
+torchtree.optim.optimizer
+=========================
 
 .. py:module:: torchtree.optim.optimizer
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.optim.optimizer.Optimizer
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Optimizer(id_: torchtree.typing.ID, parameters: torchtree.typing.ListParameter, loss: torchtree.core.model.CallableModel, optimizer: torch.optim.Optimizer, iterations: int, **kwargs)
 
-
    Bases: :py:obj:`torchtree.core.identifiable.Identifiable`, :py:obj:`torchtree.core.runnable.Runnable`
+
 
    A wrapper for torch.optim.Optimizer objects.
 
@@ -30,6 +28,7 @@ Classes
    :type optimizer: torch.optim.Optimizer
    :param int iterations: number of iterations
    :param kwargs: optionals
+
 
    .. py:method:: run() -> None
 
@@ -45,6 +44,7 @@ Classes
 
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, Any]) -> Optimizer
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

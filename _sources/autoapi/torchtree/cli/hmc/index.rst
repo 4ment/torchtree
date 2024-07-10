@@ -1,15 +1,11 @@
-:py:mod:`torchtree.cli.hmc`
-===========================
+torchtree.cli.hmc
+=================
 
 .. py:module:: torchtree.cli.hmc
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -20,19 +16,16 @@ Functions
    torchtree.cli.hmc.build_hmc
 
 
+Module Contents
+---------------
 
 .. py:function:: create_hmc_parser(subprasers)
 
-
 .. py:function:: create_stan_windowed_adaptation(joint, parameters, parameters_unres, arg)
-
 
 .. py:function:: create_hmc_operator(id_, joint, parameters, arg)
 
-
 .. py:function:: create_hmc(joint, parameters, parameters_unres, arg)
 
-
 .. py:function:: build_hmc(arg)
-
 

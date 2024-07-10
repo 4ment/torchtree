@@ -1,26 +1,24 @@
-:py:mod:`torchtree.variational.chi`
-===================================
+torchtree.variational.chi
+=========================
 
 .. py:module:: torchtree.variational.chi
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.variational.chi.CUBO
 
 
-
+Module Contents
+---------------
 
 .. py:class:: CUBO(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size, n: torch.Tensor)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Class representing the :math:`\chi`-upper bound (CUBO) objective [#Dieng2017]_.
 
@@ -35,11 +33,13 @@ Classes
     David Blei. Variational Inference
     via :math:`\chi` Upper Bound Minimization
 
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
    .. py:method:: from_json(data, dic) -> CUBO
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

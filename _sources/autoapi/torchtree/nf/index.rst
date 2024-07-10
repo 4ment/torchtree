@@ -1,5 +1,5 @@
-:py:mod:`torchtree.nf`
-======================
+torchtree.nf
+============
 
 .. py:module:: torchtree.nf
 
@@ -11,13 +11,13 @@
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   energy_functions/index.rst
-   flow/index.rst
-   planar/index.rst
-   realnvp/index.rst
+   /autoapi/torchtree/nf/energy_functions/index
+   /autoapi/torchtree/nf/flow/index
+   /autoapi/torchtree/nf/planar/index
+   /autoapi/torchtree/nf/realnvp/index
 
 

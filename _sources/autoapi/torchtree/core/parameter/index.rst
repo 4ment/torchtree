@@ -1,5 +1,5 @@
-:py:mod:`torchtree.core.parameter`
-==================================
+torchtree.core.parameter
+========================
 
 .. py:module:: torchtree.core.parameter
 
@@ -9,11 +9,8 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -24,18 +21,20 @@ Classes
    torchtree.core.parameter.ModuleParameter
 
 
-
+Module Contents
+---------------
 
 .. py:class:: Parameter(id_: Optional[str], tensor: torch.Tensor)
 
-
    Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`
+
 
    Parameter class.
 
    :param id_: identifier of Parameter object.
    :type id_: str or None
    :param Tensor tensor: Tensor object.
+
 
    .. py:property:: tensor
       :type: torch.Tensor
@@ -46,6 +45,7 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
+
    .. py:property:: requires_grad
       :type: bool
 
@@ -55,20 +55,14 @@ Classes
       :setter: Sets the flag.
       :rtype: bool
 
-   .. py:property:: grad_fn
 
+   .. py:method:: detach()
+
+
+   .. py:property:: grad_fn
       The grad_fn property of the tensor.
 
       :rtype: torch.autograd.graph.node
-
-   .. py:property:: grad
-      :type: torch.Tensor
-
-      The grad property of the Tensor.
-
-      :rtype: Tensor
-
-   .. py:method:: detach()
 
 
    .. py:method:: copy_(tensor)
@@ -79,6 +73,15 @@ Classes
       Returns the size of the tensor.
 
       :rtype: Size
+
+
+
+   .. py:property:: grad
+      :type: torch.Tensor
+
+      The grad property of the Tensor.
+
+      :rtype: Tensor
 
 
    .. py:method:: add_parameter_listener(listener) -> None
@@ -94,14 +97,17 @@ Classes
       it is not cloning listeners and the clone's id is None
 
 
+
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
       Moves the tensor object in CUDA memory.
 
 
+
    .. py:method:: cpu() -> None
 
       Moves the tensor object in CPU memory.
+
 
 
    .. py:method:: to(device: Optional[Union[int, torch.device]] = None, dtype: Optional[Union[torch.dtype, str]] = None) -> None
@@ -121,12 +127,15 @@ Classes
       .. function:: to(device)
 
 
+
    .. py:method:: json_factory(id_: str, **kwargs)
       :staticmethod:
 
 
+
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> Parameter
       :classmethod:
+
 
       Creates a Parameter object from a dictionary.
 
@@ -211,8 +220,8 @@ Classes
 
 .. py:class:: TransformedParameter(id_: Optional[str], x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter], transform: torch.distributions.Transform)
 
-
    Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.parametric.Parametric`, :py:obj:`collections.abc.Callable`
+
 
    Class wrapping an AbstractParameter and a torch Transform object.
 
@@ -229,6 +238,13 @@ Classes
    :param transform: torch transform object.
    :type transform: torch.distributions.Transform
 
+
+   .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]
+
+      Returns parameters of instance Parameter.
+
+
+
    .. py:property:: tensor
       :type: torch.Tensor
 
@@ -237,6 +253,7 @@ Classes
       :getter: Returns the tensor.
       :setter: Sets the tensor.
       :rtype: Tensor
+
 
    .. py:property:: requires_grad
       :type: bool
@@ -247,20 +264,13 @@ Classes
       :setter: Sets the flag.
       :rtype: bool
 
+
    .. py:property:: shape
       :type: torch.Size
 
       The shape of the tensor.
 
       :rtype: Size
-
-   .. py:property:: sample_shape
-      :type: torch.Size
-
-
-   .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]
-
-      Returns parameters of instance Parameter.
 
 
    .. py:method:: handle_parameter_changed(variable, index, event) -> None
@@ -275,9 +285,15 @@ Classes
    .. py:method:: fire_parameter_changed(index=None, event=None) -> None
 
 
+   .. py:property:: sample_shape
+      :type: torch.Size
+
+
+
    .. py:method:: to(*args, **kwargs) -> None
 
       Performs Tensor dtype and/or device conversion.
+
 
 
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None)
@@ -285,13 +301,16 @@ Classes
       Moves the tensor object in CUDA memory.
 
 
+
    .. py:method:: cpu()
 
       Moves the tensor object in CPU memory.
 
 
+
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> TransformedParameter
       :classmethod:
+
 
       Creates a TransformedParameter object from a dictionary.
 
@@ -345,8 +364,8 @@ Classes
 
 .. py:class:: ViewParameter(id_: Optional[str], parameter: Parameter, indices: Union[int, slice, torch.Tensor])
 
-
    Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.parametric.ParameterListener`
+
 
    Class representing a view of another parameter.
 
@@ -354,6 +373,7 @@ Classes
    :type id_: str or None
    :param Parameter parameter: parameter that ViewParameter wrap.
    :param indices: indices used on parameter
+
 
    .. py:property:: tensor
       :type: torch.Tensor
@@ -364,6 +384,7 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
+
    .. py:property:: shape
       :type: torch.Size
 
@@ -371,12 +392,14 @@ Classes
 
       :rtype: Size
 
+
    .. py:property:: dtype
       :type: torch.dtype
 
       The dtype of the tensor.
 
       :rtype: torch.dtype
+
 
    .. py:property:: requires_grad
       :type: bool
@@ -386,6 +409,7 @@ Classes
       :getter: Returns the flag.
       :setter: Sets the flag.
       :rtype: bool
+
 
    .. py:method:: assign(parameter)
 
@@ -403,6 +427,7 @@ Classes
       it is not cloning listeners and the clone's id is None
 
 
+
    .. py:method:: handle_parameter_changed(variable, index, event) -> None
 
 
@@ -411,9 +436,11 @@ Classes
       Performs Tensor dtype and/or device conversion.
 
 
+
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
       Moves the tensor object in CUDA memory.
+
 
 
    .. py:method:: cpu() -> None
@@ -421,12 +448,15 @@ Classes
       Moves the tensor object in CPU memory.
 
 
+
    .. py:method:: json_factory(id_: str, x, indices)
       :staticmethod:
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -440,14 +470,18 @@ Classes
 
 .. py:class:: CatParameter(id_: Optional[str], parameters: Union[list[Parameter], tuple[Parameter, Ellipsis]], dim: Optional[int] = 0)
 
-
    Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.parametric.ParameterListener`
+
 
    Class for concatenating parameters.
 
    :param id_: ID of object
    :param parameters: list or tuple of parameters
    :param dim: dimension for concatenation
+
+
+   .. py:method:: update()
+
 
    .. py:property:: tensor
       :type: torch.Tensor
@@ -458,6 +492,7 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
+
    .. py:property:: requires_grad
       :type: bool
 
@@ -467,19 +502,11 @@ Classes
       :setter: Sets the flag.
       :rtype: bool
 
-   .. py:property:: device
-      :type: torch.device
-
-      Returns the torch.device where the Tensor is.
-
-      :rtype: torch.device
-
-   .. py:method:: update()
-
 
    .. py:method:: to(*args, **kwargs) -> None
 
       Performs Tensor dtype and/or device conversion.
+
 
 
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
@@ -487,9 +514,19 @@ Classes
       Moves the tensor object in CUDA memory.
 
 
+
    .. py:method:: cpu() -> None
 
       Moves the tensor object in CPU memory.
+
+
+
+   .. py:property:: device
+      :type: torch.device
+
+      Returns the torch.device where the Tensor is.
+
+      :rtype: torch.device
 
 
    .. py:method:: add_parameter_listener(listener) -> None
@@ -507,6 +544,7 @@ Classes
    .. py:method:: from_json(data, dic)
       :classmethod:
 
+
       Abstract method to create object from a dictionary.
 
       :param dict[str, Any] data: dictionary representation of a torchtree object.
@@ -519,10 +557,17 @@ Classes
 
 .. py:class:: ModuleParameter(id_: Optional[str], module)
 
-
    Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.parametric.Parametric`
 
+
    Abstract base class for parameters.
+
+
+   .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]
+
+      Returns parameters of instance Parameter.
+
+
 
    .. py:property:: tensor
       :type: torch.Tensor
@@ -533,6 +578,7 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
+
    .. py:property:: requires_grad
       :type: bool
 
@@ -542,20 +588,13 @@ Classes
       :setter: Sets the flag.
       :rtype: bool
 
+
    .. py:property:: shape
       :type: torch.Size
 
       The shape of the tensor.
 
       :rtype: Size
-
-   .. py:property:: sample_shape
-      :type: torch.Size
-
-
-   .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]
-
-      Returns parameters of instance Parameter.
 
 
    .. py:method:: handle_parameter_changed(variable, index, event) -> None
@@ -570,9 +609,15 @@ Classes
    .. py:method:: fire_parameter_changed(index=None, event=None) -> None
 
 
+   .. py:property:: sample_shape
+      :type: torch.Size
+
+
+
    .. py:method:: to(*args, **kwargs) -> None
 
       Performs Tensor dtype and/or device conversion.
+
 
 
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None)
@@ -580,13 +625,16 @@ Classes
       Moves the tensor object in CUDA memory.
 
 
+
    .. py:method:: cpu()
 
       Moves the tensor object in CPU memory.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

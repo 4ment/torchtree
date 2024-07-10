@@ -1,26 +1,24 @@
-:py:mod:`torchtree.inference.mcmc.gmrf_block_updating`
-======================================================
+torchtree.inference.mcmc.gmrf_block_updating
+============================================
 
 .. py:module:: torchtree.inference.mcmc.gmrf_block_updating
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator
 
 
-
+Module Contents
+---------------
 
 .. py:class:: GMRFPiecewiseCoalescentBlockUpdatingOperator(id_: torchtree.typing.ID, coalescent: torchtree.evolution.coalescent.AbstractCoalescentModel, gmrf: torchtree.distributions.gmrf.GMRF, weight: float, target_acceptance_probability: float, scaler: float, **kwargs)
 
-
    Bases: :py:obj:`torchtree.inference.mcmc.operator.MCMCOperator`
+
 
    Class implementing the block-updating Markov chain Monte Carlo sampling
    for Gaussian Markov random fields (GMRF).
@@ -32,8 +30,10 @@ Classes
    :param float target_acceptance_probability: target acceptance probability.
    :param float scaler: scaler for tuning the precision parameter proposal.
 
+
    .. py:property:: tuning_parameter
       :type: float
+
 
 
    .. py:method:: adaptable_parameter() -> float
@@ -56,6 +56,7 @@ Classes
 
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> GMRFPiecewiseCoalescentBlockUpdatingOperator
       :classmethod:
+
 
       Creates a GMRFPiecewiseCoalescentBlockUpdatingOperator object from a
       dictionary.

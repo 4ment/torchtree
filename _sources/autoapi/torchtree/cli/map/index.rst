@@ -1,15 +1,11 @@
-:py:mod:`torchtree.cli.map`
-===========================
+torchtree.cli.map
+=================
 
 .. py:module:: torchtree.cli.map
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -20,19 +16,16 @@ Functions
    torchtree.cli.map.build_optimizer
 
 
+Module Contents
+---------------
 
 .. py:function:: create_map_parser(subprasers)
 
-
 .. py:function:: create_optimizer(joint, parameters, arg)
-
 
 .. py:function:: create_logger(id_, parameters, arg)
 
-
 .. py:function:: create_tree_logger(id_, tree_id, arg)
 
-
 .. py:function:: build_optimizer(arg)
-
 

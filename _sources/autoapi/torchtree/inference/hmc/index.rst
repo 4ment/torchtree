@@ -1,20 +1,20 @@
-:py:mod:`torchtree.inference.hmc`
-=================================
+torchtree.inference.hmc
+=======================
 
 .. py:module:: torchtree.inference.hmc
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   adaptation/index.rst
-   hamiltonian/index.rst
-   hmc/index.rst
-   integrator/index.rst
-   operator/index.rst
-   stan_adaptation/index.rst
+   /autoapi/torchtree/inference/hmc/adaptation/index
+   /autoapi/torchtree/inference/hmc/hamiltonian/index
+   /autoapi/torchtree/inference/hmc/hmc/index
+   /autoapi/torchtree/inference/hmc/integrator/index
+   /autoapi/torchtree/inference/hmc/operator/index
+   /autoapi/torchtree/inference/hmc/stan_adaptation/index
 
 

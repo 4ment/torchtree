@@ -1,14 +1,28 @@
-:py:mod:`torchtree.core.utils`
-==============================
+torchtree.core.utils
+====================
 
 .. py:module:: torchtree.core.utils
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   torchtree.core.utils.REGISTERED_CLASSES
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   torchtree.core.utils.JSONParseError
+   torchtree.core.utils.AlternativeAttributeError
+
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -17,9 +31,8 @@ Classes
    torchtree.core.utils.SignalHandler
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -41,23 +54,15 @@ Functions
    torchtree.core.utils.register_class
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   torchtree.core.utils.REGISTERED_CLASSES
-
+Module Contents
+---------------
 
 .. py:data:: REGISTERED_CLASSES
 
-   
-
 .. py:class:: TensorEncoder(*, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, default=None)
 
-
    Bases: :py:obj:`json.JSONEncoder`
+
 
    Extensible JSON <http://json.org> encoder for Python data structures.
 
@@ -87,6 +92,7 @@ Attributes
    implementation (to raise ``TypeError``).
 
 
+
    .. py:method:: default(obj)
 
       Implement this method in a subclass such that it returns
@@ -111,8 +117,8 @@ Attributes
 
 .. py:class:: TensorDecoder(*args, **kwargs)
 
-
    Bases: :py:obj:`json.JSONDecoder`
+
 
    Simple JSON <http://json.org> decoder
 
@@ -142,12 +148,11 @@ Attributes
    their corresponding ``float`` values, which is outside the JSON spec.
 
 
+
    .. py:method:: object_hook(dic)
 
 
-
 .. py:function:: as_tensor(dct, dtype=torch.float64)
-
 
 .. py:function:: tensor_rand(distribution, shape, dtype=None, device=None, requires_grad=False)
 
@@ -184,33 +189,26 @@ Attributes
 
 .. py:function:: get_class(full_name: str) -> type
 
-
 .. py:exception:: JSONParseError
 
-
    Bases: :py:obj:`Exception`
+
 
    Common base class for all non-exit exceptions.
 
 
 .. py:function:: process_objects(data, dic, force_list=False, key=None)
 
-
 .. py:function:: process_object_with_key(key, data, dic, default=None)
-
 
 .. py:function:: process_object(data, dic)
 
-
 .. py:class:: SignalHandler
-
 
    .. py:method:: exit(signum, frame)
 
 
-
 .. py:function:: validate(data, rules)
-
 
 .. py:function:: remove_comments(obj)
 
@@ -223,12 +221,9 @@ Attributes
 
 .. py:function:: replace_wildcard_with_str(obj, wildcard, value)
 
-
 .. py:function:: replace_star_with_str(obj, value)
 
-
 .. py:function:: expand_plates(obj, parent=None, idx=None)
-
 
 .. py:function:: update_parameters(json_object, parameters) -> None
 
@@ -250,16 +245,18 @@ Attributes
 
 .. py:exception:: AlternativeAttributeError
 
-
    Bases: :py:obj:`Exception`
+
 
    Custom exception for debugging conflicts between @property and
    __getattr__
 
    https://stackoverflow.com/questions/36575068/attributeerrors-undesired-interaction-between-property-and-getattr
 
+
    .. py:method:: wrapper(f)
       :classmethod:
+
 
       Wraps a function to reraise an AttributeError as the alternate
       type.
@@ -268,10 +265,7 @@ Attributes
 
 .. py:function:: string_to_list_index(index_str) -> Union[int, slice]
 
-
 .. py:function:: package_contents(package_name)
 
-
 .. py:function:: register_class(_cls, name=None)
-
 

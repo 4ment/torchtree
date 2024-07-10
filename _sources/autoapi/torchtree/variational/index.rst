@@ -1,5 +1,5 @@
-:py:mod:`torchtree.variational`
-===============================
+torchtree.variational
+=====================
 
 .. py:module:: torchtree.variational
 
@@ -11,34 +11,12 @@
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   chi/index.rst
-   kl/index.rst
-   renyi/index.rst
-
-
-Package Contents
-----------------
-
-Classes
-~~~~~~~
-
-.. autoapisummary::
-
-   torchtree.variational.CUBO
-   torchtree.variational.ELBO
-   torchtree.variational.KLpq
-   torchtree.variational.KLpqImportance
-   torchtree.variational.VR
-
-
-
-
-
-
-
+   /autoapi/torchtree/variational/chi/index
+   /autoapi/torchtree/variational/kl/index
+   /autoapi/torchtree/variational/renyi/index
 
 

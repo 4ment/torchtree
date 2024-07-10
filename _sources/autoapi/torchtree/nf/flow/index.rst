@@ -1,26 +1,24 @@
-:py:mod:`torchtree.nf.flow`
-===========================
+torchtree.nf.flow
+=================
 
 .. py:module:: torchtree.nf.flow
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.nf.flow.NormalizingFlow
 
 
-
+Module Contents
+---------------
 
 .. py:class:: NormalizingFlow(id_: str, x: Union[torchtree.core.abstractparameter.AbstractParameter, list[torchtree.core.abstractparameter.AbstractParameter]], base: torchtree.distributions.distributions.Distribution, modules: list[torchtree.nn.module.Module], dtype=None, device=None)
 
-
    Bases: :py:obj:`torchtree.distributions.distributions.DistributionModel`
+
 
    Class for normalizing flows.
 
@@ -31,6 +29,7 @@ Classes
    :param Distribution base: base distribution
    :param modules: list of transformations
    :type modules: List[Module]
+
 
    .. py:method:: forward(x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]
 
@@ -44,11 +43,13 @@ Classes
       of samples if the distribution parameters are batched.
 
 
+
    .. py:method:: rsample(sample_shape=Size()) -> None
 
       Generates a sample_shape shaped reparameterized sample or
       sample_shape shaped batch of reparameterized samples if the
       distribution parameters are batched.
+
 
 
    .. py:method:: log_prob(x: Union[list[torchtree.core.abstractparameter.AbstractParameter], torchtree.core.abstractparameter.AbstractParameter] = None) -> torch.Tensor
@@ -61,6 +62,7 @@ Classes
       :rtype: Tensor
 
 
+
    .. py:method:: entropy() -> torch.Tensor
 
       Returns entropy of distribution, batched over batch_shape.
@@ -69,9 +71,11 @@ Classes
       :rtype: Tensor
 
 
+
    .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]
 
       Returns parameters of instance Parameter.
+
 
 
    .. py:method:: to(*args, **kwargs) -> None
@@ -79,9 +83,11 @@ Classes
       Performs Tensor dtype and/or device conversion using torch.to.
 
 
+
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
       Move tensors to CUDA using torch.cuda.
+
 
 
    .. py:method:: cpu() -> None
@@ -89,8 +95,10 @@ Classes
       Move tensors to CPU memory using ~torch.cpu.
 
 
+
    .. py:method:: from_json(data: dict[str, any], dic: dict[str, any]) -> NormalizingFlow
       :classmethod:
+
 
       Create a Flow object.
 

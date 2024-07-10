@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.inverse_gamma`
-===============================================
+torchtree.distributions.inverse_gamma
+=====================================
 
 .. py:module:: torchtree.distributions.inverse_gamma
 
@@ -9,23 +9,21 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.distributions.inverse_gamma.InverseGamma
 
 
-
+Module Contents
+---------------
 
 .. py:class:: InverseGamma(concentration, rate, validate_args=None)
 
-
    Bases: :py:obj:`torch.distributions.TransformedDistribution`
+
 
    Inverse gamma distribution parametrized by concentration and rate.
 
@@ -35,24 +33,17 @@ Classes
    :param float or Tensor concentration: concentration parameter of the distribution
    :param float or Tensor rate: rate parameter of the distribution
 
-   .. py:property:: concentration
-
-
-   .. py:property:: rate
-
 
    .. py:attribute:: arg_constraints
 
-      
 
    .. py:attribute:: support
 
-      
 
    .. py:attribute:: has_rsample
       :value: True
 
-      
+
 
    .. py:method:: expand(batch_shape, _instance=None)
 
@@ -72,5 +63,11 @@ Classes
       :returns: New distribution instance with batch dimensions expanded to
                 `batch_size`.
 
+
+
+   .. py:property:: concentration
+
+
+   .. py:property:: rate
 
 

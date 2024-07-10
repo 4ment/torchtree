@@ -1,26 +1,24 @@
-:py:mod:`torchtree.ops.welford`
-===============================
+torchtree.ops.welford
+=====================
 
 .. py:module:: torchtree.ops.welford
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.ops.welford.WelfordVariance
 
 
-
+Module Contents
+---------------
 
 .. py:class:: WelfordVariance(mean: torch.Tensor, variance: torch.Tensor, samples=0)
 
-
    Welford's online method for estimating (co)variance.
+
 
    .. py:method:: add_sample(x: torch.Tensor) -> None
 
@@ -29,6 +27,7 @@ Classes
       .. math:
           m_{k} = m_{k-1} + (x - m_{k-1})/k
           v_{k} = v_{k-1} + (x_k - v_{k-1})(x_k - v_{k})
+
 
 
    .. py:method:: remove_sample(x: torch.Tensor)
@@ -40,6 +39,7 @@ Classes
           v_{k-1} = v_{k} - (x_k - v_{k-1})(x_k - v_{k})
 
 
+
    .. py:method:: variance() -> torch.Tensor
 
 
@@ -47,6 +47,5 @@ Classes
 
 
    .. py:method:: reset() -> None
-
 
 

@@ -1,26 +1,24 @@
-:py:mod:`torchtree.evolution.root_transform`
-============================================
+torchtree.evolution.root_transform
+==================================
 
 .. py:module:: torchtree.evolution.root_transform
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.evolution.root_transform.RootParameter
 
 
-
+Module Contents
+---------------
 
 .. py:class:: RootParameter(id_: torchtree.typing.ID, distance: torchtree.core.parameter.Parameter, rate: torchtree.core.parameter.Parameter, shift: float)
 
-
    Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.model.CallableModel`
+
 
    This root height parameter is calculated from
     number of substitutions / substitution rate.
@@ -31,6 +29,13 @@ Classes
    :param Parameter rate: rate parameter
    :param float shift: shift root height by this amount. Used by serially sampled trees
 
+
+   .. py:method:: parameters() -> list[torchtree.core.parameter.Parameter]
+
+      Returns parameters of instance Parameter.
+
+
+
    .. py:property:: tensor
       :type: torch.Tensor
 
@@ -40,14 +45,11 @@ Classes
       :setter: Sets the tensor.
       :rtype: Tensor
 
-   .. py:method:: parameters() -> list[torchtree.core.parameter.Parameter]
-
-      Returns parameters of instance Parameter.
-
 
    .. py:method:: transform() -> torch.Tensor
 
       Return root height.
+
 
 
    .. py:method:: handle_parameter_changed(variable, index, event) -> None
@@ -64,6 +66,7 @@ Classes
 
    .. py:method:: from_json(data, dic) -> RootParameter
       :classmethod:
+
 
       Create a RootParameter object.
 

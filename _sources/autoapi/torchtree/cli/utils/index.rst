@@ -1,23 +1,27 @@
-:py:mod:`torchtree.cli.utils`
-=============================
+torchtree.cli.utils
+===================
 
 .. py:module:: torchtree.cli.utils
 
 
-Module Contents
----------------
+Attributes
+----------
+
+.. autoapisummary::
+
+   torchtree.cli.utils.CONSTRAINT_PREFIX
+
 
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.cli.utils.CONSTRAINT
 
 
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -28,47 +32,35 @@ Functions
    torchtree.cli.utils.remove_constraints
 
 
-
-Attributes
-~~~~~~~~~~
-
-.. autoapisummary::
-
-   torchtree.cli.utils.CONSTRAINT_PREFIX
-
+Module Contents
+---------------
 
 .. py:data:: CONSTRAINT_PREFIX
    :value: '@'
 
-   
 
 .. py:class:: CONSTRAINT
 
-
    Bases: :py:obj:`enum.Enum`
+
 
    Generic enumeration.
 
    Derive from this class to define new enumerations.
 
+
    .. py:attribute:: LOWER
 
-      
 
    .. py:attribute:: UPPER
 
-      
 
    .. py:attribute:: SIMPLEX
-
-      
 
 
 .. py:function:: convert_date_to_real(day, month, year)
 
-
 .. py:function:: read_dates_from_csv(input_file, date_format=None)
-
 
 .. py:function:: make_unconstrained(json_object: Union[dict, list]) -> tuple[list[str], list[dict]]
 
@@ -77,7 +69,6 @@ Attributes
 
 
 .. py:function:: length_of_tensor_in_dict_parameter(param: dict) -> int
-
 
 .. py:function:: remove_constraints(obj)
 

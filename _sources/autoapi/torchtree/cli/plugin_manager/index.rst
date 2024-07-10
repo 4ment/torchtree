@@ -1,24 +1,21 @@
-:py:mod:`torchtree.cli.plugin_manager`
-======================================
+torchtree.cli.plugin_manager
+============================
 
 .. py:module:: torchtree.cli.plugin_manager
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.cli.plugin_manager.PluginManager
 
 
-
+Module Contents
+---------------
 
 .. py:class:: PluginManager
-
 
    .. py:method:: load_plugins()
 
@@ -30,6 +27,5 @@ Classes
 
 
    .. py:method:: plugins()
-
 
 

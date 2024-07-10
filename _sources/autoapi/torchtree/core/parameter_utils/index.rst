@@ -1,15 +1,11 @@
-:py:mod:`torchtree.core.parameter_utils`
-========================================
+torchtree.core.parameter_utils
+==============================
 
 .. py:module:: torchtree.core.parameter_utils
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -17,6 +13,8 @@ Functions
    torchtree.core.parameter_utils.pack_tensor
 
 
+Module Contents
+---------------
 
 .. py:function:: save_parameters(file_name: str, parameters: list[torchtree.core.parameter.Parameter], safely=True, overwrite=False)
 

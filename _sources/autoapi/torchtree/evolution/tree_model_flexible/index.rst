@@ -1,26 +1,24 @@
-:py:mod:`torchtree.evolution.tree_model_flexible`
-=================================================
+torchtree.evolution.tree_model_flexible
+=======================================
 
 .. py:module:: torchtree.evolution.tree_model_flexible
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.evolution.tree_model_flexible.FlexibleTimeTreeModel
 
 
-
+Module Contents
+---------------
 
 .. py:class:: FlexibleTimeTreeModel(id_: torchtree.typing.ID, tree, taxa: torchtree.evolution.taxa.Taxa, internal_heights: torchtree.core.abstractparameter.AbstractParameter)
 
-
    Bases: :py:obj:`torchtree.evolution.tree_model.TimeTreeModel`
+
 
    Parametric model.
 
@@ -28,8 +26,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:method:: json_factory(id_: str, newick: str, internal_heights: Union[dict, list, str], taxa: Union[dict, list, str], **kwargs)
       :staticmethod:
+
 
       Factory for creating tree models in JSON format.
 
@@ -46,8 +46,10 @@ Classes
       :return: tree model in JSON format compatible with from_json class method
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

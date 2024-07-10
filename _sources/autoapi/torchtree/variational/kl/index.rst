@@ -1,14 +1,11 @@
-:py:mod:`torchtree.variational.kl`
-==================================
+torchtree.variational.kl
+========================
 
 .. py:module:: torchtree.variational.kl
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -18,12 +15,13 @@ Classes
    torchtree.variational.kl.SELBO
 
 
-
+Module Contents
+---------------
 
 .. py:class:: ELBO(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size, entropy=False, score=False)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Class representing the evidence lower bound (ELBO) objective.
 
@@ -51,11 +49,13 @@ Classes
        for variational distribution
    :param bool score: use score function instead of pathwise gradient estimator
 
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
    .. py:method:: from_json(data, dic) -> ELBO
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -69,8 +69,8 @@ Classes
 
 .. py:class:: KLpq(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Calculate inclusive Kullback-Leibler divergence from q to p
    :math:`\text{KL}(p\|q)` using self-normalized importance sampling
@@ -100,11 +100,13 @@ Classes
 
    .. footbibliography::
 
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
    .. py:method:: from_json(data, dic) -> KLpq
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -118,8 +120,8 @@ Classes
 
 .. py:class:: KLpqImportance(id_: torchtree.typing.ID, q: torchtree.distributions.distributions.DistributionModel, p: torchtree.core.model.CallableModel, samples: torch.Size)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Class for minimizing inclusive Kullback-Leibler divergence
    from q to p :math:`\text{KL}(p\|q)` using self-normalized importance
@@ -142,11 +144,13 @@ Classes
    :param torch.Size samples: number of samples.
 
 
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -160,8 +164,8 @@ Classes
 
 .. py:class:: SELBO(id_: torchtree.typing.ID, components: list[torchtree.distributions.distributions.DistributionModel], weights: torchtree.core.abstractparameter.AbstractParameter, p: torchtree.core.model.CallableModel, samples: torch.Size, entropy=False)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Class representing the stratified evidence lower bound (SELBO) objective.
 
@@ -185,11 +189,13 @@ Classes
 
    .. footbibliography::
 
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

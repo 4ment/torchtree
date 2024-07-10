@@ -1,15 +1,11 @@
-:py:mod:`torchtree.cli.mcmc`
-============================
+torchtree.cli.mcmc
+==================
 
 .. py:module:: torchtree.cli.mcmc
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -18,13 +14,12 @@ Functions
    torchtree.cli.mcmc.build_mcmc
 
 
+Module Contents
+---------------
 
 .. py:function:: create_mcmc_parser(subprasers)
 
-
 .. py:function:: create_mcmc(joint, parameters, parameters_unres, arg)
 
-
 .. py:function:: build_mcmc(arg)
-
 

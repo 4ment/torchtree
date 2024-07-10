@@ -1,17 +1,17 @@
-:py:mod:`torchtree.inference.mcmc`
-==================================
+torchtree.inference.mcmc
+========================
 
 .. py:module:: torchtree.inference.mcmc
 
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   gmrf_block_updating/index.rst
-   mcmc/index.rst
-   operator/index.rst
+   /autoapi/torchtree/inference/mcmc/gmrf_block_updating/index
+   /autoapi/torchtree/inference/mcmc/mcmc/index
+   /autoapi/torchtree/inference/mcmc/operator/index
 
 

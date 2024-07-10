@@ -1,15 +1,11 @@
-:py:mod:`torchtree.cli.argparse_utils`
-======================================
+torchtree.cli.argparse_utils
+============================
 
 .. py:module:: torchtree.cli.argparse_utils
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
@@ -19,9 +15,10 @@ Functions
    torchtree.cli.argparse_utils.list_or_int
 
 
+Module Contents
+---------------
 
 .. py:function:: zero_or_path(arg)
-
 
 .. py:function:: str_or_float(arg, choices)
 

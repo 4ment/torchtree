@@ -1,14 +1,11 @@
-:py:mod:`torchtree.evolution.site_model`
-========================================
+torchtree.evolution.site_model
+==============================
 
 .. py:module:: torchtree.evolution.site_model
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -19,18 +16,20 @@ Classes
    torchtree.evolution.site_model.WeibullSiteModel
 
 
-
+Module Contents
+---------------
 
 .. py:class:: SiteModel(id_: torchtree.typing.ID, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
    Bases: :py:obj:`torchtree.core.model.Model`
+
 
    Parametric model.
 
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
 
    .. py:method:: handle_parameter_changed(variable, index, event)
 
@@ -42,6 +41,7 @@ Classes
       :abstractmethod:
 
 
+
    .. py:method:: probabilities() -> torch.Tensor
       :abstractmethod:
 
@@ -49,14 +49,15 @@ Classes
 
 .. py:class:: ConstantSiteModel(id_: torchtree.typing.ID, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
    Bases: :py:obj:`SiteModel`
+
 
    Parametric model.
 
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
 
    .. py:method:: rates() -> torch.Tensor
 
@@ -69,9 +70,11 @@ Classes
       Performs Tensor dtype and/or device conversion using torch.to.
 
 
+
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
       Move tensors to CUDA using torch.cuda.
+
 
 
    .. py:method:: cpu() -> None
@@ -79,8 +82,10 @@ Classes
       Move tensors to CPU memory using ~torch.cpu.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -94,8 +99,8 @@ Classes
 
 .. py:class:: InvariantSiteModel(id_: torchtree.typing.ID, invariant: torchtree.core.abstractparameter.AbstractParameter, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
    Bases: :py:obj:`SiteModel`
+
 
    Parametric model.
 
@@ -103,8 +108,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:property:: invariant
       :type: torch.Tensor
+
 
 
    .. py:method:: update_rates_probs(invariant: torch.Tensor)
@@ -121,9 +128,11 @@ Classes
       Performs Tensor dtype and/or device conversion using torch.to.
 
 
+
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
       Move tensors to CUDA using torch.cuda.
+
 
 
    .. py:method:: cpu() -> None
@@ -131,8 +140,10 @@ Classes
       Move tensors to CPU memory using ~torch.cpu.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 
@@ -146,8 +157,8 @@ Classes
 
 .. py:class:: UnivariateDiscretizedSiteModel(id_: torchtree.typing.ID, parameter: torchtree.core.abstractparameter.AbstractParameter, categories: int, invariant: torchtree.core.abstractparameter.AbstractParameter = None, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
    Bases: :py:obj:`SiteModel`
+
 
    Parametric model.
 
@@ -155,12 +166,15 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
-   .. py:property:: invariant
-      :type: torch.Tensor
-
 
    .. py:method:: inverse_cdf(parameter: torch.Tensor, quantile: torch.Tensor, invariant: torch.Tensor) -> torch.Tensor
       :abstractmethod:
+
+
+
+   .. py:property:: invariant
+      :type: torch.Tensor
+
 
 
    .. py:method:: update_rates(parameter: torch.Tensor, invariant: torch.Tensor)
@@ -177,9 +191,11 @@ Classes
       Performs Tensor dtype and/or device conversion using torch.to.
 
 
+
    .. py:method:: cuda(device: Optional[Union[int, torch.device]] = None) -> None
 
       Move tensors to CUDA using torch.cuda.
+
 
 
    .. py:method:: cpu() -> None
@@ -190,8 +206,8 @@ Classes
 
 .. py:class:: WeibullSiteModel(id_: torchtree.typing.ID, parameter: torchtree.core.abstractparameter.AbstractParameter, categories: int, invariant: torchtree.core.abstractparameter.AbstractParameter = None, mu: torchtree.core.abstractparameter.AbstractParameter = None)
 
-
    Bases: :py:obj:`UnivariateDiscretizedSiteModel`
+
 
    Parametric model.
 
@@ -199,8 +215,10 @@ Classes
    changes. A Model is the building block of more complex models. This
    class is abstract.
 
+
    .. py:property:: shape
       :type: torch.Tensor
+
 
 
    .. py:method:: inverse_cdf(parameter, quantile, invariant)
@@ -208,6 +226,7 @@ Classes
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

@@ -1,21 +1,19 @@
-:py:mod:`torchtree.inference.utils`
-===================================
+torchtree.inference.utils
+=========================
 
 .. py:module:: torchtree.inference.utils
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    torchtree.inference.utils.extract_tensors_and_parameters
 
 
+Module Contents
+---------------
 
 .. py:function:: extract_tensors_and_parameters(params: list[Union[torchtree.core.parameter.Parameter, torchtree.core.parametric.Parametric]], dic: dict[str, any]) -> tuple[torchtree.typing.ListTensor, torchtree.typing.ListParameter]
 

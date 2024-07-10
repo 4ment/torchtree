@@ -1,32 +1,31 @@
-:py:mod:`torchtree.evolution.attribute_pattern`
-===============================================
+torchtree.evolution.attribute_pattern
+=====================================
 
 .. py:module:: torchtree.evolution.attribute_pattern
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.evolution.attribute_pattern.AttributePattern
 
 
-
+Module Contents
+---------------
 
 .. py:class:: AttributePattern(id_: Optional[str], taxa: torchtree.evolution.taxa.Taxa, data_type: torchtree.evolution.datatype.DataType, attribute: str)
 
-
    Bases: :py:obj:`torchtree.core.model.Model`
+
 
    Parametric model.
 
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
 
    .. py:method:: compute_tips_states()
 
@@ -45,13 +44,16 @@ Classes
       Move tensors to CUDA using torch.cuda.
 
 
+
    .. py:method:: cpu() -> None
 
       Move tensors to CPU memory using ~torch.cpu.
 
 
+
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

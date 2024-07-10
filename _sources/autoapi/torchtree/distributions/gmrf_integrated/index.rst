@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.gmrf_integrated`
-=================================================
+torchtree.distributions.gmrf_integrated
+=======================================
 
 .. py:module:: torchtree.distributions.gmrf_integrated
 
@@ -9,23 +9,21 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.distributions.gmrf_integrated.GMRFGammaIntegrated
 
 
-
+Module Contents
+---------------
 
 .. py:class:: GMRFGammaIntegrated(id_: torchtree.typing.ID, field: torchtree.core.abstractparameter.AbstractParameter, shape: float, rate: float, tree_model: torchtree.evolution.tree_model.TimeTreeModel = None, weights: torch.Tensor = None, rescale: bool = True)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Integrated GMRF/gamma distribution.
 
@@ -51,8 +49,10 @@ Classes
 
    Idea from Cheng Zhang
 
+
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> GMRFGammaIntegrated
       :classmethod:
+
 
       Creates a GMRFGammaIntegrated object from a dictionary.
 

@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.gmrf`
-======================================
+torchtree.distributions.gmrf
+============================
 
 .. py:module:: torchtree.distributions.gmrf
 
@@ -9,11 +9,8 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
@@ -21,12 +18,13 @@ Classes
    torchtree.distributions.gmrf.GMRFCovariate
 
 
-
+Module Contents
+---------------
 
 .. py:class:: GMRF(id_: torchtree.typing.ID, field: torchtree.core.abstractparameter.AbstractParameter, precision: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel = None, weights: torch.Tensor = None, rescale: bool = True)
 
-
    Bases: :py:obj:`torchtree.core.model.CallableModel`
+
 
    Gaussian Markov random field.
 
@@ -45,11 +43,13 @@ Classes
       p(\boldsymbol{x} \mid \tau) =  \prod_{i=1}^{N-1} \frac{1}{\sqrt{2 \pi}}
        \sqrt{\tau} e^{-\frac{\tau}{2} (x_{i+1} -x_i)^2}
 
+
    .. py:method:: precision_matrix() -> torch.Tensor
 
 
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> GMRF
       :classmethod:
+
 
       Creates a GMRF object from a dictionary.
 
@@ -85,8 +85,8 @@ Classes
 
 .. py:class:: GMRFCovariate(id_: torchtree.typing.ID, field: torchtree.core.abstractparameter.AbstractParameter, precision: torchtree.core.abstractparameter.AbstractParameter, covariates: torchtree.core.abstractparameter.AbstractParameter, beta: torchtree.core.abstractparameter.AbstractParameter)
 
-
    Bases: :py:obj:`GMRF`
+
 
    Gaussian Markov random field with covariates.
 
@@ -118,8 +118,10 @@ Classes
 
    .. footbibliography::
 
+
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> GMRFCovariate
       :classmethod:
+
 
       Creates a GMRFCovariate object from a dictionary.
 

@@ -1,5 +1,5 @@
-:py:mod:`torchtree.cli`
-=======================
+torchtree.cli
+=============
 
 .. py:module:: torchtree.cli
 
@@ -12,30 +12,36 @@
 
 Submodules
 ----------
+
 .. toctree::
-   :titlesonly:
    :maxdepth: 1
 
-   advi/index.rst
-   argparse_utils/index.rst
-   cli/index.rst
-   evolution/index.rst
-   hmc/index.rst
-   jacobians/index.rst
-   loggers/index.rst
-   map/index.rst
-   mcmc/index.rst
-   operators/index.rst
-   plugin/index.rst
-   plugin_manager/index.rst
-   priors/index.rst
-   utils/index.rst
+   /autoapi/torchtree/cli/advi/index
+   /autoapi/torchtree/cli/argparse_utils/index
+   /autoapi/torchtree/cli/cli/index
+   /autoapi/torchtree/cli/evolution/index
+   /autoapi/torchtree/cli/hmc/index
+   /autoapi/torchtree/cli/jacobians/index
+   /autoapi/torchtree/cli/loggers/index
+   /autoapi/torchtree/cli/map/index
+   /autoapi/torchtree/cli/mcmc/index
+   /autoapi/torchtree/cli/operators/index
+   /autoapi/torchtree/cli/plugin/index
+   /autoapi/torchtree/cli/plugin_manager/index
+   /autoapi/torchtree/cli/priors/index
+   /autoapi/torchtree/cli/utils/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   torchtree.cli.PLUGIN_MANAGER
 
 
 Package Contents
 ----------------
 
 .. py:data:: PLUGIN_MANAGER
-
-   
 

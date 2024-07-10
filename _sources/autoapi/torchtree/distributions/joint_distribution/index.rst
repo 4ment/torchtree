@@ -1,5 +1,5 @@
-:py:mod:`torchtree.distributions.joint_distribution`
-====================================================
+torchtree.distributions.joint_distribution
+==========================================
 
 .. py:module:: torchtree.distributions.joint_distribution
 
@@ -9,23 +9,21 @@
 
 
 
-Module Contents
----------------
-
 Classes
-~~~~~~~
+-------
 
 .. autoapisummary::
 
    torchtree.distributions.joint_distribution.JointDistributionModel
 
 
-
+Module Contents
+---------------
 
 .. py:class:: JointDistributionModel(id_: torchtree.typing.ID, distributions: list[torchtree.distributions.distributions.DistributionModel])
 
-
    Bases: :py:obj:`torchtree.distributions.distributions.DistributionModel`
+
 
    Joint distribution of independent variables.
 
@@ -34,6 +32,7 @@ Classes
    :param id_: ID of joint distribution
    :param distributions: list of distributions of type DistributionModel or
     CallableModel
+
 
    .. py:method:: log_prob(x: Union[list[torchtree.Parameter], torchtree.Parameter] = None) -> torch.Tensor
 
@@ -45,6 +44,7 @@ Classes
       :rtype: Tensor
 
 
+
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
       Generates a sample_shape shaped reparameterized sample or
@@ -52,10 +52,12 @@ Classes
       distribution parameters are batched.
 
 
+
    .. py:method:: sample(sample_shape=torch.Size()) -> None
 
       Generates a sample_shape shaped sample or sample_shape shaped batch
       of samples if the distribution parameters are batched.
+
 
 
    .. py:method:: entropy() -> torch.Tensor
@@ -66,11 +68,13 @@ Classes
       :rtype: Tensor
 
 
+
    .. py:method:: handle_parameter_changed(variable: torchtree.Parameter, index, event) -> None
 
 
    .. py:method:: from_json(data, dic)
       :classmethod:
+
 
       Abstract method to create object from a dictionary.
 

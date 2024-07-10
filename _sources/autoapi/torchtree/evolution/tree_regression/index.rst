@@ -1,21 +1,19 @@
-:py:mod:`torchtree.evolution.tree_regression`
-=============================================
+torchtree.evolution.tree_regression
+===================================
 
 .. py:module:: torchtree.evolution.tree_regression
 
 
-Module Contents
----------------
-
-
 Functions
-~~~~~~~~~
+---------
 
 .. autoapisummary::
 
    torchtree.evolution.tree_regression.linear_regression
 
 
+Module Contents
+---------------
 
 .. py:function:: linear_regression(tree) -> tuple[torch.Tensor, torch.Tensor]
 
