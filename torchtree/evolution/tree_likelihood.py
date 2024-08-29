@@ -321,6 +321,9 @@ class TreeLikelihoodModel(CallableModel):
             rates = rates.reshape(sample_shape + (1, -1))
         probs = self.site_model.probabilities().unsqueeze(-1).unsqueeze(-1)
         if self.clock_model is None:
+            if branch_lengths.dim() == 1:
+                branch_lengths = branch_lengths.expand(sample_shape + (-1,))
+
             bls = torch.cat(
                 (
                     branch_lengths,

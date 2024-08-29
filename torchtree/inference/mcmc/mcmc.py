@@ -20,6 +20,18 @@ from torchtree.typing import ID
 
 @register_class
 class MCMC(Identifiable, Runnable):
+    r"""Represents a Markov Chain Monte Carlo (MCMC) algorithm for inference.
+
+    :param id_: The ID of the MCMC instance.
+    :type id_: ID
+    :param joint: The joint model used for inference.
+    :type joint: CallableModel
+    :param operators: The list of MCMC operators.
+    :type operators: List[MCMCOperator]
+    :param int iterations: The number of iterations for the MCMC algorithm.
+    :param dict kwargs: Additional keyword arguments.
+    """
+
     def __init__(
         self,
         id_: ID,
@@ -28,6 +40,8 @@ class MCMC(Identifiable, Runnable):
         iterations: int,
         **kwargs,
     ) -> None:
+        """Initialize an instance of the MCMC class."""
+
         Identifiable.__init__(self, id_)
         self._operators = operators
         self.joint = joint
@@ -43,6 +57,7 @@ class MCMC(Identifiable, Runnable):
                 self.parameters.extend(parameter.parameters())
 
     def run(self) -> None:
+        """Run the MCMC algorithm."""
         accept = 0
 
         for logger in self.loggers:
@@ -129,11 +144,13 @@ class MCMC(Identifiable, Runnable):
             )
 
     def state_dict(self) -> dict[str, Any]:
+        """Returns the current state of the MCMC object as a dictionary."""
         states = {"iteration": self._epoch}
         states["operators"] = [op.state_dict() for op in self._operators]
         return states
 
     def load_state_dict(self, state_dict: dict[str, Any]) -> None:
+        """Load the state dictionary into the MCMC algorithm."""
         for op in self._operators:
             for op_state in state_dict["operators"]:
                 if op.id == op_state["id"]:
@@ -142,6 +159,7 @@ class MCMC(Identifiable, Runnable):
         self._epoch = state_dict["iteration"]
 
     def save_full_state(self) -> None:
+        """Save the full state of the MCMC algorithm."""
         mcmc_state = {
             "id": self.id,
             "type": "MCMC",
@@ -152,13 +170,30 @@ class MCMC(Identifiable, Runnable):
 
     @classmethod
     def from_json(cls, data: dict[str, Any], dic: dict[str, Any]) -> MCMC:
+        r"""Creates an MCMC instance from a dictionary.
+
+        :param dict[str, Any] data: dictionary representation of a parameter object.
+        :param dict[str, Identifiable] dic: dictionary containing torchtree objects
+            keyed by their ID.
+
+        **JSON attributes**:
+
+         Mandatory:
+          - id (str): identifier of object.
+          - joint (str or dict): joint distribution of interest implementing CallableModel.
+          - operators (list of dict): list of operators implementing MCMCOperator.
+          - iterations (int): number of iterations.
+
+         Optional:
+          - loggers (list of dict): list of loggers implementing MCMCOperator.
+          - checkpoint (bool or str): checkpoint file name (Default: checkpoint.json).
+            No checkpointing if False is specified.
+          - checkpoint_frequency (int): frequency of checkpointing (Default: 1000).
+          - every (int): on-screen logging frequency (Default: 100).
+        """
         iterations = data["iterations"]
 
         optionals = {}
-        # checkpointing is used by default and the default file name is checkpoint.json
-        # it can be disabled if "checkpoint": false is used
-        # the name of the checkpoint file can be modified using
-        # "checkpoint": "checkpointer.json"
         if "checkpoint" in data:
             if isinstance(data["checkpoint"], bool) and data["checkpoint"]:
                 optionals["checkpoint"] = "checkpoint.json"
@@ -167,8 +202,7 @@ class MCMC(Identifiable, Runnable):
         else:
             optionals["checkpoint"] = "checkpoint.json"
 
-        if "checkpoint_frequency" in data:
-            optionals["checkpoint_frequency"] = data["checkpoint_frequency"]
+        optionals["checkpoint_frequency"] = data.get("checkpoint_frequency", 1000)
 
         if "loggers" in data:
             loggers = process_objects(data["loggers"], dic)
@@ -180,7 +214,6 @@ class MCMC(Identifiable, Runnable):
 
         operators = process_objects(data["operators"], dic)
 
-        if "every" in data:
-            optionals["every"] = data["every"]
+        optionals["every"] = data.get("every", 100)
 
         return cls(data["id"], joint, operators, iterations, **optionals)

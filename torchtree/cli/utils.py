@@ -43,7 +43,7 @@ def read_dates_from_csv(input_file, date_format=None):
             index_date = line.index('date')
             break
         for line in reader:
-            dates[line[index_name]] = line[index_date]
+            dates[line[index_name]] = float(line[index_date])
 
     if date_format is not None:
         res = re.split(r"[/-]", date_format)

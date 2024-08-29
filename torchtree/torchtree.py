@@ -97,6 +97,7 @@ def main():
             # now we update the state_dict of the algorithms (e.g. Optimizer, MCMC)
             if (
                 arg.checkpoint is not None
+                and hasattr(obj, "id")
                 and obj.id in others
                 and hasattr(obj, "load_state_dict")
             ):

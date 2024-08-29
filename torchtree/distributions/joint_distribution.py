@@ -33,9 +33,16 @@ class JointDistributionModel(DistributionModel):
             lp = distr()
             sample_shape = distr.sample_shape
             if lp.shape == sample_shape:
+                # [...] -> [...,1]
                 log_p.append(lp.unsqueeze(-1))
             elif lp.shape == torch.Size([]):
+                # [] -> [1]
                 log_p.append(lp.unsqueeze(0))
+            elif len(lp.shape) - len(sample_shape) > 0:
+                # [..., x, y] -> [..., x*y].sum(-1)
+                log_p.append(
+                    lp.view(lp.shape[: len(sample_shape)] + (-1,)).sum(-1, keepdim=True)
+                )
             elif lp.shape[-1] != 1:
                 log_p.append(lp.sum(-1, keepdim=True))
             elif lp.dim() == 1:

@@ -104,8 +104,7 @@ class Optimizer(Identifiable, Runnable):
 
     def _run(self) -> None:
         for logger in self.loggers:
-            if hasattr(logger, 'init'):
-                logger.init()
+            logger.initialize()
 
         handler = SignalHandler()
         if self.convergence is not None:

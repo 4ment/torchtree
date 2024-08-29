@@ -144,7 +144,7 @@ class HKY(SymmetricSubstitutionModel):
 
     def q(self) -> torch.Tensor:
         if len(self.frequencies.shape) == 1:
-            pi = self.frequencies.unsqueeze(0)
+            pi = self.frequencies.expand(self.kappa.shape[:-1] + (4,)).unsqueeze(-2)
         else:
             pi = self.frequencies.unsqueeze(-2)
         kappa = self.kappa

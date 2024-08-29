@@ -7,7 +7,7 @@ def create_loggers(parameters: list[str], arg) -> dict:
     models = ["joint.jacobian", "joint", "like", "prior"]
     if arg.coalescent:
         models.append("coalescent")
-        if arg.coalescent in COALESCENT_PIECEWISE:
+        if arg.coalescent in COALESCENT_PIECEWISE and not arg.gmrf_integrated:
             models.append('gmrf')
     return [
         {

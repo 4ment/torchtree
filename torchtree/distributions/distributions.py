@@ -126,21 +126,20 @@ class Distribution(DistributionModel):
 
     @property
     def event_shape(self) -> torch.Size:
-        return self.dist(
-            **{name: p.tensor for name, p in self.dict_parameters.items()},
-            **self.kwargs,
-        ).event_shape
+        return self.distribution.event_shape
 
     @property
     def batch_shape(self) -> torch.Size:
-        return self.dist(
-            **{name: p.tensor for name, p in self.dict_parameters.items()},
-            **self.kwargs,
-        ).batch_shape
+        return self.distribution.batch_shape
 
     def _sample_shape(self) -> torch.Size:
-        offset = 1 if len(self.batch_shape) == 0 else len(self.batch_shape)
-        return self.x.tensor.shape[:-offset]
+        x_shape = self.x.tensor.shape
+        if len(x_shape) > len(self.batch_shape):
+            offset = 1 if len(self.batch_shape) == 0 else len(self.batch_shape)
+            return x_shape[:-offset]
+        else:
+            # the distribution is a likelihood term
+            return self.batch_shape[: -len(x_shape)]
 
     @property
     def distribution(self) -> torch.distributions.Distribution:

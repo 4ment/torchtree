@@ -538,10 +538,14 @@ def create_tree_likelihood_general(trait: str, data_type: dict, taxa: Taxa, arg)
         "id": f"site_pattern.{trait}",
         "type": "AttributePattern",
         "taxa": "taxa",
-        "data_type": data_type,
+        "data_type": data_type["id"],
         "attribute": trait,
     }
-    site_model = create_site_model(f"sitemodel.{trait}", arg)
+    # site_model = create_site_model(f"sitemodel.{trait}", arg)
+    site_model = {
+        "id": f"sitemodel.{trait}",
+        "type": "ConstantSiteModel",
+    }
 
     state_count = len(data_type["codes"])
     mapping = torch.arange(state_count * (state_count - 1))
@@ -566,6 +570,7 @@ def create_tree_likelihood_general(trait: str, data_type: dict, taxa: Taxa, arg)
             # CONSTRAINT.SIMPLEX.value: True
         },
         "state_count": state_count,
+        "data_type": data_type,
     }
     # substitution_model = {
     #     "id": f"substmodel.{trait}",
@@ -582,7 +587,17 @@ def create_tree_likelihood_general(trait: str, data_type: dict, taxa: Taxa, arg)
         "site_pattern": site_pattern,
     }
     if arg.clock is not None:
-        treelikelihood_model["branch_model"] = "branchmodel"
+        treelikelihood_model["branch_model"] = {
+            "id": f"branchmodel.{trait}",
+            "type": "StrictClockModel",
+            "tree_model": "tree",
+            "rate": {
+                "id": f"rate.{trait}",
+                "type": "Parameter",
+                "tensor": [1.0],
+                CONSTRAINT.LOWER.value: 0.0,
+            },
+        }
 
     if arg.use_ambiguities:
         treelikelihood_model["use_ambiguities"] = True
@@ -954,7 +969,7 @@ def create_general_data_type(id_, trait, taxa):
     data_type = {
         "id": id_,
         "type": "GeneralDataType",
-        "codes": unique_codes,
+        "codes": sorted(unique_codes),
     }
     return data_type
 
@@ -1062,10 +1077,11 @@ def create_taxa(id_, arg):
                 break
             taxa_map = {taxon["id"]: taxon for taxon in taxa["taxa"]}
             for line in reader:
-                if "attributes" not in taxa_map[line[1]]:
-                    taxa_map[line[1]]["attributes"] = {}
+                taxon = line[0]
+                if "attributes" not in taxa_map[taxon]:
+                    taxa_map[taxon]["attributes"] = {}
                 for trait, idx in zip(arg.trait, indices):
-                    taxa_map[line[1]]["attributes"][trait] = line[idx]
+                    taxa_map[taxon]["attributes"][trait] = line[idx]
     return taxa
 
 
@@ -1692,9 +1708,6 @@ def create_evolution_joint(taxa, alignment, arg):
         ],
     }
 
-    if len(prior_dic["distributions"]) > 0:
-        joint_dic["distributions"].append(prior_dic)
-
     if arg.location_regex:
         data_type_location = create_general_data_type(
             "data_type.location", "location", taxa
@@ -1712,6 +1725,9 @@ def create_evolution_joint(taxa, alignment, arg):
                 trait, data_type_trait, taxa, arg
             )
             joint_dic["distributions"].append(trait_dic)
+
+    if len(prior_dic["distributions"]) > 0:
+        joint_dic["distributions"].append(prior_dic)
 
     return joint_dic
 

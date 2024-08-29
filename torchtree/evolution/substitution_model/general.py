@@ -132,7 +132,13 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
         data_type = process_object(data['data_type'], dic)
         rates = process_object(data['rates'], dic)
         frequencies = process_object(data['frequencies'], dic)
-        mapping = process_object(data['mapping'], dic)
+        if 'mapping' not in data:
+            mapping_count = data_type.state_count * (data_type.state_count - 1) // 2
+            mapping = Parameter(None, torch.arange(mapping_count))
+        elif isinstance(data['mapping'], list):
+            mapping = Parameter(None, torch.tensor(data['mapping']))
+        else:
+            mapping = process_object(data['mapping'], dic)
         return cls(id_, data_type, mapping, rates, frequencies)
 
 
@@ -187,7 +193,10 @@ class GeneralNonSymmetricSubstitutionModel(NonSymmetricSubstitutionModel):
         data_type = process_object(data['data_type'], dic)
         rates = process_object(data['rates'], dic)
         frequencies = process_object(data['frequencies'], dic)
-        if isinstance(data['mapping'], list):
+        if 'mapping' not in data:
+            mapping_count = data_type.state_count * (data_type.state_count - 1)
+            mapping = Parameter(None, torch.arange(mapping_count))
+        elif isinstance(data['mapping'], list):
             mapping = Parameter(None, torch.tensor(data['mapping']))
         else:
             mapping = process_object(data['mapping'], dic)

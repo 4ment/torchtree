@@ -94,7 +94,6 @@ class HMCOperator(MCMCOperator, ParameterListener):
         trial = 0
         while trial < max_trials:
             momentum = self._hamiltonian.sample_momentum(self.mass_matrix)
-            ok = True
             try:
                 kinetic_energy0 = self._hamiltonian.kinetic_energy(
                     momentum, self.inverse_mass_matrix

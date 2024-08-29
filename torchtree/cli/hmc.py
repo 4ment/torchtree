@@ -56,8 +56,8 @@ def create_hmc_parser(subprasers):
     )
     parser.add_argument(
         "--stem",
-        required=True,
-        help="""stem for output file""",
+        default="samples",
+        help="""stem for output file [default: %(default)s]""",
     )
     parser.add_argument(
         "--mass_matrix",
@@ -236,7 +236,12 @@ def create_hmc(joint, parameters, parameters_unres, arg):
         )
 
     if arg.stem:
-        hmc_json["loggers"] = create_loggers(parameters, arg)
+        parameters2 = list(filter(lambda x: 'tree.ratios' != x, parameters))
+        if "tree.root_height.unshifted" in parameters2:
+            idx = parameters2.index("tree.root_height.unshifted")
+            parameters2[idx] = "tree.root_height"
+
+        hmc_json["loggers"] = create_loggers(parameters2, arg)
 
     return hmc_json
 
