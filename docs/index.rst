@@ -5,7 +5,7 @@ Welcome to torchtree!
    The documentation corresponds to the current state of the main branch. There may be differences with the latest released version.
 
 
-torchtree is a program for inferring phylogenetic trees from molecular sequeces.
+torchtree is a program designed for developing and inferring phylogenetic models.
 It is implemented in Python and uses PyTorch to leverage automatic differentiation.
 Inference algorithms include variational inference, Hamiltonian Monte Carlo, maximum *a posteriori* and Markov chain Monte Carlo.
 
@@ -43,6 +43,22 @@ torchtree can be easily extended without modifying the code base thanks its modu
 .. _bito: https://github.com/phylovi/bito
 
 
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Getting Started
+
+   getting_started/install.rst
+   getting_started/quick_start.rst
+   getting_started/json_reference.rst
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Advanced
+
+   advanced/concepts.rst
+   advanced/tree_likelihood.rst
 
 .. toctree::
    :hidden:

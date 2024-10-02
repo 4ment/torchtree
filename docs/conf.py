@@ -13,6 +13,8 @@
 import os
 import sys
 from datetime import date
+from docutils import nodes
+from docutils.parsers.rst import roles
 
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -90,3 +92,14 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "torch": ("https://pytorch.org/docs/master/", None),
 }
+
+def colorcode_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+    # Create a literal node with the class "keycode"
+    node = nodes.literal(text, text, classes=["keycode"])
+    return [node], []
+
+# Register the new role
+roles.register_local_role('keycode', colorcode_role)
+
+def setup(app):
+    app.add_css_file('custom.css')

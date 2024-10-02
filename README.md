@@ -7,12 +7,13 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/torchtree)
 
 
-torchtree is a program designed for inferring phylogenetic trees from molecular sequences. Implemented in Python, it leverages [PyTorch] for automatic differentiation. The suite of inference algorithms encompasses variational inference, Hamiltonian Monte Carlo, maximum *a posteriori*, and Markov chain Monte Carlo.
+torchtree is a program designed for developing and inferring phylogenetic models. Implemented in Python, it leverages [PyTorch] for automatic differentiation. The suite of inference algorithms encompasses variational inference, Hamiltonian Monte Carlo, maximum *a posteriori*, and Markov chain Monte Carlo.
 
 - [Getting Started](#getting-started)
   - [Dependencies](#dependencies)
   - [Installation](#installation)
 - [Quick start](#quick-start)
+- [Documentatoin](#documentation)
 - [Plug-ins](#torchtree-plug-in)
 
 ## Getting Started
@@ -44,6 +45,11 @@ Check install
 torchtree --help
 ```
 
+## Documentation
+For detailed information on how to use `torchtree` and its features, please refer to the official documentation and API reference.
+ - [Documentation](https://4ment.github.io/torchtree)
+ - [API Reference](https://4ment.github.io/torchtree/autoapi/torchtree/index.html)
+
 ## Quick start
 `torchtree` requires a JSON file containing models and algorithms. A configuration file can be generated using `torchtree-cli`, a command line-based tool. This two-step process allows the user to adjust values in the configuration file, such as hyperparameters.
 
@@ -69,11 +75,14 @@ torchtree fluA.json
 ```
 
 ## torchtree plug-in
-torchtree can be easily extended without modifying the code base thanks its modular implementation. Some examples of external packages
+torchtree can be easily extended without modifying the code base thanks its modular implementation. Some examples of plug-ins:
+
 - [torchtree-bito]
 - [torchtree-physher]
 - [torchtree-scipy]
 - [torchtree-tensorflow]
+
+A GitHub [template](https://github.com/4ment/torchtree-plugin-template) is available to assist in the development of a plug-in, and it is highly recommended to use it. This template provides a structured starting point, ensuring consistency and compatibility with `torchtree` while streamlining the development process.
 
 ## License
 
