@@ -93,4 +93,5 @@ torchtree makes use of the following libraries and tools, which are under their 
 [PyTorch]: https://pytorch.org
 [torchtree-bito]: https://github.com/4ment/torchtree-bito
 [torchtree-physher]: https://github.com/4ment/torchtree-physher
+[torchtree-tensorflow]: https://github.com/4ment/torchtree-tensorflow
 [torchtree-scipy]: https://github.com/4ment/torchtree-scipy
