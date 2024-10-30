@@ -14,6 +14,8 @@ torchtree is a program designed for inferring phylogenetic trees from molecular 
   - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Plug-ins](#torchtree-plug-in)
+- [API Documentation](https://4ment.github.io/torchtree/)
+
 
 ## Getting Started
 
@@ -36,7 +38,8 @@ pip install torchtree
 To build torchtree from source you can run
 ```bash
 git clone https://github.com/4ment/torchtree
-pip install torchtree/
+cd torchtree
+pip install -e .
 ```
 
 Check install
@@ -90,5 +93,5 @@ torchtree makes use of the following libraries and tools, which are under their 
 [PyTorch]: https://pytorch.org
 [torchtree-bito]: https://github.com/4ment/torchtree-bito
 [torchtree-physher]: https://github.com/4ment/torchtree-physher
-[torchtree-scipy]: https://github.com/4ment/torchtree-scipy
 [torchtree-tensorflow]: https://github.com/4ment/torchtree-tensorflow
+[torchtree-scipy]: https://github.com/4ment/torchtree-scipy
