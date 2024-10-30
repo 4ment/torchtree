@@ -36,7 +36,8 @@ pip install torchtree
 To build torchtree from source you can run
 ```bash
 git clone https://github.com/4ment/torchtree
-pip install torchtree/
+cd torchtree
+pip install -e .
 ```
 
 Check install
