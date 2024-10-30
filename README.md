@@ -14,6 +14,8 @@ torchtree is a program designed for inferring phylogenetic trees from molecular 
   - [Installation](#installation)
 - [Quick start](#quick-start)
 - [Plug-ins](#torchtree-plug-in)
+- [API Documentation](https://4ment.github.io/torchtree/)
+
 
 ## Getting Started
 
