@@ -86,6 +86,18 @@ Module Contents
    :param **kwargs: optional arguments for instanciating torch Distribution
 
 
+   .. py:attribute:: dist
+
+
+   .. py:attribute:: dict_parameters
+
+
+   .. py:attribute:: kwargs
+
+
+   .. py:attribute:: distribution_parameters
+
+
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
       Generates a sample_shape shaped reparameterized sample or

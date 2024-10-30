@@ -141,6 +141,32 @@ Module Contents
    recompute it.
 
 
+   .. py:attribute:: site_pattern
+
+
+   .. py:attribute:: tree_model
+
+
+   .. py:attribute:: subst_model
+
+
+   .. py:attribute:: site_model
+
+
+   .. py:attribute:: clock_model
+
+
+   .. py:attribute:: rescale
+      :value: False
+
+
+
+   .. py:attribute:: use_tip_states
+
+
+   .. py:attribute:: threshold
+
+
    .. py:method:: calculate_with_tip_partials(mats, frequencies, probs)
 
 

@@ -22,6 +22,11 @@ Module Contents
    Code adapted from: https://github.com/stan-dev/stan
 
 
+   .. py:attribute:: x
+      :value: None
+
+
+
    .. py:method:: restart() -> None
 
 

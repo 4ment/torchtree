@@ -28,6 +28,9 @@ Module Contents
    recompute it.
 
 
+   .. py:attribute:: joint
+
+
    .. py:method:: sample_momentum(mass_matrix: torch.Tensor) -> None
 
 

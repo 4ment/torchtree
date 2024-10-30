@@ -16,27 +16,29 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css?v=a5c4661c" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
@@ -50,6 +52,7 @@
     <link rel="prev" title="torchtree.variational.chi" href="../chi/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -65,19 +68,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../../search.html"
       method="get">
@@ -85,7 +77,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -93,8 +84,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -110,7 +101,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -140,15 +132,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -206,14 +194,6 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../evolution/index.html">torchtree.evolution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
-</ul>
-</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/alignment/index.html">torchtree.evolution.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/attribute_pattern/index.html">torchtree.evolution.attribute_pattern</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/bdsk/index.html">torchtree.evolution.bdsk</a></li>
@@ -227,6 +207,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/root_transform/index.html">torchtree.evolution.root_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/site_model/index.html">torchtree.evolution.site_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/site_pattern/index.html">torchtree.evolution.site_pattern</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
+</ul>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/taxa/index.html">torchtree.evolution.taxa</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/tree_height_transform/index.html">torchtree.evolution.tree_height_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/tree_likelihood/index.html">torchtree.evolution.tree_likelihood</a></li>
@@ -278,14 +266,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../optim/optimizer/index.html">torchtree.optim.optimizer</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../torchtree/index.html">torchtree.torchtree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../typing/index.html">torchtree.typing</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html">torchtree.variational</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../chi/index.html">torchtree.variational.chi</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">torchtree.variational.kl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../renyi/index.html">torchtree.variational.renyi</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../../torchtree/index.html">torchtree.torchtree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../typing/index.html">torchtree.typing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bibliography/bib.html">Bibliography</a></li>
@@ -363,24 +351,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -407,21 +387,37 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO"><code class="docutils literal notranslate"><span class="pre">ELBO</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.q"><code class="docutils literal notranslate"><span class="pre">ELBO.q</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.p"><code class="docutils literal notranslate"><span class="pre">ELBO.p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.samples"><code class="docutils literal notranslate"><span class="pre">ELBO.samples</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.entropy"><code class="docutils literal notranslate"><span class="pre">ELBO.entropy</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.score"><code class="docutils literal notranslate"><span class="pre">ELBO.score</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">ELBO.handle_parameter_changed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.from_json"><code class="docutils literal notranslate"><span class="pre">ELBO.from_json()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq"><code class="docutils literal notranslate"><span class="pre">KLpq</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.q"><code class="docutils literal notranslate"><span class="pre">KLpq.q</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.p"><code class="docutils literal notranslate"><span class="pre">KLpq.p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.samples"><code class="docutils literal notranslate"><span class="pre">KLpq.samples</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">KLpq.handle_parameter_changed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.from_json"><code class="docutils literal notranslate"><span class="pre">KLpq.from_json()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance"><code class="docutils literal notranslate"><span class="pre">KLpqImportance</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.q"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.q</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.p"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.samples"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.samples</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.handle_parameter_changed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.from_json"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.from_json()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO"><code class="docutils literal notranslate"><span class="pre">SELBO</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.components"><code class="docutils literal notranslate"><span class="pre">SELBO.components</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.p"><code class="docutils literal notranslate"><span class="pre">SELBO.p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.weights"><code class="docutils literal notranslate"><span class="pre">SELBO.weights</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.samples"><code class="docutils literal notranslate"><span class="pre">SELBO.samples</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.entropy"><code class="docutils literal notranslate"><span class="pre">SELBO.entropy</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">SELBO.handle_parameter_changed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.from_json"><code class="docutils literal notranslate"><span class="pre">SELBO.from_json()</span></code></a></li>
 </ul>
@@ -483,16 +479,41 @@ posterior distribution <span class="math notranslate nohighlight">\(p\)</span> t
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>None</em>) – ID of ELBO object.</p></li>
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>None</em>) – ID of ELBO object.</p></li>
 <li><p><strong>q</strong> (<a class="reference internal" href="../../distributions/distributions/index.html#torchtree.distributions.distributions.DistributionModel" title="torchtree.distributions.distributions.DistributionModel"><em>DistributionModel</em></a>) – variational distribution.</p></li>
 <li><p><strong>p</strong> (<a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><em>CallableModel</em></a>) – joint distribution.</p></li>
 <li><p><strong>samples</strong> (<em>torch.Size</em>) – number of samples.</p></li>
-<li><p><strong>entropy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – use entropy instead of Monte Carlo approximation
+<li><p><strong>entropy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – use entropy instead of Monte Carlo approximation
 for variational distribution</p></li>
-<li><p><strong>score</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – use score function instead of pathwise gradient estimator</p></li>
+<li><p><strong>score</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – use score function instead of pathwise gradient estimator</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.ELBO.q">
+<span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#torchtree.variational.kl.ELBO.q" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.ELBO.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#torchtree.variational.kl.ELBO.p" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.ELBO.samples">
+<span class="sig-name descname"><span class="pre">samples</span></span><a class="headerlink" href="#torchtree.variational.kl.ELBO.samples" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.ELBO.entropy">
+<span class="sig-name descname"><span class="pre">entropy</span></span><a class="headerlink" href="#torchtree.variational.kl.ELBO.entropy" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.ELBO.score">
+<span class="sig-name descname"><span class="pre">score</span></span><a class="headerlink" href="#torchtree.variational.kl.ELBO.score" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.variational.kl.ELBO.handle_parameter_changed">
 <span class="sig-name descname"><span class="pre">handle_parameter_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/variational/kl.html#ELBO.handle_parameter_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.variational.kl.ELBO.handle_parameter_changed" title="Link to this definition">#</a></dt>
@@ -505,8 +526,8 @@ for variational distribution</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
-<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
 by their ID.</p></li>
 </ul>
 </dd>
@@ -542,7 +563,7 @@ of <span class="math notranslate nohighlight">\(\text{KL}(p \|q)\)</span> using 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>None</em>) – ID of KLpq object.</p></li>
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>None</em>) – ID of KLpq object.</p></li>
 <li><p><strong>q</strong> (<a class="reference internal" href="../../distributions/distributions/index.html#torchtree.distributions.distributions.DistributionModel" title="torchtree.distributions.distributions.DistributionModel"><em>DistributionModel</em></a>) – variational distribution.</p></li>
 <li><p><strong>p</strong> (<a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><em>CallableModel</em></a>) – joint distribution.</p></li>
 <li><p><strong>samples</strong> (<em>torch.Size</em>) – number of samples.</p></li>
@@ -557,6 +578,21 @@ of <span class="math notranslate nohighlight">\(\text{KL}(p \|q)\)</span> using 
 </aside>
 </aside>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.KLpq.q">
+<span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#torchtree.variational.kl.KLpq.q" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.KLpq.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#torchtree.variational.kl.KLpq.p" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.KLpq.samples">
+<span class="sig-name descname"><span class="pre">samples</span></span><a class="headerlink" href="#torchtree.variational.kl.KLpq.samples" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.variational.kl.KLpq.handle_parameter_changed">
 <span class="sig-name descname"><span class="pre">handle_parameter_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/variational/kl.html#KLpq.handle_parameter_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.variational.kl.KLpq.handle_parameter_changed" title="Link to this definition">#</a></dt>
@@ -569,8 +605,8 @@ of <span class="math notranslate nohighlight">\(\text{KL}(p \|q)\)</span> using 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
-<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
 by their ID.</p></li>
 </ul>
 </dd>
@@ -602,13 +638,28 @@ sampling gradient estimator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>None</em>) – ID of object.</p></li>
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>None</em>) – ID of object.</p></li>
 <li><p><strong>q</strong> (<a class="reference internal" href="../../distributions/distributions/index.html#torchtree.distributions.distributions.DistributionModel" title="torchtree.distributions.distributions.DistributionModel"><em>DistributionModel</em></a>) – variational distribution.</p></li>
 <li><p><strong>p</strong> (<a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><em>CallableModel</em></a>) – joint distribution.</p></li>
 <li><p><strong>samples</strong> (<em>torch.Size</em>) – number of samples.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.KLpqImportance.q">
+<span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#torchtree.variational.kl.KLpqImportance.q" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.KLpqImportance.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#torchtree.variational.kl.KLpqImportance.p" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.KLpqImportance.samples">
+<span class="sig-name descname"><span class="pre">samples</span></span><a class="headerlink" href="#torchtree.variational.kl.KLpqImportance.samples" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.variational.kl.KLpqImportance.handle_parameter_changed">
 <span class="sig-name descname"><span class="pre">handle_parameter_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/variational/kl.html#KLpqImportance.handle_parameter_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.variational.kl.KLpqImportance.handle_parameter_changed" title="Link to this definition">#</a></dt>
@@ -621,8 +672,8 @@ sampling gradient estimator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
-<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
 by their ID.</p></li>
 </ul>
 </dd>
@@ -639,7 +690,7 @@ by their ID.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="torchtree.variational.kl.SELBO">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.variational.kl.</span></span><span class="sig-name descname"><span class="pre">SELBO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../distributions/distributions/index.html#torchtree.distributions.distributions.DistributionModel" title="torchtree.distributions.distributions.DistributionModel"><span class="pre">torchtree.distributions.distributions.DistributionModel</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entropy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/variational/kl.html#SELBO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.variational.kl.SELBO" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.variational.kl.</span></span><span class="sig-name descname"><span class="pre">SELBO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../distributions/distributions/index.html#torchtree.distributions.distributions.DistributionModel" title="torchtree.distributions.distributions.DistributionModel"><span class="pre">torchtree.distributions.distributions.DistributionModel</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entropy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/variational/kl.html#SELBO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.variational.kl.SELBO" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.model.CallableModel</span></code></a></p>
 <p>Class representing the stratified evidence lower bound (SELBO) objective.</p>
 <p>Maximizing the SELBO is equivalent to minimizing exclusive Kullback-Leibler
@@ -653,12 +704,12 @@ divergence from p to q <span class="math notranslate nohighlight">\(\text{KL}(q\
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>None</em>) – ID of KLqp object.</p></li>
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>None</em>) – ID of KLqp object.</p></li>
 <li><p><strong>components</strong> (<a class="reference internal" href="../../distributions/distributions/index.html#torchtree.distributions.distributions.DistributionModel" title="torchtree.distributions.distributions.DistributionModel"><em>DistributionModel</em></a>) – list of distribution.</p></li>
 <li><p><strong>weights</strong> (<a class="reference internal" href="../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><em>AbstractParameter</em></a>)</p></li>
 <li><p><strong>p</strong> (<a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><em>CallableModel</em></a>) – joint distribution.</p></li>
 <li><p><strong>samples</strong> (<em>torch.Size</em>) – number of samples.</p></li>
-<li><p><strong>entropy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – use entropy instead of Monte Carlo approximation
+<li><p><strong>entropy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – use entropy instead of Monte Carlo approximation
 for variational distribution</p></li>
 </ul>
 </dd>
@@ -671,6 +722,31 @@ for variational distribution</p></li>
 </aside>
 </aside>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.SELBO.components">
+<span class="sig-name descname"><span class="pre">components</span></span><a class="headerlink" href="#torchtree.variational.kl.SELBO.components" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.SELBO.p">
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#torchtree.variational.kl.SELBO.p" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.SELBO.weights">
+<span class="sig-name descname"><span class="pre">weights</span></span><a class="headerlink" href="#torchtree.variational.kl.SELBO.weights" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.SELBO.samples">
+<span class="sig-name descname"><span class="pre">samples</span></span><a class="headerlink" href="#torchtree.variational.kl.SELBO.samples" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.variational.kl.SELBO.entropy">
+<span class="sig-name descname"><span class="pre">entropy</span></span><a class="headerlink" href="#torchtree.variational.kl.SELBO.entropy" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.variational.kl.SELBO.handle_parameter_changed">
 <span class="sig-name descname"><span class="pre">handle_parameter_changed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/variational/kl.html#SELBO.handle_parameter_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.variational.kl.SELBO.handle_parameter_changed" title="Link to this definition">#</a></dt>
@@ -683,8 +759,8 @@ for variational distribution</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
-<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
 by their ID.</p></li>
 </ul>
 </dd>
@@ -738,7 +814,8 @@ by their ID.</p></li>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -750,21 +827,37 @@ by their ID.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO"><code class="docutils literal notranslate"><span class="pre">ELBO</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.q"><code class="docutils literal notranslate"><span class="pre">ELBO.q</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.p"><code class="docutils literal notranslate"><span class="pre">ELBO.p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.samples"><code class="docutils literal notranslate"><span class="pre">ELBO.samples</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.entropy"><code class="docutils literal notranslate"><span class="pre">ELBO.entropy</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.score"><code class="docutils literal notranslate"><span class="pre">ELBO.score</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">ELBO.handle_parameter_changed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.ELBO.from_json"><code class="docutils literal notranslate"><span class="pre">ELBO.from_json()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq"><code class="docutils literal notranslate"><span class="pre">KLpq</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.q"><code class="docutils literal notranslate"><span class="pre">KLpq.q</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.p"><code class="docutils literal notranslate"><span class="pre">KLpq.p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.samples"><code class="docutils literal notranslate"><span class="pre">KLpq.samples</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">KLpq.handle_parameter_changed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpq.from_json"><code class="docutils literal notranslate"><span class="pre">KLpq.from_json()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance"><code class="docutils literal notranslate"><span class="pre">KLpqImportance</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.q"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.q</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.p"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.samples"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.samples</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.handle_parameter_changed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.KLpqImportance.from_json"><code class="docutils literal notranslate"><span class="pre">KLpqImportance.from_json()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO"><code class="docutils literal notranslate"><span class="pre">SELBO</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.components"><code class="docutils literal notranslate"><span class="pre">SELBO.components</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.p"><code class="docutils literal notranslate"><span class="pre">SELBO.p</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.weights"><code class="docutils literal notranslate"><span class="pre">SELBO.weights</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.samples"><code class="docutils literal notranslate"><span class="pre">SELBO.samples</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.entropy"><code class="docutils literal notranslate"><span class="pre">SELBO.entropy</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.handle_parameter_changed"><code class="docutils literal notranslate"><span class="pre">SELBO.handle_parameter_changed()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.variational.kl.SELBO.from_json"><code class="docutils literal notranslate"><span class="pre">SELBO.from_json()</span></code></a></li>
 </ul>
@@ -819,8 +912,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

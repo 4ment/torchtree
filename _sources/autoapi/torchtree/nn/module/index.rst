@@ -29,8 +29,12 @@ Module Contents
    :type parameters: OrderedDict[str,Parameter]
 
 
+   .. py:attribute:: x
+
+
    .. py:property:: module
       :type: torch.nn.Module
+
 
       returns torch.nn.Module
 

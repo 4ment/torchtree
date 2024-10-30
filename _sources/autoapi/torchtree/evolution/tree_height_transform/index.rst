@@ -31,6 +31,15 @@ Module Contents
 
    .. py:attribute:: sign
 
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
+
+
+   .. py:attribute:: tree
+
+
+   .. py:attribute:: taxa_count
+
 
    .. py:method:: sort_indices()
 
@@ -71,6 +80,18 @@ Module Contents
 
 
    .. py:attribute:: sign
+
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
+
+
+   .. py:attribute:: tree
+
+
+   .. py:attribute:: taxa_count
+
+
+   .. py:attribute:: k
 
 
    .. py:method:: log_abs_det_jacobian(x, y)

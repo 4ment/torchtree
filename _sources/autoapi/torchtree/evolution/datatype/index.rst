@@ -154,9 +154,6 @@ Module Contents
    .. py:attribute:: AMINO_ACIDS_AMBIGUITY_STATES
 
 
-   .. py:attribute:: AMINO_ACIDS_AMBIGUITY_STATES
-
-
    .. py:method:: encoding(string) -> int
 
 
@@ -207,6 +204,18 @@ Module Contents
 
 
 
+   .. py:attribute:: name
+
+
+   .. py:attribute:: table
+
+
+   .. py:attribute:: triplets
+
+
+   .. py:attribute:: stop_count
+
+
    .. py:method:: encoding(codon) -> int
 
 
@@ -235,6 +244,12 @@ Module Contents
    Abstract class making an object identifiable.
 
    :param str or None id_: identifier of object
+
+
+   .. py:attribute:: codes
+
+
+   .. py:attribute:: ambiguities
 
 
    .. py:method:: encoding(string: str) -> int

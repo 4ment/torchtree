@@ -44,6 +44,21 @@ Module Contents
        \sqrt{\tau} e^{-\frac{\tau}{2} (x_{i+1} -x_i)^2}
 
 
+   .. py:attribute:: tree_model
+
+
+   .. py:attribute:: weights
+
+
+   .. py:attribute:: field
+
+
+   .. py:attribute:: precision
+
+
+   .. py:attribute:: rescale
+
+
    .. py:method:: precision_matrix() -> torch.Tensor
 
 
@@ -117,6 +132,12 @@ Module Contents
        \boldsymbol{Q} (X - \boldsymbol{Z} \boldsymbol{\beta})}
 
    .. footbibliography::
+
+
+   .. py:attribute:: covariates
+
+
+   .. py:attribute:: beta
 
 
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> GMRFCovariate

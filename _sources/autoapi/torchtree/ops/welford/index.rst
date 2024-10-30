@@ -20,6 +20,9 @@ Module Contents
    Welford's online method for estimating (co)variance.
 
 
+   .. py:attribute:: samples
+
+
    .. py:method:: add_sample(x: torch.Tensor) -> None
 
       Add sample to calculate mean and variance.

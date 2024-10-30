@@ -31,6 +31,12 @@ Module Contents
    :param float scaler: scaler for tuning the precision parameter proposal.
 
 
+   .. py:attribute:: gmrf
+
+
+   .. py:attribute:: coalescent
+
+
    .. py:property:: tuning_parameter
       :type: float
 

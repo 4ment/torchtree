@@ -16,27 +16,29 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css?v=a5c4661c" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
@@ -45,10 +47,11 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/torchtree/optim/optimizer/index';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="torchtree.variational" href="../../variational/index.html" />
+    <link rel="next" title="torchtree.torchtree" href="../../torchtree/index.html" />
     <link rel="prev" title="torchtree.optim.lr_scheduler" href="../lr_scheduler/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -64,19 +67,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../../search.html"
       method="get">
@@ -84,7 +76,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -92,8 +83,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -109,7 +100,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -139,15 +131,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -205,14 +193,6 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../evolution/index.html">torchtree.evolution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
-</ul>
-</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/alignment/index.html">torchtree.evolution.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/attribute_pattern/index.html">torchtree.evolution.attribute_pattern</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/bdsk/index.html">torchtree.evolution.bdsk</a></li>
@@ -226,6 +206,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/root_transform/index.html">torchtree.evolution.root_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/site_model/index.html">torchtree.evolution.site_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/site_pattern/index.html">torchtree.evolution.site_pattern</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
+</ul>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/taxa/index.html">torchtree.evolution.taxa</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/tree_height_transform/index.html">torchtree.evolution.tree_height_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/tree_likelihood/index.html">torchtree.evolution.tree_likelihood</a></li>
@@ -277,14 +265,14 @@
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">torchtree.optim.optimizer</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../torchtree/index.html">torchtree.torchtree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../typing/index.html">torchtree.typing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../variational/index.html">torchtree.variational</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../variational/chi/index.html">torchtree.variational.chi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../variational/kl/index.html">torchtree.variational.kl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../variational/renyi/index.html">torchtree.variational.renyi</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../../torchtree/index.html">torchtree.torchtree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../typing/index.html">torchtree.typing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bibliography/bib.html">Bibliography</a></li>
@@ -362,24 +350,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -406,6 +386,18 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer"><code class="docutils literal notranslate"><span class="pre">Optimizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.parameters"><code class="docutils literal notranslate"><span class="pre">Optimizer.parameters</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.loss"><code class="docutils literal notranslate"><span class="pre">Optimizer.loss</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.optimizer"><code class="docutils literal notranslate"><span class="pre">Optimizer.optimizer</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.iterations"><code class="docutils literal notranslate"><span class="pre">Optimizer.iterations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.scheduler"><code class="docutils literal notranslate"><span class="pre">Optimizer.scheduler</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.convergence"><code class="docutils literal notranslate"><span class="pre">Optimizer.convergence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.loggers"><code class="docutils literal notranslate"><span class="pre">Optimizer.loggers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.maximize"><code class="docutils literal notranslate"><span class="pre">Optimizer.maximize</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.checkpoint"><code class="docutils literal notranslate"><span class="pre">Optimizer.checkpoint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.checkpoint_frequency"><code class="docutils literal notranslate"><span class="pre">Optimizer.checkpoint_frequency</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.checkpoint_all"><code class="docutils literal notranslate"><span class="pre">Optimizer.checkpoint_all</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.distributions"><code class="docutils literal notranslate"><span class="pre">Optimizer.distributions</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.run"><code class="docutils literal notranslate"><span class="pre">Optimizer.run()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.state_dict"><code class="docutils literal notranslate"><span class="pre">Optimizer.state_dict()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.load_state_dict"><code class="docutils literal notranslate"><span class="pre">Optimizer.load_state_dict()</span></code></a></li>
@@ -443,49 +435,109 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.optim.optimizer.</span></span><span class="sig-name descname"><span class="pre">Optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ListParameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/master/optim.html#torch.optim.Optimizer" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><span class="pre">torch.optim.Optimizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.optim.optimizer.</span></span><span class="sig-name descname"><span class="pre">Optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ListParameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.optim.Optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../core/identifiable/index.html#torchtree.core.identifiable.Identifiable" title="torchtree.core.identifiable.Identifiable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.identifiable.Identifiable</span></code></a>, <a class="reference internal" href="../../core/runnable/index.html#torchtree.core.runnable.Runnable" title="torchtree.core.runnable.Runnable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.runnable.Runnable</span></code></a></p>
 <p>A wrapper for torch.optim.Optimizer objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – list of Parameter</p></li>
+<li><p><strong>parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – list of Parameter</p></li>
 <li><p><strong>loss</strong> (<a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><em>CallableModel</em></a>) – loss function</p></li>
-<li><p><strong>optimizer</strong> (<a class="reference external" href="https://pytorch.org/docs/master/optim.html#torch.optim.Optimizer" title="(in PyTorch vmaster (2.1.0a0+gitbe0b12e ))"><em>torch.optim.Optimizer</em></a>) – a torch.optim.Optimizer object</p></li>
-<li><p><strong>iterations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – number of iterations</p></li>
+<li><p><strong>optimizer</strong> (<em>torch.optim.Optimizer</em>) – a torch.optim.Optimizer object</p></li>
+<li><p><strong>iterations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of iterations</p></li>
 <li><p><strong>kwargs</strong> – optionals</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.parameters" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.loss">
+<span class="sig-name descname"><span class="pre">loss</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.loss" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.optimizer">
+<span class="sig-name descname"><span class="pre">optimizer</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.optimizer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.iterations">
+<span class="sig-name descname"><span class="pre">iterations</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.iterations" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.scheduler">
+<span class="sig-name descname"><span class="pre">scheduler</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.scheduler" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.convergence">
+<span class="sig-name descname"><span class="pre">convergence</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.convergence" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.loggers">
+<span class="sig-name descname"><span class="pre">loggers</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.loggers" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.maximize">
+<span class="sig-name descname"><span class="pre">maximize</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.maximize" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.checkpoint">
+<span class="sig-name descname"><span class="pre">checkpoint</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.checkpoint" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.checkpoint_frequency">
+<span class="sig-name descname"><span class="pre">checkpoint_frequency</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.checkpoint_frequency" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.checkpoint_all">
+<span class="sig-name descname"><span class="pre">checkpoint_all</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.checkpoint_all" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.distributions">
+<span class="sig-name descname"><span class="pre">distributions</span></span><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.distributions" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.run" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.run" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.state_dict">
-<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.state_dict" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.state_dict" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.load_state_dict">
-<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.load_state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.load_state_dict" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.load_state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.load_state_dict" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.save_full_state">
-<span class="sig-name descname"><span class="pre">save_full_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checkpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safely</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.save_full_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.save_full_state" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save_full_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checkpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safely</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.save_full_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.save_full_state" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.optimizer.Optimizer.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.optim.optimizer.Optimizer" title="torchtree.optim.optimizer.Optimizer"><span class="pre">Optimizer</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.from_json" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.optim.optimizer.Optimizer" title="torchtree.optim.optimizer.Optimizer"><span class="pre">Optimizer</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/optimizer.html#Optimizer.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.optimizer.Optimizer.from_json" title="Link to this definition">#</a></dt>
 <dd><p>Abstract method to create object from a dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
-<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
 by their ID.</p></li>
 </ul>
 </dd>
@@ -524,11 +576,11 @@ by their ID.</p></li>
       </div>
     </a>
     <a class="right-next"
-       href="../../variational/index.html"
+       href="../../torchtree/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">torchtree.variational</p>
+        <p class="prev-next-title">torchtree.torchtree</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -539,7 +591,8 @@ by their ID.</p></li>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -551,6 +604,18 @@ by their ID.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer"><code class="docutils literal notranslate"><span class="pre">Optimizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.parameters"><code class="docutils literal notranslate"><span class="pre">Optimizer.parameters</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.loss"><code class="docutils literal notranslate"><span class="pre">Optimizer.loss</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.optimizer"><code class="docutils literal notranslate"><span class="pre">Optimizer.optimizer</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.iterations"><code class="docutils literal notranslate"><span class="pre">Optimizer.iterations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.scheduler"><code class="docutils literal notranslate"><span class="pre">Optimizer.scheduler</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.convergence"><code class="docutils literal notranslate"><span class="pre">Optimizer.convergence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.loggers"><code class="docutils literal notranslate"><span class="pre">Optimizer.loggers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.maximize"><code class="docutils literal notranslate"><span class="pre">Optimizer.maximize</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.checkpoint"><code class="docutils literal notranslate"><span class="pre">Optimizer.checkpoint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.checkpoint_frequency"><code class="docutils literal notranslate"><span class="pre">Optimizer.checkpoint_frequency</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.checkpoint_all"><code class="docutils literal notranslate"><span class="pre">Optimizer.checkpoint_all</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.distributions"><code class="docutils literal notranslate"><span class="pre">Optimizer.distributions</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.run"><code class="docutils literal notranslate"><span class="pre">Optimizer.run()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.state_dict"><code class="docutils literal notranslate"><span class="pre">Optimizer.state_dict()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.optimizer.Optimizer.load_state_dict"><code class="docutils literal notranslate"><span class="pre">Optimizer.load_state_dict()</span></code></a></li>
@@ -608,8 +673,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

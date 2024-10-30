@@ -16,27 +16,29 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../../../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=fd3f3429" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/tabs.css?v=a5c4661c" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../../../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
@@ -49,6 +51,7 @@
     <link rel="prev" title="torchtree.inference.mcmc.gmrf_block_updating" href="../gmrf_block_updating/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -64,19 +67,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../../../search.html"
       method="get">
@@ -84,7 +76,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -92,8 +83,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -109,7 +100,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -139,15 +131,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -205,14 +193,6 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../evolution/index.html">torchtree.evolution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
-</ul>
-</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../evolution/alignment/index.html">torchtree.evolution.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../evolution/attribute_pattern/index.html">torchtree.evolution.attribute_pattern</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../evolution/bdsk/index.html">torchtree.evolution.bdsk</a></li>
@@ -226,6 +206,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../evolution/root_transform/index.html">torchtree.evolution.root_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../evolution/site_model/index.html">torchtree.evolution.site_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../evolution/site_pattern/index.html">torchtree.evolution.site_pattern</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
+</ul>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../evolution/taxa/index.html">torchtree.evolution.taxa</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../evolution/tree_height_transform/index.html">torchtree.evolution.tree_height_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../evolution/tree_likelihood/index.html">torchtree.evolution.tree_likelihood</a></li>
@@ -277,14 +265,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../optim/optimizer/index.html">torchtree.optim.optimizer</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../torchtree/index.html">torchtree.torchtree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../typing/index.html">torchtree.typing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../variational/index.html">torchtree.variational</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../variational/chi/index.html">torchtree.variational.chi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../variational/kl/index.html">torchtree.variational.kl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../variational/renyi/index.html">torchtree.variational.renyi</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../torchtree/index.html">torchtree.torchtree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../typing/index.html">torchtree.typing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bibliography/bib.html">Bibliography</a></li>
@@ -362,24 +350,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -406,6 +386,13 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC"><code class="docutils literal notranslate"><span class="pre">MCMC</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.joint"><code class="docutils literal notranslate"><span class="pre">MCMC.joint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.iterations"><code class="docutils literal notranslate"><span class="pre">MCMC.iterations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.loggers"><code class="docutils literal notranslate"><span class="pre">MCMC.loggers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.checkpoint"><code class="docutils literal notranslate"><span class="pre">MCMC.checkpoint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.checkpoint_frequency"><code class="docutils literal notranslate"><span class="pre">MCMC.checkpoint_frequency</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.every"><code class="docutils literal notranslate"><span class="pre">MCMC.every</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.parameters"><code class="docutils literal notranslate"><span class="pre">MCMC.parameters</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.run"><code class="docutils literal notranslate"><span class="pre">MCMC.run()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.state_dict"><code class="docutils literal notranslate"><span class="pre">MCMC.state_dict()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.load_state_dict"><code class="docutils literal notranslate"><span class="pre">MCMC.load_state_dict()</span></code></a></li>
@@ -433,7 +420,7 @@ document.write(`
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.inference.mcmc.mcmc.MCMC" title="torchtree.inference.mcmc.mcmc.MCMC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MCMC</span></code></a></p></td>
-<td><p>Abstract class making an object identifiable.</p></td>
+<td><p>Represents a Markov Chain Monte Carlo (MCMC) algorithm for inference.</p></td>
 </tr>
 </tbody>
 </table>
@@ -443,53 +430,112 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.inference.mcmc.mcmc.</span></span><span class="sig-name descname"><span class="pre">MCMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">operators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator" title="torchtree.inference.mcmc.operator.MCMCOperator"><span class="pre">torchtree.inference.mcmc.operator.MCMCOperator</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.inference.mcmc.mcmc.</span></span><span class="sig-name descname"><span class="pre">MCMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">operators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator" title="torchtree.inference.mcmc.operator.MCMCOperator"><span class="pre">torchtree.inference.mcmc.operator.MCMCOperator</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../../../core/identifiable/index.html#torchtree.core.identifiable.Identifiable" title="torchtree.core.identifiable.Identifiable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.identifiable.Identifiable</span></code></a>, <a class="reference internal" href="../../../core/runnable/index.html#torchtree.core.runnable.Runnable" title="torchtree.core.runnable.Runnable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.core.runnable.Runnable</span></code></a></p>
-<p>Abstract class making an object identifiable.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>None</em>) – identifier of object</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.run" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.state_dict">
-<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.state_dict" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.load_state_dict">
-<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.load_state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.load_state_dict" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.save_full_state">
-<span class="sig-name descname"><span class="pre">save_full_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.save_full_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.save_full_state" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.inference.mcmc.mcmc.MCMC" title="torchtree.inference.mcmc.mcmc.MCMC"><span class="pre">MCMC</span></a></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.from_json" title="Link to this definition">#</a></dt>
-<dd><p>Abstract method to create object from a dictionary.</p>
+<p>Represents a Markov Chain Monte Carlo (MCMC) algorithm for inference.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
-<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
-by their ID.</p></li>
+<li><p><strong>id</strong> (<em>ID</em>) – The ID of the MCMC instance.</p></li>
+<li><p><strong>joint</strong> (<a class="reference internal" href="../../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><em>CallableModel</em></a>) – The joint model used for inference.</p></li>
+<li><p><strong>operators</strong> (<em>List</em><em>[</em><a class="reference internal" href="../operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator" title="torchtree.inference.mcmc.operator.MCMCOperator"><em>MCMCOperator</em></a><em>]</em>) – The list of MCMC operators.</p></li>
+<li><p><strong>iterations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The number of iterations for the MCMC algorithm.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Additional keyword arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>torchtree object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Any</p>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.joint">
+<span class="sig-name descname"><span class="pre">joint</span></span><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.joint" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.iterations">
+<span class="sig-name descname"><span class="pre">iterations</span></span><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.iterations" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.loggers">
+<span class="sig-name descname"><span class="pre">loggers</span></span><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.loggers" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.checkpoint">
+<span class="sig-name descname"><span class="pre">checkpoint</span></span><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.checkpoint" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.checkpoint_frequency">
+<span class="sig-name descname"><span class="pre">checkpoint_frequency</span></span><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.checkpoint_frequency" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.every">
+<span class="sig-name descname"><span class="pre">every</span></span><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.every" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.parameters" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.run" title="Link to this definition">#</a></dt>
+<dd><p>Run the MCMC algorithm.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.state_dict">
+<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.state_dict" title="Link to this definition">#</a></dt>
+<dd><p>Returns the current state of the MCMC object as a dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.load_state_dict">
+<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.load_state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.load_state_dict" title="Link to this definition">#</a></dt>
+<dd><p>Load the state dictionary into the MCMC algorithm.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.save_full_state">
+<span class="sig-name descname"><span class="pre">save_full_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.save_full_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.save_full_state" title="Link to this definition">#</a></dt>
+<dd><p>Save the full state of the MCMC algorithm.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchtree.inference.mcmc.mcmc.MCMC.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.inference.mcmc.mcmc.MCMC" title="torchtree.inference.mcmc.mcmc.MCMC"><span class="pre">MCMC</span></a></span></span><a class="reference internal" href="../../../../../_modules/torchtree/inference/mcmc/mcmc.html#MCMC.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.inference.mcmc.mcmc.MCMC.from_json" title="Link to this definition">#</a></dt>
+<dd><p>Creates an MCMC instance from a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a parameter object.</p></li>
+<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><a class="reference internal" href="../../../core/identifiable/index.html#torchtree.core.identifiable.Identifiable" title="torchtree.core.identifiable.Identifiable"><em>Identifiable</em></a><em>]</em>) – dictionary containing torchtree objects
+keyed by their ID.</p></li>
+</ul>
 </dd>
 </dl>
+<p><strong>JSON attributes</strong>:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Mandatory:</dt><dd><ul class="simple">
+<li><p>id (str): identifier of object.</p></li>
+<li><p>joint (str or dict): joint distribution of interest implementing CallableModel.</p></li>
+<li><p>operators (list of dict): list of operators implementing MCMCOperator.</p></li>
+<li><p>iterations (int): number of iterations.</p></li>
+</ul>
+</dd>
+<dt>Optional:</dt><dd><ul class="simple">
+<li><p>loggers (list of dict): list of loggers implementing MCMCOperator.</p></li>
+<li><p>checkpoint (bool or str): checkpoint file name (Default: checkpoint.json).
+No checkpointing if False is specified.</p></li>
+<li><p>checkpoint_frequency (int): frequency of checkpointing (Default: 1000).</p></li>
+<li><p>every (int): on-screen logging frequency (Default: 100).</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
 </dd></dl>
 
 </dd></dl>
@@ -533,7 +579,8 @@ by their ID.</p></li>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -545,6 +592,13 @@ by their ID.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC"><code class="docutils literal notranslate"><span class="pre">MCMC</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.joint"><code class="docutils literal notranslate"><span class="pre">MCMC.joint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.iterations"><code class="docutils literal notranslate"><span class="pre">MCMC.iterations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.loggers"><code class="docutils literal notranslate"><span class="pre">MCMC.loggers</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.checkpoint"><code class="docutils literal notranslate"><span class="pre">MCMC.checkpoint</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.checkpoint_frequency"><code class="docutils literal notranslate"><span class="pre">MCMC.checkpoint_frequency</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.every"><code class="docutils literal notranslate"><span class="pre">MCMC.every</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.parameters"><code class="docutils literal notranslate"><span class="pre">MCMC.parameters</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.run"><code class="docutils literal notranslate"><span class="pre">MCMC.run()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.state_dict"><code class="docutils literal notranslate"><span class="pre">MCMC.state_dict()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.inference.mcmc.mcmc.MCMC.load_state_dict"><code class="docutils literal notranslate"><span class="pre">MCMC.load_state_dict()</span></code></a></li>
@@ -602,8 +656,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

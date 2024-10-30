@@ -9,22 +9,14 @@ torchtree.inference
 
 
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 1
-
-   /autoapi/torchtree/inference/hmc/index
-   /autoapi/torchtree/inference/mcmc/index
-
-
 Submodules
 ----------
 
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/torchtree/inference/hmc/index
+   /autoapi/torchtree/inference/mcmc/index
    /autoapi/torchtree/inference/sampler/index
    /autoapi/torchtree/inference/utils/index
 

@@ -31,6 +31,23 @@ Module Contents
    :type modules: List[Module]
 
 
+   .. py:attribute:: x
+
+
+   .. py:attribute:: base
+
+
+   .. py:attribute:: modules
+
+
+   .. py:attribute:: layers
+
+
+   .. py:attribute:: sum_log_abs_det_jacobians
+      :value: None
+
+
+
    .. py:method:: forward(x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]
 
 

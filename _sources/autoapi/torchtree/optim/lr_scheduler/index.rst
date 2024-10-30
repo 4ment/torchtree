@@ -25,6 +25,9 @@ Module Contents
    :param scheduler: a :class:`~torch.optim.lr_scheduler`
 
 
+   .. py:attribute:: scheduler
+
+
    .. py:method:: step(*args) -> None
 
 

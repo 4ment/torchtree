@@ -27,6 +27,15 @@ Module Contents
    class is abstract.
 
 
+   .. py:attribute:: taxa
+
+
+   .. py:attribute:: data_type
+
+
+   .. py:attribute:: attribute
+
+
    .. py:method:: compute_tips_states()
 
 

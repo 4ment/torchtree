@@ -62,6 +62,39 @@ Module Contents
    :param validate_args:
 
 
+   .. py:attribute:: tree_model
+
+
+   .. py:attribute:: R
+
+
+   .. py:attribute:: delta
+
+
+   .. py:attribute:: s
+
+
+   .. py:attribute:: rho
+
+
+   .. py:attribute:: origin
+
+
+   .. py:attribute:: times
+
+
+   .. py:attribute:: relative_times
+
+
+   .. py:attribute:: survival
+
+
+   .. py:attribute:: origin_is_root_edge
+
+
+   .. py:attribute:: removal_probability
+
+
    .. py:method:: from_json(data, dic)
       :classmethod:
 
@@ -99,8 +132,46 @@ Module Contents
 
    .. py:attribute:: arg_constraints
 
+      Returns a dictionary from argument names to
+      :class:`~torch.distributions.constraints.Constraint` objects that
+      should be satisfied by each argument of this distribution. Args that
+      are not tensors need not appear in this dict.
+
 
    .. py:attribute:: support
+
+      Returns a :class:`~torch.distributions.constraints.Constraint` object
+      representing this distribution's support.
+
+
+   .. py:attribute:: lambda_
+
+
+   .. py:attribute:: mu
+
+
+   .. py:attribute:: psi
+
+
+   .. py:attribute:: rho
+
+
+   .. py:attribute:: times
+
+
+   .. py:attribute:: origin
+
+
+   .. py:attribute:: relative_times
+
+
+   .. py:attribute:: survival
+
+
+   .. py:attribute:: origin_is_root_edge
+
+
+   .. py:attribute:: removal_probability
 
 
    .. py:method:: log_q(A, B, t, t_i)

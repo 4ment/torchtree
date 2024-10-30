@@ -34,6 +34,18 @@ Module Contents
     via :math:`\chi` Upper Bound Minimization
 
 
+   .. py:attribute:: q
+
+
+   .. py:attribute:: p
+
+
+   .. py:attribute:: n
+
+
+   .. py:attribute:: samples
+
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 

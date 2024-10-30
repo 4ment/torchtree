@@ -33,8 +33,16 @@ Module Contents
 
    .. py:attribute:: arg_constraints
 
+      Returns a dictionary from argument names to
+      :class:`~torch.distributions.constraints.Constraint` objects that
+      should be satisfied by each argument of this distribution. Args that
+      are not tensors need not appear in this dict.
+
 
    .. py:attribute:: support
+
+      Returns a :class:`~torch.distributions.constraints.Constraint` object
+      representing this distribution's support.
 
 
    .. py:method:: log_prob(value: torch.Tensor) -> torch.Tensor

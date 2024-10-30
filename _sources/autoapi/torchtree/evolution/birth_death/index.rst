@@ -31,6 +31,27 @@ Module Contents
    :param survival: condition on observing at least one sample
 
 
+   .. py:attribute:: tree_model
+
+
+   .. py:attribute:: lambda_
+
+
+   .. py:attribute:: mu
+
+
+   .. py:attribute:: psi
+
+
+   .. py:attribute:: rho
+
+
+   .. py:attribute:: origin
+
+
+   .. py:attribute:: survival
+
+
    .. py:method:: handle_model_changed(model, obj, index)
 
 
@@ -65,6 +86,29 @@ Module Contents
 
 
    .. py:attribute:: arg_constraints
+
+      Returns a dictionary from argument names to
+      :class:`~torch.distributions.constraints.Constraint` objects that
+      should be satisfied by each argument of this distribution. Args that
+      are not tensors need not appear in this dict.
+
+
+   .. py:attribute:: lambda_
+
+
+   .. py:attribute:: mu
+
+
+   .. py:attribute:: psi
+
+
+   .. py:attribute:: rho
+
+
+   .. py:attribute:: origin
+
+
+   .. py:attribute:: survival
 
 
    .. py:method:: log_q(A, B, t, t_i)

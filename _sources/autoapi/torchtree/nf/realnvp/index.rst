@@ -32,6 +32,12 @@ Module Contents
    Modified RealNVP Coupling Layers per the MAF paper.
 
 
+   .. py:attribute:: s_net
+
+
+   .. py:attribute:: t_net
+
+
    .. py:method:: forward(x, y=None)
 
 
@@ -44,6 +50,18 @@ Module Contents
 
 
    RealNVP BatchNorm layer.
+
+
+   .. py:attribute:: momentum
+
+
+   .. py:attribute:: eps
+
+
+   .. py:attribute:: log_gamma
+
+
+   .. py:attribute:: beta
 
 
    .. py:method:: forward(x, cond_y=None)
@@ -82,6 +100,26 @@ Module Contents
    :param n_hidden:
    :param cond_label_size:
    :param batch_norm:
+
+
+   .. py:attribute:: x
+
+
+   .. py:attribute:: base_dist
+
+
+   .. py:attribute:: sum_log_abs_det_jacobians
+      :value: None
+
+
+
+   .. py:attribute:: input_size
+
+
+   .. py:attribute:: net
+
+
+   .. py:attribute:: net_parameters
 
 
    .. py:method:: forward(x, y=None)

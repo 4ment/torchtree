@@ -36,8 +36,14 @@ Module Contents
    :param Tensor tensor: Tensor object.
 
 
+   .. py:attribute:: listeners
+      :value: []
+
+
+
    .. py:property:: tensor
       :type: torch.Tensor
+
 
       The tensor.
 
@@ -48,6 +54,7 @@ Module Contents
 
    .. py:property:: requires_grad
       :type: bool
+
 
       Is True if gradients need to be computed for this Tensor, False otherwise.
 
@@ -60,6 +67,7 @@ Module Contents
 
 
    .. py:property:: grad_fn
+
       The grad_fn property of the tensor.
 
       :rtype: torch.autograd.graph.node
@@ -78,6 +86,7 @@ Module Contents
 
    .. py:property:: grad
       :type: torch.Tensor
+
 
       The grad property of the Tensor.
 
@@ -239,6 +248,19 @@ Module Contents
    :type transform: torch.distributions.Transform
 
 
+   .. py:attribute:: transform
+
+
+   .. py:attribute:: need_update
+      :value: False
+
+
+
+   .. py:attribute:: listeners
+      :value: []
+
+
+
    .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]
 
       Returns parameters of instance Parameter.
@@ -247,6 +269,7 @@ Module Contents
 
    .. py:property:: tensor
       :type: torch.Tensor
+
 
       The tensor.
 
@@ -258,6 +281,7 @@ Module Contents
    .. py:property:: requires_grad
       :type: bool
 
+
       Is True if gradients need to be computed for this Tensor, False otherwise.
 
       :getter: Returns the flag.
@@ -267,6 +291,7 @@ Module Contents
 
    .. py:property:: shape
       :type: torch.Size
+
 
       The shape of the tensor.
 
@@ -375,8 +400,20 @@ Module Contents
    :param indices: indices used on parameter
 
 
+   .. py:attribute:: parameter
+
+
+   .. py:attribute:: indices
+
+
+   .. py:attribute:: listeners
+      :value: []
+
+
+
    .. py:property:: tensor
       :type: torch.Tensor
+
 
       The tensor.
 
@@ -388,6 +425,7 @@ Module Contents
    .. py:property:: shape
       :type: torch.Size
 
+
       The shape of the tensor.
 
       :rtype: Size
@@ -396,6 +434,7 @@ Module Contents
    .. py:property:: dtype
       :type: torch.dtype
 
+
       The dtype of the tensor.
 
       :rtype: torch.dtype
@@ -403,6 +442,7 @@ Module Contents
 
    .. py:property:: requires_grad
       :type: bool
+
 
       Is True if gradients need to be computed for this Tensor, False otherwise.
 
@@ -486,6 +526,7 @@ Module Contents
    .. py:property:: tensor
       :type: torch.Tensor
 
+
       The tensor.
 
       :getter: Returns the tensor.
@@ -495,6 +536,7 @@ Module Contents
 
    .. py:property:: requires_grad
       :type: bool
+
 
       Is True if gradients need to be computed for this Tensor, False otherwise.
 
@@ -523,6 +565,7 @@ Module Contents
 
    .. py:property:: device
       :type: torch.device
+
 
       Returns the torch.device where the Tensor is.
 
@@ -563,6 +606,19 @@ Module Contents
    Abstract base class for parameters.
 
 
+   .. py:attribute:: need_update
+      :value: False
+
+
+
+   .. py:attribute:: module
+
+
+   .. py:attribute:: listeners
+      :value: []
+
+
+
    .. py:method:: parameters() -> list[torchtree.core.abstractparameter.AbstractParameter]
 
       Returns parameters of instance Parameter.
@@ -571,6 +627,7 @@ Module Contents
 
    .. py:property:: tensor
       :type: torch.Tensor
+
 
       The tensor.
 
@@ -582,6 +639,7 @@ Module Contents
    .. py:property:: requires_grad
       :type: bool
 
+
       Is True if gradients need to be computed for this Tensor, False otherwise.
 
       :getter: Returns the flag.
@@ -591,6 +649,7 @@ Module Contents
 
    .. py:property:: shape
       :type: torch.Size
+
 
       The shape of the tensor.
 

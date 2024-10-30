@@ -27,6 +27,27 @@ Module Contents
    class is abstract.
 
 
+   .. py:attribute:: data_type
+
+
+   .. py:attribute:: alpha
+
+
+   .. py:attribute:: beta
+
+
+   .. py:attribute:: kappa
+
+
+   .. py:attribute:: synonymous
+
+
+   .. py:attribute:: non_synonymous
+
+
+   .. py:attribute:: transitions
+
+
    .. py:method:: q() -> torch.Tensor
 
 

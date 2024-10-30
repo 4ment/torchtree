@@ -30,6 +30,25 @@ Module Contents
    :param float shift: shift root height by this amount. Used by serially sampled trees
 
 
+   .. py:attribute:: distance
+
+
+   .. py:attribute:: rate
+
+
+   .. py:attribute:: shift
+
+
+   .. py:attribute:: need_update
+      :value: False
+
+
+
+   .. py:attribute:: listeners
+      :value: []
+
+
+
    .. py:method:: parameters() -> list[torchtree.core.parameter.Parameter]
 
       Returns parameters of instance Parameter.
@@ -38,6 +57,7 @@ Module Contents
 
    .. py:property:: tensor
       :type: torch.Tensor
+
 
       The tensor.
 

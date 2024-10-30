@@ -28,6 +28,15 @@ Module Contents
    :param str or None id_: identifier of object
 
 
+   .. py:attribute:: parameters
+
+
+   .. py:attribute:: weight
+
+
+   .. py:attribute:: target_acceptance_probability
+
+
    .. py:property:: tuning_parameter
       :type: float
 

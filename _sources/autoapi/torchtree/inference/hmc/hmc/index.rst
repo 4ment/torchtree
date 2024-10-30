@@ -26,6 +26,39 @@ Module Contents
    :meth:`~torch.core.serializable.JSONSerializable.from_json` abstract method.
 
 
+   .. py:attribute:: parameters
+
+
+   .. py:attribute:: joint
+
+
+   .. py:attribute:: iterations
+
+
+   .. py:attribute:: integrator
+
+
+   .. py:attribute:: dimension
+
+
+   .. py:attribute:: warmup_adaptor
+
+
+   .. py:attribute:: loggers
+
+
+   .. py:attribute:: checkpoint
+
+
+   .. py:attribute:: checkpoint_frequency
+
+
+   .. py:attribute:: every
+
+
+   .. py:attribute:: find_step_size
+
+
    .. py:method:: sample_momentum(params)
 
 

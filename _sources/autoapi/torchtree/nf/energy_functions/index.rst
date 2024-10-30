@@ -44,6 +44,12 @@ Module Contents
    recompute it.
 
 
+   .. py:attribute:: x
+
+
+   .. py:attribute:: desc
+
+
    .. py:method:: handle_model_changed(model, obj, index)
 
 

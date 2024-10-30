@@ -16,27 +16,29 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css?v=a5c4661c" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
@@ -49,6 +51,7 @@
     <link rel="prev" title="torchtree.optim" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -64,19 +67,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../../search.html"
       method="get">
@@ -84,7 +76,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -92,8 +83,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -109,7 +100,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -139,15 +131,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -205,14 +193,6 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../evolution/index.html">torchtree.evolution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
-</ul>
-</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/alignment/index.html">torchtree.evolution.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/attribute_pattern/index.html">torchtree.evolution.attribute_pattern</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/bdsk/index.html">torchtree.evolution.bdsk</a></li>
@@ -226,6 +206,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/root_transform/index.html">torchtree.evolution.root_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/site_model/index.html">torchtree.evolution.site_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/site_pattern/index.html">torchtree.evolution.site_pattern</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
+</ul>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/taxa/index.html">torchtree.evolution.taxa</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/tree_height_transform/index.html">torchtree.evolution.tree_height_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../evolution/tree_likelihood/index.html">torchtree.evolution.tree_likelihood</a></li>
@@ -277,14 +265,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../optimizer/index.html">torchtree.optim.optimizer</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../torchtree/index.html">torchtree.torchtree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../typing/index.html">torchtree.typing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../variational/index.html">torchtree.variational</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../variational/chi/index.html">torchtree.variational.chi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../variational/kl/index.html">torchtree.variational.kl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../variational/renyi/index.html">torchtree.variational.renyi</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../../torchtree/index.html">torchtree.torchtree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../typing/index.html">torchtree.typing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bibliography/bib.html">Bibliography</a></li>
@@ -362,24 +350,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -410,11 +390,24 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.loss"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.loss</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.every"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.every</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.samples"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.samples</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.start"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.start</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.file_name"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.file_name</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.check"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.check()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.from_json"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.from_json()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.tol_rel_obj"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.tol_rel_obj</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.elbo</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo_best"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.elbo_best</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo_prev"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.elbo_prev</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.delta_elbo</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_ave"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.delta_elbo_ave</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_med"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.delta_elbo_med</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo_diff"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.elbo_diff</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.check"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.check()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.rel_difference"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.rel_difference()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.from_json"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.from_json()</span></code></a></li>
@@ -461,41 +454,66 @@ document.write(`
 <p>Base class for all convergence diagnostic classes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.convergence.BaseConvergence.check">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#BaseConvergence.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.BaseConvergence.check" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#BaseConvergence.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.BaseConvergence.check" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="torchtree.optim.convergence.VariationalConvergence">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.optim.convergence.</span></span><span class="sig-name descname"><span class="pre">VariationalConvergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">every</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#VariationalConvergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.optim.convergence.</span></span><span class="sig-name descname"><span class="pre">VariationalConvergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">every</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#VariationalConvergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.optim.convergence.BaseConvergence" title="torchtree.optim.convergence.BaseConvergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseConvergence</span></code></a></p>
 <p>Class that does not check for convergence but output ELBO.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>loss</strong> – ELBO function</p></li>
-<li><p><strong>every</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – evaluate ELBO at every “every” iteration</p></li>
+<li><p><strong>every</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – evaluate ELBO at every “every” iteration</p></li>
 <li><p><strong>samples</strong> (<em>torch.Size</em>) – number of samples for ELBO calculation</p></li>
-<li><p><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – start checking at iteration number “start (Default is 0)”</p></li>
-<li><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – print to file_name or print to sys.stdout if file_name is None</p></li>
+<li><p><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – start checking at iteration number “start (Default is 0)”</p></li>
+<li><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – print to file_name or print to sys.stdout if file_name is None</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.VariationalConvergence.loss">
+<span class="sig-name descname"><span class="pre">loss</span></span><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence.loss" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.VariationalConvergence.every">
+<span class="sig-name descname"><span class="pre">every</span></span><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence.every" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.VariationalConvergence.samples">
+<span class="sig-name descname"><span class="pre">samples</span></span><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence.samples" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.VariationalConvergence.start">
+<span class="sig-name descname"><span class="pre">start</span></span><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence.start" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.VariationalConvergence.file_name">
+<span class="sig-name descname"><span class="pre">file_name</span></span><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence.file_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.convergence.VariationalConvergence.check">
-<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#VariationalConvergence.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence.check" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#VariationalConvergence.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence.check" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.convergence.VariationalConvergence.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.optim.convergence.VariationalConvergence" title="torchtree.optim.convergence.VariationalConvergence"><span class="pre">VariationalConvergence</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#VariationalConvergence.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence.from_json" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.optim.convergence.VariationalConvergence" title="torchtree.optim.convergence.VariationalConvergence"><span class="pre">VariationalConvergence</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#VariationalConvergence.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.VariationalConvergence.from_json" title="Link to this definition">#</a></dt>
 <dd><p>Abstract method to create object from a dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
-<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
 by their ID.</p></li>
 </ul>
 </dd>
@@ -512,7 +530,7 @@ by their ID.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.optim.convergence.</span></span><span class="sig-name descname"><span class="pre">StanVariationalConvergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">every</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol_rel_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#StanVariationalConvergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.optim.convergence.</span></span><span class="sig-name descname"><span class="pre">StanVariationalConvergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><span class="pre">torchtree.core.model.CallableModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">every</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol_rel_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#StanVariationalConvergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#torchtree.optim.convergence.VariationalConvergence" title="torchtree.optim.convergence.VariationalConvergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VariationalConvergence</span></code></a></p>
 <p>Class for checking SGD convergence using Stan’s algorithm.</p>
 <dl class="simple">
@@ -523,23 +541,63 @@ by their ID.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>loss</strong> (<a class="reference internal" href="../../core/model/index.html#torchtree.core.model.CallableModel" title="torchtree.core.model.CallableModel"><em>CallableModel</em></a>) – ELBO function</p></li>
-<li><p><strong>every</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – evaluate ELBO at every “every” iteration</p></li>
-<li><p><strong>samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – number of samples for ELBO calculation</p></li>
-<li><p><strong>max_iterations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – maximum number of iterations</p></li>
-<li><p><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – start checking at iteration number “start” (Default is 0)</p></li>
-<li><p><strong>tol_rel_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – relative tolerance parameter for convergence
+<li><p><strong>every</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – evaluate ELBO at every “every” iteration</p></li>
+<li><p><strong>samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – number of samples for ELBO calculation</p></li>
+<li><p><strong>max_iterations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – maximum number of iterations</p></li>
+<li><p><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – start checking at iteration number “start” (Default is 0)</p></li>
+<li><p><strong>tol_rel_obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – relative tolerance parameter for convergence
 (Default is 0.01)</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.tol_rel_obj">
+<span class="sig-name descname"><span class="pre">tol_rel_obj</span></span><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.tol_rel_obj" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.elbo">
+<span class="sig-name descname"><span class="pre">elbo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.elbo_best">
+<span class="sig-name descname"><span class="pre">elbo_best</span></span><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo_best" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.elbo_prev">
+<span class="sig-name descname"><span class="pre">elbo_prev</span></span><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo_prev" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.delta_elbo">
+<span class="sig-name descname"><span class="pre">delta_elbo</span></span><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_ave">
+<span class="sig-name descname"><span class="pre">delta_elbo_ave</span></span><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_ave" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_med">
+<span class="sig-name descname"><span class="pre">delta_elbo_med</span></span><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_med" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.elbo_diff">
+<span class="sig-name descname"><span class="pre">elbo_diff</span></span><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo_diff" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.check">
-<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#StanVariationalConvergence.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.check" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#StanVariationalConvergence.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.check" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.rel_difference">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rel_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#StanVariationalConvergence.rel_difference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.rel_difference" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rel_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#StanVariationalConvergence.rel_difference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.rel_difference" title="Link to this definition">#</a></dt>
 <dd><p>Compute the relative difference between two double values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -556,13 +614,13 @@ by their ID.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="torchtree.optim.convergence.StanVariationalConvergence.from_json">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.optim.convergence.StanVariationalConvergence" title="torchtree.optim.convergence.StanVariationalConvergence"><span class="pre">StanVariationalConvergence</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#StanVariationalConvergence.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.from_json" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#torchtree.optim.convergence.StanVariationalConvergence" title="torchtree.optim.convergence.StanVariationalConvergence"><span class="pre">StanVariationalConvergence</span></a></span></span><a class="reference internal" href="../../../../_modules/torchtree/optim/convergence.html#StanVariationalConvergence.from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.optim.convergence.StanVariationalConvergence.from_json" title="Link to this definition">#</a></dt>
 <dd><p>Abstract method to create object from a dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
-<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary representation of a torchtree object.</p></li>
+<li><p><strong>dic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – dictionary containing other torchtree objects keyed
 by their ID.</p></li>
 </ul>
 </dd>
@@ -616,7 +674,8 @@ by their ID.</p></li>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -632,11 +691,24 @@ by their ID.</p></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.loss"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.loss</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.every"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.every</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.samples"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.samples</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.start"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.start</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.file_name"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.file_name</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.check"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.check()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.VariationalConvergence.from_json"><code class="docutils literal notranslate"><span class="pre">VariationalConvergence.from_json()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.tol_rel_obj"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.tol_rel_obj</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.elbo</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo_best"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.elbo_best</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo_prev"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.elbo_prev</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.delta_elbo</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_ave"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.delta_elbo_ave</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_med"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.delta_elbo_med</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.elbo_diff"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.elbo_diff</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.check"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.check()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.rel_difference"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.rel_difference()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchtree.optim.convergence.StanVariationalConvergence.from_json"><code class="docutils literal notranslate"><span class="pre">StanVariationalConvergence.from_json()</span></code></a></li>
@@ -692,8 +764,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

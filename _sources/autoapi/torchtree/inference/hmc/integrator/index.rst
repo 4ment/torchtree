@@ -54,6 +54,12 @@ Module Contents
    :param str or None id_: identifier of object
 
 
+   .. py:attribute:: steps
+
+
+   .. py:attribute:: step_size
+
+
    .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
 
 

@@ -32,6 +32,15 @@ Module Contents
    :param Parameter b: bias with shape (1)
 
 
+   .. py:attribute:: u
+
+
+   .. py:attribute:: w
+
+
+   .. py:attribute:: b
+
+
    .. py:method:: forward(z: torch.Tensor) -> torch.Tensor
 
 

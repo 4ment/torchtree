@@ -28,6 +28,15 @@ Module Contents
    :type loggers: list[LoggerInterface]
 
 
+   .. py:attribute:: model
+
+
+   .. py:attribute:: samples
+
+
+   .. py:attribute:: loggers
+
+
    .. py:method:: run() -> None
 
       Run sampler: sample and log to loggers.

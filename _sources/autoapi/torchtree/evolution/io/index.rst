@@ -42,6 +42,22 @@ Module Contents
 
 .. py:class:: Node(name, height=0.0)
 
+   .. py:attribute:: name
+
+
+   .. py:attribute:: height
+
+
+   .. py:attribute:: parent
+      :value: None
+
+
+
+   .. py:attribute:: children
+      :value: []
+
+
+
 .. py:function:: random_tree_from_heights(sampling: torch.Tensor, heights: torch.Tensor) -> Node
 
 .. py:function:: parse_translate(fp)

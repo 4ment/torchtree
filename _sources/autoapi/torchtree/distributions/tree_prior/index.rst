@@ -38,6 +38,21 @@ Module Contents
    .. footbibliography::
 
 
+   .. py:attribute:: tree_model
+
+
+   .. py:attribute:: alpha
+
+
+   .. py:attribute:: c
+
+
+   .. py:attribute:: shape
+
+
+   .. py:attribute:: rate
+
+
    .. py:method:: handle_parameter_changed(variable, index, event) -> None
 
 

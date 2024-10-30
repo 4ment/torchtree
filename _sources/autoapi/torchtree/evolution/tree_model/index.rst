@@ -92,6 +92,12 @@ Module Contents
    class is abstract.
 
 
+   .. py:attribute:: tree
+
+
+   .. py:attribute:: taxa_count
+
+
    .. py:method:: update_traversals() -> None
 
 
@@ -172,6 +178,24 @@ Module Contents
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
+
+   .. py:attribute:: taxa_count
+
+
+   .. py:attribute:: sampling_times
+      :value: None
+
+
+
+   .. py:attribute:: branch_lengths_need_update
+      :value: True
+
+
+
+   .. py:attribute:: heights_need_update
+      :value: True
+
 
 
    .. py:method:: update_leaf_heights() -> None

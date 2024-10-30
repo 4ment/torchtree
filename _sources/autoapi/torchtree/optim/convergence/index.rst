@@ -44,6 +44,21 @@ Module Contents
    :param str file_name: print to file_name or print to sys.stdout if file_name is None
 
 
+   .. py:attribute:: loss
+
+
+   .. py:attribute:: every
+
+
+   .. py:attribute:: samples
+
+
+   .. py:attribute:: start
+
+
+   .. py:attribute:: file_name
+
+
    .. py:method:: check(iteration: int, *args, **kwargs) -> bool
 
 
@@ -78,6 +93,32 @@ Module Contents
    :param int start: start checking at iteration number "start" (Default is 0)
    :param float tol_rel_obj: relative tolerance parameter for convergence
     (Default is 0.01)
+
+
+   .. py:attribute:: tol_rel_obj
+
+
+   .. py:attribute:: elbo
+      :value: 0.0
+
+
+
+   .. py:attribute:: elbo_best
+
+
+   .. py:attribute:: elbo_prev
+
+
+   .. py:attribute:: delta_elbo
+
+
+   .. py:attribute:: delta_elbo_ave
+
+
+   .. py:attribute:: delta_elbo_med
+
+
+   .. py:attribute:: elbo_diff
 
 
    .. py:method:: check(iteration: int, *args, **kwargs) -> bool

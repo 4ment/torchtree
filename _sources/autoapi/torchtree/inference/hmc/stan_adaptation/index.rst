@@ -33,6 +33,32 @@ Module Contents
    :param int base window: initial width of slow adaptation interval
 
 
+   .. py:attribute:: num_warmup
+      :value: 0
+
+
+
+   .. py:attribute:: adapt_init_buffer
+      :value: 0
+
+
+
+   .. py:attribute:: adapt_term_buffer
+      :value: 0
+
+
+
+   .. py:attribute:: adapt_base_window
+      :value: 0
+
+
+
+   .. py:attribute:: step_size_adaptor
+
+
+   .. py:attribute:: mass_matrix_adaptor
+
+
    .. py:method:: restart()
 
 

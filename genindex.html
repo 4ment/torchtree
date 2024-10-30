@@ -15,38 +15,40 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
-    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="_static/documentation_options.js?v=5549cc85"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/tabs.js?v=3030b3cb"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -62,19 +64,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -82,7 +73,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -90,8 +80,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -109,7 +99,8 @@
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -139,15 +130,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -205,14 +192,6 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/torchtree/evolution/index.html">torchtree.evolution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
-</ul>
-</details></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/evolution/alignment/index.html">torchtree.evolution.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/evolution/attribute_pattern/index.html">torchtree.evolution.attribute_pattern</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/evolution/bdsk/index.html">torchtree.evolution.bdsk</a></li>
@@ -226,6 +205,14 @@
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/evolution/root_transform/index.html">torchtree.evolution.root_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/evolution/site_model/index.html">torchtree.evolution.site_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/evolution/site_pattern/index.html">torchtree.evolution.site_pattern</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/torchtree/evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
+</ul>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/evolution/taxa/index.html">torchtree.evolution.taxa</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/evolution/tree_height_transform/index.html">torchtree.evolution.tree_height_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/evolution/tree_likelihood/index.html">torchtree.evolution.tree_likelihood</a></li>
@@ -277,14 +264,14 @@
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/optim/optimizer/index.html">torchtree.optim.optimizer</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/torchtree/torchtree/index.html">torchtree.torchtree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autoapi/torchtree/typing/index.html">torchtree.typing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/torchtree/variational/index.html">torchtree.variational</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/variational/chi/index.html">torchtree.variational.chi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/variational/kl/index.html">torchtree.variational.kl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/variational/renyi/index.html">torchtree.variational.renyi</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/torchtree/torchtree/index.html">torchtree.torchtree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="autoapi/torchtree/typing/index.html">torchtree.typing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="bibliography/bib.html">Bibliography</a></li>
@@ -362,24 +349,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 
 </div></div>
       
@@ -432,6 +411,7 @@ document.write(`
  | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
+ | <a href="#X"><strong>X</strong></a>
  | <a href="#Z"><strong>Z</strong></a>
  
 </div>
@@ -453,6 +433,12 @@ document.write(`
       <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.AbstractTreeModel">AbstractTreeModel (class in torchtree.evolution.tree_model)</a>
 </li>
       <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator.accept">accept() (torchtree.inference.mcmc.operator.MCMCOperator method)</a>
+</li>
+      <li><a href="autoapi/torchtree/inference/hmc/stan_adaptation/index.html#torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation.adapt_base_window">adapt_base_window (torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/inference/hmc/stan_adaptation/index.html#torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation.adapt_init_buffer">adapt_init_buffer (torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/inference/hmc/stan_adaptation/index.html#torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation.adapt_term_buffer">adapt_term_buffer (torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator.adaptable_parameter">adaptable_parameter (torchtree.inference.mcmc.operator.MCMCOperator property)</a>
 </li>
@@ -496,17 +482,35 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/root_transform/index.html#torchtree.evolution.root_transform.RootParameter.add_parameter_listener">(torchtree.evolution.root_transform.RootParameter method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/ops/welford/index.html#torchtree.ops.welford.WelfordVariance.add_sample">add_sample() (torchtree.ops.welford.WelfordVariance method)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/alignment/index.html#torchtree.evolution.alignment.Alignment">Alignment (class in torchtree.evolution.alignment)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/site_pattern/index.html#torchtree.evolution.site_pattern.SitePattern.alignment">alignment (torchtree.evolution.site_pattern.SitePattern attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/distributions/bayesian_bridge/index.html#torchtree.distributions.bayesian_bridge.BayesianBridge.alpha">alpha (torchtree.distributions.bayesian_bridge.BayesianBridge attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/tree_prior/index.html#torchtree.distributions.tree_prior.CompoundGammaDirichletPrior.alpha">(torchtree.distributions.tree_prior.CompoundGammaDirichletPrior attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.alpha">(torchtree.evolution.coalescent.ConstantCoalescentIntegrated attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.alpha">(torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/codon/index.html#torchtree.evolution.substitution_model.codon.MG94.alpha">(torchtree.evolution.substitution_model.codon.MG94 attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/renyi/index.html#torchtree.variational.renyi.VR.alpha">(torchtree.variational.renyi.VR attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.AlternativeAttributeError">AlternativeAttributeError</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.GeneralDataType.ambiguities">ambiguities (torchtree.evolution.datatype.GeneralDataType attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.AminoAcidDataType.AMINO_ACIDS">AMINO_ACIDS (torchtree.evolution.datatype.AminoAcidDataType attribute)</a>
 </li>
-      <li><a href="autoapi/torchtree/evolution/datatype/index.html#id0">AMINO_ACIDS_AMBIGUITY_STATES (torchtree.evolution.datatype.AminoAcidDataType attribute)</a>, <a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.AminoAcidDataType.AMINO_ACIDS_AMBIGUITY_STATES">[1]</a>
+      <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.AminoAcidDataType.AMINO_ACIDS_AMBIGUITY_STATES">AMINO_ACIDS_AMBIGUITY_STATES (torchtree.evolution.datatype.AminoAcidDataType attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.AminoAcidDataType.AMINO_ACIDS_STATES">AMINO_ACIDS_STATES (torchtree.evolution.datatype.AminoAcidDataType attribute)</a>
 </li>
@@ -554,6 +558,8 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ViewParameter.assign">assign() (torchtree.core.parameter.ViewParameter method)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/attribute_pattern/index.html#torchtree.evolution.attribute_pattern.AttributePattern.attribute">attribute (torchtree.evolution.attribute_pattern.AttributePattern attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/attribute_pattern/index.html#torchtree.evolution.attribute_pattern.AttributePattern">AttributePattern (class in torchtree.evolution.attribute_pattern)</a>
 </li>
   </ul></td>
@@ -562,6 +568,12 @@ document.write(`
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/nf/planar/index.html#torchtree.nf.planar.PlanarTransform.b">b (torchtree.nf.planar.PlanarTransform attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/nf/flow/index.html#torchtree.nf.flow.NormalizingFlow.base">base (torchtree.nf.flow.NormalizingFlow attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.RealNVP.base_dist">base_dist (torchtree.nf.realnvp.RealNVP attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.BaseConvergence">BaseConvergence (class in torchtree.optim.convergence)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/deterministic_normal/index.html#torchtree.distributions.deterministic_normal.DeterministicNormal.batch_shape">batch_shape (torchtree.distributions.deterministic_normal.DeterministicNormal property)</a>
@@ -579,6 +591,20 @@ document.write(`
       <li><a href="autoapi/torchtree/distributions/bayesian_bridge/index.html#torchtree.distributions.bayesian_bridge.BayesianBridge">BayesianBridge (class in torchtree.distributions.bayesian_bridge)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel">BDSKModel (class in torchtree.evolution.bdsk)</a>
+</li>
+      <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRFCovariate.beta">beta (torchtree.distributions.gmrf.GMRFCovariate attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.beta">(torchtree.evolution.coalescent.ConstantCoalescentIntegrated attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.beta">(torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/codon/index.html#torchtree.evolution.substitution_model.codon.MG94.beta">(torchtree.evolution.substitution_model.codon.MG94 attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.BatchNorm.beta">(torchtree.nf.realnvp.BatchNorm attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.LinearTransform.bias">bias (torchtree.distributions.transforms.LinearTransform attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.CumSumExpTransform.bijective">bijective (torchtree.distributions.transforms.CumSumExpTransform attribute)</a>
 
@@ -608,6 +634,8 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeathModel">BirthDeathModel (class in torchtree.evolution.birth_death)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/branch_model/index.html#torchtree.evolution.branch_model.StrictClockModel.branch_count">branch_count (torchtree.evolution.branch_model.StrictClockModel attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.branch_lengths">branch_lengths() (torchtree.evolution.tree_model.TimeTreeModel method)</a>
 
       <ul>
@@ -616,6 +644,8 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.UnRootedTreeModel.branch_lengths">(torchtree.evolution.tree_model.UnRootedTreeModel method)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.branch_lengths_need_update">branch_lengths_need_update (torchtree.evolution.tree_model.TimeTreeModel attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/branch_model/index.html#torchtree.evolution.branch_model.BranchModel">BranchModel (class in torchtree.evolution.branch_model)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.build_advi">build_advi() (in module torchtree.cli.advi)</a>
@@ -634,6 +664,8 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/distributions/tree_prior/index.html#torchtree.distributions.tree_prior.CompoundGammaDirichletPrior.c">c (torchtree.distributions.tree_prior.CompoundGammaDirichletPrior attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/alignment/index.html#torchtree.evolution.alignment.calculate_F3x4">calculate_F3x4() (in module torchtree.evolution.alignment)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/alignment/index.html#torchtree.evolution.alignment.calculate_F3x4_from_nucleotide">calculate_F3x4_from_nucleotide() (in module torchtree.evolution.alignment)</a>
@@ -680,8 +712,34 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.check_arguments">check_arguments() (in module torchtree.cli.evolution)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.checkpoint">checkpoint (torchtree.inference.hmc.hmc.HMC attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.checkpoint">(torchtree.inference.mcmc.mcmc.MCMC attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.checkpoint">(torchtree.optim.optimizer.Optimizer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.checkpoint_all">checkpoint_all (torchtree.optim.optimizer.Optimizer attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.checkpoint_frequency">checkpoint_frequency (torchtree.inference.hmc.hmc.HMC attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.checkpoint_frequency">(torchtree.inference.mcmc.mcmc.MCMC attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.checkpoint_frequency">(torchtree.optim.optimizer.Optimizer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/evolution/io/index.html#torchtree.evolution.io.Node.children">children (torchtree.evolution.io.Node attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/core/classproperty_decorator/index.html#torchtree.core.classproperty_decorator.classproperty">classproperty (class in torchtree.core.classproperty_decorator)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/poisson_tree_likelihood/index.html#torchtree.evolution.poisson_tree_likelihood.PoissonTreeLikelihood.clock_model">clock_model (torchtree.evolution.poisson_tree_likelihood.PoissonTreeLikelihood attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.clock_model">(torchtree.evolution.tree_likelihood.TreeLikelihoodModel attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.clone">clone() (torchtree.core.parameter.Parameter method)</a>
 
       <ul>
@@ -698,7 +756,11 @@ document.write(`
         <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.TreeLogger.close">(torchtree.core.logger.TreeLogger method)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html#torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator.coalescent">coalescent (torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.COALESCENT_PIECEWISE">COALESCENT_PIECEWISE (in module torchtree.cli.evolution)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.GeneralDataType.codes">codes (torchtree.evolution.datatype.GeneralDataType attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.ConvexCombinationTransform.codomain">codomain (torchtree.distributions.transforms.ConvexCombinationTransform attribute)</a>
 
@@ -719,6 +781,8 @@ document.write(`
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.CodonDataType.CODON_TRIPLETS">CODON_TRIPLETS (torchtree.evolution.datatype.CodonDataType attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.CodonDataType">CodonDataType (class in torchtree.evolution.datatype)</a>
+</li>
+      <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.SELBO.components">components (torchtree.variational.kl.SELBO attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/tree_prior/index.html#torchtree.distributions.tree_prior.CompoundGammaDirichletPrior">CompoundGammaDirichletPrior (class in torchtree.distributions.tree_prior)</a>
 </li>
@@ -742,6 +806,8 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/distributions/inverse_gamma/index.html#torchtree.distributions.inverse_gamma.InverseGamma.concentration">concentration (torchtree.distributions.inverse_gamma.InverseGamma property)</a>
 </li>
+      <li><a href="autoapi/torchtree/distributions/gmrf_integrated/index.html#torchtree.distributions.gmrf_integrated.GMRFGammaIntegrated.constant_term">constant_term (torchtree.distributions.gmrf_integrated.GMRFGammaIntegrated attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescent">ConstantCoalescent (class in torchtree.evolution.coalescent)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegrated">ConstantCoalescentIntegrated (class in torchtree.evolution.coalescent)</a>
@@ -758,7 +824,11 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/core/container/index.html#torchtree.core.container.Container">Container (class in torchtree.core.container)</a>
 </li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.ContainerLogger.container">container (torchtree.core.logger.ContainerLogger attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.ContainerLogger">ContainerLogger (class in torchtree.core.logger)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.convergence">convergence (torchtree.optim.optimizer.Optimizer attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/utils/index.html#torchtree.cli.utils.convert_date_to_real">convert_date_to_real() (in module torchtree.cli.utils)</a>
 </li>
@@ -767,6 +837,8 @@ document.write(`
       <li><a href="autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.ConvexCombinationTransform">ConvexCombinationTransform (class in torchtree.distributions.transforms)</a>
 </li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.copy_">copy_() (torchtree.core.parameter.Parameter method)</a>
+</li>
+      <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRFCovariate.covariates">covariates (torchtree.distributions.gmrf.GMRFCovariate attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/core/abstractparameter/index.html#torchtree.core.abstractparameter.Device.cpu">cpu() (torchtree.core.abstractparameter.Device method)</a>
 
@@ -808,6 +880,8 @@ document.write(`
         <li><a href="autoapi/torchtree/nn/module/index.html#torchtree.nn.module.Module.cpu">(torchtree.nn.module.Module method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_advi">create_advi() (in module torchtree.cli.advi)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_alignment">create_alignment() (in module torchtree.cli.evolution)</a>
@@ -816,8 +890,6 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_bdsk">create_bdsk() (in module torchtree.cli.evolution)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_bdsk_prior">create_bdsk_prior() (in module torchtree.cli.evolution)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.create_birth_death">create_birth_death() (in module torchtree.cli.evolution)</a>
@@ -997,7 +1069,17 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/evolution/alignment/index.html#torchtree.evolution.alignment.Alignment.data_type">data_type (torchtree.evolution.alignment.Alignment property)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/attribute_pattern/index.html#torchtree.evolution.attribute_pattern.AttributePattern.data_type">(torchtree.evolution.attribute_pattern.AttributePattern attribute)</a>
 </li>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/codon/index.html#torchtree.evolution.substitution_model.codon.MG94.data_type">(torchtree.evolution.substitution_model.codon.MG94 attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralNonSymmetricSubstitutionModel.data_type">(torchtree.evolution.substitution_model.general.GeneralNonSymmetricSubstitutionModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralSymmetricSubstitutionModel.data_type">(torchtree.evolution.substitution_model.general.GeneralSymmetricSubstitutionModel attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.DataType">DataType (class in torchtree.evolution.datatype)</a>
 </li>
       <li><a href="autoapi/torchtree/core/parameter_encoder/index.html#torchtree.core.parameter_encoder.ParameterEncoder.default">default() (torchtree.core.parameter_encoder.ParameterEncoder method)</a>
@@ -1006,6 +1088,16 @@ document.write(`
         <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.TensorEncoder.default">(torchtree.core.utils.TensorEncoder method)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.delta">delta (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo">delta_elbo (torchtree.optim.convergence.StanVariationalConvergence attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_ave">delta_elbo_ave (torchtree.optim.convergence.StanVariationalConvergence attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence.delta_elbo_med">delta_elbo_med (torchtree.optim.convergence.StanVariationalConvergence attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/nf/energy_functions/index.html#torchtree.nf.energy_functions.EnergyFunctionModel.desc">desc (torchtree.nf.energy_functions.EnergyFunctionModel attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.detach">detach() (torchtree.core.parameter.Parameter method)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/deterministic_normal/index.html#torchtree.distributions.deterministic_normal.DeterministicNormal">DeterministicNormal (class in torchtree.distributions.deterministic_normal)</a>
@@ -1020,13 +1112,23 @@ document.write(`
         <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.CatParameter.device">(torchtree.core.parameter.CatParameter property)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/distributions/distributions/index.html#torchtree.distributions.distributions.Distribution.dict_parameters">dict_parameters (torchtree.distributions.distributions.Distribution attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/tree_height_transform/index.html#torchtree.evolution.tree_height_transform.DifferenceNodeHeightTransform">DifferenceNodeHeightTransform (class in torchtree.evolution.tree_height_transform)</a>
 </li>
       <li><a href="autoapi/torchtree/core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter.dim">dim() (torchtree.core.abstractparameter.AbstractParameter method)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.dimension">dimension (torchtree.inference.hmc.hmc.HMC attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.DirichletOperator">DirichletOperator (class in torchtree.inference.mcmc.operator)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/plugin_manager/index.html#torchtree.cli.plugin_manager.PluginManager.disable_plugins">disable_plugins() (torchtree.cli.plugin_manager.PluginManager method)</a>
+</li>
+      <li><a href="autoapi/torchtree/distributions/distributions/index.html#torchtree.distributions.distributions.Distribution.dist">dist (torchtree.distributions.distributions.Distribution attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/evolution/root_transform/index.html#torchtree.evolution.root_transform.RootParameter.distance">distance (torchtree.evolution.root_transform.RootParameter attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/distributions/index.html#torchtree.distributions.distributions.Distribution">Distribution (class in torchtree.distributions.distributions)</a>
 </li>
@@ -1050,11 +1152,13 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel.distribution">(torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/distributions/distributions/index.html#torchtree.distributions.distributions.Distribution.distribution_parameters">distribution_parameters (torchtree.distributions.distributions.Distribution attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.distribution_type">distribution_type() (in module torchtree.cli.evolution)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/distributions/index.html#torchtree.distributions.distributions.DistributionModel">DistributionModel (class in torchtree.distributions.distributions)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.distributions">distributions (torchtree.optim.optimizer.Optimizer attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.ConvexCombinationTransform.domain">domain (torchtree.distributions.transforms.ConvexCombinationTransform attribute)</a>
 
@@ -1090,6 +1194,8 @@ document.write(`
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/evolution/poisson_tree_likelihood/index.html#torchtree.evolution.poisson_tree_likelihood.PoissonTreeLikelihood.edge_lengths">edge_lengths (torchtree.evolution.poisson_tree_likelihood.PoissonTreeLikelihood attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/abstract/index.html#torchtree.evolution.substitution_model.abstract.NonSymmetricSubstitutionModel.eigen">eigen() (torchtree.evolution.substitution_model.abstract.NonSymmetricSubstitutionModel method)</a>
 
       <ul>
@@ -1099,6 +1205,14 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.ELBO">ELBO (class in torchtree.variational.kl)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence.elbo">elbo (torchtree.optim.convergence.StanVariationalConvergence attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence.elbo_best">elbo_best (torchtree.optim.convergence.StanVariationalConvergence attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence.elbo_diff">elbo_diff (torchtree.optim.convergence.StanVariationalConvergence attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence.elbo_prev">elbo_prev (torchtree.optim.convergence.StanVariationalConvergence attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel">EmpiricalSubstitutionModel (class in torchtree.evolution.substitution_model.general)</a>
 </li>
@@ -1116,6 +1230,12 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/nf/energy_functions/index.html#torchtree.nf.energy_functions.EnergyFunctionModel">EnergyFunctionModel (class in torchtree.nf.energy_functions)</a>
 </li>
+      <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.ELBO.entropy">entropy (torchtree.variational.kl.ELBO attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.SELBO.entropy">(torchtree.variational.kl.SELBO attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/distributions/deterministic_normal/index.html#torchtree.distributions.deterministic_normal.DeterministicNormal.entropy">entropy() (torchtree.distributions.deterministic_normal.DeterministicNormal method)</a>
 
       <ul>
@@ -1136,12 +1256,32 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.epidemiology_to_birth_death">epidemiology_to_birth_death() (in module torchtree.evolution.bdsk)</a>
 </li>
+      <li><a href="autoapi/torchtree/distributions/deterministic_normal/index.html#torchtree.distributions.deterministic_normal.DeterministicNormal.eps">eps (torchtree.distributions.deterministic_normal.DeterministicNormal attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.BatchNorm.eps">(torchtree.nf.realnvp.BatchNorm attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/distributions/deterministic_normal/index.html#torchtree.distributions.deterministic_normal.DeterministicNormal.event_shape">event_shape (torchtree.distributions.deterministic_normal.DeterministicNormal property)</a>
 
       <ul>
         <li><a href="autoapi/torchtree/distributions/distributions/index.html#torchtree.distributions.distributions.Distribution.event_shape">(torchtree.distributions.distributions.Distribution property)</a>
 </li>
         <li><a href="autoapi/torchtree/distributions/multivariate_normal/index.html#torchtree.distributions.multivariate_normal.MultivariateNormal.event_shape">(torchtree.distributions.multivariate_normal.MultivariateNormal property)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.ContainerLogger.every">every (torchtree.core.logger.ContainerLogger attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.Logger.every">(torchtree.core.logger.Logger attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.TreeLogger.every">(torchtree.core.logger.TreeLogger attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.every">(torchtree.inference.hmc.hmc.HMC attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.every">(torchtree.inference.mcmc.mcmc.MCMC attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.VariationalConvergence.every">(torchtree.optim.convergence.VariationalConvergence attribute)</a>
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.SignalHandler.exit">exit() (torchtree.core.utils.SignalHandler method)</a>
@@ -1164,14 +1304,36 @@ document.write(`
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.Logger.f">f (torchtree.core.logger.Logger attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.TreeLogger.f">(torchtree.core.logger.TreeLogger attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.FakeTreeModel">FakeTreeModel (class in torchtree.evolution.coalescent)</a>
 </li>
+      <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRF.field">field (torchtree.distributions.gmrf.GMRF attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/gmrf_integrated/index.html#torchtree.distributions.gmrf_integrated.GMRFGammaIntegrated.field">(torchtree.distributions.gmrf_integrated.GMRFGammaIntegrated attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.CSV.file_name">file_name (torchtree.core.logger.CSV attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.TreeLogger.file_name">(torchtree.core.logger.TreeLogger attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.VariationalConvergence.file_name">(torchtree.optim.convergence.VariationalConvergence attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.find_reasonable_step_size">find_reasonable_step_size() (in module torchtree.inference.hmc.adaptation)</a>
 
       <ul>
         <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.find_reasonable_step_size">(torchtree.inference.hmc.hmc.HMC method)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.find_step_size">find_step_size (torchtree.inference.hmc.hmc.HMC attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/core/model/index.html#torchtree.core.model.Model.fire_model_changed">fire_model_changed() (torchtree.core.model.Model method)</a>
 </li>
       <li><a href="autoapi/torchtree/core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter.fire_parameter_changed">fire_parameter_changed() (torchtree.core.abstractparameter.AbstractParameter method)</a>
@@ -1432,13 +1594,13 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/evolution/alignment/index.html#torchtree.evolution.alignment.Alignment.get">get() (torchtree.evolution.alignment.Alignment class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.get_class">get_class() (in module torchtree.core.utils)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.get_engine">get_engine() (in module torchtree.cli.evolution)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRF">GMRF (class in torchtree.distributions.gmrf)</a>
+</li>
+      <li><a href="autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html#torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator.gmrf">gmrf (torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRFCovariate">GMRFCovariate (class in torchtree.distributions.gmrf)</a>
 </li>
@@ -1446,12 +1608,42 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html#torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator">GMRFPiecewiseCoalescentBlockUpdatingOperator (class in torchtree.inference.mcmc.gmrf_block_updating)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/distributions/scale_mixture/index.html#torchtree.distributions.scale_mixture.ScaleMixtureNormal.gobal_scale">gobal_scale (torchtree.distributions.scale_mixture.ScaleMixtureNormal attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.grad">grad (torchtree.core.parameter.Parameter property)</a>
 </li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.grad_fn">grad_fn (torchtree.core.parameter.Parameter property)</a>
 </li>
       <li><a href="autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html#torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator.gradient">gradient() (torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator method)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.grid">grid (torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel.grid">(torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid.grid">(torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel.grid">(torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid.grid">(torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel.grid">(torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid.grid">(torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescent.growth">growth (torchtree.evolution.coalescent.ExponentialCoalescent attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescentModel.growth">(torchtree.evolution.coalescent.ExponentialCoalescentModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid.growth">(torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel.growth">(torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/nucleotide/index.html#torchtree.evolution.substitution_model.nucleotide.GTR">GTR (class in torchtree.evolution.substitution_model.nucleotide)</a>
 </li>
   </ul></td>
@@ -1608,7 +1800,11 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid.has_rsample">(torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid attribute)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/evolution/io/index.html#torchtree.evolution.io.Node.height">height (torchtree.evolution.io.Node attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.heights_from_branch_lengths">heights_from_branch_lengths() (in module torchtree.evolution.tree_model)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.heights_need_update">heights_need_update (torchtree.evolution.tree_model.TimeTreeModel attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.heights_to_branch_lengths">heights_to_branch_lengths() (in module torchtree.evolution.tree_model)</a>
 </li>
@@ -1630,6 +1826,12 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/core/identifiable/index.html#torchtree.core.identifiable.Identifiable">Identifiable (class in torchtree.core.identifiable)</a>
 </li>
+      <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ViewParameter.indices">indices (torchtree.core.parameter.ViewParameter attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/site_pattern/index.html#torchtree.evolution.site_pattern.SitePattern.indices">(torchtree.evolution.site_pattern.SitePattern attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.ContainerLogger.initialize">initialize() (torchtree.core.logger.ContainerLogger method)</a>
 
       <ul>
@@ -1642,16 +1844,26 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.initialize_dates_from_taxa">initialize_dates_from_taxa() (in module torchtree.evolution.tree_model)</a>
 </li>
+      <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.RealNVP.input_size">input_size (torchtree.nf.realnvp.RealNVP attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.ContainerLogger.inputs">inputs (torchtree.core.logger.ContainerLogger attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/inference/hmc/integrator/index.html#torchtree.inference.hmc.integrator.Integrator">Integrator (class in torchtree.inference.hmc.integrator)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.DualAveragingStepSize.integrator">integrator (torchtree.inference.hmc.adaptation.DualAveragingStepSize attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.integrator">(torchtree.inference.hmc.hmc.HMC attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.InvariantSiteModel.invariant">invariant (torchtree.evolution.site_model.InvariantSiteModel property)</a>
 
       <ul>
         <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel.invariant">(torchtree.evolution.site_model.UnivariateDiscretizedSiteModel property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.InvariantSiteModel">InvariantSiteModel (class in torchtree.evolution.site_model)</a>
 </li>
       <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.BatchNorm.inverse">inverse() (torchtree.nf.realnvp.BatchNorm method)</a>
@@ -1676,6 +1888,14 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.is_float">is_float() (in module torchtree.cli.evolution)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.iterations">iterations (torchtree.inference.hmc.hmc.HMC attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.iterations">(torchtree.inference.mcmc.mcmc.MCMC attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.iterations">(torchtree.optim.optimizer.Optimizer attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1686,6 +1906,14 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/nucleotide/index.html#torchtree.evolution.substitution_model.nucleotide.JC69">JC69 (class in torchtree.evolution.substitution_model.nucleotide)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/hamiltonian/index.html#torchtree.inference.hmc.hamiltonian.Hamiltonian.joint">joint (torchtree.inference.hmc.hamiltonian.Hamiltonian attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.joint">(torchtree.inference.hmc.hmc.HMC attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.joint">(torchtree.inference.mcmc.mcmc.MCMC attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/distributions/joint_distribution/index.html#torchtree.distributions.joint_distribution.JointDistributionModel">JointDistributionModel (class in torchtree.distributions.joint_distribution)</a>
 </li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.json_factory">json_factory() (torchtree.core.parameter.Parameter static method)</a>
@@ -1726,22 +1954,50 @@ document.write(`
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/torchtree/evolution/substitution_model/nucleotide/index.html#torchtree.evolution.substitution_model.nucleotide.HKY.kappa">kappa (torchtree.evolution.substitution_model.nucleotide.HKY property)</a>
+      <li><a href="autoapi/torchtree/evolution/tree_height_transform/index.html#torchtree.evolution.tree_height_transform.DifferenceNodeHeightTransform.k">k (torchtree.evolution.tree_height_transform.DifferenceNodeHeightTransform attribute)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/substitution_model/codon/index.html#torchtree.evolution.substitution_model.codon.MG94.kappa">kappa (torchtree.evolution.substitution_model.codon.MG94 attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/nucleotide/index.html#torchtree.evolution.substitution_model.nucleotide.HKY.kappa">(torchtree.evolution.substitution_model.nucleotide.HKY property)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/inference/hmc/hamiltonian/index.html#torchtree.inference.hmc.hamiltonian.Hamiltonian.kinetic_energy">kinetic_energy() (torchtree.inference.hmc.hamiltonian.Hamiltonian method)</a>
+</li>
+      <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.KLpq">KLpq (class in torchtree.variational.kl)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.KLpq">KLpq (class in torchtree.variational.kl)</a>
-</li>
       <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.KLpqImportance">KLpqImportance (class in torchtree.variational.kl)</a>
 </li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.CSV.kwargs">kwargs (torchtree.core.logger.CSV attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.Dumper.kwargs">(torchtree.core.logger.Dumper attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.Logger.kwargs">(torchtree.core.logger.Logger attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.TreeLogger.kwargs">(torchtree.core.logger.TreeLogger attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/distributions/distributions/index.html#torchtree.distributions.distributions.Distribution.kwargs">(torchtree.distributions.distributions.Distribution attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.lambda_">lambda_ (torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeath.lambda_">(torchtree.evolution.birth_death.BirthDeath attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeathModel.lambda_">(torchtree.evolution.birth_death.BirthDeathModel attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/nf/flow/index.html#torchtree.nf.flow.NormalizingFlow.layers">layers (torchtree.nf.flow.NormalizingFlow attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/inference/hmc/integrator/index.html#torchtree.inference.hmc.integrator.LeapfrogIntegrator">LeapfrogIntegrator (class in torchtree.inference.hmc.integrator)</a>
 </li>
       <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.AdaptiveStepSize.learn">learn() (torchtree.inference.hmc.adaptation.AdaptiveStepSize method)</a>
@@ -1770,6 +2026,20 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/cli/argparse_utils/index.html#torchtree.cli.argparse_utils.list_or_int">list_or_int() (in module torchtree.cli.argparse_utils)</a>
 </li>
+      <li><a href="autoapi/torchtree/core/model/index.html#torchtree.core.model.Model.listeners">listeners (torchtree.core.model.Model attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ModuleParameter.listeners">(torchtree.core.parameter.ModuleParameter attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.listeners">(torchtree.core.parameter.Parameter attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.TransformedParameter.listeners">(torchtree.core.parameter.TransformedParameter attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ViewParameter.listeners">(torchtree.core.parameter.ViewParameter attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/root_transform/index.html#torchtree.evolution.root_transform.RootParameter.listeners">(torchtree.evolution.root_transform.RootParameter attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/typing/index.html#torchtree.typing.ListParameter">ListParameter (in module torchtree.typing)</a>
 </li>
       <li><a href="autoapi/torchtree/typing/index.html#torchtree.typing.ListTensor">ListTensor (in module torchtree.typing)</a>
@@ -1802,6 +2072,20 @@ document.write(`
         <li><a href="autoapi/torchtree/optim/lr_scheduler/index.html#torchtree.optim.lr_scheduler.Scheduler.load_state_dict">(torchtree.optim.lr_scheduler.Scheduler method)</a>
 </li>
         <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.load_state_dict">(torchtree.optim.optimizer.Optimizer method)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/distributions/deterministic_normal/index.html#torchtree.distributions.deterministic_normal.DeterministicNormal.loc">loc (torchtree.distributions.deterministic_normal.DeterministicNormal attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/multivariate_normal/index.html#torchtree.distributions.multivariate_normal.MultivariateNormal.loc">(torchtree.distributions.multivariate_normal.MultivariateNormal attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/distributions/scale_mixture/index.html#torchtree.distributions.scale_mixture.ScaleMixtureNormal.loc">(torchtree.distributions.scale_mixture.ScaleMixtureNormal attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/distributions/bayesian_bridge/index.html#torchtree.distributions.bayesian_bridge.BayesianBridge.local_scale">local_scale (torchtree.distributions.bayesian_bridge.BayesianBridge attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/scale_mixture/index.html#torchtree.distributions.scale_mixture.ScaleMixtureNormal.local_scale">(torchtree.distributions.scale_mixture.ScaleMixtureNormal attribute)</a>
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.ContainerLogger.log">log() (torchtree.core.logger.ContainerLogger method)</a>
@@ -1842,6 +2126,8 @@ document.write(`
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.BatchNorm.log_gamma">log_gamma (torchtree.nf.realnvp.BatchNorm attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/distributions/ctmc_scale/index.html#torchtree.distributions.ctmc_scale.CTMCScale.log_gamma_one_half">log_gamma_one_half (torchtree.distributions.ctmc_scale.CTMCScale attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.log_p">log_p() (torchtree.evolution.bdsk.PiecewiseConstantBirthDeath method)</a>
@@ -1906,11 +2192,31 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.LoggerInterface">LoggerInterface (class in torchtree.core.logger)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.loggers">loggers (torchtree.inference.hmc.hmc.HMC attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.loggers">(torchtree.inference.mcmc.mcmc.MCMC attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/sampler/index.html#torchtree.inference.sampler.Sampler.loggers">(torchtree.inference.sampler.Sampler attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.loggers">(torchtree.optim.optimizer.Optimizer attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/distributions/log_normal/index.html#torchtree.distributions.log_normal.LogNormal">LogNormal (class in torchtree.distributions.log_normal)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.LogTransform">LogTransform (class in torchtree.distributions.transforms)</a>
 </li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.VariationalConvergence.loss">loss (torchtree.optim.convergence.VariationalConvergence attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.loss">(torchtree.optim.optimizer.Optimizer attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/cli/utils/index.html#torchtree.cli.utils.CONSTRAINT.LOWER">LOWER (torchtree.cli.utils.CONSTRAINT attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/core/model/index.html#torchtree.core.model.CallableModel.lp">lp (torchtree.core.model.CallableModel attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/core/model/index.html#torchtree.core.model.CallableModel.lp_needs_update">lp_needs_update (torchtree.core.model.CallableModel attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1926,6 +2232,12 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/cli/utils/index.html#torchtree.cli.utils.make_unconstrained">make_unconstrained() (in module torchtree.cli.utils)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralNonSymmetricSubstitutionModel.mapping">mapping (torchtree.evolution.substitution_model.general.GeneralNonSymmetricSubstitutionModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralSymmetricSubstitutionModel.mapping">(torchtree.evolution.substitution_model.general.GeneralSymmetricSubstitutionModel attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.MassMatrixAdaptor.mass_matrix">mass_matrix (torchtree.inference.hmc.adaptation.MassMatrixAdaptor property)</a>
 
       <ul>
@@ -1934,7 +2246,11 @@ document.write(`
         <li><a href="autoapi/torchtree/inference/hmc/operator/index.html#torchtree.inference.hmc.operator.HMCOperator.mass_matrix">(torchtree.inference.hmc.operator.HMCOperator property)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/inference/hmc/stan_adaptation/index.html#torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation.mass_matrix_adaptor">mass_matrix_adaptor (torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.MassMatrixAdaptor">MassMatrixAdaptor (class in torchtree.inference.hmc.adaptation)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.maximize">maximize (torchtree.optim.optimizer.Optimizer attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentDistribution.maximum_likelihood">maximum_likelihood() (torchtree.evolution.coalescent.AbstractCoalescentDistribution class method)</a>
 
@@ -1953,6 +2269,8 @@ document.write(`
       <li><a href="autoapi/torchtree/evolution/substitution_model/codon/index.html#torchtree.evolution.substitution_model.codon.MG94">MG94 (class in torchtree.evolution.substitution_model.codon)</a>
 </li>
       <li><a href="autoapi/torchtree/core/model/index.html#torchtree.core.model.Model">Model (class in torchtree.core.model)</a>
+</li>
+      <li><a href="autoapi/torchtree/inference/sampler/index.html#torchtree.inference.sampler.Sampler.model">model (torchtree.inference.sampler.Sampler attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/core/parametric/index.html#torchtree.core.parametric.ModelListener">ModelListener (class in torchtree.core.parametric)</a>
 </li>
@@ -2181,10 +2499,26 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/nn/module/index.html#torchtree.nn.module.Module">Module (class in torchtree.nn.module)</a>
 </li>
-      <li><a href="autoapi/torchtree/nn/module/index.html#torchtree.nn.module.Module.module">module (torchtree.nn.module.Module property)</a>
+      <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ModuleParameter.module">module (torchtree.core.parameter.ModuleParameter attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/nn/module/index.html#torchtree.nn.module.Module.module">(torchtree.nn.module.Module property)</a>
 </li>
+      </ul></li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ModuleParameter">ModuleParameter (class in torchtree.core.parameter)</a>
 </li>
+      <li><a href="autoapi/torchtree/nf/flow/index.html#torchtree.nf.flow.NormalizingFlow.modules">modules (torchtree.nf.flow.NormalizingFlow attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.BatchNorm.momentum">momentum (torchtree.nf.realnvp.BatchNorm attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.mu">mu (torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeath.mu">(torchtree.evolution.birth_death.BirthDeath attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeathModel.mu">(torchtree.evolution.birth_death.BirthDeathModel attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/distributions/multivariate_normal/index.html#torchtree.distributions.multivariate_normal.MultivariateNormal">MultivariateNormal (class in torchtree.distributions.multivariate_normal)</a>
 </li>
   </ul></td>
@@ -2193,6 +2527,28 @@ document.write(`
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/variational/chi/index.html#torchtree.variational.chi.CUBO.n">n (torchtree.variational.chi.CUBO attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.CodonDataType.name">name (torchtree.evolution.datatype.CodonDataType attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/io/index.html#torchtree.evolution.io.Node.name">(torchtree.evolution.io.Node attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ModuleParameter.need_update">need_update (torchtree.core.parameter.ModuleParameter attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.TransformedParameter.need_update">(torchtree.core.parameter.TransformedParameter attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/root_transform/index.html#torchtree.evolution.root_transform.RootParameter.need_update">(torchtree.evolution.root_transform.RootParameter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.SiteModel.needs_update">needs_update (torchtree.evolution.site_model.SiteModel attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.RealNVP.net">net (torchtree.nf.realnvp.RealNVP attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.RealNVP.net_parameters">net_parameters (torchtree.nf.realnvp.RealNVP attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html#torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator.newton_raphson">newton_raphson() (torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator method)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/io/index.html#torchtree.evolution.io.Node">Node (class in torchtree.evolution.io)</a>
@@ -2205,13 +2561,17 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.node_heights">(torchtree.evolution.tree_model.TimeTreeModel property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/evolution/substitution_model/codon/index.html#torchtree.evolution.substitution_model.codon.MG94.non_synonymous">non_synonymous (torchtree.evolution.substitution_model.codon.MG94 attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/abstract/index.html#torchtree.evolution.substitution_model.abstract.NonSymmetricSubstitutionModel">NonSymmetricSubstitutionModel (class in torchtree.evolution.substitution_model.abstract)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/abstract/index.html#torchtree.evolution.substitution_model.abstract.AbstractSubstitutionModel.norm">norm() (torchtree.evolution.substitution_model.abstract.AbstractSubstitutionModel method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/distributions/normal/index.html#torchtree.distributions.normal.Normal">Normal (class in torchtree.distributions.normal)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralNonSymmetricSubstitutionModel.normalize">normalize (torchtree.evolution.substitution_model.general.GeneralNonSymmetricSubstitutionModel attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/nf/flow/index.html#torchtree.nf.flow.NormalizingFlow">NormalizingFlow (class in torchtree.nf.flow)</a>
 </li>
@@ -2223,6 +2583,8 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.NucleotideDataType.NUCLEOTIDES">NUCLEOTIDES (torchtree.evolution.datatype.NucleotideDataType attribute)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/stan_adaptation/index.html#torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation.num_warmup">num_warmup (torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.CodonDataType.NUMBER_OF_CODONS">NUMBER_OF_CODONS (torchtree.evolution.datatype.CodonDataType attribute)</a>
 </li>
   </ul></td>
@@ -2233,20 +2595,58 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.TensorDecoder.object_hook">object_hook() (torchtree.core.utils.TensorDecoder method)</a>
 </li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.CSV.objs">objs (torchtree.core.logger.CSV attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.Logger.objs">(torchtree.core.logger.Logger attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/distributions/one_on_x/index.html#torchtree.distributions.one_on_x.OneOnX">OneOnX (class in torchtree.distributions.one_on_x)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer">Optimizer (class in torchtree.optim.optimizer)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.optimizer">optimizer (torchtree.optim.optimizer.Optimizer attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer">Optimizer (class in torchtree.optim.optimizer)</a>
-</li>
       <li><a href="autoapi/torchtree/typing/index.html#torchtree.typing.OrderedDictType">OrderedDictType (in module torchtree.typing)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.origin">origin (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.origin">(torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeath.origin">(torchtree.evolution.birth_death.BirthDeath attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeathModel.origin">(torchtree.evolution.birth_death.BirthDeathModel attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.origin_is_root_edge">origin_is_root_edge (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.origin_is_root_edge">(torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/variational/chi/index.html#torchtree.variational.chi.CUBO.p">p (torchtree.variational.chi.CUBO attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.ELBO.p">(torchtree.variational.kl.ELBO attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.KLpq.p">(torchtree.variational.kl.KLpq attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.KLpqImportance.p">(torchtree.variational.kl.KLpqImportance attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.SELBO.p">(torchtree.variational.kl.SELBO attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/renyi/index.html#torchtree.variational.renyi.VR.p">(torchtree.variational.renyi.VR attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.p0">p0() (torchtree.evolution.bdsk.PiecewiseConstantBirthDeath method)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/abstract/index.html#torchtree.evolution.substitution_model.abstract.NonSymmetricSubstitutionModel.p_t">p_t() (torchtree.evolution.substitution_model.abstract.NonSymmetricSubstitutionModel method)</a>
@@ -2271,12 +2671,26 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter">Parameter (class in torchtree.core.parameter)</a>
 </li>
+      <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ViewParameter.parameter">parameter (torchtree.core.parameter.ViewParameter attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#id0">Parameter.to() (in module torchtree.core.parameter)</a>, <a href="autoapi/torchtree/core/parameter/index.html#id5">[1]</a>, <a href="autoapi/torchtree/core/parameter/index.html#id6">[2]</a>
 </li>
       <li><a href="autoapi/torchtree/core/parameter_encoder/index.html#torchtree.core.parameter_encoder.ParameterEncoder">ParameterEncoder (class in torchtree.core.parameter_encoder)</a>
 </li>
       <li><a href="autoapi/torchtree/core/parametric/index.html#torchtree.core.parametric.ParameterListener">ParameterListener (class in torchtree.core.parametric)</a>
 </li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.Dumper.parameters">parameters (torchtree.core.logger.Dumper attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.parameters">(torchtree.inference.hmc.hmc.HMC attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.parameters">(torchtree.inference.mcmc.mcmc.MCMC attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator.parameters">(torchtree.inference.mcmc.operator.MCMCOperator attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.parameters">(torchtree.optim.optimizer.Optimizer attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter.parameters">parameters() (torchtree.core.abstractparameter.AbstractParameter method)</a>
 
       <ul>
@@ -2297,6 +2711,8 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/core/container/index.html#torchtree.core.container.Container.params">params() (torchtree.core.container.Container method)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/io/index.html#torchtree.evolution.io.Node.parent">parent (torchtree.evolution.io.Node attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/cli/evolution/index.html#torchtree.cli.evolution.parse_distribution">parse_distribution() (in module torchtree.cli.evolution)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/io/index.html#torchtree.evolution.io.parse_taxa">parse_taxa() (in module torchtree.evolution.io)</a>
@@ -2307,6 +2723,8 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/evolution/io/index.html#torchtree.evolution.io.parse_trees">parse_trees() (in module torchtree.evolution.io)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.AminoAcidDataType.partial">partial() (torchtree.evolution.datatype.AminoAcidDataType method)</a>
 
       <ul>
@@ -2319,8 +2737,6 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.NucleotideDataType.partial">(torchtree.evolution.datatype.NucleotideDataType method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath">PiecewiseConstantBirthDeath (class in torchtree.evolution.bdsk)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent">PiecewiseConstantCoalescent (class in torchtree.evolution.coalescent)</a>
@@ -2359,6 +2775,8 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/inference/hmc/hamiltonian/index.html#torchtree.inference.hmc.hamiltonian.Hamiltonian.potential_energy">potential_energy() (torchtree.inference.hmc.hamiltonian.Hamiltonian method)</a>
 </li>
+      <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRF.precision">precision (torchtree.distributions.gmrf.GMRF attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRF.precision_matrix">precision_matrix() (torchtree.distributions.gmrf.GMRF method)</a>
 </li>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.print_graph">print_graph() (in module torchtree.core.utils)</a>
@@ -2391,12 +2809,34 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html#torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator.propose_precision">propose_precision() (torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator method)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.psi">psi (torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeath.psi">(torchtree.evolution.birth_death.BirthDeath attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeathModel.psi">(torchtree.evolution.birth_death.BirthDeathModel attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel.Q">Q (torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/variational/chi/index.html#torchtree.variational.chi.CUBO.q">q (torchtree.variational.chi.CUBO attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.ELBO.q">(torchtree.variational.kl.ELBO attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.KLpq.q">(torchtree.variational.kl.KLpq attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.KLpqImportance.q">(torchtree.variational.kl.KLpqImportance attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/renyi/index.html#torchtree.variational.renyi.VR.q">(torchtree.variational.renyi.VR attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/abstract/index.html#torchtree.evolution.substitution_model.abstract.SubstitutionModel.q">q() (torchtree.evolution.substitution_model.abstract.SubstitutionModel method)</a>
 
       <ul>
@@ -2423,10 +2863,18 @@ document.write(`
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.R">R (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/io/index.html#torchtree.evolution.io.random_tree_from_heights">random_tree_from_heights() (in module torchtree.evolution.io)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/inverse_gamma/index.html#torchtree.distributions.inverse_gamma.InverseGamma.rate">rate (torchtree.distributions.inverse_gamma.InverseGamma property)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/tree_prior/index.html#torchtree.distributions.tree_prior.CompoundGammaDirichletPrior.rate">(torchtree.distributions.tree_prior.CompoundGammaDirichletPrior attribute)</a>
 </li>
+        <li><a href="autoapi/torchtree/evolution/root_transform/index.html#torchtree.evolution.root_transform.RootParameter.rate">(torchtree.evolution.root_transform.RootParameter attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/branch_model/index.html#torchtree.evolution.branch_model.BranchModel.rates">rates (torchtree.evolution.branch_model.BranchModel property)</a>
 
       <ul>
@@ -2487,6 +2935,18 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence.rel_difference">rel_difference() (torchtree.optim.convergence.StanVariationalConvergence static method)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.relative_times">relative_times (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.relative_times">(torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.removal_probability">removal_probability (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.removal_probability">(torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.remove_comments">remove_comments() (in module torchtree.core.utils)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/utils/index.html#torchtree.cli.utils.remove_constraints">remove_constraints() (in module torchtree.cli.utils)</a>
@@ -2519,6 +2979,12 @@ document.write(`
         <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ViewParameter.requires_grad">(torchtree.core.parameter.ViewParameter property)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRF.rescale">rescale (torchtree.distributions.gmrf.GMRF attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.rescale">(torchtree.evolution.tree_likelihood.TreeLikelihoodModel attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/rate_transform/index.html#torchtree.evolution.rate_transform.RescaledRateTransform">RescaledRateTransform (class in torchtree.evolution.rate_transform)</a>
 </li>
       <li><a href="autoapi/torchtree/ops/welford/index.html#torchtree.ops.welford.WelfordVariance.reset">reset() (torchtree.ops.welford.WelfordVariance method)</a>
@@ -2535,6 +3001,16 @@ document.write(`
         <li><a href="autoapi/torchtree/inference/hmc/stan_adaptation/index.html#torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation.restart">(torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation method)</a>
 </li>
         <li><a href="autoapi/torchtree/ops/dual_averaging/index.html#torchtree.ops.dual_averaging.DualAveraging.restart">(torchtree.ops.dual_averaging.DualAveraging method)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.rho">rho (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.rho">(torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeath.rho">(torchtree.evolution.birth_death.BirthDeath attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeathModel.rho">(torchtree.evolution.birth_death.BirthDeathModel attribute)</a>
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/evolution/root_transform/index.html#torchtree.evolution.root_transform.RootParameter">RootParameter (class in torchtree.evolution.root_transform)</a>
@@ -2585,6 +3061,18 @@ document.write(`
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.s">s (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.LinearMaskedCoupling.s_net">s_net (torchtree.nf.realnvp.LinearMaskedCoupling attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.ContainerLogger.sample">sample (torchtree.core.logger.ContainerLogger attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.Logger.sample">(torchtree.core.logger.Logger attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.TreeLogger.sample">(torchtree.core.logger.TreeLogger attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/distributions/deterministic_normal/index.html#torchtree.distributions.deterministic_normal.DeterministicNormal.sample">sample() (torchtree.distributions.deterministic_normal.DeterministicNormal method)</a>
 
       <ul>
@@ -2619,6 +3107,28 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/inference/sampler/index.html#torchtree.inference.sampler.Sampler">Sampler (class in torchtree.inference.sampler)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/sampler/index.html#torchtree.inference.sampler.Sampler.samples">samples (torchtree.inference.sampler.Sampler attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/ops/welford/index.html#torchtree.ops.welford.WelfordVariance.samples">(torchtree.ops.welford.WelfordVariance attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.VariationalConvergence.samples">(torchtree.optim.convergence.VariationalConvergence attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/chi/index.html#torchtree.variational.chi.CUBO.samples">(torchtree.variational.chi.CUBO attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.ELBO.samples">(torchtree.variational.kl.ELBO attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.KLpq.samples">(torchtree.variational.kl.KLpq attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.KLpqImportance.samples">(torchtree.variational.kl.KLpqImportance attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.SELBO.samples">(torchtree.variational.kl.SELBO attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/variational/renyi/index.html#torchtree.variational.renyi.VR.samples">(torchtree.variational.renyi.VR attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.sampling_times">sampling_times (torchtree.evolution.tree_model.TimeTreeModel attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.save_full_state">save_full_state() (torchtree.inference.mcmc.mcmc.MCMC method)</a>
 
       <ul>
@@ -2627,11 +3137,25 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/core/parameter_utils/index.html#torchtree.core.parameter_utils.save_parameters">save_parameters() (in module torchtree.core.parameter_utils)</a>
 </li>
+      <li><a href="autoapi/torchtree/distributions/bayesian_bridge/index.html#torchtree.distributions.bayesian_bridge.BayesianBridge.scale">scale (torchtree.distributions.bayesian_bridge.BayesianBridge attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/deterministic_normal/index.html#torchtree.distributions.deterministic_normal.DeterministicNormal.scale">(torchtree.distributions.deterministic_normal.DeterministicNormal attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/distributions/scale_mixture/index.html#torchtree.distributions.scale_mixture.ScaleMixtureNormal">ScaleMixtureNormal (class in torchtree.distributions.scale_mixture)</a>
 </li>
       <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.ScalerOperator">ScalerOperator (class in torchtree.inference.mcmc.operator)</a>
 </li>
       <li><a href="autoapi/torchtree/optim/lr_scheduler/index.html#torchtree.optim.lr_scheduler.Scheduler">Scheduler (class in torchtree.optim.lr_scheduler)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/lr_scheduler/index.html#torchtree.optim.lr_scheduler.Scheduler.scheduler">scheduler (torchtree.optim.lr_scheduler.Scheduler attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/optim/optimizer/index.html#torchtree.optim.optimizer.Optimizer.scheduler">(torchtree.optim.optimizer.Optimizer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.ELBO.score">score (torchtree.variational.kl.ELBO attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.SELBO">SELBO (class in torchtree.variational.kl)</a>
 </li>
@@ -2670,9 +3194,13 @@ document.write(`
 </li>
         <li><a href="autoapi/torchtree/distributions/ctmc_scale/index.html#torchtree.distributions.ctmc_scale.CTMCScale.shape">(torchtree.distributions.ctmc_scale.CTMCScale attribute)</a>
 </li>
+        <li><a href="autoapi/torchtree/distributions/tree_prior/index.html#torchtree.distributions.tree_prior.CompoundGammaDirichletPrior.shape">(torchtree.distributions.tree_prior.CompoundGammaDirichletPrior attribute)</a>
+</li>
         <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.WeibullSiteModel.shape">(torchtree.evolution.site_model.WeibullSiteModel property)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/evolution/root_transform/index.html#torchtree.evolution.root_transform.RootParameter.shift">shift (torchtree.evolution.root_transform.RootParameter attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.CumSumExpTransform.sign">sign (torchtree.distributions.transforms.CumSumExpTransform attribute)</a>
 
       <ul>
@@ -2695,13 +3223,17 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/tree_height_transform/index.html#torchtree.evolution.tree_height_transform.GeneralNodeHeightTransform.sign">(torchtree.evolution.tree_height_transform.GeneralNodeHeightTransform attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.SignalHandler">SignalHandler (class in torchtree.core.utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/torchtree/evolution/branch_model/index.html#torchtree.evolution.branch_model.SimpleClockModel">SimpleClockModel (class in torchtree.evolution.branch_model)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/utils/index.html#torchtree.cli.utils.CONSTRAINT.SIMPLEX">SIMPLEX (torchtree.cli.utils.CONSTRAINT attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.site_model">site_model (torchtree.evolution.tree_likelihood.TreeLikelihoodModel attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.site_pattern">site_pattern (torchtree.evolution.tree_likelihood.TreeLikelihoodModel attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.SiteModel">SiteModel (class in torchtree.evolution.site_model)</a>
 </li>
@@ -2715,6 +3247,12 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.size">size() (torchtree.core.parameter.Parameter method)</a>
 </li>
+      <li><a href="autoapi/torchtree/distributions/bayesian_bridge/index.html#torchtree.distributions.bayesian_bridge.BayesianBridge.slab">slab (torchtree.distributions.bayesian_bridge.BayesianBridge attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/scale_mixture/index.html#torchtree.distributions.scale_mixture.ScaleMixtureNormal.slab">(torchtree.distributions.scale_mixture.ScaleMixtureNormal attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.SlidingWindowOperator">SlidingWindowOperator (class in torchtree.inference.mcmc.operator)</a>
 </li>
       <li><a href="autoapi/torchtree/ops/smooth/index.html#torchtree.ops.smooth.smooth_max">smooth_max() (in module torchtree.ops.smooth)</a>
@@ -2735,14 +3273,26 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.WarmupAdaptation.sqrt_mass_matrix">sqrt_mass_matrix (torchtree.inference.hmc.adaptation.WarmupAdaptation property)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel.sqrt_pi">sqrt_pi (torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel.sqrt_pi_inv">sqrt_pi_inv (torchtree.evolution.substitution_model.general.EmpiricalSubstitutionModel attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence">StanVariationalConvergence (class in torchtree.optim.convergence)</a>
 </li>
       <li><a href="autoapi/torchtree/inference/hmc/stan_adaptation/index.html#torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation">StanWindowedAdaptation (class in torchtree.inference.hmc.stan_adaptation)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.VariationalConvergence.start">start (torchtree.optim.convergence.VariationalConvergence attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.AbstractDataType.state_count">state_count (torchtree.evolution.datatype.AbstractDataType property)</a>
 
       <ul>
         <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.DataType.state_count">(torchtree.evolution.datatype.DataType property)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralJC69.state_count">(torchtree.evolution.substitution_model.general.GeneralJC69 attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralNonSymmetricSubstitutionModel.state_count">(torchtree.evolution.substitution_model.general.GeneralNonSymmetricSubstitutionModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralSymmetricSubstitutionModel.state_count">(torchtree.evolution.substitution_model.general.GeneralSymmetricSubstitutionModel attribute)</a>
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.Adaptor.state_dict">state_dict() (torchtree.inference.hmc.adaptation.Adaptor method)</a>
@@ -2774,6 +3324,18 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.WarmupAdaptation.step_size">step_size (torchtree.inference.hmc.adaptation.WarmupAdaptation property)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/hmc/integrator/index.html#torchtree.inference.hmc.integrator.LeapfrogIntegrator.step_size">(torchtree.inference.hmc.integrator.LeapfrogIntegrator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/inference/hmc/stan_adaptation/index.html#torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation.step_size_adaptor">step_size_adaptor (torchtree.inference.hmc.stan_adaptation.StanWindowedAdaptation attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/inference/hmc/integrator/index.html#torchtree.inference.hmc.integrator.LeapfrogIntegrator.steps">steps (torchtree.inference.hmc.integrator.LeapfrogIntegrator attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.SignalHandler.stop">stop (torchtree.core.utils.SignalHandler attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.CodonDataType.stop_count">stop_count (torchtree.evolution.datatype.CodonDataType attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/cli/argparse_utils/index.html#torchtree.cli.argparse_utils.str_or_float">str_or_float() (in module torchtree.cli.argparse_utils)</a>
 </li>
@@ -2781,12 +3343,20 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.string_to_list_index">string_to_list_index() (in module torchtree.core.utils)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.subst_model">subst_model (torchtree.evolution.tree_likelihood.TreeLikelihoodModel attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/abstract/index.html#torchtree.evolution.substitution_model.abstract.SubstitutionModel">SubstitutionModel (class in torchtree.evolution.substitution_model.abstract)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.sufficient_statistics">sufficient_statistics() (torchtree.evolution.coalescent.PiecewiseConstantCoalescent method)</a>
 
       <ul>
         <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.sufficient_statistics">(torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid method)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/nf/flow/index.html#torchtree.nf.flow.NormalizingFlow.sum_log_abs_det_jacobians">sum_log_abs_det_jacobians (torchtree.nf.flow.NormalizingFlow attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.RealNVP.sum_log_abs_det_jacobians">(torchtree.nf.realnvp.RealNVP attribute)</a>
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/distributions/inverse_gamma/index.html#torchtree.distributions.inverse_gamma.InverseGamma.support">support (torchtree.distributions.inverse_gamma.InverseGamma attribute)</a>
@@ -2807,7 +3377,19 @@ document.write(`
         <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid.support">(torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid attribute)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.survival">survival (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.survival">(torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeath.survival">(torchtree.evolution.birth_death.BirthDeath attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeathModel.survival">(torchtree.evolution.birth_death.BirthDeathModel attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/abstract/index.html#torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel">SymmetricSubstitutionModel (class in torchtree.evolution.substitution_model.abstract)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/substitution_model/codon/index.html#torchtree.evolution.substitution_model.codon.MG94.synonymous">synonymous (torchtree.evolution.substitution_model.codon.MG94 attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -2815,20 +3397,48 @@ document.write(`
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.LinearMaskedCoupling.t_net">t_net (torchtree.nf.realnvp.LinearMaskedCoupling attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.CodonDataType.table">table (torchtree.evolution.datatype.CodonDataType attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/core/model/index.html#torchtree.core.model.Model.tag">tag (torchtree.core.model.Model property)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.AdaptiveStepSize.target_acceptance_probability">target_acceptance_probability (torchtree.inference.hmc.adaptation.AdaptiveStepSize attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator.target_acceptance_probability">(torchtree.inference.mcmc.operator.MCMCOperator attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/taxa/index.html#torchtree.evolution.taxa.Taxa">Taxa (class in torchtree.evolution.taxa)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/alignment/index.html#torchtree.evolution.alignment.Alignment.taxa">taxa (torchtree.evolution.alignment.Alignment property)</a>
 
       <ul>
+        <li><a href="autoapi/torchtree/evolution/attribute_pattern/index.html#torchtree.evolution.attribute_pattern.AttributePattern.taxa">(torchtree.evolution.attribute_pattern.AttributePattern attribute)</a>
+</li>
         <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.AbstractTreeModel.taxa">(torchtree.evolution.tree_model.AbstractTreeModel property)</a>
 </li>
         <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TreeModel.taxa">(torchtree.evolution.tree_model.TreeModel property)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/evolution/tree_height_transform/index.html#torchtree.evolution.tree_height_transform.DifferenceNodeHeightTransform.taxa_count">taxa_count (torchtree.evolution.tree_height_transform.DifferenceNodeHeightTransform attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/tree_height_transform/index.html#torchtree.evolution.tree_height_transform.GeneralNodeHeightTransform.taxa_count">(torchtree.evolution.tree_height_transform.GeneralNodeHeightTransform attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.AbstractTreeModel.taxa_count">(torchtree.evolution.tree_model.AbstractTreeModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.taxa_count">(torchtree.evolution.tree_model.TimeTreeModel attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/taxa/index.html#torchtree.evolution.taxa.Taxon">Taxon (class in torchtree.evolution.taxa)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel.temperature">temperature (torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid.temperature">(torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter.tensor">tensor (torchtree.core.abstractparameter.AbstractParameter property)</a>
 
       <ul>
@@ -2851,6 +3461,26 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.TensorEncoder">TensorEncoder (class in torchtree.core.utils)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentDistribution.theta">theta (torchtree.evolution.coalescent.AbstractCoalescentDistribution attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentModel.theta">(torchtree.evolution.coalescent.AbstractCoalescentModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescent.theta">(torchtree.evolution.coalescent.ExponentialCoalescent attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid.theta">(torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid.theta">(torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.threshold">threshold (torchtree.evolution.tree_likelihood.TreeLikelihoodModel attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.times">times (torchtree.evolution.bdsk.BDSKModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.PiecewiseConstantBirthDeath.times">(torchtree.evolution.bdsk.PiecewiseConstantBirthDeath attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel">TimeTreeModel (class in torchtree.evolution.tree_model)</a>
 </li>
       <li><a href="autoapi/torchtree/core/abstractparameter/index.html#torchtree.core.abstractparameter.Device.to">to() (torchtree.core.abstractparameter.Device method)</a>
@@ -2882,6 +3512,8 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="autoapi/torchtree/evolution/io/index.html#torchtree.evolution.io.to_nexus">to_nexus() (in module torchtree.evolution.io)</a>
+</li>
+      <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.StanVariationalConvergence.tol_rel_obj">tol_rel_obj (torchtree.optim.convergence.StanVariationalConvergence attribute)</a>
 </li>
       <li>
     torchtree
@@ -3634,10 +4266,48 @@ document.write(`
         <li><a href="autoapi/torchtree/variational/renyi/index.html#module-torchtree.variational.renyi">module</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.TransformedParameter.transform">transform (torchtree.core.parameter.TransformedParameter attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/evolution/root_transform/index.html#torchtree.evolution.root_transform.RootParameter.transform">transform() (torchtree.evolution.root_transform.RootParameter method)</a>
 </li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.TransformedParameter">TransformedParameter (class in torchtree.core.parameter)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/substitution_model/codon/index.html#torchtree.evolution.substitution_model.codon.MG94.transitions">transitions (torchtree.evolution.substitution_model.codon.MG94 attribute)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/branch_model/index.html#torchtree.evolution.branch_model.AbstractClockModel.tree">tree (torchtree.evolution.branch_model.AbstractClockModel attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/evolution/tree_height_transform/index.html#torchtree.evolution.tree_height_transform.DifferenceNodeHeightTransform.tree">(torchtree.evolution.tree_height_transform.DifferenceNodeHeightTransform attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/tree_height_transform/index.html#torchtree.evolution.tree_height_transform.GeneralNodeHeightTransform.tree">(torchtree.evolution.tree_height_transform.GeneralNodeHeightTransform attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.AbstractTreeModel.tree">(torchtree.evolution.tree_model.AbstractTreeModel attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.TreeLogger.tree_model">tree_model (torchtree.core.logger.TreeLogger attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/ctmc_scale/index.html#torchtree.distributions.ctmc_scale.CTMCScale.tree_model">(torchtree.distributions.ctmc_scale.CTMCScale attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRF.tree_model">(torchtree.distributions.gmrf.GMRF attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/distributions/gmrf_integrated/index.html#torchtree.distributions.gmrf_integrated.GMRFGammaIntegrated.tree_model">(torchtree.distributions.gmrf_integrated.GMRFGammaIntegrated attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/distributions/tree_prior/index.html#torchtree.distributions.tree_prior.CompoundGammaDirichletPrior.tree_model">(torchtree.distributions.tree_prior.CompoundGammaDirichletPrior attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/bdsk/index.html#torchtree.evolution.bdsk.BDSKModel.tree_model">(torchtree.evolution.bdsk.BDSKModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/birth_death/index.html#torchtree.evolution.birth_death.BirthDeathModel.tree_model">(torchtree.evolution.birth_death.BirthDeathModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentModel.tree_model">(torchtree.evolution.coalescent.AbstractCoalescentModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.tree_model">(torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/poisson_tree_likelihood/index.html#torchtree.evolution.poisson_tree_likelihood.PoissonTreeLikelihood.tree_model">(torchtree.evolution.poisson_tree_likelihood.PoissonTreeLikelihood attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.tree_model">(torchtree.evolution.tree_likelihood.TreeLikelihoodModel attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel">TreeLikelihoodModel (class in torchtree.evolution.tree_likelihood)</a>
 </li>
       <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.TreeLogger">TreeLogger (class in torchtree.core.logger)</a>
@@ -3645,6 +4315,8 @@ document.write(`
       <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TreeModel">TreeModel (class in torchtree.evolution.tree_model)</a>
 </li>
       <li><a href="autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.TrilExpDiagonalTransform">TrilExpDiagonalTransform (class in torchtree.distributions.transforms)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.CodonDataType.triplets">triplets (torchtree.evolution.datatype.CodonDataType attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/inference/hmc/operator/index.html#torchtree.inference.hmc.operator.HMCOperator.tune">tune() (torchtree.inference.hmc.operator.HMCOperator method)</a>
 
@@ -3672,6 +4344,8 @@ document.write(`
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/nf/planar/index.html#torchtree.nf.planar.PlanarTransform.u">u (torchtree.nf.planar.PlanarTransform attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/nf/planar/index.html#torchtree.nf.planar.PlanarTransform.u_hat">u_hat() (torchtree.nf.planar.PlanarTransform method)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.UnivariateDiscretizedSiteModel">UnivariateDiscretizedSiteModel (class in torchtree.evolution.site_model)</a>
@@ -3704,6 +4378,8 @@ document.write(`
       </ul></li>
       <li><a href="autoapi/torchtree/cli/utils/index.html#torchtree.cli.utils.CONSTRAINT.UPPER">UPPER (torchtree.cli.utils.CONSTRAINT attribute)</a>
 </li>
+      <li><a href="autoapi/torchtree/evolution/tree_likelihood/index.html#torchtree.evolution.tree_likelihood.TreeLikelihoodModel.use_tip_states">use_tip_states (torchtree.evolution.tree_likelihood.TreeLikelihoodModel attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -3714,8 +4390,12 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/ops/welford/index.html#torchtree.ops.welford.WelfordVariance.variance">variance() (torchtree.ops.welford.WelfordVariance method)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.MassMatrixAdaptor.variance_estimator">variance_estimator (torchtree.inference.hmc.adaptation.MassMatrixAdaptor attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.MassMatrixAdaptor.variance_estimator2">variance_estimator2 (torchtree.inference.hmc.adaptation.MassMatrixAdaptor attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/optim/convergence/index.html#torchtree.optim.convergence.VariationalConvergence">VariationalConvergence (class in torchtree.optim.convergence)</a>
 </li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.ViewParameter">ViewParameter (class in torchtree.core.parameter)</a>
@@ -3728,6 +4408,8 @@ document.write(`
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/nf/planar/index.html#torchtree.nf.planar.PlanarTransform.w">w (torchtree.nf.planar.PlanarTransform attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/nf/energy_functions/index.html#torchtree.nf.energy_functions.w1">w1() (in module torchtree.nf.energy_functions)</a>
 </li>
       <li><a href="autoapi/torchtree/nf/energy_functions/index.html#torchtree.nf.energy_functions.w2">w2() (in module torchtree.nf.energy_functions)</a>
@@ -3736,12 +4418,26 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/evolution/substitution_model/amino_acid/index.html#torchtree.evolution.substitution_model.amino_acid.WAG">WAG (class in torchtree.evolution.substitution_model.amino_acid)</a>
 </li>
+      <li><a href="autoapi/torchtree/inference/hmc/hmc/index.html#torchtree.inference.hmc.hmc.HMC.warmup_adaptor">warmup_adaptor (torchtree.inference.hmc.hmc.HMC attribute)</a>
+</li>
       <li><a href="autoapi/torchtree/inference/hmc/adaptation/index.html#torchtree.inference.hmc.adaptation.WarmupAdaptation">WarmupAdaptation (class in torchtree.inference.hmc.adaptation)</a>
+</li>
+      <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.WeibullSiteModel">WeibullSiteModel (class in torchtree.evolution.site_model)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.WeibullSiteModel">WeibullSiteModel (class in torchtree.evolution.site_model)</a>
+      <li><a href="autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.LinearTransform.weight">weight (torchtree.distributions.transforms.LinearTransform attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/inference/mcmc/operator/index.html#torchtree.inference.mcmc.operator.MCMCOperator.weight">(torchtree.inference.mcmc.operator.MCMCOperator attribute)</a>
 </li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRF.weights">weights (torchtree.distributions.gmrf.GMRF attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/variational/kl/index.html#torchtree.variational.kl.SELBO.weights">(torchtree.variational.kl.SELBO attribute)</a>
+</li>
+      </ul></li>
       <li><a href="autoapi/torchtree/ops/welford/index.html#torchtree.ops.welford.WelfordVariance">WelfordVariance (class in torchtree.ops.welford)</a>
 </li>
       <li><a href="autoapi/torchtree/core/utils/index.html#torchtree.core.utils.AlternativeAttributeError.wrapper">wrapper() (torchtree.core.utils.AlternativeAttributeError class method)</a>
@@ -3750,6 +4446,32 @@ document.write(`
 
       <ul>
         <li><a href="autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TreeModel.write_newick">(torchtree.evolution.tree_model.TreeModel method)</a>
+</li>
+      </ul></li>
+      <li><a href="autoapi/torchtree/core/logger/index.html#torchtree.core.logger.Logger.writer">writer (torchtree.core.logger.Logger attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/distributions/bayesian_bridge/index.html#torchtree.distributions.bayesian_bridge.BayesianBridge.x">x (torchtree.distributions.bayesian_bridge.BayesianBridge attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/ctmc_scale/index.html#torchtree.distributions.ctmc_scale.CTMCScale.x">(torchtree.distributions.ctmc_scale.CTMCScale attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/distributions/scale_mixture/index.html#torchtree.distributions.scale_mixture.ScaleMixtureNormal.x">(torchtree.distributions.scale_mixture.ScaleMixtureNormal attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/nf/energy_functions/index.html#torchtree.nf.energy_functions.EnergyFunctionModel.x">(torchtree.nf.energy_functions.EnergyFunctionModel attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/nf/flow/index.html#torchtree.nf.flow.NormalizingFlow.x">(torchtree.nf.flow.NormalizingFlow attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/nf/realnvp/index.html#torchtree.nf.realnvp.RealNVP.x">(torchtree.nf.realnvp.RealNVP attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/nn/module/index.html#torchtree.nn.module.Module.x">(torchtree.nn.module.Module attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/ops/dual_averaging/index.html#torchtree.ops.dual_averaging.DualAveraging.x">(torchtree.ops.dual_averaging.DualAveraging attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -3825,8 +4547,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

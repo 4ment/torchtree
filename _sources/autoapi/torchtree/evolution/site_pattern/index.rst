@@ -37,6 +37,12 @@ Module Contents
    class is abstract.
 
 
+   .. py:attribute:: alignment
+
+
+   .. py:attribute:: indices
+
+
    .. py:method:: compute_tips_partials(use_ambiguities=False)
 
 

@@ -33,6 +33,9 @@ Module Contents
 
    .. py:attribute:: sign
 
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
+
 
    .. py:method:: log_abs_det_jacobian(x, y) -> torch.Tensor
 
@@ -56,6 +59,9 @@ Module Contents
 
 
    .. py:attribute:: sign
+
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
 
 
    .. py:method:: log_abs_det_jacobian(x, y) -> torch.Tensor

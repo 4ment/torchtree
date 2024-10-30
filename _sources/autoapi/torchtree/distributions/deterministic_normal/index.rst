@@ -32,6 +32,15 @@ Module Contents
    :param shape: shape of standard normal variates
 
 
+   .. py:attribute:: loc
+
+
+   .. py:attribute:: scale
+
+
+   .. py:attribute:: eps
+
+
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
       Generates a sample_shape shaped reparameterized sample or

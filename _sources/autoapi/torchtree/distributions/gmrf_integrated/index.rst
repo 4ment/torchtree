@@ -50,6 +50,15 @@ Module Contents
    Idea from Cheng Zhang
 
 
+   .. py:attribute:: tree_model
+
+
+   .. py:attribute:: field
+
+
+   .. py:attribute:: constant_term
+
+
    .. py:method:: from_json(data: dict[str, Any], dic: dict[str, torchtree.core.identifiable.Identifiable]) -> GMRFGammaIntegrated
       :classmethod:
 

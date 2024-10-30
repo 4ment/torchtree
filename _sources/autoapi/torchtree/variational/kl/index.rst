@@ -50,6 +50,21 @@ Module Contents
    :param bool score: use score function instead of pathwise gradient estimator
 
 
+   .. py:attribute:: q
+
+
+   .. py:attribute:: p
+
+
+   .. py:attribute:: samples
+
+
+   .. py:attribute:: entropy
+
+
+   .. py:attribute:: score
+
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
@@ -101,6 +116,15 @@ Module Contents
    .. footbibliography::
 
 
+   .. py:attribute:: q
+
+
+   .. py:attribute:: p
+
+
+   .. py:attribute:: samples
+
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 
@@ -143,6 +167,15 @@ Module Contents
    :param CallableModel p: joint distribution.
    :param torch.Size samples: number of samples.
 
+
+
+   .. py:attribute:: q
+
+
+   .. py:attribute:: p
+
+
+   .. py:attribute:: samples
 
 
    .. py:method:: handle_parameter_changed(variable, index, event)
@@ -188,6 +221,21 @@ Module Contents
        for variational distribution
 
    .. footbibliography::
+
+
+   .. py:attribute:: components
+
+
+   .. py:attribute:: p
+
+
+   .. py:attribute:: weights
+
+
+   .. py:attribute:: samples
+
+
+   .. py:attribute:: entropy
 
 
    .. py:method:: handle_parameter_changed(variable, index, event)

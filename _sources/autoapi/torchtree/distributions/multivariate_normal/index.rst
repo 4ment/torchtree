@@ -36,6 +36,9 @@ Module Contents
    :param AbstractParameter scale_tril: scale tril of the distribution.
 
 
+   .. py:attribute:: loc
+
+
    .. py:method:: rsample(sample_shape=torch.Size()) -> None
 
       Generates a sample_shape shaped reparameterized sample or

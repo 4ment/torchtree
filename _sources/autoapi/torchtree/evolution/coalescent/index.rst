@@ -50,13 +50,24 @@ Module Contents
 
    .. py:attribute:: arg_constraints
 
+      Returns a dictionary from argument names to
+      :class:`~torch.distributions.constraints.Constraint` objects that
+      should be satisfied by each argument of this distribution. Args that
+      are not tensors need not appear in this dict.
+
 
    .. py:attribute:: support
+
+      Returns a :class:`~torch.distributions.constraints.Constraint` object
+      representing this distribution's support.
 
 
    .. py:attribute:: has_rsample
       :value: False
 
+
+
+   .. py:attribute:: theta
 
 
    .. py:method:: maximum_likelihood(node_heights) -> torch.Tensor
@@ -77,6 +88,12 @@ Module Contents
    CallableModel are Callable and the returned value is cached in case
    we need to use this value multiple times without the need to
    recompute it.
+
+
+   .. py:attribute:: theta
+
+
+   .. py:attribute:: tree_model
 
 
    .. py:method:: distribution() -> AbstractCoalescentDistribution
@@ -169,6 +186,15 @@ Module Contents
    recompute it.
 
 
+   .. py:attribute:: tree_model
+
+
+   .. py:attribute:: alpha
+
+
+   .. py:attribute:: beta
+
+
    .. py:method:: distribution() -> AbstractCoalescentDistribution
 
 
@@ -210,13 +236,27 @@ Module Contents
 
    .. py:attribute:: arg_constraints
 
+      Returns a dictionary from argument names to
+      :class:`~torch.distributions.constraints.Constraint` objects that
+      should be satisfied by each argument of this distribution. Args that
+      are not tensors need not appear in this dict.
+
 
    .. py:attribute:: support
+
+      Returns a :class:`~torch.distributions.constraints.Constraint` object
+      representing this distribution's support.
 
 
    .. py:attribute:: has_rsample
       :value: False
 
+
+
+   .. py:attribute:: alpha
+
+
+   .. py:attribute:: beta
 
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
@@ -240,6 +280,9 @@ Module Contents
    CallableModel are Callable and the returned value is cached in case
    we need to use this value multiple times without the need to
    recompute it.
+
+
+   .. py:attribute:: growth
 
 
    .. py:method:: distribution() -> AbstractCoalescentDistribution
@@ -272,13 +315,27 @@ Module Contents
 
    .. py:attribute:: arg_constraints
 
+      Returns a dictionary from argument names to
+      :class:`~torch.distributions.constraints.Constraint` objects that
+      should be satisfied by each argument of this distribution. Args that
+      are not tensors need not appear in this dict.
+
 
    .. py:attribute:: support
+
+      Returns a :class:`~torch.distributions.constraints.Constraint` object
+      representing this distribution's support.
 
 
    .. py:attribute:: has_rsample
       :value: False
 
+
+
+   .. py:attribute:: theta
+
+
+   .. py:attribute:: growth
 
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
@@ -369,6 +426,9 @@ Module Contents
    Distribution is the abstract base class for probability distributions.
 
 
+   .. py:attribute:: grid
+
+
    .. py:method:: sufficient_statistics(node_heights: torch.Tensor)
 
 
@@ -388,6 +448,12 @@ Module Contents
 
 
    Distribution is the abstract base class for probability distributions.
+
+
+   .. py:attribute:: grid
+
+
+   .. py:attribute:: temperature
 
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
@@ -411,6 +477,12 @@ Module Contents
    CallableModel are Callable and the returned value is cached in case
    we need to use this value multiple times without the need to
    recompute it.
+
+
+   .. py:attribute:: grid
+
+
+   .. py:attribute:: temperature
 
 
    .. py:method:: distribution() -> AbstractCoalescentDistribution
@@ -455,13 +527,30 @@ Module Contents
 
    .. py:attribute:: arg_constraints
 
+      Returns a dictionary from argument names to
+      :class:`~torch.distributions.constraints.Constraint` objects that
+      should be satisfied by each argument of this distribution. Args that
+      are not tensors need not appear in this dict.
+
 
    .. py:attribute:: support
+
+      Returns a :class:`~torch.distributions.constraints.Constraint` object
+      representing this distribution's support.
 
 
    .. py:attribute:: has_rsample
       :value: False
 
+
+
+   .. py:attribute:: theta
+
+
+   .. py:attribute:: growth
+
+
+   .. py:attribute:: grid
 
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
@@ -485,6 +574,12 @@ Module Contents
    CallableModel are Callable and the returned value is cached in case
    we need to use this value multiple times without the need to
    recompute it.
+
+
+   .. py:attribute:: growth
+
+
+   .. py:attribute:: grid
 
 
    .. py:method:: distribution() -> AbstractCoalescentDistribution
@@ -517,13 +612,27 @@ Module Contents
 
    .. py:attribute:: arg_constraints
 
+      Returns a dictionary from argument names to
+      :class:`~torch.distributions.constraints.Constraint` objects that
+      should be satisfied by each argument of this distribution. Args that
+      are not tensors need not appear in this dict.
+
 
    .. py:attribute:: support
+
+      Returns a :class:`~torch.distributions.constraints.Constraint` object
+      representing this distribution's support.
 
 
    .. py:attribute:: has_rsample
       :value: False
 
+
+
+   .. py:attribute:: theta
+
+
+   .. py:attribute:: grid
 
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
@@ -547,6 +656,9 @@ Module Contents
    CallableModel are Callable and the returned value is cached in case
    we need to use this value multiple times without the need to
    recompute it.
+
+
+   .. py:attribute:: grid
 
 
    .. py:method:: distribution() -> AbstractCoalescentDistribution

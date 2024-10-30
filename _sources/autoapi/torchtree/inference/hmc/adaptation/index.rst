@@ -65,6 +65,9 @@ Module Contents
    :param str or None id_: identifier of object
 
 
+   .. py:attribute:: target_acceptance_probability
+
+
    .. py:method:: restart() -> None
 
 
@@ -98,6 +101,9 @@ Module Contents
    Code adapted from: https://github.com/stan-dev/stan
 
 
+   .. py:attribute:: integrator
+
+
    .. py:method:: restart() -> None
 
 
@@ -129,6 +135,14 @@ Module Contents
    Abstract class making an object identifiable.
 
    :param str or None id_: identifier of object
+
+
+   .. py:attribute:: variance_estimator
+
+
+   .. py:attribute:: variance_estimator2
+      :value: None
+
 
 
    .. py:property:: mass_matrix

@@ -33,6 +33,11 @@ Module Contents
    class is abstract.
 
 
+   .. py:attribute:: listeners
+      :value: []
+
+
+
    .. py:method:: add_model_listener(listener: torchtree.core.parametric.ModelListener) -> None
 
 
@@ -80,6 +85,7 @@ Module Contents
    .. py:property:: sample_shape
       :type: torch.Size
 
+
       Returns sample shape.
 
 
@@ -94,6 +100,16 @@ Module Contents
    CallableModel are Callable and the returned value is cached in case
    we need to use this value multiple times without the need to
    recompute it.
+
+
+   .. py:attribute:: lp
+      :value: None
+
+
+
+   .. py:attribute:: lp_needs_update
+      :value: True
+
 
 
    .. py:method:: handle_parameter_changed(variable: torchtree.core.abstractparameter.AbstractParameter, index, event) -> None

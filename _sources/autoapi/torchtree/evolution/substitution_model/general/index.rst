@@ -30,6 +30,9 @@ Module Contents
    class is abstract.
 
 
+   .. py:attribute:: state_count
+
+
    .. py:property:: frequencies
       :type: torch.Tensor
 
@@ -90,6 +93,15 @@ Module Contents
    class is abstract.
 
 
+   .. py:attribute:: mapping
+
+
+   .. py:attribute:: state_count
+
+
+   .. py:attribute:: data_type
+
+
    .. py:property:: rates
       :type: Union[torch.Tensor, list[torch.Tensor]]
 
@@ -130,6 +142,18 @@ Module Contents
    class is abstract.
 
 
+   .. py:attribute:: mapping
+
+
+   .. py:attribute:: state_count
+
+
+   .. py:attribute:: data_type
+
+
+   .. py:attribute:: normalize
+
+
    .. py:property:: rates
       :type: torch.Tensor
 
@@ -168,6 +192,15 @@ Module Contents
    A Model can contain parameters and models and can monitor any
    changes. A Model is the building block of more complex models. This
    class is abstract.
+
+
+   .. py:attribute:: Q
+
+
+   .. py:attribute:: sqrt_pi
+
+
+   .. py:attribute:: sqrt_pi_inv
 
 
    .. py:property:: frequencies

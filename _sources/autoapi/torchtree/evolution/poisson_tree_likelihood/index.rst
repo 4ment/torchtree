@@ -29,6 +29,15 @@ Module Contents
    :param Parameter edge_lengths: edge lengths.
 
 
+   .. py:attribute:: tree_model
+
+
+   .. py:attribute:: clock_model
+
+
+   .. py:attribute:: edge_lengths
+
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 

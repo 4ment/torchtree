@@ -205,6 +205,11 @@ Module Contents
 
 .. py:class:: SignalHandler
 
+   .. py:attribute:: stop
+      :value: False
+
+
+
    .. py:method:: exit(signum, frame)
 
 

@@ -59,6 +59,30 @@ Module Contents
    :param kwargs: optionals
 
 
+   .. py:attribute:: every
+
+
+   .. py:attribute:: kwargs
+
+
+   .. py:attribute:: objs
+
+
+   .. py:attribute:: f
+      :value: None
+
+
+
+   .. py:attribute:: writer
+      :value: None
+
+
+
+   .. py:attribute:: sample
+      :value: 1
+
+
+
    .. py:method:: initialize() -> None
 
 
@@ -95,6 +119,28 @@ Module Contents
    :param TreeModel objs: TreeModel object
    :param int every: logging frequency
    :param kwargs: optionals
+
+
+   .. py:attribute:: tree_model
+
+
+   .. py:attribute:: every
+
+
+   .. py:attribute:: file_name
+
+
+   .. py:attribute:: kwargs
+
+
+   .. py:attribute:: sample
+      :value: 1
+
+
+
+   .. py:attribute:: f
+      :value: None
+
 
 
    .. py:method:: initialize() -> None
@@ -134,6 +180,15 @@ Module Contents
    :type objs: list[Parameter]
 
 
+   .. py:attribute:: objs
+
+
+   .. py:attribute:: file_name
+
+
+   .. py:attribute:: kwargs
+
+
    .. py:method:: run() -> None
 
 
@@ -163,6 +218,12 @@ Module Contents
 
    :param parameters: list of Parameters.
    :type parameters: list[Parameter]
+
+
+   .. py:attribute:: kwargs
+
+
+   .. py:attribute:: parameters
 
 
    .. py:method:: run() -> None
@@ -198,6 +259,20 @@ Module Contents
    :param inputs: list of Parameter or CallableModel objects
    :type inputs: list[Parameter or CallableModel]
    :param int every: logging frequency
+
+
+   .. py:attribute:: container
+
+
+   .. py:attribute:: every
+
+
+   .. py:attribute:: inputs
+
+
+   .. py:attribute:: sample
+      :value: 1
+
 
 
    .. py:method:: initialize() -> None

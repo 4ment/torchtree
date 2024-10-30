@@ -9,8 +9,8 @@ torchtree
 
 
 
-Subpackages
------------
+Submodules
+----------
 
 .. toctree::
    :maxdepth: 1
@@ -24,16 +24,8 @@ Subpackages
    /autoapi/torchtree/nn/index
    /autoapi/torchtree/ops/index
    /autoapi/torchtree/optim/index
-   /autoapi/torchtree/variational/index
-
-
-Submodules
-----------
-
-.. toctree::
-   :maxdepth: 1
-
    /autoapi/torchtree/torchtree/index
    /autoapi/torchtree/typing/index
+   /autoapi/torchtree/variational/index
 
 

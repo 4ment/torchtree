@@ -57,6 +57,9 @@ Module Contents
 
    .. py:attribute:: sign
 
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
+
 
    .. py:method:: log_abs_det_jacobian(x, y)
       :abstractmethod:
@@ -93,6 +96,9 @@ Module Contents
 
    .. py:attribute:: sign
 
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
+
 
    .. py:method:: log_abs_det_jacobian(x, y)
 
@@ -120,6 +126,9 @@ Module Contents
 
 
    .. py:attribute:: sign
+
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
 
 
    .. py:method:: log_abs_det_jacobian(x, y)
@@ -149,6 +158,9 @@ Module Contents
 
    .. py:attribute:: sign
 
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
+
 
    .. py:method:: log_abs_det_jacobian(x, y)
 
@@ -176,6 +188,9 @@ Module Contents
 
 
    .. py:attribute:: sign
+
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
 
 
    .. py:method:: log_abs_det_jacobian(x, y)
@@ -231,6 +246,9 @@ Module Contents
 
    .. py:attribute:: sign
 
+      Returns the sign of the determinant of the Jacobian, if applicable.
+      In general this only makes sense for bijective transforms.
+
 
    .. py:method:: log_abs_det_jacobian(x, y)
 
@@ -259,5 +277,11 @@ Module Contents
 
 
    .. py:attribute:: codomain
+
+
+   .. py:attribute:: weight
+
+
+   .. py:attribute:: bias
 
 

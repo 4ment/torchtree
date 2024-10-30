@@ -44,6 +44,12 @@ Module Contents
    .. py:attribute:: log_gamma_one_half
 
 
+   .. py:attribute:: x
+
+
+   .. py:attribute:: tree_model
+
+
    .. py:method:: to(*args, **kwargs) -> None
 
       Performs Tensor dtype and/or device conversion using torch.to.

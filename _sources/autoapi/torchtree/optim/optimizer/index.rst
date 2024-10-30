@@ -30,6 +30,42 @@ Module Contents
    :param kwargs: optionals
 
 
+   .. py:attribute:: parameters
+
+
+   .. py:attribute:: loss
+
+
+   .. py:attribute:: optimizer
+
+
+   .. py:attribute:: iterations
+
+
+   .. py:attribute:: scheduler
+
+
+   .. py:attribute:: convergence
+
+
+   .. py:attribute:: loggers
+
+
+   .. py:attribute:: maximize
+
+
+   .. py:attribute:: checkpoint
+
+
+   .. py:attribute:: checkpoint_frequency
+
+
+   .. py:attribute:: checkpoint_all
+
+
+   .. py:attribute:: distributions
+
+
    .. py:method:: run() -> None
 
 

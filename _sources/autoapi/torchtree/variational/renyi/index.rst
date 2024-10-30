@@ -34,6 +34,18 @@ Module Contents
    .. footbibliography::
 
 
+   .. py:attribute:: q
+
+
+   .. py:attribute:: p
+
+
+   .. py:attribute:: samples
+
+
+   .. py:attribute:: alpha
+
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 

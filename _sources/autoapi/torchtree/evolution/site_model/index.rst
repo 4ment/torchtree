@@ -31,6 +31,11 @@ Module Contents
    class is abstract.
 
 
+   .. py:attribute:: needs_update
+      :value: True
+
+
+
    .. py:method:: handle_parameter_changed(variable, index, event)
 
 

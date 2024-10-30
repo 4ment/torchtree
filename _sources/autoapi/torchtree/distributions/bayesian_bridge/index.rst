@@ -49,6 +49,21 @@ Module Contents
    .. footbibliography::
 
 
+   .. py:attribute:: x
+
+
+   .. py:attribute:: scale
+
+
+   .. py:attribute:: alpha
+
+
+   .. py:attribute:: local_scale
+
+
+   .. py:attribute:: slab
+
+
    .. py:method:: handle_model_changed(model, obj, index) -> None
 
 

@@ -15,38 +15,40 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css?v=a5c4661c" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../../_static/tabs.js?v=3030b3cb"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchtree/inference/mcmc/mcmc';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -62,19 +64,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../../../search.html"
       method="get">
@@ -82,7 +73,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -90,8 +80,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -109,7 +99,8 @@
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -139,15 +130,11 @@
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -205,14 +192,6 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/index.html">torchtree.evolution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
-</ul>
-</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/alignment/index.html">torchtree.evolution.alignment</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/attribute_pattern/index.html">torchtree.evolution.attribute_pattern</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/bdsk/index.html">torchtree.evolution.bdsk</a></li>
@@ -226,6 +205,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/root_transform/index.html">torchtree.evolution.root_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/site_model/index.html">torchtree.evolution.site_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/site_pattern/index.html">torchtree.evolution.site_pattern</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
+</ul>
+</details></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/taxa/index.html">torchtree.evolution.taxa</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/tree_height_transform/index.html">torchtree.evolution.tree_height_transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/evolution/tree_likelihood/index.html">torchtree.evolution.tree_likelihood</a></li>
@@ -277,14 +264,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/optim/optimizer/index.html">torchtree.optim.optimizer</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/torchtree/torchtree/index.html">torchtree.torchtree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/torchtree/typing/index.html">torchtree.typing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/variational/index.html">torchtree.variational</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/variational/chi/index.html">torchtree.variational.chi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/variational/kl/index.html">torchtree.variational.kl</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../autoapi/torchtree/variational/renyi/index.html">torchtree.variational.renyi</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/torchtree/torchtree/index.html">torchtree.torchtree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../autoapi/torchtree/typing/index.html">torchtree.typing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bibliography/bib.html">Bibliography</a></li>
@@ -362,24 +349,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 
 </div></div>
       
@@ -430,6 +409,18 @@ document.write(`
 <a class="viewcode-back" href="../../../../autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC">[docs]</a>
 <span class="nd">@register_class</span>
 <span class="k">class</span> <span class="nc">MCMC</span><span class="p">(</span><span class="n">Identifiable</span><span class="p">,</span> <span class="n">Runnable</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Represents a Markov Chain Monte Carlo (MCMC) algorithm for inference.</span>
+
+<span class="sd">    :param id_: The ID of the MCMC instance.</span>
+<span class="sd">    :type id_: ID</span>
+<span class="sd">    :param joint: The joint model used for inference.</span>
+<span class="sd">    :type joint: CallableModel</span>
+<span class="sd">    :param operators: The list of MCMC operators.</span>
+<span class="sd">    :type operators: List[MCMCOperator]</span>
+<span class="sd">    :param int iterations: The number of iterations for the MCMC algorithm.</span>
+<span class="sd">    :param dict kwargs: Additional keyword arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
@@ -438,6 +429,8 @@ document.write(`
         <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an instance of the MCMC class.&quot;&quot;&quot;</span>
+
         <span class="n">Identifiable</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_operators</span> <span class="o">=</span> <span class="n">operators</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">joint</span> <span class="o">=</span> <span class="n">joint</span>
@@ -455,6 +448,7 @@ document.write(`
 <div class="viewcode-block" id="MCMC.run">
 <a class="viewcode-back" href="../../../../autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.run">[docs]</a>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the MCMC algorithm.&quot;&quot;&quot;</span>
         <span class="n">accept</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loggers</span><span class="p">:</span>
@@ -544,6 +538,7 @@ document.write(`
 <div class="viewcode-block" id="MCMC.state_dict">
 <a class="viewcode-back" href="../../../../autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.state_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the current state of the MCMC object as a dictionary.&quot;&quot;&quot;</span>
         <span class="n">states</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;iteration&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epoch</span><span class="p">}</span>
         <span class="n">states</span><span class="p">[</span><span class="s2">&quot;operators&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">op</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operators</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">states</span></div>
@@ -552,6 +547,7 @@ document.write(`
 <div class="viewcode-block" id="MCMC.load_state_dict">
 <a class="viewcode-back" href="../../../../autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.load_state_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the state dictionary into the MCMC algorithm.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operators</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">op_state</span> <span class="ow">in</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;operators&quot;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">op_state</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]:</span>
@@ -563,6 +559,7 @@ document.write(`
 <div class="viewcode-block" id="MCMC.save_full_state">
 <a class="viewcode-back" href="../../../../autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.save_full_state">[docs]</a>
     <span class="k">def</span> <span class="nf">save_full_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the full state of the MCMC algorithm.&quot;&quot;&quot;</span>
         <span class="n">mcmc_state</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;MCMC&quot;</span><span class="p">,</span>
@@ -576,13 +573,30 @@ document.write(`
 <a class="viewcode-back" href="../../../../autoapi/torchtree/inference/mcmc/mcmc/index.html#torchtree.inference.mcmc.mcmc.MCMC.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">dic</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">MCMC</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates an MCMC instance from a dictionary.</span>
+
+<span class="sd">        :param dict[str, Any] data: dictionary representation of a parameter object.</span>
+<span class="sd">        :param dict[str, Identifiable] dic: dictionary containing torchtree objects</span>
+<span class="sd">            keyed by their ID.</span>
+
+<span class="sd">        **JSON attributes**:</span>
+
+<span class="sd">         Mandatory:</span>
+<span class="sd">          - id (str): identifier of object.</span>
+<span class="sd">          - joint (str or dict): joint distribution of interest implementing CallableModel.</span>
+<span class="sd">          - operators (list of dict): list of operators implementing MCMCOperator.</span>
+<span class="sd">          - iterations (int): number of iterations.</span>
+
+<span class="sd">         Optional:</span>
+<span class="sd">          - loggers (list of dict): list of loggers implementing MCMCOperator.</span>
+<span class="sd">          - checkpoint (bool or str): checkpoint file name (Default: checkpoint.json).</span>
+<span class="sd">            No checkpointing if False is specified.</span>
+<span class="sd">          - checkpoint_frequency (int): frequency of checkpointing (Default: 1000).</span>
+<span class="sd">          - every (int): on-screen logging frequency (Default: 100).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">iterations</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;iterations&quot;</span><span class="p">]</span>
 
         <span class="n">optionals</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># checkpointing is used by default and the default file name is checkpoint.json</span>
-        <span class="c1"># it can be disabled if &quot;checkpoint&quot;: false is used</span>
-        <span class="c1"># the name of the checkpoint file can be modified using</span>
-        <span class="c1"># &quot;checkpoint&quot;: &quot;checkpointer.json&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;checkpoint&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;checkpoint&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;checkpoint&quot;</span><span class="p">]:</span>
                 <span class="n">optionals</span><span class="p">[</span><span class="s2">&quot;checkpoint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;checkpoint.json&quot;</span>
@@ -591,8 +605,7 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="n">optionals</span><span class="p">[</span><span class="s2">&quot;checkpoint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;checkpoint.json&quot;</span>
 
-        <span class="k">if</span> <span class="s2">&quot;checkpoint_frequency&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="n">optionals</span><span class="p">[</span><span class="s2">&quot;checkpoint_frequency&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;checkpoint_frequency&quot;</span><span class="p">]</span>
+        <span class="n">optionals</span><span class="p">[</span><span class="s2">&quot;checkpoint_frequency&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;checkpoint_frequency&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;loggers&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="n">loggers</span> <span class="o">=</span> <span class="n">process_objects</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;loggers&quot;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
@@ -604,8 +617,7 @@ document.write(`
 
         <span class="n">operators</span> <span class="o">=</span> <span class="n">process_objects</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;operators&quot;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;every&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="n">optionals</span><span class="p">[</span><span class="s2">&quot;every&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;every&quot;</span><span class="p">]</span>
+        <span class="n">optionals</span><span class="p">[</span><span class="s2">&quot;every&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;every&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">joint</span><span class="p">,</span> <span class="n">operators</span><span class="p">,</span> <span class="n">iterations</span><span class="p">,</span> <span class="o">**</span><span class="n">optionals</span><span class="p">)</span></div>
 </div>
@@ -672,8 +684,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

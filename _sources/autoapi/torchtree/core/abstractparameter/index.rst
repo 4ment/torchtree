@@ -34,6 +34,7 @@ Module Contents
 
       :abstractmethod:
 
+
       Returns the torch.device where the Tensor is.
 
       :rtype: torch.device
@@ -76,6 +77,7 @@ Module Contents
 
       :abstractmethod:
 
+
       The tensor.
 
       :getter: Returns the tensor.
@@ -86,6 +88,7 @@ Module Contents
    .. py:property:: shape
       :type: torch.Size
 
+
       The shape of the tensor.
 
       :rtype: Size
@@ -94,6 +97,7 @@ Module Contents
    .. py:property:: dtype
       :type: torch.dtype
 
+
       The dtype of the tensor.
 
       :rtype: torch.dtype
@@ -101,6 +105,7 @@ Module Contents
 
    .. py:property:: requires_grad
       :type: bool
+
 
       Is True if gradients need to be computed for this Tensor, False otherwise.
 
@@ -122,6 +127,7 @@ Module Contents
 
    .. py:property:: device
       :type: torch.device
+
 
       Returns the torch.device where the Tensor is.
 

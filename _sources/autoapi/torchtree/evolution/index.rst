@@ -9,15 +9,6 @@ torchtree.evolution
 
 
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 1
-
-   /autoapi/torchtree/evolution/substitution_model/index
-
-
 Submodules
 ----------
 
@@ -37,6 +28,7 @@ Submodules
    /autoapi/torchtree/evolution/root_transform/index
    /autoapi/torchtree/evolution/site_model/index
    /autoapi/torchtree/evolution/site_pattern/index
+   /autoapi/torchtree/evolution/substitution_model/index
    /autoapi/torchtree/evolution/taxa/index
    /autoapi/torchtree/evolution/tree_height_transform/index
    /autoapi/torchtree/evolution/tree_likelihood/index
