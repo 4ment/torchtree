@@ -43,6 +43,26 @@ torchtree can be easily extended without modifying the code base thanks its modu
 .. _bito: https://github.com/phylovi/bito
 
 
+How to cite
+-----------
+
+.. tabs::
+
+   .. tab:: Cite
+
+      Mathieu Fourment, Matthew Macaulay, Christiaan J Swanepoel, Xiang Ji, Marc A Suchard and Frederick A Matsen IV. *torchtree: flexible phylogenetic model development and inference using PyTorch*, 2024 `arXiv:2406.18044 <https://arxiv.org/abs/2406.18044>`_
+
+   .. code-tab:: bibtex
+
+      @misc{fourment2024torchtree,
+            title={torchtree: flexible phylogenetic model development and inference using {PyTorch}}, 
+            author={Mathieu Fourment and Matthew Macaulay and Christiaan J Swanepoel and Xiang Ji and Marc A Suchard and Frederick A Matsen IV},
+            year={2024},
+            eprint={2406.18044},
+            archivePrefix={arXiv},
+            primaryClass={q-bio.PE},
+            url={https://arxiv.org/abs/2406.18044}
+      }
 
 .. toctree::
    :maxdepth: 1
@@ -50,6 +70,7 @@ torchtree can be easily extended without modifying the code base thanks its modu
 
    getting_started/install.rst
    getting_started/quick_start.rst
+   getting_started/features.rst
    getting_started/json_reference.rst
 
 
@@ -59,6 +80,7 @@ torchtree can be easily extended without modifying the code base thanks its modu
 
    advanced/concepts.rst
    advanced/tree_likelihood.rst
+   advanced/benchmark.rst
 
 .. toctree::
    :hidden:

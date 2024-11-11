@@ -9,11 +9,14 @@
 
 torchtree is a program designed for developing and inferring phylogenetic models. Implemented in Python, it leverages [PyTorch] for automatic differentiation. The suite of inference algorithms encompasses variational inference, Hamiltonian Monte Carlo, maximum *a posteriori*, and Markov chain Monte Carlo.
 
+For a comprehensive assessment of torchtree's performance and use cases, please see our evaluation repository, [torchtree-experiments](https://github.com/4ment/torchtree-experiments), where torchtree was rigorously tested on various datasets and benchmarked for accuracy and speed.
+
+
 - [Getting Started](#getting-started)
   - [Dependencies](#dependencies)
   - [Installation](#installation)
 - [Quick start](#quick-start)
-- [Documentatoin](#documentation)
+- [Documentation](#documentation)
 - [Plug-ins](#torchtree-plug-in)
 
 ## Getting Started
@@ -83,6 +86,23 @@ torchtree can be easily extended without modifying the code base thanks its modu
 - [torchtree-tensorflow]
 
 A GitHub [template](https://github.com/4ment/torchtree-plugin-template) is available to assist in the development of a plug-in, and it is highly recommended to use it. This template provides a structured starting point, ensuring consistency and compatibility with `torchtree` while streamlining the development process.
+
+## How to cite
+
+If you use torchtree, please consider citing:
+
+```
+
+@misc{fourment2024torchtree,
+      title={torchtree: flexible phylogenetic model development and inference using {PyTorch}}, 
+      author={Mathieu Fourment and Matthew Macaulay and Christiaan J Swanepoel and Xiang Ji and Marc A Suchard and Frederick A Matsen IV},
+      year={2024},
+      eprint={2406.18044},
+      archivePrefix={arXiv},
+      primaryClass={q-bio.PE},
+      url={https://arxiv.org/abs/2406.18044}
+}
+```
 
 ## License
 
