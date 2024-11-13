@@ -9,6 +9,8 @@ torchtree is a program designed for developing and inferring phylogenetic models
 It is implemented in Python and uses PyTorch to leverage automatic differentiation.
 Inference algorithms include variational inference, Hamiltonian Monte Carlo, maximum *a posteriori* and Markov chain Monte Carlo.
 
+For a comprehensive assessment of torchtree's performance and use cases, please see our evaluation repository, [torchtree-experiments](https://github.com/4ment/torchtree-experiments), where torchtree was rigorously tested on various datasets and benchmarked for accuracy and speed.
+
 Installation
 ------------
 
@@ -33,6 +35,8 @@ torchtree can be easily extended without modifying the code base thanks its modu
 - torchtree-physher_: is a plug-in interfacing physher_ for fast gradient calculations of tree likelihood and coalescent models.
 - torchtree-scipy_: is a plug-in interfacing the SciPy package.
 - torchtree-tensorflow_: is a plug-in interacting with Tensorflow.
+
+A GitHub `template <https://github.com/4ment/torchtree-plugin-template>`_ is available to assist in the development of a plug-in, and it is highly recommended to use it. This template provides a structured starting point, ensuring consistency and compatibility with `torchtree` while streamlining the development process.
 
 .. _torchtree-bito: http://github.com/4ment/torchtree-bito
 .. _torchtree-physher: http://github.com/4ment/torchtree-physher

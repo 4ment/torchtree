@@ -44,6 +44,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinx_tabs.tabs",
+    "sphinx_togglebutton",
 ]
 autosummary_generate = True
 

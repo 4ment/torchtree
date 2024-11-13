@@ -7,6 +7,7 @@ This benchmark assesses the memory usage and speed of various gradient implement
 The study's aim was to compare the efficiency of automatic differentiation (AD) and analytic gradient methods.
 The gradient of the tree likelihood can be computed by `BITO <https://github.com/phylovi/bito>`_ or `physher <https://github.com/4ment/physher>`_ [#Fourment2014]_, efficient C++ and C libraries that analytically calculate the gradient.
 `torchtree` integrates with these libraries through the `torchtree-bito <https://github.com/4ment/torchtree-bito>`_ and `torchtree-physher <https://github.com/4ment/torchtree-physher>`_ plug-ins.
+`physher` is a standalone program that can be used as a library by torchtree.
 
 .. list-table:: Programs compared in the benchmark
    :header-rows: 1
@@ -36,7 +37,7 @@ The gradient of the tree likelihood can be computed by `BITO <https://github.com
      - PyTorch
      - AD
      - BITO and physher
-   * - `treeflow <https://github.com/christiaanjs/treeflow>`_
+   * - `treeflow <https://github.com/christiaanjs/treeflow>`_ [#swanepoel2022]_
      - python
      - TensorFlow
      - AD
@@ -69,3 +70,5 @@ As shown in the next figure, the relative performance of AD depends on the task.
 .. [#Fourment2014] Fourment M and Holmes EC. Novel non-parametric models to estimate evolutionary rates and divergence times from heterochronous sequence data. *BMC Evolutionary Biology*, 2014. doi:`10.1186/s12862-014-0163-6 <https://doi.org/10.1186/s12862-014-0163-6>`_
 
 .. [#Fourment2019] Fourment M and Darling AE. Evaluating probabilistic programming and fast variational Bayesian inference in phylogenetics. *PeerJ*, 2019. doi:`10.7717/peerj.8272 <https://doi.org/10.7717/peerj.8272>`_
+
+.. [#swanepoel2022] Swanepoel C, Fourment M, Ji X, Nasif H, Suchard MA, Matsen IV FA, Drummond A. TreeFlow: probabilistic programming and automatic differentiation for phylogenetics, 2022. `arXiv:2211.05220 <https://arxiv.org/abs/2211.05220>`_

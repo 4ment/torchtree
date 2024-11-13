@@ -84,6 +84,35 @@ Plotting the results
 
 Here are the kernel density estimates of the posterior distributions for some parameters:
 
+.. toggle:: Show code
+
+    .. code-block:: python
+
+        import matplotlib.pyplot as plt
+        import pandas as pd
+        import seaborn as sns
+
+        df = pd.read_csv("samples.csv", sep="\t")
+        df.rename(
+            columns={
+                "tree.root_height": "Root height",
+                "branchmodel.rate": "Substitution rate",
+                "coalescent.theta": "Population size",
+                "substmodel.kappa": "Kappa",
+            },
+            inplace=True,
+        )
+
+        fig, axes = plt.subplots(2, 2)
+        fig.supylabel("Density")
+
+        columns = ["Root height", "Substitution rate", "Population size", "Kappa"]
+        for ax, col in zip(axes.flat, columns):
+            sns.kdeplot(data=df, x=col, ax=ax)
+            ax.set(ylabel=None)
+
+        plt.show()
+
 .. figure:: images/advi_hky_rooted.png
    :align: center
    :alt: ADVI inference of a time tree with a strict clock and constant coalescent model
