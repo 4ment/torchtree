@@ -86,6 +86,63 @@ class GeneralJC69(SubstitutionModel):
 
 @register_class
 class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
+    r"""General symmetric substitution model.
+
+    The state space :math:`\Omega=\{S_0, S_1, \dots, S_{M-1}\}` of this model is defined by the `DataType` object.
+    
+    This model is composed of:
+
+    - :math:`K` substitution rate parameters: :math:`\mathbf{r}=r_0, r_1, \dots, r_{K-1}` where :math:`K \leq (M^2-M)/2`.
+    - :math:`M` equilibrium frequency parameters: :math:`\pi_0, \pi_1, \dots, \pi_{M-1}`.
+    - A mapping function that associates each matrix element :math:`Q_{ij}` to an index in the set of rates :math:`f: \{0, 1, \dots, (M^2-M)/2-1\} \rightarrow \{0,1, \dots, K-1\}`
+    
+    The matrix :math:`Q` is thus defined as:
+
+    .. math::
+
+        Q_{ij} =
+        \begin{cases}
+        r_{f(i \cdot M + j)} \pi_j & \text{if } i \neq j \\
+        -\sum_{k \neq i} Q_{ik} & \text{if } i = j
+        \end{cases}
+    
+    where :math:`i,j \in \{0,1, \dots, M-1\}` are zero-based indices for rows and columns.
+
+    :math:`f` is implemented as a one-dimentional array :math:`\mathbf{g}[x]=f(x)` for :math:`x \in \{0, 1,\dots, (M^2-M)/2-1\}` where each element maps a position in :math:`Q` to an index in the rate array :math:`r`.
+    The mapping is defined such as the position :math:`(i,j)` in :math:`Q` corresponds to :math:`i \cdot M+ j` for :math:`i \neq j`.
+    The indices correspond to first iterating over rows (row 0, then row 1, etc.) and then over columns for each row of the upper off-diagonal elements.
+
+    The HKY substitution model can be defined as a symmetric substitution model with M=4 frequency parameters and rate parameters :math:`\mathbf{r}=r_0, r_1`.
+    The mapping function is therefore:
+    
+    .. math::
+
+        f(k) =
+        \begin{cases}
+        0 & \text{if } k = i \cdot 4 + j \text{ and } i \rightarrow j \text{ is transversion}\\
+        1 & \text{otherwise}
+        \end{cases}
+    
+    As a one-dimentional array, the mapping is defined as :math:`\mathbf{g}=[0,1,0,0,1,0]`.
+    
+    The HKY rate matrix :math:`Q` is given as:
+
+    .. math::
+
+        Q_{HKY} = 
+        \begin{bmatrix}
+        -(r_0 \pi_C + r_1 \pi_G + r_0 \pi_T) & r_0 \pi_C & r_1 \pi_G & r_0 \pi_T \\
+        r_0 \pi_A & -(r_0 \pi_A + r_0 \pi_G + r_0 \pi_T) & r_0 \pi_G & r_1 \pi_T \\
+        r_1 \pi_A & r_0 \pi_C & -(r_1\pi_A + r_0 \pi_C + r_0 \pi_T) & r_0 \pi_T \\
+        r_0 \pi_A & r_1 \pi_C & r_0 \pi_G & -(r_0 \pi_A + r_1 \pi_C + r_0 \pi_G)
+        \end{bmatrix}
+    
+    Similarly the GTR model can be specified with :math:`\mathbf{g}=[0,1,2,3,4,5]` and :math:`\mathbf{r}=r_0, r_1, r_2, r_3, r_4, r_5`.
+    
+    .. note::
+        The order of the equilibrium frequencies in a :class:`~torchtree.Parameter` is expected to be the order of the states defined in the DataType object.
+    """
+
     def __init__(
         self,
         id_: ID,
@@ -144,6 +201,36 @@ class GeneralSymmetricSubstitutionModel(SymmetricSubstitutionModel):
 
 @register_class
 class GeneralNonSymmetricSubstitutionModel(NonSymmetricSubstitutionModel):
+    r"""General non-symmetric substitution model.
+
+    The state space :math:`\Omega=\{S_0, S_1, \dots, S_{M-1}\}` of this model is defined by the `DataType` object.
+    
+    This model is composed of:
+
+    - :math:`K` substitution rate parameters: :math:`\mathbf{r}=r_0, r_1, \dots, r_{K-1}` where :math:`K \leq (M^2-M)`.
+    - :math:`M` equilibrium frequency parameters: :math:`\pi_0, \pi_1, \dots, \pi_{M-1}`.
+    - A mapping function that associates each matrix element :math:`Q_{ij}` to an index in the set of rates :math:`f: \{0, 1, \dots, (M^2-M)-1\} \rightarrow \{0,1, \dots, K-1\}`
+    
+    The matrix :math:`Q` is thus defined as:
+
+    .. math::
+
+        Q_{ij} =
+        \begin{cases}
+        r_{f(i \cdot M + j)} \pi_j & \text{if } i \neq j \\
+        -\sum_{k \neq i} Q_{ik} & \text{if } i = j
+        \end{cases}
+    
+    where :math:`i,j \in \{0,1, \dots, M-1\}` are zero-based indices for rows and columns.
+
+    :math:`f` is implemented as a one-dimentional array :math:`\mathbf{g}[x]=f(x)` for :math:`x \in \{0, 1,\dots, (M^2-M)-1\}` where each element maps a position in :math:`Q` to an index in the rate array :math:`r`.
+    The mapping is defined such as the position :math:`(i,j)` in :math:`Q` corresponds to :math:`i \cdot M + j` for :math:`i > j` and :math:`j \cdot M + i + (M^2-M)/2` for :math:`i < j`.
+    In other words, the first of :math:`\mathbf{g}` corresponds to the upper off-diagonal elements and the second to the lower off-diagonal elements.
+    
+    .. note::
+        The order of the equilibrium frequencies in a :class:`~torchtree.Parameter` is expected to be the order of the states defined in the DataType object.
+    """
+
     def __init__(
         self,
         id_: ID,

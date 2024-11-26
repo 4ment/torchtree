@@ -17,6 +17,8 @@ The following subcommands are available:
 
 Each subcommand/algorithm requires a different set of arguments which can be obtained by running ``torchtree-cli <subcommand> --help``.
 
+:command:`torchtree-cli` requires an alignment file in FASTA format and a tree file in either `Newick <https://en.wikipedia.org/wiki/Newick_format>`_ or `NEXUS <https://en.wikipedia.org/wiki/Nexus_file>`_ format.
+While *torchtree* uses the `DendroPy <https://jeetsukumaran.github.io/DendroPy/>`_ library to parse and manipulate phylogenetic trees, it is recommended to use a Newick file due to the numerous variations of the NEXUS format.
 
 Let's explore a few examples of how to use these programs using an influenza A virus dataset containing 69 DNA sequences.
 The alignment and tree files are located in the `data <https://github.com/4ment/torchtree/tree/master/data>`_ directory of the `torchtree <https://github.com/4ment/torchtree>`_ repository.

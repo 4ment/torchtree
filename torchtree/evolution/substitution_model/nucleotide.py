@@ -1,3 +1,54 @@
+r"""Reversible nucleotide substitution models.
+
+Reversible nucleotide substitution models are characterized by the following:
+
+1. **Time Reversibility**
+
+The substitution process satisfies the detailed balance condition:
+
+.. math::
+
+    \pi_i Q_{ij} = \pi_j Q_{ji}
+
+where:
+
+- :math:`\pi_i` and :math:`\pi_j` are the equilibrium frequencies of nucleotides :math:`i` and :math:`j`.
+- :math:`Q_{ij}` is the rate of substitution from nucleotide :math:`i` to :math:`j`.
+
+This ensures that the process appears the same forward and backward in time, making the likelihood computations simpler.
+
+2. **Equilibrium Frequencies**
+
+Represent the long-term stationary distribution of nucleotides. These frequencies account for biases in nucleotide composition.
+
+3. **Rate Matrix (Q)**
+
+The general structure of the rate matrix for reversible models is:
+
+.. math::
+
+    Q_{ij} =
+    \begin{cases}
+    \mu_{ij} \pi_j & \text{if } i \neq j \\
+    -\sum_{k \neq i} Q_{ik} & \text{if } i = j
+    \end{cases}
+
+where:
+
+- :math:`\mu_{ij}` is the relative rate of substitution between nucleotides :math:`i` and :math:`j`.
+- Diagonal entries (:math:`Q_{ii}`) ensure rows sum to zero.
+
+4. **Scaling**
+
+The rate matrix is typically scaled such that the average rate of substitution is 1.
+The scaling factor :math:`\beta` is given by:
+
+.. math::
+    \beta = -\frac{1}{\sum_{i} \pi_i \mu_{ii}}
+
+.. note::
+    The order of the equilibrium frequencies in a :class:`~torchtree.Parameter` is expected to be :math:`\pi_A, \pi_C, \pi_G, \pi_T`.
+"""
 from __future__ import annotations
 
 from typing import Optional, Union
@@ -14,6 +65,28 @@ from .abstract import SubstitutionModel, SymmetricSubstitutionModel
 
 @register_class
 class JC69(SubstitutionModel):
+    r"""Jukes-Cantor (JC69) substitution model.
+    
+    The JC69 model assumes:
+    
+    - **Equal substitution rates:** Each nucleotide is equally likely to mutate into another nucleotide.
+    - **Equal base frequencies:** The equilibrium frequencies of :math:`\pi_A, \pi_C, \pi_G, \pi_T` are all equal to 0.25.
+    - **Reversibility:** The substitution process is time-reversible.
+    
+    The JC69 rate matrix :math:`Q` is given as:
+
+    .. math::
+
+        Q = 
+        \begin{bmatrix}
+        -1 & 1/3 & 1/3 & 1/3 \\
+        1/3 & -1 & 1/3 & 1/3 \\
+        1/3 & 1/3 & -1 & 1/3 \\
+        1/3 & 1/3 & 1/3 & -1
+        \end{bmatrix}
+
+    """
+
     def __init__(self, id_: ID) -> None:
         super().__init__(id_)
         self._frequencies = torch.full((4,), 0.25)
@@ -73,6 +146,26 @@ class JC69(SubstitutionModel):
 
 @register_class
 class HKY(SymmetricSubstitutionModel):
+    r"""Hasegawa-Kishino-Yano (HKY) substitution model.
+    
+    The HKY model has:
+
+    - A transition/transversion rate ratio parameters: :math:`\kappa`.
+    - Four equilibrium frequency parameters: :math:`\pi_A, \pi_C, \pi_G, \pi_T`.
+    
+    The HKY rate matrix :math:`Q` is given as:
+
+    .. math::
+
+        Q = 
+        \begin{bmatrix}
+        -(\pi_C + \kappa \pi_G + \pi_T) & \pi_C & \kappa \pi_G & \pi_T \\
+        \pi_A & -(\pi_A + \pi_G + \kappa \pi_T) & \pi_G & \kappa \pi_T \\
+        \kappa \pi_A & \pi_C & -(\kappa \pi_A + \pi_C + \pi_T) & \pi_T \\
+        \pi_A & \kappa \pi_C & \pi_G & -(\pi_A + \kappa \pi_C + \pi_G)
+        \end{bmatrix}
+    """
+
     def __init__(
         self, id_: ID, kappa: AbstractParameter, frequencies: AbstractParameter
     ) -> None:
@@ -180,6 +273,42 @@ class HKY(SymmetricSubstitutionModel):
 
 @register_class
 class GTR(SymmetricSubstitutionModel):
+    r"""General Time Reversible (GTR) substitution model.
+    
+    The GTR model has:
+
+    - Six substitution rate parameters: :math:`a, b, c, d, e, f`.
+    - Four equilibrium frequency parameters: :math:`\pi_A, \pi_C, \pi_G, \pi_T`.
+    
+    The GTR rate matrix :math:`Q` is given as:
+
+    .. math::
+
+        Q = 
+        \begin{bmatrix}
+        -(a \pi_C + b \pi_G + c \pi_T) & a \pi_C & b \pi_G & c \pi_T \\
+        a \pi_A & -(a \pi_A + d \pi_G + e \pi_T) & d \pi_G & e \pi_T \\
+        b \pi_A & d \pi_C & -(b \pi_A + d \pi_C + f \pi_T) & f \pi_T \\
+        c \pi_A & e \pi_C & f \pi_G & -(c \pi_A + e \pi_C + f \pi_G)
+        \end{bmatrix}
+
+    where the exchangeability parameters are defined as:
+
+    .. math::
+        \begin{align*}
+        a &= r_{AC} = r_{CA}\\
+        b &= r_{AG} = r_{GA}\\
+        c &= r_{AT} = r_{TA}\\
+        d &= r_{CG} = r_{GC}\\
+        e &= r_{CT} = r_{TC}\\
+        f &= r_{GT} = r_{TG}
+        \end{align*}
+    
+    .. note::
+        The order of the rate parameters in a :class:`~torchtree.Parameter` is expected to be :math:`a, b, c, d, e, f`.
+        The upper off-diagonal elements are indexed by first iterating over rows (row 0, then row 1, etc.) and then over columns for each row.
+    """
+
     def __init__(
         self, id_: ID, rates: AbstractParameter, frequencies: AbstractParameter
     ):

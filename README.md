@@ -56,6 +56,24 @@ For detailed information on how to use `torchtree` and its features, please refe
 ## Quick start
 `torchtree` requires a JSON file containing models and algorithms. A configuration file can be generated using `torchtree-cli`, a command line-based tool. This two-step process allows the user to adjust values in the configuration file, such as hyperparameters.
 
+`torchtree-cli` implements several subcommands, each corresponding to a different type of inference algorithm.
+A list of available subcommands can be obtained by running `torchtree-cli --help`.
+
+The following subcommands are available:
+
+* `advi`: Automatic differentiation variational inference
+* `hmc`: Hamiltonian Monte Carlo
+* `map`: Maximum *a posteriori*
+* `mcmc`: Markov chain Monte Carlo
+
+Each subcommand/algorithm requires a different set of arguments which can be obtained by running `torchtree-cli <subcommand> --help`.
+
+`torchtree-cli` requires an alignment file in FASTA format and a tree file in either [Newick](https://en.wikipedia.org/wiki/Newick_format) or [NEXUS](https://en.wikipedia.org/wiki/Nexus_file) format.
+While *torchtree* uses the [DendroPy](https://jeetsukumaran.github.io/DendroPy) library to parse and manipulate phylogenetic trees, it is recommended to use a Newick file due to the numerous variations of the NEXUS format.
+
+Let's explore a few examples of how to use these programs using an influenza A virus dataset containing 69 DNA sequences.
+The alignment and tree files are located in the [data](data) directory.
+
 ### 1 - Generating a configuration file
 Some examples of models using variational inference:
 
