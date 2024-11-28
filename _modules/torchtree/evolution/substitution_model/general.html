@@ -32,6 +32,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=09fa7fd9" />
   
   <!-- So that users can add custom icons -->
   <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
@@ -42,7 +44,13 @@
     <script src="../../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchtree/evolution/substitution_model/general';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -137,7 +145,20 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/json_reference.html">Input files</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced/concepts.html">Building blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced/tree_likelihood.html">Tree likelihood model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced/benchmark.html">Benchmark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/cli/index.html">torchtree.cli</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -499,6 +520,63 @@
 <a class="viewcode-back" href="../../../../autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralSymmetricSubstitutionModel">[docs]</a>
 <span class="nd">@register_class</span>
 <span class="k">class</span> <span class="nc">GeneralSymmetricSubstitutionModel</span><span class="p">(</span><span class="n">SymmetricSubstitutionModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;General symmetric substitution model.</span>
+
+<span class="sd">    The state space :math:`\Omega=\{S_0, S_1, \dots, S_{M-1}\}` of this model is defined by the `DataType` object.</span>
+<span class="sd">    </span>
+<span class="sd">    This model is composed of:</span>
+
+<span class="sd">    - :math:`K` substitution rate parameters: :math:`\mathbf{r}=r_0, r_1, \dots, r_{K-1}` where :math:`K \leq (M^2-M)/2`.</span>
+<span class="sd">    - :math:`M` equilibrium frequency parameters: :math:`\pi_0, \pi_1, \dots, \pi_{M-1}`.</span>
+<span class="sd">    - A mapping function that associates each matrix element :math:`Q_{ij}` to an index in the set of rates :math:`f: \{0, 1, \dots, (M^2-M)/2-1\} \rightarrow \{0,1, \dots, K-1\}`</span>
+<span class="sd">    </span>
+<span class="sd">    The matrix :math:`Q` is thus defined as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        Q_{ij} =</span>
+<span class="sd">        \begin{cases}</span>
+<span class="sd">        r_{f(i \cdot M + j)} \pi_j &amp; \text{if } i \neq j \\</span>
+<span class="sd">        -\sum_{k \neq i} Q_{ik} &amp; \text{if } i = j</span>
+<span class="sd">        \end{cases}</span>
+<span class="sd">    </span>
+<span class="sd">    where :math:`i,j \in \{0,1, \dots, M-1\}` are zero-based indices for rows and columns.</span>
+
+<span class="sd">    :math:`f` is implemented as a one-dimentional array :math:`\mathbf{g}[x]=f(x)` for :math:`x \in \{0, 1,\dots, (M^2-M)/2-1\}` where each element maps a position in :math:`Q` to an index in the rate array :math:`r`.</span>
+<span class="sd">    The mapping is defined such as the position :math:`(i,j)` in :math:`Q` corresponds to :math:`i \cdot M+ j` for :math:`i \neq j`.</span>
+<span class="sd">    The indices correspond to first iterating over rows (row 0, then row 1, etc.) and then over columns for each row of the upper off-diagonal elements.</span>
+
+<span class="sd">    The HKY substitution model can be defined as a symmetric substitution model with M=4 frequency parameters and rate parameters :math:`\mathbf{r}=r_0, r_1`.</span>
+<span class="sd">    The mapping function is therefore:</span>
+<span class="sd">    </span>
+<span class="sd">    .. math::</span>
+
+<span class="sd">        f(k) =</span>
+<span class="sd">        \begin{cases}</span>
+<span class="sd">        0 &amp; \text{if } k = i \cdot 4 + j \text{ and } i \rightarrow j \text{ is transversion}\\</span>
+<span class="sd">        1 &amp; \text{otherwise}</span>
+<span class="sd">        \end{cases}</span>
+<span class="sd">    </span>
+<span class="sd">    As a one-dimentional array, the mapping is defined as :math:`\mathbf{g}=[0,1,0,0,1,0]`.</span>
+<span class="sd">    </span>
+<span class="sd">    The HKY rate matrix :math:`Q` is given as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        Q_{HKY} = </span>
+<span class="sd">        \begin{bmatrix}</span>
+<span class="sd">        -(r_0 \pi_C + r_1 \pi_G + r_0 \pi_T) &amp; r_0 \pi_C &amp; r_1 \pi_G &amp; r_0 \pi_T \\</span>
+<span class="sd">        r_0 \pi_A &amp; -(r_0 \pi_A + r_0 \pi_G + r_0 \pi_T) &amp; r_0 \pi_G &amp; r_1 \pi_T \\</span>
+<span class="sd">        r_1 \pi_A &amp; r_0 \pi_C &amp; -(r_1\pi_A + r_0 \pi_C + r_0 \pi_T) &amp; r_0 \pi_T \\</span>
+<span class="sd">        r_0 \pi_A &amp; r_1 \pi_C &amp; r_0 \pi_G &amp; -(r_0 \pi_A + r_1 \pi_C + r_0 \pi_G)</span>
+<span class="sd">        \end{bmatrix}</span>
+<span class="sd">    </span>
+<span class="sd">    Similarly the GTR model can be specified with :math:`\mathbf{g}=[0,1,2,3,4,5]` and :math:`\mathbf{r}=r_0, r_1, r_2, r_3, r_4, r_5`.</span>
+<span class="sd">    </span>
+<span class="sd">    .. note::</span>
+<span class="sd">        The order of the equilibrium frequencies in a :class:`~torchtree.Parameter` is expected to be the order of the states defined in the DataType object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
@@ -572,6 +650,36 @@
 <a class="viewcode-back" href="../../../../autoapi/torchtree/evolution/substitution_model/general/index.html#torchtree.evolution.substitution_model.general.GeneralNonSymmetricSubstitutionModel">[docs]</a>
 <span class="nd">@register_class</span>
 <span class="k">class</span> <span class="nc">GeneralNonSymmetricSubstitutionModel</span><span class="p">(</span><span class="n">NonSymmetricSubstitutionModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;General non-symmetric substitution model.</span>
+
+<span class="sd">    The state space :math:`\Omega=\{S_0, S_1, \dots, S_{M-1}\}` of this model is defined by the `DataType` object.</span>
+<span class="sd">    </span>
+<span class="sd">    This model is composed of:</span>
+
+<span class="sd">    - :math:`K` substitution rate parameters: :math:`\mathbf{r}=r_0, r_1, \dots, r_{K-1}` where :math:`K \leq (M^2-M)`.</span>
+<span class="sd">    - :math:`M` equilibrium frequency parameters: :math:`\pi_0, \pi_1, \dots, \pi_{M-1}`.</span>
+<span class="sd">    - A mapping function that associates each matrix element :math:`Q_{ij}` to an index in the set of rates :math:`f: \{0, 1, \dots, (M^2-M)-1\} \rightarrow \{0,1, \dots, K-1\}`</span>
+<span class="sd">    </span>
+<span class="sd">    The matrix :math:`Q` is thus defined as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        Q_{ij} =</span>
+<span class="sd">        \begin{cases}</span>
+<span class="sd">        r_{f(i \cdot M + j)} \pi_j &amp; \text{if } i \neq j \\</span>
+<span class="sd">        -\sum_{k \neq i} Q_{ik} &amp; \text{if } i = j</span>
+<span class="sd">        \end{cases}</span>
+<span class="sd">    </span>
+<span class="sd">    where :math:`i,j \in \{0,1, \dots, M-1\}` are zero-based indices for rows and columns.</span>
+
+<span class="sd">    :math:`f` is implemented as a one-dimentional array :math:`\mathbf{g}[x]=f(x)` for :math:`x \in \{0, 1,\dots, (M^2-M)-1\}` where each element maps a position in :math:`Q` to an index in the rate array :math:`r`.</span>
+<span class="sd">    The mapping is defined such as the position :math:`(i,j)` in :math:`Q` corresponds to :math:`i \cdot M + j` for :math:`i &gt; j` and :math:`j \cdot M + i + (M^2-M)/2` for :math:`i &lt; j`.</span>
+<span class="sd">    In other words, the first of :math:`\mathbf{g}` corresponds to the upper off-diagonal elements and the second to the lower off-diagonal elements.</span>
+<span class="sd">    </span>
+<span class="sd">    .. note::</span>
+<span class="sd">        The order of the equilibrium frequencies in a :class:`~torchtree.Parameter` is expected to be the order of the states defined in the DataType object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>

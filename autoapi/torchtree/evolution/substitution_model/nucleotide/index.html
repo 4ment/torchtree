@@ -33,6 +33,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=09fa7fd9" />
   
   <!-- So that users can add custom icons -->
   <script src="../../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
@@ -43,7 +45,14 @@
     <script src="../../../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script src="../../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/torchtree/evolution/substitution_model/nucleotide/index';</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -138,7 +147,20 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started/quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started/features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started/json_reference.html">Input files</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../advanced/concepts.html">Building blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../advanced/tree_likelihood.html">Tree likelihood model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../advanced/benchmark.html">Benchmark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../index.html">API Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../cli/index.html">torchtree.cli</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -430,18 +452,62 @@
                   
   <section id="module-torchtree.evolution.substitution_model.nucleotide">
 <span id="torchtree-evolution-substitution-model-nucleotide"></span><h1>torchtree.evolution.substitution_model.nucleotide<a class="headerlink" href="#module-torchtree.evolution.substitution_model.nucleotide" title="Link to this heading">#</a></h1>
+<p>Reversible nucleotide substitution models.</p>
+<p>Reversible nucleotide substitution models are characterized by the following:</p>
+<ol class="arabic simple">
+<li><p><strong>Time Reversibility</strong></p></li>
+</ol>
+<p>The substitution process satisfies the detailed balance condition:</p>
+<div class="math notranslate nohighlight">
+\[\pi_i Q_{ij} = \pi_j Q_{ji}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\pi_i\)</span> and <span class="math notranslate nohighlight">\(\pi_j\)</span> are the equilibrium frequencies of nucleotides <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(Q_{ij}\)</span> is the rate of substitution from nucleotide <span class="math notranslate nohighlight">\(i\)</span> to <span class="math notranslate nohighlight">\(j\)</span>.</p></li>
+</ul>
+<p>This ensures that the process appears the same forward and backward in time, making the likelihood computations simpler.</p>
+<ol class="arabic simple" start="2">
+<li><p><strong>Equilibrium Frequencies</strong></p></li>
+</ol>
+<p>Represent the long-term stationary distribution of nucleotides. These frequencies account for biases in nucleotide composition.</p>
+<ol class="arabic simple" start="3">
+<li><p><strong>Rate Matrix (Q)</strong></p></li>
+</ol>
+<p>The general structure of the rate matrix for reversible models is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q_{ij} =
+\begin{cases}
+\mu_{ij} \pi_j &amp; \text{if } i \neq j \\
+-\sum_{k \neq i} Q_{ik} &amp; \text{if } i = j
+\end{cases}\end{split}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mu_{ij}\)</span> is the relative rate of substitution between nucleotides <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>.</p></li>
+<li><p>Diagonal entries (<span class="math notranslate nohighlight">\(Q_{ii}\)</span>) ensure rows sum to zero.</p></li>
+</ul>
+<ol class="arabic simple" start="4">
+<li><p><strong>Scaling</strong></p></li>
+</ol>
+<p>The rate matrix is typically scaled such that the average rate of substitution is 1.
+The scaling factor <span class="math notranslate nohighlight">\(\beta\)</span> is given by:</p>
+<div class="math notranslate nohighlight">
+\[\beta = -\frac{1}{\sum_{i} \pi_i \mu_{ii}}\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The order of the equilibrium frequencies in a <code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code> is expected to be <span class="math notranslate nohighlight">\(\pi_A, \pi_C, \pi_G, \pi_T\)</span>.</p>
+</div>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.substitution_model.nucleotide.JC69" title="torchtree.evolution.substitution_model.nucleotide.JC69"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JC69</span></code></a></p></td>
-<td><p>Parametric model.</p></td>
+<td><p>Jukes-Cantor (JC69) substitution model.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchtree.evolution.substitution_model.nucleotide.HKY" title="torchtree.evolution.substitution_model.nucleotide.HKY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HKY</span></code></a></p></td>
-<td><p>Parametric model.</p></td>
+<td><p>Hasegawa-Kishino-Yano (HKY) substitution model.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchtree.evolution.substitution_model.nucleotide.GTR" title="torchtree.evolution.substitution_model.nucleotide.GTR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GTR</span></code></a></p></td>
-<td><p>Parametric model.</p></td>
+<td><p>General Time Reversible (GTR) substitution model.</p></td>
 </tr>
 </tbody>
 </table>
@@ -453,10 +519,22 @@
 <dt class="sig sig-object py" id="torchtree.evolution.substitution_model.nucleotide.JC69">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.substitution_model.nucleotide.</span></span><span class="sig-name descname"><span class="pre">JC69</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/torchtree/evolution/substitution_model/nucleotide.html#JC69"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.evolution.substitution_model.nucleotide.JC69" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../abstract/index.html#torchtree.evolution.substitution_model.abstract.SubstitutionModel" title="torchtree.evolution.substitution_model.abstract.SubstitutionModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.abstract.SubstitutionModel</span></code></a></p>
-<p>Parametric model.</p>
-<p>A Model can contain parameters and models and can monitor any
-changes. A Model is the building block of more complex models. This
-class is abstract.</p>
+<p>Jukes-Cantor (JC69) substitution model.</p>
+<p>The JC69 model assumes:</p>
+<ul class="simple">
+<li><p><strong>Equal substitution rates:</strong> Each nucleotide is equally likely to mutate into another nucleotide.</p></li>
+<li><p><strong>Equal base frequencies:</strong> The equilibrium frequencies of <span class="math notranslate nohighlight">\(\pi_A, \pi_C, \pi_G, \pi_T\)</span> are all equal to 0.25.</p></li>
+<li><p><strong>Reversibility:</strong> The substitution process is time-reversible.</p></li>
+</ul>
+<p>The JC69 rate matrix <span class="math notranslate nohighlight">\(Q\)</span> is given as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q =
+\begin{bmatrix}
+-1 &amp; 1/3 &amp; 1/3 &amp; 1/3 \\
+1/3 &amp; -1 &amp; 1/3 &amp; 1/3 \\
+1/3 &amp; 1/3 &amp; -1 &amp; 1/3 \\
+1/3 &amp; 1/3 &amp; 1/3 &amp; -1
+\end{bmatrix}\end{split}\]</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.evolution.substitution_model.nucleotide.JC69.frequencies">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Tensor</span></em><a class="headerlink" href="#torchtree.evolution.substitution_model.nucleotide.JC69.frequencies" title="Link to this definition">#</a></dt>
@@ -535,10 +613,21 @@ by their ID.</p></li>
 <dt class="sig sig-object py" id="torchtree.evolution.substitution_model.nucleotide.HKY">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.substitution_model.nucleotide.</span></span><span class="sig-name descname"><span class="pre">HKY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kappa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/torchtree/evolution/substitution_model/nucleotide.html#HKY"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.evolution.substitution_model.nucleotide.HKY" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../abstract/index.html#torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel" title="torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel</span></code></a></p>
-<p>Parametric model.</p>
-<p>A Model can contain parameters and models and can monitor any
-changes. A Model is the building block of more complex models. This
-class is abstract.</p>
+<p>Hasegawa-Kishino-Yano (HKY) substitution model.</p>
+<p>The HKY model has:</p>
+<ul class="simple">
+<li><p>A transition/transversion rate ratio parameters: <span class="math notranslate nohighlight">\(\kappa\)</span>.</p></li>
+<li><p>Four equilibrium frequency parameters: <span class="math notranslate nohighlight">\(\pi_A, \pi_C, \pi_G, \pi_T\)</span>.</p></li>
+</ul>
+<p>The HKY rate matrix <span class="math notranslate nohighlight">\(Q\)</span> is given as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q =
+\begin{bmatrix}
+-(\pi_C + \kappa \pi_G + \pi_T) &amp; \pi_C &amp; \kappa \pi_G &amp; \pi_T \\
+\pi_A &amp; -(\pi_A + \pi_G + \kappa \pi_T) &amp; \pi_G &amp; \kappa \pi_T \\
+\kappa \pi_A &amp; \pi_C &amp; -(\kappa \pi_A + \pi_C + \pi_T) &amp; \pi_T \\
+\pi_A &amp; \kappa \pi_C &amp; \pi_G &amp; -(\pi_A + \kappa \pi_C + \pi_G)
+\end{bmatrix}\end{split}\]</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.evolution.substitution_model.nucleotide.HKY.rates">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#torchtree.evolution.substitution_model.nucleotide.HKY.rates" title="Link to this definition">#</a></dt>
@@ -596,10 +685,36 @@ by their ID.</p></li>
 <dt class="sig sig-object py" id="torchtree.evolution.substitution_model.nucleotide.GTR">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchtree.evolution.substitution_model.nucleotide.</span></span><span class="sig-name descname"><span class="pre">GTR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torchtree.typing.ID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../core/abstractparameter/index.html#torchtree.core.abstractparameter.AbstractParameter" title="torchtree.core.abstractparameter.AbstractParameter"><span class="pre">torchtree.core.abstractparameter.AbstractParameter</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/torchtree/evolution/substitution_model/nucleotide.html#GTR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchtree.evolution.substitution_model.nucleotide.GTR" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../abstract/index.html#torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel" title="torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">torchtree.evolution.substitution_model.abstract.SymmetricSubstitutionModel</span></code></a></p>
-<p>Parametric model.</p>
-<p>A Model can contain parameters and models and can monitor any
-changes. A Model is the building block of more complex models. This
-class is abstract.</p>
+<p>General Time Reversible (GTR) substitution model.</p>
+<p>The GTR model has:</p>
+<ul class="simple">
+<li><p>Six substitution rate parameters: <span class="math notranslate nohighlight">\(a, b, c, d, e, f\)</span>.</p></li>
+<li><p>Four equilibrium frequency parameters: <span class="math notranslate nohighlight">\(\pi_A, \pi_C, \pi_G, \pi_T\)</span>.</p></li>
+</ul>
+<p>The GTR rate matrix <span class="math notranslate nohighlight">\(Q\)</span> is given as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}Q =
+\begin{bmatrix}
+-(a \pi_C + b \pi_G + c \pi_T) &amp; a \pi_C &amp; b \pi_G &amp; c \pi_T \\
+a \pi_A &amp; -(a \pi_A + d \pi_G + e \pi_T) &amp; d \pi_G &amp; e \pi_T \\
+b \pi_A &amp; d \pi_C &amp; -(b \pi_A + d \pi_C + f \pi_T) &amp; f \pi_T \\
+c \pi_A &amp; e \pi_C &amp; f \pi_G &amp; -(c \pi_A + e \pi_C + f \pi_G)
+\end{bmatrix}\end{split}\]</div>
+<p>where the exchangeability parameters are defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+a &amp;= r_{AC} = r_{CA}\\
+b &amp;= r_{AG} = r_{GA}\\
+c &amp;= r_{AT} = r_{TA}\\
+d &amp;= r_{CG} = r_{GC}\\
+e &amp;= r_{CT} = r_{TC}\\
+f &amp;= r_{GT} = r_{TG}
+\end{align*}\end{split}\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The order of the rate parameters in a <code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code> is expected to be <span class="math notranslate nohighlight">\(a, b, c, d, e, f\)</span>.
+The upper off-diagonal elements are indexed by first iterating over rows (row 0, then row 1, etc.) and then over columns for each row.</p>
+</div>
 <dl class="py property">
 <dt class="sig sig-object py" id="torchtree.evolution.substitution_model.nucleotide.GTR.rates">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rates</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#torchtree.evolution.substitution_model.nucleotide.GTR.rates" title="Link to this definition">#</a></dt>

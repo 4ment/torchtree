@@ -32,6 +32,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=09fa7fd9" />
   
   <!-- So that users can add custom icons -->
   <script src="../../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
@@ -42,7 +44,13 @@
     <script src="../../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../../_static/togglebutton.js?v=4a39c7ea"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchtree/evolution/substitution_model/nucleotide';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -137,7 +145,20 @@
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/json_reference.html">Input files</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced/concepts.html">Building blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced/tree_likelihood.html">Tree likelihood model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../advanced/benchmark.html">Benchmark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../autoapi/torchtree/cli/index.html">torchtree.cli</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -385,7 +406,58 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchtree.evolution.substitution_model.nucleotide</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Reversible nucleotide substitution models.</span>
+
+<span class="sd">Reversible nucleotide substitution models are characterized by the following:</span>
+
+<span class="sd">1. **Time Reversibility**</span>
+
+<span class="sd">The substitution process satisfies the detailed balance condition:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    \pi_i Q_{ij} = \pi_j Q_{ji}</span>
+
+<span class="sd">where:</span>
+
+<span class="sd">- :math:`\pi_i` and :math:`\pi_j` are the equilibrium frequencies of nucleotides :math:`i` and :math:`j`.</span>
+<span class="sd">- :math:`Q_{ij}` is the rate of substitution from nucleotide :math:`i` to :math:`j`.</span>
+
+<span class="sd">This ensures that the process appears the same forward and backward in time, making the likelihood computations simpler.</span>
+
+<span class="sd">2. **Equilibrium Frequencies**</span>
+
+<span class="sd">Represent the long-term stationary distribution of nucleotides. These frequencies account for biases in nucleotide composition.</span>
+
+<span class="sd">3. **Rate Matrix (Q)**</span>
+
+<span class="sd">The general structure of the rate matrix for reversible models is:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    Q_{ij} =</span>
+<span class="sd">    \begin{cases}</span>
+<span class="sd">    \mu_{ij} \pi_j &amp; \text{if } i \neq j \\</span>
+<span class="sd">    -\sum_{k \neq i} Q_{ik} &amp; \text{if } i = j</span>
+<span class="sd">    \end{cases}</span>
+
+<span class="sd">where:</span>
+
+<span class="sd">- :math:`\mu_{ij}` is the relative rate of substitution between nucleotides :math:`i` and :math:`j`.</span>
+<span class="sd">- Diagonal entries (:math:`Q_{ii}`) ensure rows sum to zero.</span>
+
+<span class="sd">4. **Scaling**</span>
+
+<span class="sd">The rate matrix is typically scaled such that the average rate of substitution is 1.</span>
+<span class="sd">The scaling factor :math:`\beta` is given by:</span>
+
+<span class="sd">.. math::</span>
+<span class="sd">    \beta = -\frac{1}{\sum_{i} \pi_i \mu_{ii}}</span>
+
+<span class="sd">.. note::</span>
+<span class="sd">    The order of the equilibrium frequencies in a :class:`~torchtree.Parameter` is expected to be :math:`\pi_A, \pi_C, \pi_G, \pi_T`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -403,6 +475,28 @@
 <a class="viewcode-back" href="../../../../autoapi/torchtree/evolution/substitution_model/nucleotide/index.html#torchtree.evolution.substitution_model.nucleotide.JC69">[docs]</a>
 <span class="nd">@register_class</span>
 <span class="k">class</span> <span class="nc">JC69</span><span class="p">(</span><span class="n">SubstitutionModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Jukes-Cantor (JC69) substitution model.</span>
+<span class="sd">    </span>
+<span class="sd">    The JC69 model assumes:</span>
+<span class="sd">    </span>
+<span class="sd">    - **Equal substitution rates:** Each nucleotide is equally likely to mutate into another nucleotide.</span>
+<span class="sd">    - **Equal base frequencies:** The equilibrium frequencies of :math:`\pi_A, \pi_C, \pi_G, \pi_T` are all equal to 0.25.</span>
+<span class="sd">    - **Reversibility:** The substitution process is time-reversible.</span>
+<span class="sd">    </span>
+<span class="sd">    The JC69 rate matrix :math:`Q` is given as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        Q = </span>
+<span class="sd">        \begin{bmatrix}</span>
+<span class="sd">        -1 &amp; 1/3 &amp; 1/3 &amp; 1/3 \\</span>
+<span class="sd">        1/3 &amp; -1 &amp; 1/3 &amp; 1/3 \\</span>
+<span class="sd">        1/3 &amp; 1/3 &amp; -1 &amp; 1/3 \\</span>
+<span class="sd">        1/3 &amp; 1/3 &amp; 1/3 &amp; -1</span>
+<span class="sd">        \end{bmatrix}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_frequencies</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">4</span><span class="p">,),</span> <span class="mf">0.25</span><span class="p">)</span>
@@ -486,6 +580,26 @@
 <a class="viewcode-back" href="../../../../autoapi/torchtree/evolution/substitution_model/nucleotide/index.html#torchtree.evolution.substitution_model.nucleotide.HKY">[docs]</a>
 <span class="nd">@register_class</span>
 <span class="k">class</span> <span class="nc">HKY</span><span class="p">(</span><span class="n">SymmetricSubstitutionModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Hasegawa-Kishino-Yano (HKY) substitution model.</span>
+<span class="sd">    </span>
+<span class="sd">    The HKY model has:</span>
+
+<span class="sd">    - A transition/transversion rate ratio parameters: :math:`\kappa`.</span>
+<span class="sd">    - Four equilibrium frequency parameters: :math:`\pi_A, \pi_C, \pi_G, \pi_T`.</span>
+<span class="sd">    </span>
+<span class="sd">    The HKY rate matrix :math:`Q` is given as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        Q = </span>
+<span class="sd">        \begin{bmatrix}</span>
+<span class="sd">        -(\pi_C + \kappa \pi_G + \pi_T) &amp; \pi_C &amp; \kappa \pi_G &amp; \pi_T \\</span>
+<span class="sd">        \pi_A &amp; -(\pi_A + \pi_G + \kappa \pi_T) &amp; \pi_G &amp; \kappa \pi_T \\</span>
+<span class="sd">        \kappa \pi_A &amp; \pi_C &amp; -(\kappa \pi_A + \pi_C + \pi_T) &amp; \pi_T \\</span>
+<span class="sd">        \pi_A &amp; \kappa \pi_C &amp; \pi_G &amp; -(\pi_A + \kappa \pi_C + \pi_G)</span>
+<span class="sd">        \end{bmatrix}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span> <span class="n">kappa</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">:</span> <span class="n">AbstractParameter</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -611,6 +725,42 @@
 <a class="viewcode-back" href="../../../../autoapi/torchtree/evolution/substitution_model/nucleotide/index.html#torchtree.evolution.substitution_model.nucleotide.GTR">[docs]</a>
 <span class="nd">@register_class</span>
 <span class="k">class</span> <span class="nc">GTR</span><span class="p">(</span><span class="n">SymmetricSubstitutionModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;General Time Reversible (GTR) substitution model.</span>
+<span class="sd">    </span>
+<span class="sd">    The GTR model has:</span>
+
+<span class="sd">    - Six substitution rate parameters: :math:`a, b, c, d, e, f`.</span>
+<span class="sd">    - Four equilibrium frequency parameters: :math:`\pi_A, \pi_C, \pi_G, \pi_T`.</span>
+<span class="sd">    </span>
+<span class="sd">    The GTR rate matrix :math:`Q` is given as:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        Q = </span>
+<span class="sd">        \begin{bmatrix}</span>
+<span class="sd">        -(a \pi_C + b \pi_G + c \pi_T) &amp; a \pi_C &amp; b \pi_G &amp; c \pi_T \\</span>
+<span class="sd">        a \pi_A &amp; -(a \pi_A + d \pi_G + e \pi_T) &amp; d \pi_G &amp; e \pi_T \\</span>
+<span class="sd">        b \pi_A &amp; d \pi_C &amp; -(b \pi_A + d \pi_C + f \pi_T) &amp; f \pi_T \\</span>
+<span class="sd">        c \pi_A &amp; e \pi_C &amp; f \pi_G &amp; -(c \pi_A + e \pi_C + f \pi_G)</span>
+<span class="sd">        \end{bmatrix}</span>
+
+<span class="sd">    where the exchangeability parameters are defined as:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \begin{align*}</span>
+<span class="sd">        a &amp;= r_{AC} = r_{CA}\\</span>
+<span class="sd">        b &amp;= r_{AG} = r_{GA}\\</span>
+<span class="sd">        c &amp;= r_{AT} = r_{TA}\\</span>
+<span class="sd">        d &amp;= r_{CG} = r_{GC}\\</span>
+<span class="sd">        e &amp;= r_{CT} = r_{TC}\\</span>
+<span class="sd">        f &amp;= r_{GT} = r_{TG}</span>
+<span class="sd">        \end{align*}</span>
+<span class="sd">    </span>
+<span class="sd">    .. note::</span>
+<span class="sd">        The order of the rate parameters in a :class:`~torchtree.Parameter` is expected to be :math:`a, b, c, d, e, f`.</span>
+<span class="sd">        The upper off-diagonal elements are indexed by first iterating over rows (row 0, then row 1, etc.) and then over columns for each row.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span> <span class="n">rates</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">:</span> <span class="n">AbstractParameter</span>
     <span class="p">):</span>
