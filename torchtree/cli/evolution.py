@@ -59,13 +59,17 @@ COALESCENT_PIECEWISE = [
 
 def create_evolution_parser(parser):
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("-i", "--input", required=False, help="""alignment file""")
+    group.add_argument(
+        "-i", "--input", required=False, help="""alignment file in FASTA format"""
+    )
     group.add_argument(
         "--poisson",
         action="store_true",
         help="""use poisson tree likelihood""",
     )
-    parser.add_argument("-t", "--tree", required=True, help="""tree file""")
+    parser.add_argument(
+        "-t", "--tree", required=True, help="""tree file in newick or NEXUS format"""
+    )
     parser.add_argument(
         "-m",
         "--model",

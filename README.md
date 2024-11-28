@@ -7,12 +7,16 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/torchtree)
 
 
-torchtree is a program designed for inferring phylogenetic trees from molecular sequences. Implemented in Python, it leverages [PyTorch] for automatic differentiation. The suite of inference algorithms encompasses variational inference, Hamiltonian Monte Carlo, maximum *a posteriori*, and Markov chain Monte Carlo.
+torchtree is a program designed for developing and inferring phylogenetic models. Implemented in Python, it leverages [PyTorch] for automatic differentiation. The suite of inference algorithms encompasses variational inference, Hamiltonian Monte Carlo, maximum *a posteriori*, and Markov chain Monte Carlo.
+
+For a comprehensive assessment of torchtree's performance and use cases, please see our evaluation repository, [torchtree-experiments](https://github.com/4ment/torchtree-experiments), where torchtree was rigorously tested on various datasets and benchmarked for accuracy and speed.
+
 
 - [Getting Started](#getting-started)
   - [Dependencies](#dependencies)
   - [Installation](#installation)
 - [Quick start](#quick-start)
+- [Documentation](#documentation)
 - [Plug-ins](#torchtree-plug-in)
 
 ## Getting Started
@@ -44,8 +48,31 @@ Check install
 torchtree --help
 ```
 
+## Documentation
+For detailed information on how to use `torchtree` and its features, please refer to the official documentation and API reference.
+ - [Documentation](https://4ment.github.io/torchtree)
+ - [API Reference](https://4ment.github.io/torchtree/autoapi/torchtree/index.html)
+
 ## Quick start
 `torchtree` requires a JSON file containing models and algorithms. A configuration file can be generated using `torchtree-cli`, a command line-based tool. This two-step process allows the user to adjust values in the configuration file, such as hyperparameters.
+
+`torchtree-cli` implements several subcommands, each corresponding to a different type of inference algorithm.
+A list of available subcommands can be obtained by running `torchtree-cli --help`.
+
+The following subcommands are available:
+
+* `advi`: Automatic differentiation variational inference
+* `hmc`: Hamiltonian Monte Carlo
+* `map`: Maximum *a posteriori*
+* `mcmc`: Markov chain Monte Carlo
+
+Each subcommand/algorithm requires a different set of arguments which can be obtained by running `torchtree-cli <subcommand> --help`.
+
+`torchtree-cli` requires an alignment file in FASTA format and a tree file in either [Newick](https://en.wikipedia.org/wiki/Newick_format) or [NEXUS](https://en.wikipedia.org/wiki/Nexus_file) format.
+While *torchtree* uses the [DendroPy](https://jeetsukumaran.github.io/DendroPy) library to parse and manipulate phylogenetic trees, it is recommended to use a Newick file due to the numerous variations of the NEXUS format.
+
+Let's explore a few examples of how to use these programs using an influenza A virus dataset containing 69 DNA sequences.
+The alignment and tree files are located in the [data](data) directory.
 
 ### 1 - Generating a configuration file
 Some examples of models using variational inference:
@@ -69,11 +96,31 @@ torchtree fluA.json
 ```
 
 ## torchtree plug-in
-torchtree can be easily extended without modifying the code base thanks its modular implementation. Some examples of external packages
+torchtree can be easily extended without modifying the code base thanks its modular implementation. Some examples of plug-ins:
+
 - [torchtree-bito]
 - [torchtree-physher]
 - [torchtree-scipy]
 - [torchtree-tensorflow]
+
+A GitHub [template](https://github.com/4ment/torchtree-plugin-template) is available to assist in the development of a plug-in, and it is highly recommended to use it. This template provides a structured starting point, ensuring consistency and compatibility with `torchtree` while streamlining the development process.
+
+## How to cite
+
+If you use torchtree, please consider citing:
+
+```
+
+@misc{fourment2024torchtree,
+      title={torchtree: flexible phylogenetic model development and inference using {PyTorch}}, 
+      author={Mathieu Fourment and Matthew Macaulay and Christiaan J Swanepoel and Xiang Ji and Marc A Suchard and Frederick A Matsen IV},
+      year={2024},
+      eprint={2406.18044},
+      archivePrefix={arXiv},
+      primaryClass={q-bio.PE},
+      url={https://arxiv.org/abs/2406.18044}
+}
+```
 
 ## License
 

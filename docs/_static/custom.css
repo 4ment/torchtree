@@ -1,0 +1,5 @@
+/* Custom color for inline code with the "keycode" role */
+.keycode {
+    color: #005b82;  /* Change this to your desired color */
+    background-color: #f0f8ff;  /* Optional: Add background color */
+}
