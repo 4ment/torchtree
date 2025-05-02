@@ -170,6 +170,9 @@ def create_fullrank_from_meanfield(params, path):
     locs = []
     log_scales = []
     for param in checkpoint:
+        # checkpoint saves the states of other objects such as the Optimizer
+        if not param['type'].endswith('Parameter'):
+            continue
         if '.loc' in param['id']:
             locs.append(param)
         elif '.scale.unres' in param['id']:
@@ -179,12 +182,14 @@ def create_fullrank_from_meanfield(params, path):
             sys.exit(2)
     sorted(
         locs,
-        key=lambda x: params.index(x['id'].replace('.loc', '').replace('var.', '')),
+        key=lambda x: params.index(
+            x['id'].replace('.loc', '').replace('variational.', '')
+        ),
     )
     sorted(
         log_scales,
         key=lambda x: params.index(
-            x['id'].replace('.scale.unres', '').replace('var.', '')
+            x['id'].replace('.scale.unres', '').replace('variational.', '')
         ),
     )
     return locs, log_scales

@@ -78,9 +78,9 @@ def tensor_rand(distribution, shape, dtype=None, device=None, requires_grad=Fals
 
     :example:
     >>> _ = torch.manual_seed(0)
-    >>> t1 = tensor_rand('normal(1.0, 2.0)', (1,2), dtype=torch.float64)
+    >>> t1 = tensor_rand('normal(1.0, 2.0)', (1,2))
     >>> t1
-    tensor([[4.0820, 0.4131]], dtype=torch.float64)
+    tensor([[4.0820, 0.4131]])
     >>> _ = torch.manual_seed(0)
     >>> t2 = tensor_rand('normal(0.0, 1.0)', (1,2), dtype=torch.float64)
     >>> _ = torch.manual_seed(0)
