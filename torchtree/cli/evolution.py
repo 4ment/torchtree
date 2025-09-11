@@ -12,7 +12,12 @@ from dendropy import TaxonNamespace, Tree
 
 from torchtree import Parameter, ViewParameter
 from torchtree.cli import PLUGIN_MANAGER
-from torchtree.cli.argparse_utils import list_of_float, str_or_float, zero_or_path
+from torchtree.cli.argparse_utils import (
+    list_of_float,
+    str_or_float,
+    str_or_int,
+    zero_or_path,
+)
 from torchtree.cli.priors import create_clock_horseshoe_prior, create_one_on_x_prior
 from torchtree.cli.utils import CONSTRAINT, convert_date_to_real, read_dates_from_csv
 from torchtree.core.utils import process_object
@@ -53,6 +58,7 @@ COALESCENT_PIECEWISE = [
     "piecewise-linear",
     "skyglide",
     "skygrid",
+    "skyline",
     "skyride",
 ]
 
@@ -112,7 +118,7 @@ def create_evolution_parser(parser):
     )
     parser.add_argument(
         "--clock",
-        choices=["strict", "ucln", "horseshoe"],
+        choices=["strict", "ucln", "horseshoe", "ncln"],
         help="""type of clock""",
     )
     parser.add_argument(
@@ -257,6 +263,11 @@ def add_coalescent(parser):
         help="""a cutoff for skygrid""",
     )
     parser.add_argument(
+        "--group_sizes",
+        type=str_or_int,
+        help="""group sizes for generalized skyline""",
+    )
+    parser.add_argument(
         "--gmrf_integrated",
         action="store_true",
         help="""use GMRF with precision integrated out""",
@@ -284,6 +295,12 @@ def add_coalescent(parser):
         type=float,
         help="""Soft coalescent""",
     )
+    parser.add_argument(
+        "--theta_prior",
+        choices=["gmrf", "gmrf_integrated", "eml"],
+        default="gmrf",
+        help="""prior for piecewise population size parameters""",
+    )
     return parser
 
 
@@ -297,12 +314,20 @@ def check_arguments(arg, parser):
             parser.error(
                 "skyride coalescent model does not require cutoff or grid arguments"
             )
+        elif arg.coalescent == "skyline":
+            if arg.group_sizes is None:
+                parser.error("skyline coalescent model requires group_sizes argument")
         elif arg.coalescent in piecewise_grid and (
             arg.cutoff is None or arg.grid is None
         ):
             parser.error(
                 ", ".join(piecewise_grid)
                 + " coalescent models require cutoff and grid arguments"
+            )
+    elif arg.coalescent is not None:
+        if arg.cutoff is not None or arg.grid is not None:
+            parser.error(
+                "cutoff and grid arguments are only valid for piecewise coalescent models"
             )
 
 
@@ -819,6 +844,23 @@ def create_branch_model(id_, tree_id, taxa_count, arg, rate_init=None):
             "tree_model": tree_id,
             "rate": rate,
         }
+    elif arg.clock == "ncln":
+        rate = Parameter.json_factory(
+            f"{id_}.rates", **{"tensor": 1.0, "full": [2 * taxa_count - 2]}
+        )
+        location = Parameter.json_factory(f"{id_}.location", **{"tensor": [0.01]})
+        scale = Parameter.json_factory(f"{id_}.scale", **{"tensor": [1.0]})
+        location[CONSTRAINT.LOWER.value] = 0.0
+        scale[CONSTRAINT.LOWER.value] = 0.0
+        rate[CONSTRAINT.LOWER.value] = 0.0
+        return {
+            "id": id_,
+            "type": "ArbitraryClockModel",
+            "tree_model": tree_id,
+            "rate": rate,
+            "location": location,
+            "scale": scale,
+        }
 
 
 def build_alignment(file_name, data_type):
@@ -1208,6 +1250,58 @@ def create_bdsk(birth_death_id, tree_id, arg):
     return bdsk
 
 
+def create_gmrf(arg, id_, joint_list):
+    if arg.gmrf_integrated:
+        gmrf = {
+            "id": "gmrf",
+            "type": "GMRFGammaIntegrated",
+            "x": f"{id_}.theta.log",
+            "shape": 0.001,
+            "rate": 0.001,
+        }
+    else:
+        gmrf = {
+            "id": "gmrf",
+            "type": "GMRF",
+            "x": f"{id_}.theta.log",
+            "precision": Parameter.json_factory(
+                "gmrf.precision",
+                **{"tensor": [0.1]},
+            ),
+        }
+
+    if arg.coalescent_non_centered:
+        gmrf["x"] = {
+            "id": f"{id_}.theta.log",
+            "type": "TransformedParameter",
+            "transform": "LogTransform",
+            "x": f"{id_}.theta",
+        }
+
+    joint_list.append(gmrf)
+
+    if arg.coalescent == "skyride":
+        if not arg.disable_time_aware:
+            gmrf["tree_model"] = "tree"
+
+        if arg.disable_gmrf_rescaling:
+            gmrf["rescale"] = False
+
+    if not arg.gmrf_integrated:
+        gmrf["precision"][CONSTRAINT.LOWER.value] = 0.0
+        joint_list.append(
+            Distribution.json_factory(
+                "gmrf.precision.prior",
+                "torch.distributions.Gamma",
+                "gmrf.precision",
+                {
+                    "concentration": 0.0010,
+                    "rate": 0.0010,
+                },
+            )
+        )
+
+
 def create_coalesent(id_, tree_id, taxa, arg):
     joint_list = []
     params = {}
@@ -1238,6 +1332,12 @@ def create_coalesent(id_, tree_id, taxa, arg):
     elif arg.coalescent in COALESCENT_PIECEWISE:
         if arg.coalescent == "skyride":
             theta_shape = [len(taxa["taxa"]) - 1]
+        elif arg.coalescent == "skyline" and arg.group_sizes is not None:
+            internal_count = len(taxa['taxa']) - 1
+            if isinstance(arg.group_sizes, int):
+                theta_shape = [arg.group_sizes]
+            elif isinstance(arg.group_sizes, str):
+                theta_shape = [len(arg.group_sizes.split(","))]
         else:
             theta_shape = [arg.grid]
 
@@ -1290,54 +1390,22 @@ def create_coalesent(id_, tree_id, taxa, arg):
                 "x": theta_log,
             }
 
-        if arg.gmrf_integrated:
-            gmrf = {
-                "id": "gmrf",
-                "type": "GMRFGammaIntegrated",
-                "x": f"{id_}.theta.log",
-                "shape": 0.001,
-                "rate": 0.001,
-            }
-        else:
-            gmrf = {
-                "id": "gmrf",
-                "type": "GMRF",
-                "x": f"{id_}.theta.log",
-                "precision": Parameter.json_factory(
-                    "gmrf.precision",
-                    **{"tensor": [0.1]},
-                ),
-            }
-
-        if arg.coalescent_non_centered:
-            gmrf["x"] = {
-                "id": f"{id_}.theta.log",
-                "type": "TransformedParameter",
-                "transform": "LogTransform",
+        if arg.theta_prior == "gmrf":
+            create_gmrf(arg, id_, joint_list)
+        elif arg.theta_prior == "eml":
+            eml = {
+                "id": f"{id_}.theta.eml",
+                "type": "GammaAutoregressiveModel",
                 "x": f"{id_}.theta",
             }
-
-        joint_list.append(gmrf)
-
-        if arg.coalescent == "skyride":
-            if not arg.disable_time_aware:
-                gmrf["tree_model"] = "tree"
-
-            if arg.disable_gmrf_rescaling:
-                gmrf["rescale"] = False
-
-        if not arg.gmrf_integrated:
-            gmrf["precision"][CONSTRAINT.LOWER.value] = 0.0
-            joint_list.append(
-                Distribution.json_factory(
-                    "gmrf.precision.prior",
-                    "torch.distributions.Gamma",
-                    "gmrf.precision",
-                    {
-                        "concentration": 0.0010,
-                        "rate": 0.0010,
-                    },
-                )
+            theta0 = {
+                "id": f"{id_}.theta0",
+                "type": "ViewParameter",
+                "indices": "0:1",
+                "parameter": f"{id_}.theta",
+            }
+            joint_list.extend(
+                (eml, create_one_on_x_prior(f"{id_}.theta0.prior", theta0))
             )
 
     if arg.coalescent == "constant":
@@ -1402,6 +1470,30 @@ def create_coalesent(id_, tree_id, taxa, arg):
             "tree_model": tree_id,
             "cutoff": arg.cutoff,
         }
+    elif arg.coalescent == "skyline":
+        coalescent = {
+            "id": id_,
+            "type": "GeneralizedSkylineCoalescentModel",
+            "theta": theta,
+            "tree_model": tree_id,
+        }
+        internal_count = len(taxa['taxa']) - 1
+        if isinstance(arg.group_sizes, int):
+            base_size = internal_count // arg.group_sizes
+            remainder = internal_count % arg.group_sizes
+
+            # start with base_size for each group
+            group_sizes = torch.full((arg.group_sizes,), base_size, dtype=torch.long)
+
+            # distribute the remainder
+            group_sizes[:remainder] += 1
+            coalescent["group_sizes"] = group_sizes.tolist()
+        elif isinstance(arg.group_sizes, str):
+            coalescent["group_sizes"] = list(map(int, arg.group_sizes.split(",")))
+            assert sum(coalescent["group_sizes"]) == internal_count, (
+                f"The sum of group sizes {sum(coalescent['group_sizes'])} does not match "
+                f"the number of internal nodes {len(taxa['taxa']) - 1}"
+            )
 
     for plugin in PLUGIN_MANAGER.plugins():
         plugin.process_coalescent(arg, coalescent)
@@ -1483,17 +1575,22 @@ def create_ucln_prior(branch_model_id):
     )
     mean[CONSTRAINT.LOWER.value] = 0.0
     stdev[CONSTRAINT.LOWER.value] = 0.0
-    joint_list.append(
-        Distribution.json_factory(
-            f"{branch_model_id}.rates.prior",
+    log_normal_distribution = {
+        "id": f"{branch_model_id}.rates.prior",
+        "type": "IndependentDistribution",
+        "reinterpreted_batch_ndims": 1,
+        "base_distribution": Distribution.json_factory(
+            f"{branch_model_id}.rates.prior2",
             "LogNormal",
             f"{branch_model_id}.rates",
             {
                 "mean": mean,
                 "stdev": stdev,
             },
-        )
-    )
+        ),
+    }
+
+    joint_list.append(log_normal_distribution)
     joint_list.append(
         CTMCScale.json_factory(
             f"{branch_model_id}.mean.prior",
@@ -1510,6 +1607,42 @@ def create_ucln_prior(branch_model_id):
                 "concentration": 0.5396,
                 "rate": 2.6184,
             },
+        )
+    )
+    return joint_list
+
+
+def create_ncln_prior(branch_model_id):
+    """Create non centered log normal prior for branch rates."""
+    joint_list = []
+
+    joint_list.extend(
+        (
+            Distribution.json_factory(
+                f"{branch_model_id}.rates.prior",
+                "LogNormal",
+                f"{branch_model_id}.rates",
+                {
+                    "mean": 1.0,
+                    "stdev": 1.0,
+                },
+            ),
+            Distribution.json_factory(
+                f"{branch_model_id}.location.prior",
+                "torch.distributions.Exponential",
+                f"{branch_model_id}.location",
+                {
+                    "rate": 1.0,
+                },
+            ),
+            Distribution.json_factory(
+                f"{branch_model_id}.scale.prior",
+                "torch.distributions.Exponential",
+                f"{branch_model_id}.scale",
+                {
+                    "rate": 1.0,
+                },
+            ),
         )
     )
     return joint_list
@@ -1553,6 +1686,8 @@ def create_clock_prior(arg):
 
     elif arg.clock == "ucln":
         prior_list.extend(create_ucln_prior(branch_model_id))
+    elif arg.clock == "ncln":
+        prior_list.extend(create_ncln_prior(branch_model_id))
     elif arg.clock == "horseshoe":
         prior_list.extend(create_clock_horseshoe_prior(branch_model_id, tree_id))
     return prior_list

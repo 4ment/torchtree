@@ -1,4 +1,5 @@
 """Lognormal distribution parametrized by mean and scale."""
+
 import math
 from math import log
 from numbers import Number

@@ -1,4 +1,5 @@
 """Normal distribution parametrized by location and precision."""
+
 from math import sqrt
 from numbers import Number
 from typing import Union

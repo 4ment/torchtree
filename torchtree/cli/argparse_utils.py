@@ -31,6 +31,19 @@ def str_or_float(arg, choices):
             )
 
 
+def str_or_int(arg):
+    """Used by argparse when the argument can be either an integer or a string."""
+    try:
+        return int(arg)
+    except ValueError:
+        if isinstance(arg, str):
+            return arg
+        else:
+            raise argparse.ArgumentTypeError(
+                'invalid choice (choose from an integer or a string)'
+            )
+
+
 def list_of_float(arg, length):
     """Used by argparse when the argument should be a list of floats."""
     values = arg.split(",")

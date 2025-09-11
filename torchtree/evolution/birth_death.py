@@ -104,6 +104,7 @@ class BirthDeath(Distribution):
     :param survival: condition on observing at least one sample
     :param validate_args:
     """
+
     arg_constraints = {
         'lambda_': constraints.greater_than_eq(0.0),
         'mu': constraints.positive,

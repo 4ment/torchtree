@@ -1,4 +1,5 @@
 """One on X prior."""
+
 import torch.distributions
 import torch.distributions.constraints
 

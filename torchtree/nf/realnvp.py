@@ -1,5 +1,6 @@
 """Masked Autoregressive Flow for Density Estimation arXiv:1705.07057v4 Code
 ported from https://github.com/kamenbliznashki/normalizing_flows."""
+
 from __future__ import annotations
 
 import copy

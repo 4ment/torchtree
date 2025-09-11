@@ -4,13 +4,13 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - python>=3.7
+  - python>=3.10
   - numpy>=1.7
   - dendropy
   - pytorch>=1.9
   - pip
 # Dev dependencies
-  - black
+  - black=23.3.0
   - docformatter
   - flake8
   - isort

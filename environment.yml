@@ -3,7 +3,7 @@ channels:
   - pytorch
   - bioconda
 dependencies:
-  - python=3.7
+  - python=3.10
   - numpy>=1.7
   - dendropy
   - pytorch>=1.9

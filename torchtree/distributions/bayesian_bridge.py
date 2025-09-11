@@ -1,4 +1,5 @@
 """Bayesian bridge prior."""
+
 from __future__ import annotations
 
 from numbers import Number

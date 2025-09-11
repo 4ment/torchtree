@@ -840,14 +840,19 @@ def create_logger(id_, parameters, arg):
     if arg.coalescent:
         models.append('coalescent')
         if arg.coalescent in COALESCENT_PIECEWISE:
-            models.append('gmrf')
             models.append(
                 {
                     'id': arg.coalescent,
                     'type': 'JointDistributionModel',
-                    'distributions': ['coalescent', 'gmrf'],
+                    'distributions': ['coalescent'],
                 }
             )
+            if arg.theta_prior == 'eml':
+                models[-1]['distributions'].append('coalescent.theta.eml')
+                models.append('coalescent.theta.eml')
+            else:
+                models[-1]['distributions'].append('gmrf')
+                models.append('gmrf')
 
     return {
         "id": id_,
@@ -877,14 +882,19 @@ def create_sampler(id_, var_id, parameters, arg):
     if arg.coalescent:
         models.append('coalescent')
         if arg.coalescent in COALESCENT_PIECEWISE:
-            models.append('gmrf')
             models.append(
                 {
                     'id': arg.coalescent,
                     'type': 'JointDistributionModel',
-                    'distributions': ['coalescent', 'gmrf'],
+                    'distributions': ['coalescent'],
                 }
             )
+            if arg.theta_prior == 'eml':
+                models[-1]['distributions'].append('coalescent.theta.eml')
+                models.append('coalescent.theta.eml')
+            else:
+                models[-1]['distributions'].append('gmrf')
+                models.append('gmrf')
 
     return {
         "id": id_,
@@ -937,7 +947,7 @@ def build_advi(arg):
     if arg.clock is not None and arg.heights == 'ratio':
         jacobians_list.append('tree')
 
-    if arg.coalescent in COALESCENT_PIECEWISE:
+    if arg.coalescent in COALESCENT_PIECEWISE and arg.theta_prior != 'eml':
         jacobians_list.remove("coalescent.theta")
 
     joint_jacobian = {
@@ -984,13 +994,20 @@ def build_advi(arg):
             parameters.extend(
                 (
                     f'{branch_model_id}.rates.prior.mean',
-                    f'{branch_model_id}.rates.prior.scale',
+                    f'{branch_model_id}.rates.prior.stdev',
+                )
+            )
+        elif arg.clock == 'ncln':
+            parameters.extend(
+                (
+                    f'{branch_model_id}.location',
+                    f'{branch_model_id}.scale',
                 )
             )
         else:
             parameters.append(f"{branch_model_id}.rate")
 
-        if arg.clock == 'horseshoe' or arg.clock == 'ucln':
+        if arg.clock == 'horseshoe' or arg.clock in ('ucln', 'ncln'):
             parameters.append(f'{branch_model_id}.rates')
     else:
         parameters = ['tree.blens']
@@ -999,7 +1016,11 @@ def build_advi(arg):
         if arg.coalescent_integrated is None:
             parameters.append("coalescent.theta")
 
-        if arg.coalescent in COALESCENT_PIECEWISE and not arg.gmrf_integrated:
+        if (
+            arg.coalescent in COALESCENT_PIECEWISE
+            and not arg.gmrf_integrated
+            and arg.theta_prior is None
+        ):
             parameters.append('gmrf.precision')
         elif arg.coalescent == 'exponential':
             parameters.append('coalescent.growth')

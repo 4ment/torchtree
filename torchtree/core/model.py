@@ -1,4 +1,5 @@
 """Parametric models."""
+
 import abc
 import collections.abc
 from typing import Optional, Union

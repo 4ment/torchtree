@@ -37,6 +37,9 @@ class LoggerInterface(JSONSerializable, Runnable):
         self.log(RUN=True)
         self.close()
 
+    def __call__(self, *args, **kwargs):
+        return self.log(*args, **kwargs)
+
 
 @register_class
 class Logger(LoggerInterface):
@@ -95,7 +98,7 @@ class Logger(LoggerInterface):
 
         sample = kwargs.get('sample', self.sample)
         self.sample += 1
-        if sample % self.every != 0:
+        if sample % self.every != 0 and sample != 1:
             return
 
         row = [sample]

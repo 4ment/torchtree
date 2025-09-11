@@ -188,6 +188,7 @@ class ConstantCoalescentIntegrated(Distribution):
 
     The posterior distribution of the population size parameter is an inverse gamma with shape :math:`\alpha + N` and rate :math:`\beta + \sum_{i=1}^N C_i t_i`.
     """  # noqa: E501
+
     arg_constraints = {}
     support = constraints.positive
     has_rsample = False
@@ -1102,3 +1103,110 @@ class PiecewiseLinearCoalescentGridModel(AbstractCoalescentModel):
             node_heights = process_data_coalesent(data, theta.dtype)
             tree_model = FakeTreeModel(node_heights)
         return cls(id_, theta, grid, tree_model)
+
+
+class GeneralizedSkylineCoalescent(AbstractCoalescentDistribution):
+    def __init__(
+        self,
+        thetas: torch.Tensor,
+        group_sizes: torch.Tensor,
+        validate_args=None,
+    ) -> None:
+        super().__init__(thetas, validate_args)
+        self.group_sizes = group_sizes
+
+    def _sorted_terms(self, node_heights):
+        batch_shape = max(node_heights.shape, self.theta.shape, key=len)[:-1]
+        # if node_heights is fixed there is no batch dimension
+        if node_heights.dim() < self.theta.dim():
+            heights = node_heights.expand(batch_shape + torch.Size([-1]))
+        else:
+            heights = node_heights
+
+        taxa_shape = heights.shape[:-1] + (int((node_heights.shape[-1] + 1) / 2),)
+        node_mask = torch.cat(
+            [
+                # sampling event
+                torch.full(taxa_shape, 1, dtype=torch.int),
+                # coalescent event
+                torch.full(
+                    taxa_shape[:-1] + (taxa_shape[-1] - 1,),
+                    -1,
+                    dtype=torch.int,
+                ),
+            ],
+            dim=-1,
+        )
+        indices = torch.argsort(heights, descending=False)
+        heights_sorted = torch.gather(heights, -1, indices)
+        node_mask_sorted = torch.gather(node_mask, -1, indices)
+        lineage_count = node_mask_sorted.cumsum(-1)[..., :-1]
+
+        lchoose2 = lineage_count * (lineage_count - 1) / 2.0
+        intervals = heights_sorted[..., 1:] - heights_sorted[..., :-1]
+        return node_mask_sorted, lchoose2, intervals
+
+    def log_prob(self, node_heights: torch.Tensor) -> torch.Tensor:
+        node_mask_sorted, lchoose2, durations = self._sorted_terms(node_heights)
+
+        group_bounds = self.group_sizes.cumsum(0)
+
+        coalescent_count = thetas_indices = torch.where(
+            node_mask_sorted == -1,
+            torch.tensor([1], dtype=torch.long),
+            torch.tensor([0], dtype=torch.long),
+        ).cumsum(-1)[..., :-1]
+
+        thetas_indices = torch.searchsorted(
+            group_bounds, coalescent_count.contiguous(), right=True
+        )
+
+        thetas = self.theta.gather(-1, thetas_indices)
+
+        # log population size at the end of each coalescent interval
+        thetas_internal = thetas[node_mask_sorted[..., 1:] == -1].reshape(
+            *node_heights.shape[:-1], -1
+        )
+
+        return -torch.sum(lchoose2 * durations / thetas, -1, keepdim=True) - torch.sum(
+            thetas_internal.log(),
+            dim=-1,
+            keepdim=True,
+        )
+
+
+@register_class
+class GeneralizedSkylineCoalescentModel(AbstractCoalescentModel):
+    def __init__(
+        self,
+        id_: ID,
+        theta: AbstractParameter,
+        group_sizes: AbstractParameter,
+        tree_model: TimeTreeModel,
+    ) -> None:
+        super().__init__(id_, theta, tree_model)
+        self.group_sizes = group_sizes
+
+    def distribution(self) -> AbstractCoalescentDistribution:
+        return GeneralizedSkylineCoalescent(self.theta.tensor, self.group_sizes.tensor)
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        theta = process_object(data['theta'], dic)
+        if isinstance(data['group_sizes'], list):
+            group_sizes = Parameter(
+                None,
+                torch.tensor(
+                    data['group_sizes'], dtype=torch.long, device=theta.tensor.device
+                ),
+            )
+        else:
+            group_sizes = process_object(data['group_sizes'], dic)
+
+        if TreeModel.tag in data:
+            tree_model: TimeTreeModel = process_object(data[TreeModel.tag], dic)
+        else:
+            node_heights = process_data_coalesent(data, theta.dtype)
+            tree_model = FakeTreeModel(node_heights)
+        return cls(id_, theta, group_sizes, tree_model)

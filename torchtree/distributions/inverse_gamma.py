@@ -1,4 +1,5 @@
 """Inverse gamma distribution parametrized by concentration and rate."""
+
 from torch.distributions import Gamma, TransformedDistribution, constraints
 from torch.distributions.transforms import PowerTransform
 

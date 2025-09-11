@@ -1,4 +1,5 @@
 """CTMC scale reference prior."""
+
 from typing import Optional, Union
 
 import torch

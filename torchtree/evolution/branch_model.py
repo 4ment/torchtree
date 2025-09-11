@@ -1,3 +1,4 @@
+import math
 from abc import ABC, abstractmethod
 
 import torch
@@ -75,3 +76,50 @@ class SimpleClockModel(AbstractClockModel):
         tree_model = process_object(data[TreeModel.tag], dic)
         rate = process_object(data['rate'], dic)
         return cls(id_, rate, tree_model)
+
+
+@register_class
+class ArbitraryClockModel(AbstractClockModel):
+    def __init__(
+        self,
+        id_: ID,
+        rate: AbstractParameter,
+        location: AbstractParameter,
+        scale: AbstractParameter,
+        tree: TreeModel,
+    ) -> None:
+        super().__init__(id_, rate, tree)
+        self._location = location
+        self._scale = scale
+        self.mu0 = -0.5 * math.log(2.0)
+        self.sigma0 = math.sqrt(math.log(2.0))
+
+    @property
+    def rates(self) -> torch.Tensor:
+        phi = self._scale.tensor**2
+        mu_phi = -0.5 * torch.log(1.0 + phi)
+        sigma_phi = torch.sqrt(torch.log(1.0 + phi))
+        return self._location.tensor * torch.exp(
+            sigma_phi / self.sigma0 * (self._rates.tensor.log() - self.mu0) + mu_phi
+        )
+
+    @staticmethod
+    def json_factory(id_: str, tree_model, rate, location, scale):
+        return {
+            'id': id_,
+            'type': 'ArbitraryClockModel',
+            TreeModel.tag: tree_model,
+            'rate': rate,
+            'location': location,
+            'scale': scale,
+        }
+
+    @classmethod
+    def from_json(cls, data, dic):
+        id_ = data['id']
+        tree_model = process_object(data[TreeModel.tag], dic)
+        rate = process_object(data['rate'], dic)
+        location = process_object(data['location'], dic)
+        scale = process_object(data['scale'], dic)
+
+        return cls(id_, rate, location, scale, tree_model)

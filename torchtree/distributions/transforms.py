@@ -1,4 +1,5 @@
 """Invertible transformations inheriting from torch.distributions.Transform."""
+
 import math
 from typing import Optional, Union
 
@@ -30,6 +31,7 @@ class TrilExpDiagonalTransform(Transform):
         >>> torch.allclose(TrilExpDiagonalTransform().inv(y), x)
         True
     """
+
     bijective = True
     sign = +1
 
@@ -60,6 +62,7 @@ class CumSumTransform(Transform):
     >>> all(CumSumTransform().inv(torch.tensor([1., 3., 6.])) == x)
     True
     """
+
     domain = constraints.real
     codomain = constraints.positive
     bijective = True
@@ -78,6 +81,7 @@ class CumSumTransform(Transform):
 @register_class
 class CumSumExpTransform(Transform):
     r"""Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`."""
+
     domain = constraints.real
     codomain = constraints.positive
     bijective = True
@@ -109,6 +113,7 @@ class CumSumExpTransform(Transform):
 
 class SoftPlusTransform(Transform):
     r"""Transform via the mapping :math:`y_i = \log(\exp(x_i) + 1)`."""
+
     domain = constraints.real
     codomain = constraints.positive
     bijective = True
@@ -126,6 +131,7 @@ class SoftPlusTransform(Transform):
 
 class CumSumSoftPlusTransform(Transform):
     r"""Transform via the mapping :math:`y_i = \log(\exp(\sum_{j=0}^i x_j) +1)`."""
+
     domain = constraints.real
     codomain = constraints.positive
     bijective = True
@@ -152,6 +158,7 @@ class ConvexCombinationTransform(Transform):
 
     :param weights: weights (sum to 1)
     """
+
     domain = constraints.positive
     codomain = constraints.positive
 
@@ -172,6 +179,7 @@ class ConvexCombinationTransform(Transform):
 @register_class
 class LogTransform(Transform):
     r"""Transform via the mapping :math:`y = \log(x)`."""
+
     domain = constraints.positive
     codomain = constraints.real
     bijective = True

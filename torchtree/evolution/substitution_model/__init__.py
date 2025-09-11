@@ -58,6 +58,7 @@ Given a sequence alignment and a model of nucleotide substitution (such as the J
 The Markov substitution model allows the computation of the likelihood of observing the given sequences under the model, and the tree that maximizes this likelihood is considered the most probable evolutionary tree.
 
 """
+
 from torchtree.evolution.substitution_model.amino_acid import LG, WAG
 from torchtree.evolution.substitution_model.codon import MG94
 from torchtree.evolution.substitution_model.general import (

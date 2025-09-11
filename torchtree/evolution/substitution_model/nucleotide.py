@@ -49,6 +49,7 @@ The scaling factor :math:`\beta` is given by:
 .. note::
     The order of the equilibrium frequencies in a :class:`~torchtree.Parameter` is expected to be :math:`\pi_A, \pi_C, \pi_G, \pi_T`.
 """
+
 from __future__ import annotations
 
 from typing import Optional, Union

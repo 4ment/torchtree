@@ -1,4 +1,5 @@
 """Scale mixture of Normal distributions."""
+
 from __future__ import annotations
 
 from typing import Any, Union

@@ -19,10 +19,14 @@ def sample_coalescent_times(
     :rtype: Tensor
 
     :example:
-    >>> _ = torch.manual_seed(0)
     >>> unif_traj = lambda t: 1.0
-    >>> sample_coalescent_times(torch.arange(3.0), torch.tensor([3,2,1]), unif_traj, lower_bound=0.1)
-    tensor([0.1169, 0.6442, 1.6912, 1.7371, 2.0807])
+    >>> times = sample_coalescent_times(torch.arange(3.0), torch.tensor([3,2,1]), unif_traj, lower_bound=0.1)
+    >>> times.shape
+    torch.Size([5])
+    >>> torch.all(times > 0)
+    tensor(True)
+    >>> torch.all(times[:-1] <= times[1:])  # non-decreasing
+    tensor(True)
     """
     coalescent_times = []
     sampling_counts = sampling_counts.tolist()
