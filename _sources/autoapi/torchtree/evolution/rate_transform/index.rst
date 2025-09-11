@@ -32,6 +32,8 @@ Module Contents
 
 
    .. py:attribute:: sign
+      :value: 1
+
 
       Returns the sign of the determinant of the Jacobian, if applicable.
       In general this only makes sense for bijective transforms.
@@ -59,6 +61,8 @@ Module Contents
 
 
    .. py:attribute:: sign
+      :value: 1
+
 
       Returns the sign of the determinant of the Jacobian, if applicable.
       In general this only makes sense for bijective transforms.

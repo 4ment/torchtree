@@ -53,9 +53,13 @@ Module Contents
 
 
    .. py:attribute:: momentum
+      :value: 0.9
+
 
 
    .. py:attribute:: eps
+      :value: 1e-05
+
 
 
    .. py:attribute:: log_gamma
@@ -71,7 +75,7 @@ Module Contents
 
 
 .. py:class:: FlowSequential(*args: torch.nn.modules.module.Module)
-              FlowSequential(arg: OrderedDict[str, Module])
+              FlowSequential(arg: collections.OrderedDict[str, torch.nn.modules.module.Module])
 
    Bases: :py:obj:`torch.nn.Sequential`
 

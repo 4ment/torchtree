@@ -60,9 +60,13 @@ Module Contents
 
 
    .. py:attribute:: entropy
+      :value: False
+
 
 
    .. py:attribute:: score
+      :value: False
+
 
 
    .. py:method:: handle_parameter_changed(variable, index, event)
@@ -236,6 +240,8 @@ Module Contents
 
 
    .. py:attribute:: entropy
+      :value: False
+
 
 
    .. py:method:: handle_parameter_changed(variable, index, event)

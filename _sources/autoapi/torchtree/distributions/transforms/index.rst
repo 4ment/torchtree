@@ -27,7 +27,7 @@ Classes
 Module Contents
 ---------------
 
-.. py:class:: TrilExpDiagonalTransform(cache_size=0)
+.. py:class:: TrilExpDiagonalTransform(cache_size: int = 0)
 
    Bases: :py:obj:`torch.distributions.Transform`
 
@@ -56,6 +56,8 @@ Module Contents
 
 
    .. py:attribute:: sign
+      :value: 1
+
 
       Returns the sign of the determinant of the Jacobian, if applicable.
       In general this only makes sense for bijective transforms.
@@ -69,7 +71,7 @@ Module Contents
 
 
 
-.. py:class:: CumSumTransform(cache_size=0)
+.. py:class:: CumSumTransform(cache_size: int = 0)
 
    Bases: :py:obj:`torch.distributions.Transform`
 
@@ -95,6 +97,8 @@ Module Contents
 
 
    .. py:attribute:: sign
+      :value: 1
+
 
       Returns the sign of the determinant of the Jacobian, if applicable.
       In general this only makes sense for bijective transforms.
@@ -106,7 +110,7 @@ Module Contents
 
 
 
-.. py:class:: CumSumExpTransform(cache_size=0)
+.. py:class:: CumSumExpTransform(cache_size: int = 0)
 
    Bases: :py:obj:`torch.distributions.Transform`
 
@@ -126,6 +130,8 @@ Module Contents
 
 
    .. py:attribute:: sign
+      :value: 1
+
 
       Returns the sign of the determinant of the Jacobian, if applicable.
       In general this only makes sense for bijective transforms.
@@ -137,7 +143,7 @@ Module Contents
 
 
 
-.. py:class:: SoftPlusTransform(cache_size=0)
+.. py:class:: SoftPlusTransform(cache_size: int = 0)
 
    Bases: :py:obj:`torch.distributions.Transform`
 
@@ -157,6 +163,8 @@ Module Contents
 
 
    .. py:attribute:: sign
+      :value: 1
+
 
       Returns the sign of the determinant of the Jacobian, if applicable.
       In general this only makes sense for bijective transforms.
@@ -168,7 +176,7 @@ Module Contents
 
 
 
-.. py:class:: CumSumSoftPlusTransform(cache_size=0)
+.. py:class:: CumSumSoftPlusTransform(cache_size: int = 0)
 
    Bases: :py:obj:`torch.distributions.Transform`
 
@@ -188,6 +196,8 @@ Module Contents
 
 
    .. py:attribute:: sign
+      :value: 1
+
 
       Returns the sign of the determinant of the Jacobian, if applicable.
       In general this only makes sense for bijective transforms.
@@ -225,7 +235,7 @@ Module Contents
 
 
 
-.. py:class:: LogTransform(cache_size=0)
+.. py:class:: LogTransform(cache_size: int = 0)
 
    Bases: :py:obj:`torch.distributions.Transform`
 
@@ -245,6 +255,8 @@ Module Contents
 
 
    .. py:attribute:: sign
+      :value: 1
+
 
       Returns the sign of the determinant of the Jacobian, if applicable.
       In general this only makes sense for bijective transforms.
@@ -283,5 +295,7 @@ Module Contents
 
 
    .. py:attribute:: bias
+      :value: None
+
 
 

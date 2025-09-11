@@ -46,6 +46,8 @@ Module Contents
 
 
    .. py:attribute:: height
+      :value: 0.0
+
 
 
    .. py:attribute:: parent

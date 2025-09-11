@@ -13,6 +13,7 @@ Classes
    torchtree.evolution.branch_model.AbstractClockModel
    torchtree.evolution.branch_model.StrictClockModel
    torchtree.evolution.branch_model.SimpleClockModel
+   torchtree.evolution.branch_model.ArbitraryClockModel
 
 
 Module Contents
@@ -108,6 +109,48 @@ Module Contents
 
 
    .. py:method:: json_factory(id_: str, tree_model, rate)
+      :staticmethod:
+
+
+
+   .. py:method:: from_json(data, dic)
+      :classmethod:
+
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
+
+
+.. py:class:: ArbitraryClockModel(id_: torchtree.typing.ID, rate: torchtree.core.abstractparameter.AbstractParameter, location: torchtree.core.abstractparameter.AbstractParameter, scale: torchtree.core.abstractparameter.AbstractParameter, tree: torchtree.evolution.tree_model.TreeModel)
+
+   Bases: :py:obj:`AbstractClockModel`
+
+
+   Parametric model.
+
+   A Model can contain parameters and models and can monitor any
+   changes. A Model is the building block of more complex models. This
+   class is abstract.
+
+
+   .. py:attribute:: mu0
+
+
+   .. py:attribute:: sigma0
+
+
+   .. py:property:: rates
+      :type: torch.Tensor
+
+
+
+   .. py:method:: json_factory(id_: str, tree_model, rate, location, scale)
       :staticmethod:
 
 

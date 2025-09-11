@@ -4,19 +4,12 @@ torchtree.evolution.alignment
 .. py:module:: torchtree.evolution.alignment
 
 
-Attributes
-----------
-
-.. autoapisummary::
-
-   torchtree.evolution.alignment.Sequence
-
-
 Classes
 -------
 
 .. autoapisummary::
 
+   torchtree.evolution.alignment.Sequence
    torchtree.evolution.alignment.Alignment
 
 
@@ -38,7 +31,16 @@ Functions
 Module Contents
 ---------------
 
-.. py:data:: Sequence
+.. py:class:: Sequence
+
+   Bases: :py:obj:`tuple`
+
+
+   .. py:attribute:: taxon
+
+
+   .. py:attribute:: sequence
+
 
 .. py:class:: Alignment(id_: torchtree.typing.ID, sequences: list[Sequence], taxa: torchtree.evolution.taxa.Taxa, data_type: torchtree.evolution.datatype.DataType)
 

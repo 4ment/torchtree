@@ -15,31 +15,28 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=09fa7fd9" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -56,7 +53,6 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -72,8 +68,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -81,6 +88,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -88,8 +96,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -107,8 +115,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -138,11 +145,15 @@
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
@@ -219,6 +230,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/birth_death/index.html">torchtree.evolution.birth_death</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/branch_model/index.html">torchtree.evolution.branch_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent/index.html">torchtree.evolution.coalescent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent_simulator/index.html">torchtree.evolution.coalescent_simulator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/datatype/index.html">torchtree.evolution.datatype</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/io/index.html">torchtree.evolution.io</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/poisson_tree_likelihood/index.html">torchtree.evolution.poisson_tree_likelihood</a></li>
@@ -370,16 +382,24 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 
 </div></div>
       
@@ -407,22 +427,23 @@
                   
   <h1>Source code for torchtree.distributions.transforms</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Invertible transformations inheriting from torch.distributions.Transform.&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch.autograd.functional</span> <span class="kn">import</span> <span class="n">jacobian</span>
-<span class="kn">from</span> <span class="nn">torch.distributions</span> <span class="kn">import</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">constraints</span>
-<span class="kn">from</span> <span class="nn">torch.nn.functional</span> <span class="kn">import</span> <span class="n">softplus</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">torchtree.core.abstractparameter</span> <span class="kn">import</span> <span class="n">AbstractParameter</span>
-<span class="kn">from</span> <span class="nn">torchtree.core.utils</span> <span class="kn">import</span> <span class="n">register_class</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.autograd.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">jacobian</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">constraints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">softplus</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.core.abstractparameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_class</span>
 
 
 <div class="viewcode-block" id="TrilExpDiagonalTransform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.TrilExpDiagonalTransform">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">TrilExpDiagonalTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrilExpDiagonalTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Transform a 1D tensor to a triangular tensor.</span>
 
 <span class="sd">    The diagonal of the triangular matrix is exponentiated. Useful for variational</span>
@@ -440,10 +461,11 @@
 <span class="sd">        &gt;&gt;&gt; torch.allclose(TrilExpDiagonalTransform().inv(y), x)</span>
 <span class="sd">        True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">bijective</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">sign</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">dim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">tril</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="n">tril_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -451,7 +473,7 @@
         <span class="n">tril</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)]</span> <span class="o">=</span> <span class="n">tril</span><span class="o">.</span><span class="n">diag</span><span class="p">()</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">tril</span>
 
-    <span class="k">def</span> <span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="n">tril_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">col</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
         <span class="n">x</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">range</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">diag</span><span class="p">()</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
@@ -459,7 +481,7 @@
 
 <div class="viewcode-block" id="TrilExpDiagonalTransform.log_abs_det_jacobian">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.TrilExpDiagonalTransform.log_abs_det_jacobian">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 </div>
 
@@ -467,7 +489,7 @@
 
 <div class="viewcode-block" id="CumSumTransform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.CumSumTransform">[docs]</a>
-<span class="k">class</span> <span class="nc">CumSumTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CumSumTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Transform via the mapping :math:`y_i = \sum_{j=0}^i x_j`.</span>
 
 <span class="sd">    &gt;&gt;&gt; x = torch.tensor([1., 2., 3.])</span>
@@ -476,20 +498,21 @@
 <span class="sd">    &gt;&gt;&gt; all(CumSumTransform().inv(torch.tensor([1., 3., 6.])) == x)</span>
 <span class="sd">    True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">domain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span>
     <span class="n">codomain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">bijective</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">sign</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">y</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CumSumTransform.log_abs_det_jacobian">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.CumSumTransform.log_abs_det_jacobian">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">)</span></div>
 </div>
 
@@ -498,24 +521,25 @@
 <div class="viewcode-block" id="CumSumExpTransform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.CumSumExpTransform">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">CumSumExpTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CumSumExpTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Transform via the mapping :math:`y_i = \exp(\sum_{j=0}^i x_j)`.&quot;&quot;&quot;</span>
+
     <span class="n">domain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span>
     <span class="n">codomain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">bijective</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">sign</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="n">y_log</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">y_log</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">y_log</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">y_log</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CumSumExpTransform.log_abs_det_jacobian">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.CumSumExpTransform.log_abs_det_jacobian">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">xx</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">xx</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">xx</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
 
         <span class="c1"># The Jacobian is triangular so we compute the determinant using the diagonal</span>
@@ -535,22 +559,23 @@
 
 <div class="viewcode-block" id="SoftPlusTransform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.SoftPlusTransform">[docs]</a>
-<span class="k">class</span> <span class="nc">SoftPlusTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SoftPlusTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Transform via the mapping :math:`y_i = \log(\exp(x_i) + 1)`.&quot;&quot;&quot;</span>
+
     <span class="n">domain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span>
     <span class="n">codomain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">bijective</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">sign</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">softplus</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SoftPlusTransform.log_abs_det_jacobian">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.SoftPlusTransform.log_abs_det_jacobian">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">softplus</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">)</span></div>
 </div>
 
@@ -558,23 +583,24 @@
 
 <div class="viewcode-block" id="CumSumSoftPlusTransform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.CumSumSoftPlusTransform">[docs]</a>
-<span class="k">class</span> <span class="nc">CumSumSoftPlusTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CumSumSoftPlusTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Transform via the mapping :math:`y_i = \log(\exp(\sum_{j=0}^i x_j) +1)`.&quot;&quot;&quot;</span>
+
     <span class="n">domain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span>
     <span class="n">codomain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">bijective</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">sign</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="n">y_log</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">y_log</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">y_log</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">y_log</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CumSumSoftPlusTransform.log_abs_det_jacobian">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.CumSumSoftPlusTransform.log_abs_det_jacobian">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
 </div>
 
@@ -583,7 +609,7 @@
 <div class="viewcode-block" id="ConvexCombinationTransform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.ConvexCombinationTransform">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">ConvexCombinationTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConvexCombinationTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Transform via the mapping :math:`y = \frac{x}{\sum_{i=1}^K \alpha_i x_i}`.</span>
 
 <span class="sd">    The transformation satisfies</span>
@@ -592,22 +618,23 @@
 
 <span class="sd">    :param weights: weights (sum to 1)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">domain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">codomain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span> <span class="n">cache_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span> <span class="n">cache_size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ConvexCombinationTransform</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cache_size</span><span class="o">=</span><span class="n">cache_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span> <span class="o">=</span> <span class="n">weights</span>
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="ConvexCombinationTransform.log_abs_det_jacobian">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.ConvexCombinationTransform.log_abs_det_jacobian">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
 </div>
 
@@ -616,22 +643,23 @@
 <div class="viewcode-block" id="LogTransform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.LogTransform">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">LogTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LogTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Transform via the mapping :math:`y = \log(x)`.&quot;&quot;&quot;</span>
+
     <span class="n">domain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">codomain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span>
     <span class="n">bijective</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">sign</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span>
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">y</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span>
 
 <div class="viewcode-block" id="LogTransform.log_abs_det_jacobian">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.LogTransform.log_abs_det_jacobian">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_abs_det_jacobian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">y</span></div>
 </div>
 
@@ -640,7 +668,7 @@
 <div class="viewcode-block" id="LinearTransform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/distributions/transforms/index.html#torchtree.distributions.transforms.LinearTransform">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">LinearTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LinearTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Transform via the mapping :math:`y = xA&#39; + b`.</span>
 
 <span class="sd">    :example:</span>
@@ -656,7 +684,7 @@
     <span class="n">domain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span>
     <span class="n">codomain</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">AbstractParameter</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
         <span class="n">bias</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">AbstractParameter</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -666,7 +694,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">bias</span>
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">bias</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">tensor</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="n">AbstractParameter</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span>
         <span class="p">)</span>
@@ -677,7 +705,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">linear</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">bias</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 </pre></div>
@@ -718,7 +746,7 @@ By Mathieu Fourment
 
   <p class="copyright">
     
-      © Copyright 2024, Mathieu Fourment.
+      © Copyright 2025, Mathieu Fourment.
       <br/>
     
   </p>
@@ -742,8 +770,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

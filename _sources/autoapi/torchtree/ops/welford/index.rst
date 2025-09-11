@@ -21,6 +21,8 @@ Module Contents
 
 
    .. py:attribute:: samples
+      :value: 0
+
 
 
    .. py:method:: add_sample(x: torch.Tensor) -> None

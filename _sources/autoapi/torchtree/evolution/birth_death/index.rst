@@ -50,6 +50,8 @@ Module Contents
 
 
    .. py:attribute:: survival
+      :value: True
+
 
 
    .. py:method:: handle_model_changed(model, obj, index)
@@ -109,6 +111,8 @@ Module Contents
 
 
    .. py:attribute:: survival
+      :value: True
+
 
 
    .. py:method:: log_q(A, B, t, t_i)

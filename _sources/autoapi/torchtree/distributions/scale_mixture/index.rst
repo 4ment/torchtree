@@ -53,6 +53,8 @@ Module Contents
 
 
    .. py:attribute:: slab
+      :value: None
+
 
 
    .. py:method:: handle_model_changed(model, obj, index) -> None

@@ -15,31 +15,28 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=09fa7fd9" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -56,7 +53,6 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -72,8 +68,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -81,6 +88,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -88,8 +96,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -107,8 +115,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -138,11 +145,15 @@
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
@@ -219,6 +230,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/birth_death/index.html">torchtree.evolution.birth_death</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/branch_model/index.html">torchtree.evolution.branch_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent/index.html">torchtree.evolution.coalescent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent_simulator/index.html">torchtree.evolution.coalescent_simulator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/datatype/index.html">torchtree.evolution.datatype</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/io/index.html">torchtree.evolution.io</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/poisson_tree_likelihood/index.html">torchtree.evolution.poisson_tree_likelihood</a></li>
@@ -370,16 +382,24 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 
 </div></div>
       
@@ -406,19 +426,19 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchtree.cli.advi</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">from</span> <span class="nn">torchtree</span> <span class="kn">import</span> <span class="n">Parameter</span>
-<span class="kn">from</span> <span class="nn">torchtree.cli</span> <span class="kn">import</span> <span class="n">PLUGIN_MANAGER</span>
-<span class="kn">from</span> <span class="nn">torchtree.cli.argparse_utils</span> <span class="kn">import</span> <span class="n">list_or_int</span>
-<span class="kn">from</span> <span class="nn">torchtree.cli.evolution</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.cli</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLUGIN_MANAGER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.cli.argparse_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_or_int</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.cli.evolution</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">COALESCENT_PIECEWISE</span><span class="p">,</span>
     <span class="n">create_alignment</span><span class="p">,</span>
     <span class="n">create_evolution_joint</span><span class="p">,</span>
@@ -427,16 +447,16 @@
     <span class="n">create_site_model_srd06_mus</span><span class="p">,</span>
     <span class="n">create_taxa</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchtree.cli.jacobians</span> <span class="kn">import</span> <span class="n">create_jacobians</span>
-<span class="kn">from</span> <span class="nn">torchtree.cli.utils</span> <span class="kn">import</span> <span class="n">CONSTRAINT</span>
-<span class="kn">from</span> <span class="nn">torchtree.distributions</span> <span class="kn">import</span> <span class="n">Distribution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.cli.jacobians</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_jacobians</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.cli.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">CONSTRAINT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Distribution</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="create_variational_parser">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_variational_parser">[docs]</a>
-<span class="k">def</span> <span class="nf">create_variational_parser</span><span class="p">(</span><span class="n">subprasers</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_variational_parser</span><span class="p">(</span><span class="n">subprasers</span><span class="p">):</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">subprasers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s1">&#39;advi&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;build a JSON file for variational inference&#39;</span>
     <span class="p">)</span>
@@ -546,7 +566,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_unique_id</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_unique_id</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
     <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">unique_id</span> <span class="o">=</span> <span class="n">id_</span>
     <span class="k">while</span> <span class="n">unique_id</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
@@ -557,7 +577,7 @@
 
 <div class="viewcode-block" id="create_tril">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_tril">[docs]</a>
-<span class="k">def</span> <span class="nf">create_tril</span><span class="p">(</span><span class="n">scales</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_tril</span><span class="p">(</span><span class="n">scales</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a 1 dimentional tensor containing a flatten tridiagonal matrix.</span>
 
 <span class="sd">    A covariance matrix is created using scales**2 for variances and the</span>
@@ -580,12 +600,15 @@
 
 <div class="viewcode-block" id="create_fullrank_from_meanfield">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_fullrank_from_meanfield">[docs]</a>
-<span class="k">def</span> <span class="nf">create_fullrank_from_meanfield</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_fullrank_from_meanfield</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
         <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
     <span class="n">locs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">log_scales</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">checkpoint</span><span class="p">:</span>
+        <span class="c1"># checkpoint saves the states of other objects such as the Optimizer</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;Parameter&#39;</span><span class="p">):</span>
+            <span class="k">continue</span>
         <span class="k">if</span> <span class="s1">&#39;.loc&#39;</span> <span class="ow">in</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
             <span class="n">locs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
         <span class="k">elif</span> <span class="s1">&#39;.scale.unres&#39;</span> <span class="ow">in</span> <span class="n">param</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
@@ -595,12 +618,14 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
     <span class="nb">sorted</span><span class="p">(</span>
         <span class="n">locs</span><span class="p">,</span>
-        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">params</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.loc&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;var.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)),</span>
+        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">params</span><span class="o">.</span><span class="n">index</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.loc&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;variational.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="nb">sorted</span><span class="p">(</span>
         <span class="n">log_scales</span><span class="p">,</span>
         <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">params</span><span class="o">.</span><span class="n">index</span><span class="p">(</span>
-            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.scale.unres&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;var.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.scale.unres&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;variational.&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">locs</span><span class="p">,</span> <span class="n">log_scales</span></div>
@@ -609,7 +634,7 @@
 
 <div class="viewcode-block" id="create_fullrank">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_fullrank">[docs]</a>
-<span class="k">def</span> <span class="nf">create_fullrank</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_fullrank</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
     <span class="n">group_map</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;UNSPECIFIED&#39;</span><span class="p">:</span> <span class="p">[]}</span>
     <span class="n">gather_parameters</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="n">group_map</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
@@ -656,7 +681,7 @@
 
 <div class="viewcode-block" id="create_flexible_variational">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_flexible_variational">[docs]</a>
-<span class="k">def</span> <span class="nf">create_flexible_variational</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">json_object</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_flexible_variational</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">json_object</span><span class="p">):</span>
     <span class="n">group_map</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;UNSPECIFIED&#39;</span><span class="p">:</span> <span class="p">[]}</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">distr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">variational</span><span class="p">):</span>
@@ -711,7 +736,7 @@
 
 <div class="viewcode-block" id="create_realnp_distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_realnp_distribution">[docs]</a>
-<span class="k">def</span> <span class="nf">create_realnp_distribution</span><span class="p">(</span><span class="n">var_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_realnp_distribution</span><span class="p">(</span><span class="n">var_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">var_id</span><span class="p">,</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;RealNVP&quot;</span><span class="p">,</span>
@@ -747,7 +772,7 @@
 
 <div class="viewcode-block" id="create_realnvp">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_realnvp">[docs]</a>
-<span class="k">def</span> <span class="nf">create_realnvp</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_realnvp</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
     <span class="n">group_map</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;UNSPECIFIED&#39;</span><span class="p">:</span> <span class="p">[]}</span>
     <span class="n">gather_parameters</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="n">group_map</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
@@ -764,7 +789,7 @@
 
 <div class="viewcode-block" id="gather_parameters">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.gather_parameters">[docs]</a>
-<span class="k">def</span> <span class="nf">gather_parameters</span><span class="p">(</span><span class="n">json_object</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">group_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gather_parameters</span><span class="p">(</span><span class="n">json_object</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">group_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">json_object</span><span class="p">:</span>
             <span class="n">gather_parameters</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">group_map</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
@@ -788,7 +813,7 @@
 
 <div class="viewcode-block" id="apply_sigmoid_transformed">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.apply_sigmoid_transformed">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_sigmoid_transformed</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_sigmoid_transformed</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">unres_id</span> <span class="o">=</span> <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.unres&#39;</span>
     <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;TransformedParameter&#39;</span>
     <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;torch.distributions.SigmoidTransform&#39;</span>
@@ -833,7 +858,7 @@
 
 <div class="viewcode-block" id="apply_affine_transform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.apply_affine_transform">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_affine_transform</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_affine_transform</span><span class="p">(</span><span class="n">json_object</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
     <span class="n">unshifted_id</span> <span class="o">=</span> <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.unshifted&#39;</span>
     <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;TransformedParameter&#39;</span>
     <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;torch.distributions.AffineTransform&#39;</span>
@@ -854,7 +879,7 @@
 
 <div class="viewcode-block" id="apply_exp_transform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.apply_exp_transform">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_exp_transform</span><span class="p">(</span><span class="n">json_object</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_exp_transform</span><span class="p">(</span><span class="n">json_object</span><span class="p">):</span>
     <span class="n">unres_id</span> <span class="o">=</span> <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.unres&#39;</span>
     <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;TransformedParameter&#39;</span>
     <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;torch.distributions.ExpTransform&#39;</span>
@@ -876,7 +901,7 @@
 
 <div class="viewcode-block" id="apply_simplex_transform">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.apply_simplex_transform">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_simplex_transform</span><span class="p">(</span><span class="n">json_object</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_simplex_transform</span><span class="p">(</span><span class="n">json_object</span><span class="p">):</span>
     <span class="n">unres_id</span> <span class="o">=</span> <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.unres&#39;</span>
     <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;TransformedParameter&#39;</span>
     <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;torch.distributions.StickBreakingTransform&#39;</span>
@@ -903,7 +928,7 @@
 
 <div class="viewcode-block" id="create_normal_distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_normal_distribution">[docs]</a>
-<span class="k">def</span> <span class="nf">create_normal_distribution</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">x_unres</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_normal_distribution</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">x_unres</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
     <span class="n">loc_param</span> <span class="o">=</span> <span class="n">Parameter</span><span class="o">.</span><span class="n">json_factory</span><span class="p">(</span>
         <span class="n">var_id</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">x_unres</span> <span class="o">+</span> <span class="s1">&#39;.loc&#39;</span><span class="p">,</span>
         <span class="o">**</span><span class="p">{</span><span class="s1">&#39;full_like&#39;</span><span class="p">:</span> <span class="n">x_unres</span><span class="p">,</span> <span class="s1">&#39;tensor&#39;</span><span class="p">:</span> <span class="n">loc</span><span class="p">},</span>
@@ -936,7 +961,7 @@
 
 <div class="viewcode-block" id="create_gamma_distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_gamma_distribution">[docs]</a>
-<span class="k">def</span> <span class="nf">create_gamma_distribution</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">x_unres</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_gamma_distribution</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">x_unres</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">concentration</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
     <span class="n">concentration_param</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">var_id</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.concentration&#39;</span><span class="p">,</span>
         <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TransformedParameter&#39;</span><span class="p">,</span>
@@ -973,7 +998,7 @@
 
 <div class="viewcode-block" id="create_weibull_distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_weibull_distribution">[docs]</a>
-<span class="k">def</span> <span class="nf">create_weibull_distribution</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">x_unres</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">concentration</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_weibull_distribution</span><span class="p">(</span><span class="n">var_id</span><span class="p">,</span> <span class="n">x_unres</span><span class="p">,</span> <span class="n">json_object</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">concentration</span><span class="p">):</span>
     <span class="n">scale_param</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">var_id</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">json_object</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.scale&#39;</span><span class="p">,</span>
         <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TransformedParameter&#39;</span><span class="p">,</span>
@@ -1004,7 +1029,7 @@
 
 <div class="viewcode-block" id="create_meanfield">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_meanfield">[docs]</a>
-<span class="k">def</span> <span class="nf">create_meanfield</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_meanfield</span><span class="p">(</span>
     <span class="n">var_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">json_object</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">distribution</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
     <span class="n">distributions</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1114,7 +1139,7 @@
 
 <div class="viewcode-block" id="apply_transforms_for_fullrank">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.apply_transforms_for_fullrank">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_transforms_for_fullrank</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_transforms_for_fullrank</span><span class="p">(</span>
     <span class="n">var_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">json_object</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
@@ -1188,7 +1213,7 @@
 
 <div class="viewcode-block" id="create_variational_model">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_variational_model">[docs]</a>
-<span class="k">def</span> <span class="nf">create_variational_model</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">joint</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_variational_model</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">joint</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
     <span class="n">variational</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">id_</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;JointDistributionModel&#39;</span><span class="p">}</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">variational</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
         <span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">variational</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">arg</span><span class="o">.</span><span class="n">variational</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;meanfield&#39;</span>
@@ -1211,7 +1236,7 @@
 
 <div class="viewcode-block" id="create_advi">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_advi">[docs]</a>
-<span class="k">def</span> <span class="nf">create_advi</span><span class="p">(</span><span class="n">joint</span><span class="p">,</span> <span class="n">variational</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_advi</span><span class="p">(</span><span class="n">joint</span><span class="p">,</span> <span class="n">variational</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">K_grad_samples</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">grad_samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">grad_samples</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">K_grad_samples</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1291,7 +1316,7 @@
 
 <div class="viewcode-block" id="create_logger">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_logger">[docs]</a>
-<span class="k">def</span> <span class="nf">create_logger</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_logger</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">stem</span><span class="p">:</span>
         <span class="n">file_name</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s1">&#39;-samples.csv&#39;</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1302,14 +1327,19 @@
     <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span><span class="p">:</span>
         <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;coalescent&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="n">COALESCENT_PIECEWISE</span><span class="p">:</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;gmrf&#39;</span><span class="p">)</span>
             <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span><span class="p">,</span>
                     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;JointDistributionModel&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;distributions&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;coalescent&#39;</span><span class="p">,</span> <span class="s1">&#39;gmrf&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;distributions&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;coalescent&#39;</span><span class="p">],</span>
                 <span class="p">}</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">theta_prior</span> <span class="o">==</span> <span class="s1">&#39;eml&#39;</span><span class="p">:</span>
+                <span class="n">models</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;distributions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;coalescent.theta.eml&#39;</span><span class="p">)</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;coalescent.theta.eml&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">models</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;distributions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;gmrf&#39;</span><span class="p">)</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;gmrf&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">id_</span><span class="p">,</span>
@@ -1323,7 +1353,7 @@
 
 <div class="viewcode-block" id="create_sampler">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.create_sampler">[docs]</a>
-<span class="k">def</span> <span class="nf">create_sampler</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">var_id</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_sampler</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">var_id</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">stem</span><span class="p">:</span>
         <span class="n">file_name</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s1">&#39;-samples.csv&#39;</span>
         <span class="n">tree_file_name</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s1">&#39;-samples.trees&#39;</span>
@@ -1342,14 +1372,19 @@
     <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span><span class="p">:</span>
         <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;coalescent&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="n">COALESCENT_PIECEWISE</span><span class="p">:</span>
-            <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;gmrf&#39;</span><span class="p">)</span>
             <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span><span class="p">,</span>
                     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;JointDistributionModel&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;distributions&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;coalescent&#39;</span><span class="p">,</span> <span class="s1">&#39;gmrf&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;distributions&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;coalescent&#39;</span><span class="p">],</span>
                 <span class="p">}</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">theta_prior</span> <span class="o">==</span> <span class="s1">&#39;eml&#39;</span><span class="p">:</span>
+                <span class="n">models</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;distributions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;coalescent.theta.eml&#39;</span><span class="p">)</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;coalescent.theta.eml&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">models</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;distributions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;gmrf&#39;</span><span class="p">)</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;gmrf&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">id_</span><span class="p">,</span>
@@ -1377,7 +1412,7 @@
 
 <div class="viewcode-block" id="build_advi">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.build_advi">[docs]</a>
-<span class="k">def</span> <span class="nf">build_advi</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_advi</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
     <span class="n">json_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">taxa</span> <span class="o">=</span> <span class="n">create_taxa</span><span class="p">(</span><span class="s1">&#39;taxa&#39;</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
     <span class="n">json_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">taxa</span><span class="p">)</span>
@@ -1405,7 +1440,7 @@
     <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">clock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">arg</span><span class="o">.</span><span class="n">heights</span> <span class="o">==</span> <span class="s1">&#39;ratio&#39;</span><span class="p">:</span>
         <span class="n">jacobians_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;tree&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="n">COALESCENT_PIECEWISE</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="n">COALESCENT_PIECEWISE</span> <span class="ow">and</span> <span class="n">arg</span><span class="o">.</span><span class="n">theta_prior</span> <span class="o">!=</span> <span class="s1">&#39;eml&#39;</span><span class="p">:</span>
         <span class="n">jacobians_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;coalescent.theta&quot;</span><span class="p">)</span>
 
     <span class="n">joint_jacobian</span> <span class="o">=</span> <span class="p">{</span>
@@ -1452,13 +1487,20 @@
             <span class="n">parameters</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s1">.rates.prior.mean&#39;</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s1">.rates.prior.scale&#39;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s1">.rates.prior.stdev&#39;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">arg</span><span class="o">.</span><span class="n">clock</span> <span class="o">==</span> <span class="s1">&#39;ncln&#39;</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s1">.location&#39;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s1">.scale&#39;</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s2">.rate&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">clock</span> <span class="o">==</span> <span class="s1">&#39;horseshoe&#39;</span> <span class="ow">or</span> <span class="n">arg</span><span class="o">.</span><span class="n">clock</span> <span class="o">==</span> <span class="s1">&#39;ucln&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">clock</span> <span class="o">==</span> <span class="s1">&#39;horseshoe&#39;</span> <span class="ow">or</span> <span class="n">arg</span><span class="o">.</span><span class="n">clock</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;ucln&#39;</span><span class="p">,</span> <span class="s1">&#39;ncln&#39;</span><span class="p">):</span>
             <span class="n">parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">branch_model_id</span><span class="si">}</span><span class="s1">.rates&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tree.blens&#39;</span><span class="p">]</span>
@@ -1467,7 +1509,11 @@
         <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent_integrated</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;coalescent.theta&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="n">COALESCENT_PIECEWISE</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">arg</span><span class="o">.</span><span class="n">gmrf_integrated</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="ow">in</span> <span class="n">COALESCENT_PIECEWISE</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">arg</span><span class="o">.</span><span class="n">gmrf_integrated</span>
+            <span class="ow">and</span> <span class="n">arg</span><span class="o">.</span><span class="n">theta_prior</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
             <span class="n">parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;gmrf.precision&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">arg</span><span class="o">.</span><span class="n">coalescent</span> <span class="o">==</span> <span class="s1">&#39;exponential&#39;</span><span class="p">:</span>
             <span class="n">parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;coalescent.growth&#39;</span><span class="p">)</span>
@@ -1560,7 +1606,7 @@ By Mathieu Fourment
 
   <p class="copyright">
     
-      © Copyright 2024, Mathieu Fourment.
+      © Copyright 2025, Mathieu Fourment.
       <br/>
     
   </p>
@@ -1584,8 +1630,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

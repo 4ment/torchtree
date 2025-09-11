@@ -50,12 +50,18 @@ Module Contents
 
 
    .. py:attribute:: LOWER
+      :value: '@lower'
+
 
 
    .. py:attribute:: UPPER
+      :value: '@upper'
+
 
 
    .. py:attribute:: SIMPLEX
+      :value: '@simplex'
+
 
 
 .. py:function:: convert_date_to_real(day, month, year)

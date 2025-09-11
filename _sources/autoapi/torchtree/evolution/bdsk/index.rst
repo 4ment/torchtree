@@ -75,24 +75,38 @@ Module Contents
 
 
    .. py:attribute:: rho
+      :value: None
+
 
 
    .. py:attribute:: origin
+      :value: None
+
 
 
    .. py:attribute:: times
+      :value: None
+
 
 
    .. py:attribute:: relative_times
+      :value: False
+
 
 
    .. py:attribute:: survival
+      :value: True
+
 
 
    .. py:attribute:: origin_is_root_edge
+      :value: False
+
 
 
    .. py:attribute:: removal_probability
+      :value: None
+
 
 
    .. py:method:: from_json(data, dic)
@@ -157,21 +171,33 @@ Module Contents
 
 
    .. py:attribute:: times
+      :value: None
+
 
 
    .. py:attribute:: origin
+      :value: None
+
 
 
    .. py:attribute:: relative_times
+      :value: False
+
 
 
    .. py:attribute:: survival
+      :value: True
+
 
 
    .. py:attribute:: origin_is_root_edge
+      :value: False
+
 
 
    .. py:attribute:: removal_probability
+      :value: None
+
 
 
    .. py:method:: log_q(A, B, t, t_i)

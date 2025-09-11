@@ -41,6 +41,8 @@ Module Contents
 
 
    .. py:attribute:: indices
+      :value: None
+
 
 
    .. py:method:: compute_tips_partials(use_ambiguities=False)

@@ -27,6 +27,8 @@ Classes
    torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel
    torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid
    torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel
+   torchtree.evolution.coalescent.GeneralizedSkylineCoalescent
+   torchtree.evolution.coalescent.GeneralizedSkylineCoalescentModel
 
 
 Functions
@@ -46,6 +48,13 @@ Module Contents
 
 
    Distribution is the abstract base class for probability distributions.
+
+   :param batch_shape: The shape over which parameters are batched.
+   :type batch_shape: torch.Size
+   :param event_shape: The shape of a single sample (without batching).
+   :type event_shape: torch.Size
+   :param validate_args: Whether to validate arguments. Default: None.
+   :type validate_args: bool, optional
 
 
    .. py:attribute:: arg_constraints
@@ -143,6 +152,13 @@ Module Contents
 
 
    Distribution is the abstract base class for probability distributions.
+
+   :param batch_shape: The shape over which parameters are batched.
+   :type batch_shape: torch.Size
+   :param event_shape: The shape of a single sample (without batching).
+   :type event_shape: torch.Size
+   :param validate_args: Whether to validate arguments. Default: None.
+   :type validate_args: bool, optional
 
 
    .. py:attribute:: has_rsample
@@ -312,6 +328,13 @@ Module Contents
 
    Distribution is the abstract base class for probability distributions.
 
+   :param batch_shape: The shape over which parameters are batched.
+   :type batch_shape: torch.Size
+   :param event_shape: The shape of a single sample (without batching).
+   :type event_shape: torch.Size
+   :param validate_args: Whether to validate arguments. Default: None.
+   :type validate_args: bool, optional
+
 
    .. py:attribute:: arg_constraints
 
@@ -354,6 +377,13 @@ Module Contents
 
 
    Distribution is the abstract base class for probability distributions.
+
+   :param batch_shape: The shape over which parameters are batched.
+   :type batch_shape: torch.Size
+   :param event_shape: The shape of a single sample (without batching).
+   :type event_shape: torch.Size
+   :param validate_args: Whether to validate arguments. Default: None.
+   :type validate_args: bool, optional
 
 
    .. py:method:: sufficient_statistics(node_heights: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]
@@ -425,6 +455,13 @@ Module Contents
 
    Distribution is the abstract base class for probability distributions.
 
+   :param batch_shape: The shape over which parameters are batched.
+   :type batch_shape: torch.Size
+   :param event_shape: The shape of a single sample (without batching).
+   :type event_shape: torch.Size
+   :param validate_args: Whether to validate arguments. Default: None.
+   :type validate_args: bool, optional
+
 
    .. py:attribute:: grid
 
@@ -449,11 +486,20 @@ Module Contents
 
    Distribution is the abstract base class for probability distributions.
 
+   :param batch_shape: The shape over which parameters are batched.
+   :type batch_shape: torch.Size
+   :param event_shape: The shape of a single sample (without batching).
+   :type event_shape: torch.Size
+   :param validate_args: Whether to validate arguments. Default: None.
+   :type validate_args: bool, optional
+
 
    .. py:attribute:: grid
 
 
    .. py:attribute:: temperature
+      :value: None
+
 
 
    .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
@@ -483,6 +529,8 @@ Module Contents
 
 
    .. py:attribute:: temperature
+      :value: None
+
 
 
    .. py:method:: distribution() -> AbstractCoalescentDistribution
@@ -523,6 +571,13 @@ Module Contents
 
 
    Distribution is the abstract base class for probability distributions.
+
+   :param batch_shape: The shape over which parameters are batched.
+   :type batch_shape: torch.Size
+   :param event_shape: The shape of a single sample (without batching).
+   :type event_shape: torch.Size
+   :param validate_args: Whether to validate arguments. Default: None.
+   :type validate_args: bool, optional
 
 
    .. py:attribute:: arg_constraints
@@ -609,6 +664,13 @@ Module Contents
 
    Distribution is the abstract base class for probability distributions.
 
+   :param batch_shape: The shape over which parameters are batched.
+   :type batch_shape: torch.Size
+   :param event_shape: The shape of a single sample (without batching).
+   :type event_shape: torch.Size
+   :param validate_args: Whether to validate arguments. Default: None.
+   :type validate_args: bool, optional
+
 
    .. py:attribute:: arg_constraints
 
@@ -659,6 +721,70 @@ Module Contents
 
 
    .. py:attribute:: grid
+
+
+   .. py:method:: distribution() -> AbstractCoalescentDistribution
+
+      Returns underlying coalescent distribution.
+
+
+
+   .. py:method:: from_json(data, dic)
+      :classmethod:
+
+
+      Abstract method to create object from a dictionary.
+
+      :param dict[str, Any] data: dictionary representation of a torchtree object.
+      :param dict[str, Any] dic: dictionary containing other torchtree objects keyed
+          by their ID.
+      :return: torchtree object.
+      :rtype: Any
+
+
+
+.. py:class:: GeneralizedSkylineCoalescent(thetas: torch.Tensor, group_sizes: torch.Tensor, validate_args=None)
+
+   Bases: :py:obj:`AbstractCoalescentDistribution`
+
+
+   Distribution is the abstract base class for probability distributions.
+
+   :param batch_shape: The shape over which parameters are batched.
+   :type batch_shape: torch.Size
+   :param event_shape: The shape of a single sample (without batching).
+   :type event_shape: torch.Size
+   :param validate_args: Whether to validate arguments. Default: None.
+   :type validate_args: bool, optional
+
+
+   .. py:attribute:: group_sizes
+
+
+   .. py:method:: log_prob(node_heights: torch.Tensor) -> torch.Tensor
+
+      Returns the log of the probability density/mass function evaluated at
+      `value`.
+
+      :param value:
+      :type value: Tensor
+
+
+
+.. py:class:: GeneralizedSkylineCoalescentModel(id_: torchtree.typing.ID, theta: torchtree.core.abstractparameter.AbstractParameter, group_sizes: torchtree.core.abstractparameter.AbstractParameter, tree_model: torchtree.evolution.tree_model.TimeTreeModel)
+
+   Bases: :py:obj:`AbstractCoalescentModel`
+
+
+   Classes inheriting from :class:`Model` and
+   :class:`collections.abc.Callable`.
+
+   CallableModel are Callable and the returned value is cached in case
+   we need to use this value multiple times without the need to
+   recompute it.
+
+
+   .. py:attribute:: group_sizes
 
 
    .. py:method:: distribution() -> AbstractCoalescentDistribution

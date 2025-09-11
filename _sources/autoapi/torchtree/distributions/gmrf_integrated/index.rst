@@ -51,6 +51,8 @@ Module Contents
 
 
    .. py:attribute:: tree_model
+      :value: None
+
 
 
    .. py:attribute:: field

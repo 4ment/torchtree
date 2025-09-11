@@ -152,6 +152,8 @@ Module Contents
 
 
    .. py:attribute:: AMINO_ACIDS_AMBIGUITY_STATES
+      :value: [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []]
+
 
 
    .. py:method:: encoding(string) -> int
@@ -211,6 +213,8 @@ Module Contents
 
 
    .. py:attribute:: triplets
+      :value: ('AAA', 'AAC', 'AAG', 'AAT', 'ACA', 'ACC', 'ACG', 'ACT', 'AGA', 'AGC', 'AGG', 'AGT', 'ATA',...
+
 
 
    .. py:attribute:: stop_count

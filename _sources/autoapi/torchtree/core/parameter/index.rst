@@ -387,17 +387,30 @@ Module Contents
 
 
 
-.. py:class:: ViewParameter(id_: Optional[str], parameter: Parameter, indices: Union[int, slice, torch.Tensor])
+.. py:class:: ViewParameter(id_: Optional[str], parameter: Parameter, indices: Union[int, slice, torch.Tensor, tuple])
 
    Bases: :py:obj:`torchtree.core.abstractparameter.AbstractParameter`, :py:obj:`torchtree.core.parametric.ParameterListener`
 
 
    Class representing a view of another parameter.
 
+   This class has 2 pruposes:
+    - Slicing or indexing a Parameter: indices can be an int, slice, or Tensor.
+    - Reshaping a Parameter: indices is a tuple representing the new shape.
+
    :param id_: ID of object.
    :type id_: str or None
    :param Parameter parameter: parameter that ViewParameter wrap.
    :param indices: indices used on parameter
+
+   :example:
+   >>> parameter = Parameter("param", torch.tensor([1.,2., 3., 4.]))
+   >>> view_parameter = ViewParameter("view", parameter, (2, 2))
+   >>> torch.all(view_parameter.tensor == torch.tensor([[1., 2.], [3., 4.]]))
+   tensor(True)
+   >>> view_parameter.tensor = torch.tensor([[5., 6.], [7., 8.]])
+   >>> torch.all(parameter.tensor == torch.tensor([5., 6., 7., 8.]))
+   tensor(True)
 
 
    .. py:attribute:: parameter

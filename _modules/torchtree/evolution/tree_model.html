@@ -15,31 +15,28 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=09fa7fd9" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -56,7 +53,6 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -72,8 +68,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -81,6 +88,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -88,8 +96,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -107,8 +115,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -138,11 +145,15 @@
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
@@ -219,6 +230,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/birth_death/index.html">torchtree.evolution.birth_death</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/branch_model/index.html">torchtree.evolution.branch_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent/index.html">torchtree.evolution.coalescent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent_simulator/index.html">torchtree.evolution.coalescent_simulator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/datatype/index.html">torchtree.evolution.datatype</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/io/index.html">torchtree.evolution.io</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/poisson_tree_likelihood/index.html">torchtree.evolution.poisson_tree_likelihood</a></li>
@@ -370,16 +382,24 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 
 </div></div>
       
@@ -406,23 +426,23 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchtree.evolution.tree_model</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
-<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">dendropy</span> <span class="kn">import</span> <span class="n">TaxonNamespace</span><span class="p">,</span> <span class="n">Tree</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dendropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">TaxonNamespace</span><span class="p">,</span> <span class="n">Tree</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">CatParameter</span>
-<span class="kn">from</span> <span class="nn">..core.abstractparameter</span> <span class="kn">import</span> <span class="n">AbstractParameter</span>
-<span class="kn">from</span> <span class="nn">..core.model</span> <span class="kn">import</span> <span class="n">CallableModel</span><span class="p">,</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">..core.utils</span> <span class="kn">import</span> <span class="n">process_object</span><span class="p">,</span> <span class="n">register_class</span>
-<span class="kn">from</span> <span class="nn">..typing</span> <span class="kn">import</span> <span class="n">ID</span>
-<span class="kn">from</span> <span class="nn">.taxa</span> <span class="kn">import</span> <span class="n">Taxa</span>
-<span class="kn">from</span> <span class="nn">.tree_height_transform</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">CatParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..core.abstractparameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..core.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallableModel</span><span class="p">,</span> <span class="n">Model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">process_object</span><span class="p">,</span> <span class="n">register_class</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.taxa</span><span class="w"> </span><span class="kn">import</span> <span class="n">Taxa</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tree_height_transform</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DifferenceNodeHeightTransform</span><span class="p">,</span>
     <span class="n">GeneralNodeHeightTransform</span><span class="p">,</span>
 <span class="p">)</span>
@@ -430,7 +450,7 @@
 
 <div class="viewcode-block" id="heights_to_branch_lengths">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.heights_to_branch_lengths">[docs]</a>
-<span class="k">def</span> <span class="nf">heights_to_branch_lengths</span><span class="p">(</span><span class="n">node_heights</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">indexing</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">heights_to_branch_lengths</span><span class="p">(</span><span class="n">node_heights</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">indexing</span><span class="p">):</span>
     <span class="n">taxa_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">bounds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">indices_sorted</span> <span class="o">=</span> <span class="n">indexing</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">indexing</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])]</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
@@ -447,7 +467,7 @@
 
 <div class="viewcode-block" id="setup_indexes">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.setup_indexes">[docs]</a>
-<span class="k">def</span> <span class="nf">setup_indexes</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">indices_postorder</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_indexes</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">indices_postorder</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
         <span class="n">node</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="n">node</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">add_bound_attribute</span><span class="p">(</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
@@ -469,7 +489,7 @@
 
 <div class="viewcode-block" id="setup_dates">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.setup_dates">[docs]</a>
-<span class="k">def</span> <span class="nf">setup_dates</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">heterochronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_dates</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">heterochronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="c1"># parse dates</span>
     <span class="k">if</span> <span class="n">heterochronous</span><span class="p">:</span>
         <span class="n">dates</span> <span class="o">=</span> <span class="p">{}</span>
@@ -504,7 +524,7 @@
 
 <div class="viewcode-block" id="initialize_dates_from_taxa">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.initialize_dates_from_taxa">[docs]</a>
-<span class="k">def</span> <span class="nf">initialize_dates_from_taxa</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">taxa</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">initialize_dates_from_taxa</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">taxa</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">):</span>
     <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">taxon</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">taxa</span><span class="p">]</span>
     <span class="n">max_date</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
 
@@ -529,7 +549,7 @@
 
 <div class="viewcode-block" id="heights_from_branch_lengths">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.heights_from_branch_lengths">[docs]</a>
-<span class="k">def</span> <span class="nf">heights_from_branch_lengths</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1.0e-6</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">heights_from_branch_lengths</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1.0e-6</span><span class="p">):</span>
     <span class="n">heights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">taxon_namespace</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
@@ -547,7 +567,7 @@
 
 <div class="viewcode-block" id="parse_tree">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.parse_tree">[docs]</a>
-<span class="k">def</span> <span class="nf">parse_tree</span><span class="p">(</span><span class="n">taxa</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_tree</span><span class="p">(</span><span class="n">taxa</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
     <span class="n">taxon_namespace</span> <span class="o">=</span> <span class="n">TaxonNamespace</span><span class="p">([</span><span class="n">taxon</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="n">taxa</span><span class="p">])</span>
     <span class="n">taxon_namespace_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">taxon_namespace</span><span class="p">)</span>
     <span class="k">if</span> <span class="s1">&#39;newick&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
@@ -581,30 +601,30 @@
 
 <div class="viewcode-block" id="TreeModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TreeModel">[docs]</a>
-<span class="k">class</span> <span class="nc">TreeModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TreeModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
     <span class="n">_tag</span> <span class="o">=</span> <span class="s1">&#39;tree_model&#39;</span>
 
 <div class="viewcode-block" id="TreeModel.branch_lengths">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TreeModel.branch_lengths">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">branch_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">branch_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="o">...</span></div>
 
 
     <span class="nd">@property</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">postorder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">postorder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
         <span class="o">...</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">taxa</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">taxa</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="o">...</span>
 
 <div class="viewcode-block" id="TreeModel.write_newick">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TreeModel.write_newick">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">write_newick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steam</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_newick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">steam</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="o">...</span></div>
 </div>
 
@@ -612,8 +632,8 @@
 
 <div class="viewcode-block" id="AbstractTreeModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.AbstractTreeModel">[docs]</a>
-<span class="k">class</span> <span class="nc">AbstractTreeModel</span><span class="p">(</span><span class="n">TreeModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">taxa</span><span class="p">:</span> <span class="n">Taxa</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AbstractTreeModel</span><span class="p">(</span><span class="n">TreeModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">taxa</span><span class="p">:</span> <span class="n">Taxa</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">TreeModel</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">tree</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_taxa</span> <span class="o">=</span> <span class="n">taxa</span>
@@ -623,7 +643,7 @@
 
 <div class="viewcode-block" id="AbstractTreeModel.update_traversals">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.AbstractTreeModel.update_traversals">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_traversals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_traversals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># postorder for peeling</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_postorder</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">postorder_node_iter</span><span class="p">():</span>
@@ -636,22 +656,22 @@
 
 <div class="viewcode-block" id="AbstractTreeModel.handle_model_changed">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.AbstractTreeModel.handle_model_changed">[docs]</a>
-    <span class="k">def</span> <span class="nf">handle_model_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_model_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">postorder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">postorder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_postorder</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">taxa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">taxa</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># return [taxon.label for taxon in self.tree.taxon_namespace]</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">taxon</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxa</span><span class="p">]</span>
 
 <div class="viewcode-block" id="AbstractTreeModel.as_newick">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.AbstractTreeModel.as_newick">[docs]</a>
-    <span class="k">def</span> <span class="nf">as_newick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_newick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">write_newick</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
@@ -659,11 +679,11 @@
 
 <div class="viewcode-block" id="AbstractTreeModel.write_newick">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.AbstractTreeModel.write_newick">[docs]</a>
-    <span class="k">def</span> <span class="nf">write_newick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_newick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_newick</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">seed_node</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_write_newick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_newick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">():</span>
             <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">child</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">child_node_iter</span><span class="p">()):</span>
@@ -692,8 +712,8 @@
 <div class="viewcode-block" id="UnRootedTreeModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.UnRootedTreeModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">UnRootedTreeModel</span><span class="p">(</span><span class="n">AbstractTreeModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnRootedTreeModel</span><span class="p">(</span><span class="n">AbstractTreeModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">taxa</span><span class="p">:</span> <span class="n">Taxa</span><span class="p">,</span> <span class="n">branch_lengths</span><span class="p">:</span> <span class="n">AbstractParameter</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">taxa</span><span class="p">)</span>
@@ -701,23 +721,23 @@
 
 <div class="viewcode-block" id="UnRootedTreeModel.branch_lengths">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.UnRootedTreeModel.branch_lengths">[docs]</a>
-    <span class="k">def</span> <span class="nf">branch_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">branch_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_branch_lengths</span><span class="o">.</span><span class="n">tensor</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_branch_lengths</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 <div class="viewcode-block" id="UnRootedTreeModel.handle_parameter_changed">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.UnRootedTreeModel.handle_parameter_changed">[docs]</a>
-    <span class="k">def</span> <span class="nf">handle_parameter_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_parameter_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fire_model_changed</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="UnRootedTreeModel.json_factory">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.UnRootedTreeModel.json_factory">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">json_factory</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">json_factory</span><span class="p">(</span>
         <span class="n">id_</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">newick</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">branch_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -783,7 +803,7 @@
 <div class="viewcode-block" id="UnRootedTreeModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.UnRootedTreeModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="n">taxa</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;taxa&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
         <span class="n">tree</span> <span class="o">=</span> <span class="n">parse_tree</span><span class="p">(</span><span class="n">taxa</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
@@ -813,8 +833,8 @@
 <div class="viewcode-block" id="TimeTreeModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">TimeTreeModel</span><span class="p">(</span><span class="n">AbstractTreeModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeTreeModel</span><span class="p">(</span><span class="n">AbstractTreeModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">taxa</span><span class="p">:</span> <span class="n">Taxa</span><span class="p">,</span> <span class="n">internal_heights</span><span class="p">:</span> <span class="n">AbstractParameter</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">taxa</span><span class="p">)</span>
@@ -829,7 +849,7 @@
 
 <div class="viewcode-block" id="TimeTreeModel.update_leaf_heights">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.update_leaf_heights">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_leaf_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_leaf_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">leaf_heights</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_taxa</span><span class="p">)</span>
 
         <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">taxon</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">taxon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taxa</span><span class="p">]</span>
@@ -849,7 +869,7 @@
 
 <div class="viewcode-block" id="TimeTreeModel.update_traversals">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.update_traversals">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_traversals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_traversals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update_traversals</span><span class="p">()</span>
         <span class="c1"># preoder indexing to go from ratios to heights</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preorder</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
@@ -863,7 +883,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">node_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">node_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heights_need_update</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_node_heights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -879,7 +899,7 @@
 
 <div class="viewcode-block" id="TimeTreeModel.branch_lengths">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.branch_lengths">[docs]</a>
-    <span class="k">def</span> <span class="nf">branch_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">branch_lengths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return branch lengths calculated from node heights.</span>
 
 <span class="sd">        Branch lengths are indexed by node index on the distal side of</span>
@@ -901,25 +921,25 @@
 
 <div class="viewcode-block" id="TimeTreeModel.handle_parameter_changed">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.handle_parameter_changed">[docs]</a>
-    <span class="k">def</span> <span class="nf">handle_parameter_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_parameter_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">branch_lengths_need_update</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">heights_need_update</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fire_model_changed</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_heights</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 <div class="viewcode-block" id="TimeTreeModel.cuda">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.cuda">[docs]</a>
-    <span class="k">def</span> <span class="nf">cuda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cuda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sampling_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_times</span><span class="o">.</span><span class="n">cuda</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TimeTreeModel.cpu">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.cpu">[docs]</a>
-    <span class="k">def</span> <span class="nf">cpu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cpu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sampling_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_times</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span></div>
 
@@ -927,7 +947,7 @@
 <div class="viewcode-block" id="TimeTreeModel.json_factory">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.json_factory">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">json_factory</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">json_factory</span><span class="p">(</span>
         <span class="n">id_</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">newick</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">internal_heights</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -998,7 +1018,7 @@
 <div class="viewcode-block" id="TimeTreeModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.TimeTreeModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="n">taxa</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;taxa&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
         <span class="n">tree</span> <span class="o">=</span> <span class="n">parse_tree</span><span class="p">(</span><span class="n">taxa</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
@@ -1018,8 +1038,8 @@
 <div class="viewcode-block" id="ReparameterizedTimeTreeModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.ReparameterizedTimeTreeModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">ReparameterizedTimeTreeModel</span><span class="p">(</span><span class="n">TimeTreeModel</span><span class="p">,</span> <span class="n">CallableModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReparameterizedTimeTreeModel</span><span class="p">(</span><span class="n">TimeTreeModel</span><span class="p">,</span> <span class="n">CallableModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
         <span class="n">tree</span><span class="p">,</span>
@@ -1038,7 +1058,7 @@
 
 <div class="viewcode-block" id="ReparameterizedTimeTreeModel.update_node_heights">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.ReparameterizedTimeTreeModel.update_node_heights">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_node_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_node_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_heights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_internal_heights</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_heights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
             <span class="p">(</span>
@@ -1052,7 +1072,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">node_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">node_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heights_need_update</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_node_heights</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">heights_need_update</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1060,7 +1080,7 @@
 
 <div class="viewcode-block" id="ReparameterizedTimeTreeModel.handle_model_changed">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.ReparameterizedTimeTreeModel.handle_model_changed">[docs]</a>
-    <span class="k">def</span> <span class="nf">handle_model_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_model_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lp_needs_update</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">branch_lengths_need_update</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">heights_need_update</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1069,7 +1089,7 @@
 
 <div class="viewcode-block" id="ReparameterizedTimeTreeModel.handle_parameter_changed">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.ReparameterizedTimeTreeModel.handle_parameter_changed">[docs]</a>
-    <span class="k">def</span> <span class="nf">handle_parameter_changed</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_parameter_changed</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">event</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lp_needs_update</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1078,7 +1098,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fire_model_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heights_need_update</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_node_heights</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">log_abs_det_jacobian</span><span class="p">(</span>
@@ -1087,14 +1107,14 @@
 
 <div class="viewcode-block" id="ReparameterizedTimeTreeModel.cuda">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.ReparameterizedTimeTreeModel.cuda">[docs]</a>
-    <span class="k">def</span> <span class="nf">cuda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cuda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">GeneralNodeHeightTransform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ReparameterizedTimeTreeModel.cpu">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.ReparameterizedTimeTreeModel.cpu">[docs]</a>
-    <span class="k">def</span> <span class="nf">cpu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cpu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">GeneralNodeHeightTransform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
@@ -1102,7 +1122,7 @@
 <div class="viewcode-block" id="ReparameterizedTimeTreeModel.json_factory">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.ReparameterizedTimeTreeModel.json_factory">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">json_factory</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">json_factory</span><span class="p">(</span>
         <span class="n">id_</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">newick</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">taxa</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -1196,7 +1216,7 @@
 <div class="viewcode-block" id="ReparameterizedTimeTreeModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/tree_model/index.html#torchtree.evolution.tree_model.ReparameterizedTimeTreeModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="n">taxa</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;taxa&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
         <span class="n">tree</span> <span class="o">=</span> <span class="n">parse_tree</span><span class="p">(</span><span class="n">taxa</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
@@ -1259,7 +1279,7 @@ By Mathieu Fourment
 
   <p class="copyright">
     
-      © Copyright 2024, Mathieu Fourment.
+      © Copyright 2025, Mathieu Fourment.
       <br/>
     
   </p>
@@ -1283,8 +1303,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

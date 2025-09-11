@@ -43,9 +43,11 @@ Functions
    torchtree.cli.evolution.create_birth_death
    torchtree.cli.evolution.create_constant_birth_death
    torchtree.cli.evolution.create_bdsk
+   torchtree.cli.evolution.create_gmrf
    torchtree.cli.evolution.create_coalesent
    torchtree.cli.evolution.create_substitution_model_priors
    torchtree.cli.evolution.create_ucln_prior
+   torchtree.cli.evolution.create_ncln_prior
    torchtree.cli.evolution.parse_distribution
    torchtree.cli.evolution.create_clock_prior
    torchtree.cli.evolution.create_evolution_priors
@@ -64,7 +66,7 @@ Module Contents
 .. py:data:: logger
 
 .. py:data:: COALESCENT_PIECEWISE
-   :value: ['piecewise-constant', 'piecewise-exponential', 'piecewise-linear', 'skyglide', 'skygrid', 'skyride']
+   :value: ['piecewise-constant', 'piecewise-exponential', 'piecewise-linear', 'skyglide', 'skygrid',...
 
 
 .. py:function:: create_evolution_parser(parser)
@@ -121,11 +123,18 @@ Module Contents
 
 .. py:function:: create_bdsk(birth_death_id, tree_id, arg)
 
+.. py:function:: create_gmrf(arg, id_, joint_list)
+
 .. py:function:: create_coalesent(id_, tree_id, taxa, arg)
 
 .. py:function:: create_substitution_model_priors(substmodel_id, model)
 
 .. py:function:: create_ucln_prior(branch_model_id)
+
+.. py:function:: create_ncln_prior(branch_model_id)
+
+   Create non centered log normal prior for branch rates.
+
 
 .. py:function:: parse_distribution(desc)
 

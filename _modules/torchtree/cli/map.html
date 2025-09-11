@@ -15,31 +15,28 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=09fa7fd9" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -56,7 +53,6 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -72,8 +68,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -81,6 +88,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -88,8 +96,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -107,8 +115,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -138,11 +145,15 @@
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
@@ -219,6 +230,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/birth_death/index.html">torchtree.evolution.birth_death</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/branch_model/index.html">torchtree.evolution.branch_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent/index.html">torchtree.evolution.coalescent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent_simulator/index.html">torchtree.evolution.coalescent_simulator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/datatype/index.html">torchtree.evolution.datatype</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/io/index.html">torchtree.evolution.io</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/poisson_tree_likelihood/index.html">torchtree.evolution.poisson_tree_likelihood</a></li>
@@ -370,16 +382,24 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 
 </div></div>
       
@@ -406,20 +426,20 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchtree.cli.map</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">torchtree.cli</span> <span class="kn">import</span> <span class="n">PLUGIN_MANAGER</span>
-<span class="kn">from</span> <span class="nn">torchtree.cli.evolution</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.cli</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLUGIN_MANAGER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.cli.evolution</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">create_alignment</span><span class="p">,</span>
     <span class="n">create_evolution_joint</span><span class="p">,</span>
     <span class="n">create_evolution_parser</span><span class="p">,</span>
     <span class="n">create_site_model_srd06_mus</span><span class="p">,</span>
     <span class="n">create_taxa</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">torchtree.cli.utils</span> <span class="kn">import</span> <span class="n">make_unconstrained</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.cli.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_unconstrained</span>
 
 
 <div class="viewcode-block" id="create_map_parser">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/map/index.html#torchtree.cli.map.create_map_parser">[docs]</a>
-<span class="k">def</span> <span class="nf">create_map_parser</span><span class="p">(</span><span class="n">subprasers</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_map_parser</span><span class="p">(</span><span class="n">subprasers</span><span class="p">):</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">subprasers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
         <span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;build a JSON file for maximum a posteriori inference&#39;</span>
     <span class="p">)</span>
@@ -479,7 +499,7 @@
 
 <div class="viewcode-block" id="create_optimizer">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/map/index.html#torchtree.cli.map.create_optimizer">[docs]</a>
-<span class="k">def</span> <span class="nf">create_optimizer</span><span class="p">(</span><span class="n">joint</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_optimizer</span><span class="p">(</span><span class="n">joint</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;bfgs&quot;</span><span class="p">,</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Optimizer&quot;</span><span class="p">,</span>
@@ -496,7 +516,7 @@
 
 <div class="viewcode-block" id="create_logger">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/map/index.html#torchtree.cli.map.create_logger">[docs]</a>
-<span class="k">def</span> <span class="nf">create_logger</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_logger</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">id_</span><span class="p">,</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Logger&quot;</span><span class="p">,</span>
@@ -508,7 +528,7 @@
 
 <div class="viewcode-block" id="create_tree_logger">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/map/index.html#torchtree.cli.map.create_tree_logger">[docs]</a>
-<span class="k">def</span> <span class="nf">create_tree_logger</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">tree_id</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_tree_logger</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">tree_id</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">id_</span><span class="p">,</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;TreeLogger&quot;</span><span class="p">,</span>
@@ -520,7 +540,7 @@
 
 <div class="viewcode-block" id="build_optimizer">
 <a class="viewcode-back" href="../../../autoapi/torchtree/cli/map/index.html#torchtree.cli.map.build_optimizer">[docs]</a>
-<span class="k">def</span> <span class="nf">build_optimizer</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_optimizer</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
     <span class="n">json_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">taxa</span> <span class="o">=</span> <span class="n">create_taxa</span><span class="p">(</span><span class="s1">&#39;taxa&#39;</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
     <span class="n">json_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">taxa</span><span class="p">)</span>
@@ -587,7 +607,7 @@ By Mathieu Fourment
 
   <p class="copyright">
     
-      © Copyright 2024, Mathieu Fourment.
+      © Copyright 2025, Mathieu Fourment.
       <br/>
     
   </p>
@@ -611,8 +631,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

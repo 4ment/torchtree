@@ -21,6 +21,7 @@ Submodules
    /autoapi/torchtree/evolution/birth_death/index
    /autoapi/torchtree/evolution/branch_model/index
    /autoapi/torchtree/evolution/coalescent/index
+   /autoapi/torchtree/evolution/coalescent_simulator/index
    /autoapi/torchtree/evolution/datatype/index
    /autoapi/torchtree/evolution/io/index
    /autoapi/torchtree/evolution/poisson_tree_likelihood/index

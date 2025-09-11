@@ -45,9 +45,13 @@ Module Contents
 
 
    .. py:attribute:: tree_model
+      :value: None
+
 
 
    .. py:attribute:: weights
+      :value: None
+
 
 
    .. py:attribute:: field
@@ -57,6 +61,8 @@ Module Contents
 
 
    .. py:attribute:: rescale
+      :value: True
+
 
 
    .. py:method:: precision_matrix() -> torch.Tensor

@@ -15,31 +15,28 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=09fa7fd9" />
   
-  <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
     <script src="../../../_static/documentation_options.js?v=5549cc85"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -56,7 +53,6 @@
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -72,8 +68,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="../../../search.html"
       method="get">
@@ -81,6 +88,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -88,8 +96,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -107,8 +115,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -138,11 +145,15 @@
 </a></div>
         <div class="sidebar-primary-item">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
@@ -219,6 +230,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/birth_death/index.html">torchtree.evolution.birth_death</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/branch_model/index.html">torchtree.evolution.branch_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent/index.html">torchtree.evolution.coalescent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent_simulator/index.html">torchtree.evolution.coalescent_simulator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/datatype/index.html">torchtree.evolution.datatype</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/io/index.html">torchtree.evolution.io</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/poisson_tree_likelihood/index.html">torchtree.evolution.poisson_tree_likelihood</a></li>
@@ -370,16 +382,24 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
 
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
+  </button>
+`);
+</script>
 
 </div></div>
       
@@ -406,35 +426,35 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchtree.evolution.coalescent</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch.distributions</span> <span class="kn">import</span> <span class="n">constraints</span>
-<span class="kn">from</span> <span class="nn">torch.distributions.distribution</span> <span class="kn">import</span> <span class="n">Distribution</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">constraints</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.distributions.distribution</span><span class="w"> </span><span class="kn">import</span> <span class="n">Distribution</span>
 
-<span class="kn">from</span> <span class="nn">torchtree.core.abstractparameter</span> <span class="kn">import</span> <span class="n">AbstractParameter</span>
-<span class="kn">from</span> <span class="nn">torchtree.core.model</span> <span class="kn">import</span> <span class="n">CallableModel</span>
-<span class="kn">from</span> <span class="nn">torchtree.core.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
-<span class="kn">from</span> <span class="nn">torchtree.core.utils</span> <span class="kn">import</span> <span class="n">process_object</span><span class="p">,</span> <span class="n">process_objects</span><span class="p">,</span> <span class="n">register_class</span>
-<span class="kn">from</span> <span class="nn">torchtree.ops.smooth</span> <span class="kn">import</span> <span class="n">soft_sort</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.core.abstractparameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.core.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallableModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.core.parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">process_object</span><span class="p">,</span> <span class="n">process_objects</span><span class="p">,</span> <span class="n">register_class</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchtree.ops.smooth</span><span class="w"> </span><span class="kn">import</span> <span class="n">soft_sort</span>
 
-<span class="kn">from</span> <span class="nn">..typing</span> <span class="kn">import</span> <span class="n">ID</span>
-<span class="kn">from</span> <span class="nn">.tree_model</span> <span class="kn">import</span> <span class="n">TimeTreeModel</span><span class="p">,</span> <span class="n">TreeModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tree_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeTreeModel</span><span class="p">,</span> <span class="n">TreeModel</span>
 
 
 <div class="viewcode-block" id="AbstractCoalescentDistribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentDistribution">[docs]</a>
-<span class="k">class</span> <span class="nc">AbstractCoalescentDistribution</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AbstractCoalescentDistribution</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
     <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;theta&#39;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">has_rsample</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span>
         <span class="n">batch_shape</span><span class="p">,</span> <span class="n">event_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">batch_shape</span><span class="p">,</span> <span class="n">event_shape</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span>
@@ -442,7 +462,7 @@
 <div class="viewcode-block" id="AbstractCoalescentDistribution.maximum_likelihood">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentDistribution.maximum_likelihood">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">maximum_likelihood</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">maximum_likelihood</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 </div>
 
@@ -450,8 +470,8 @@
 
 <div class="viewcode-block" id="AbstractCoalescentModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentModel">[docs]</a>
-<span class="k">class</span> <span class="nc">AbstractCoalescentModel</span><span class="p">(</span><span class="n">CallableModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AbstractCoalescentModel</span><span class="p">(</span><span class="n">CallableModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
         <span class="n">theta</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span>
@@ -461,18 +481,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span> <span class="o">=</span> <span class="n">tree_model</span>
 
-    <span class="k">def</span> <span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">sample_shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AbstractCoalescentModel.distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.AbstractCoalescentModel.distribution">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns underlying coalescent distribution.&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">coalescent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">coalescent</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">node_heights</span><span class="p">)</span></div>
 
@@ -481,8 +501,8 @@
 <div class="viewcode-block" id="ConstantCoalescentModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">ConstantCoalescentModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstantCoalescentModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
         <span class="n">theta</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span>
@@ -492,14 +512,14 @@
 
 <div class="viewcode-block" id="ConstantCoalescentModel.distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentModel.distribution">[docs]</a>
-    <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ConstantCoalescent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ConstantCoalescentModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="n">theta</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">TreeModel</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
@@ -514,13 +534,13 @@
 
 <div class="viewcode-block" id="ConstantCoalescent">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescent">[docs]</a>
-<span class="k">class</span> <span class="nc">ConstantCoalescent</span><span class="p">(</span><span class="n">AbstractCoalescentDistribution</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstantCoalescent</span><span class="p">(</span><span class="n">AbstractCoalescentDistribution</span><span class="p">):</span>
     <span class="n">has_rsample</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="ConstantCoalescent.maximum_likelihood">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescent.maximum_likelihood">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">maximum_likelihood</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">maximum_likelihood</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">taxa_shape</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),)</span>
         <span class="n">node_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
             <span class="p">[</span>
@@ -545,7 +565,7 @@
 
 <div class="viewcode-block" id="ConstantCoalescent.log_prob">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescent.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">taxa_shape</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),)</span>
         <span class="n">node_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
             <span class="p">[</span>
@@ -572,7 +592,7 @@
 
 <div class="viewcode-block" id="ConstantCoalescent.rsample">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescent.rsample">[docs]</a>
-    <span class="k">def</span> <span class="nf">rsample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">()):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rsample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">()):</span>
         <span class="n">lineage_count</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">taxon_count</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">dtype</span>
         <span class="p">)</span>
@@ -586,8 +606,8 @@
 <div class="viewcode-block" id="ConstantCoalescentIntegratedModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">ConstantCoalescentIntegratedModel</span><span class="p">(</span><span class="n">CallableModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstantCoalescentIntegratedModel</span><span class="p">(</span><span class="n">CallableModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span> <span class="n">tree_model</span><span class="p">:</span> <span class="n">TimeTreeModel</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
@@ -595,23 +615,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
 
-    <span class="k">def</span> <span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">sample_shape</span>
 
 <div class="viewcode-block" id="ConstantCoalescentIntegratedModel.distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.distribution">[docs]</a>
-    <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ConstantCoalescentIntegrated</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">coalescent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribution</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">coalescent</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">node_heights</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ConstantCoalescentIntegratedModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegratedModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="n">alpha</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">]</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">]</span>
@@ -623,7 +643,7 @@
 
 <div class="viewcode-block" id="ConstantCoalescentIntegrated">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegrated">[docs]</a>
-<span class="k">class</span> <span class="nc">ConstantCoalescentIntegrated</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstantCoalescentIntegrated</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Integrated Constant size coalescent/inverse gamma distribution.</span>
 
 <span class="sd">    Integrate the product of constant population coalescent and inverse gamma distribtions</span>
@@ -640,18 +660,19 @@
 
 <span class="sd">    The posterior distribution of the population size parameter is an inverse gamma with shape :math:`\alpha + N` and rate :math:`\beta + \sum_{i=1}^N C_i t_i`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+
     <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">has_rsample</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
 
 <div class="viewcode-block" id="ConstantCoalescentIntegrated.log_prob">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ConstantCoalescentIntegrated.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">internal_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="n">taxa_shape</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),)</span>
         <span class="n">node_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
@@ -686,8 +707,8 @@
 <div class="viewcode-block" id="ExponentialCoalescentModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescentModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">ExponentialCoalescentModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExponentialCoalescentModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
         <span class="n">theta</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span>
@@ -699,11 +720,11 @@
 
 <div class="viewcode-block" id="ExponentialCoalescentModel.distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescentModel.distribution">[docs]</a>
-    <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ExponentialCoalescent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tree_model</span><span class="o">.</span><span class="n">sample_shape</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
@@ -714,7 +735,7 @@
 <div class="viewcode-block" id="ExponentialCoalescentModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescentModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="n">theta</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
         <span class="n">growth</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;growth&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
@@ -730,7 +751,7 @@
 
 <div class="viewcode-block" id="ExponentialCoalescent">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescent">[docs]</a>
-<span class="k">class</span> <span class="nc">ExponentialCoalescent</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExponentialCoalescent</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
     <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;theta&#39;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span>
         <span class="s1">&#39;growth&#39;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
@@ -738,7 +759,7 @@
     <span class="n">support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">has_rsample</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">growth</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span>
@@ -748,7 +769,7 @@
 
 <div class="viewcode-block" id="ExponentialCoalescent.log_prob">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.ExponentialCoalescent.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">taxa_shape</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),)</span>
         <span class="n">node_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
             <span class="p">[</span>
@@ -781,8 +802,8 @@
 
 <div class="viewcode-block" id="PiecewiseConstantCoalescent">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent">[docs]</a>
-<span class="k">class</span> <span class="nc">PiecewiseConstantCoalescent</span><span class="p">(</span><span class="n">AbstractCoalescentDistribution</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_sorted_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PiecewiseConstantCoalescent</span><span class="p">(</span><span class="n">AbstractCoalescentDistribution</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sorted_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">):</span>
         <span class="n">batch_shape</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="c1"># if node_heights is fixed there is no batch dimension</span>
         <span class="k">if</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">dim</span><span class="p">():</span>
@@ -815,7 +836,7 @@
 
 <div class="viewcode-block" id="PiecewiseConstantCoalescent.sufficient_statistics">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.sufficient_statistics">[docs]</a>
-    <span class="k">def</span> <span class="nf">sufficient_statistics</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sufficient_statistics</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns sorted sufficient statistics and number of coalescent events</span>
@@ -854,7 +875,7 @@
 
 <div class="viewcode-block" id="PiecewiseConstantCoalescent.log_prob">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_terms</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
 
         <span class="n">thetas_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
@@ -872,7 +893,7 @@
 <div class="viewcode-block" id="PiecewiseConstantCoalescent.maximum_likelihood">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescent.maximum_likelihood">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">maximum_likelihood</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">maximum_likelihood</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">taxa_shape</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),)</span>
         <span class="n">node_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
             <span class="p">[</span>
@@ -925,17 +946,17 @@
 <div class="viewcode-block" id="PiecewiseConstantCoalescentModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">PiecewiseConstantCoalescentModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PiecewiseConstantCoalescentModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
 <div class="viewcode-block" id="PiecewiseConstantCoalescentModel.distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel.distribution">[docs]</a>
-    <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">PiecewiseConstantCoalescent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PiecewiseConstantCoalescentModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="n">theta</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">TreeModel</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
@@ -950,8 +971,8 @@
 
 <div class="viewcode-block" id="PiecewiseConstantCoalescentGrid">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid">[docs]</a>
-<span class="k">class</span> <span class="nc">PiecewiseConstantCoalescentGrid</span><span class="p">(</span><span class="n">AbstractCoalescentDistribution</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PiecewiseConstantCoalescentGrid</span><span class="p">(</span><span class="n">AbstractCoalescentDistribution</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">thetas</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">grid</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
@@ -960,7 +981,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">thetas</span><span class="p">,</span> <span class="n">validate_args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
 
-    <span class="k">def</span> <span class="nf">_sorted_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sorted_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
         <span class="n">batch_shape</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_shape</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
@@ -1004,7 +1025,7 @@
 
 <div class="viewcode-block" id="PiecewiseConstantCoalescentGrid.sufficient_statistics">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.sufficient_statistics">[docs]</a>
-    <span class="k">def</span> <span class="nf">sufficient_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sufficient_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
         <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_terms</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
         <span class="n">groups</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor_split</span><span class="p">(</span>
             <span class="n">lchoose2</span> <span class="o">*</span> <span class="n">durations</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -1019,7 +1040,7 @@
 
 <div class="viewcode-block" id="PiecewiseConstantCoalescentGrid.log_prob">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGrid.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">batch_shape</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_terms</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
 
@@ -1052,8 +1073,8 @@
 
 <div class="viewcode-block" id="SoftPiecewiseConstantCoalescentGrid">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid">[docs]</a>
-<span class="k">class</span> <span class="nc">SoftPiecewiseConstantCoalescentGrid</span><span class="p">(</span><span class="n">ConstantCoalescent</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SoftPiecewiseConstantCoalescentGrid</span><span class="p">(</span><span class="n">ConstantCoalescent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">thetas</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">grid</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
@@ -1066,7 +1087,7 @@
 
 <div class="viewcode-block" id="SoftPiecewiseConstantCoalescentGrid.log_prob">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.SoftPiecewiseConstantCoalescentGrid.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">batch_shape</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">taxa_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
 
@@ -1187,8 +1208,8 @@
 <div class="viewcode-block" id="PiecewiseConstantCoalescentGridModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">PiecewiseConstantCoalescentGridModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PiecewiseConstantCoalescentGridModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
         <span class="n">theta</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span>
@@ -1202,7 +1223,7 @@
 
 <div class="viewcode-block" id="PiecewiseConstantCoalescentGridModel.distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel.distribution">[docs]</a>
-    <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">SoftPiecewiseConstantCoalescentGrid</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span>
@@ -1214,7 +1235,7 @@
 <div class="viewcode-block" id="PiecewiseConstantCoalescentGridModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseConstantCoalescentGridModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
 
         <span class="n">theta</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
@@ -1245,23 +1266,23 @@
 
 <div class="viewcode-block" id="FakeTreeModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.FakeTreeModel">[docs]</a>
-<span class="k">class</span> <span class="nc">FakeTreeModel</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FakeTreeModel</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_heights</span> <span class="o">=</span> <span class="n">node_heights</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">node_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">node_heights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_heights</span><span class="o">.</span><span class="n">tensor</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_heights</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 
 <div class="viewcode-block" id="process_data_coalesent">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.process_data_coalesent">[docs]</a>
-<span class="k">def</span> <span class="nf">process_data_coalesent</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractParameter</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_data_coalesent</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractParameter</span><span class="p">:</span>
     <span class="k">if</span> <span class="s1">&#39;times&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="n">times</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;times&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1273,7 +1294,7 @@
 
 <div class="viewcode-block" id="PiecewiseExponentialCoalescentGrid">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid">[docs]</a>
-<span class="k">class</span> <span class="nc">PiecewiseExponentialCoalescentGrid</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PiecewiseExponentialCoalescentGrid</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
     <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;theta&#39;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span>
         <span class="s1">&#39;growth&#39;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
@@ -1281,7 +1302,7 @@
     <span class="n">support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">has_rsample</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">theta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">growth</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
@@ -1296,7 +1317,7 @@
 
 <div class="viewcode-block" id="PiecewiseExponentialCoalescentGrid.log_prob">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGrid.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">dim</span><span class="p">():</span>
             <span class="n">batch_shape</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1398,8 +1419,8 @@
 <div class="viewcode-block" id="PiecewiseExponentialCoalescentGridModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">PiecewiseExponentialCoalescentGridModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PiecewiseExponentialCoalescentGridModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
         <span class="n">theta</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span>
@@ -1418,7 +1439,7 @@
 
 <div class="viewcode-block" id="PiecewiseExponentialCoalescentGridModel.distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel.distribution">[docs]</a>
-    <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">PiecewiseExponentialCoalescentGrid</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">growth</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">tensor</span>
         <span class="p">)</span></div>
@@ -1427,7 +1448,7 @@
 <div class="viewcode-block" id="PiecewiseExponentialCoalescentGridModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseExponentialCoalescentGridModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
 
         <span class="n">theta</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
@@ -1455,14 +1476,14 @@
 
 <div class="viewcode-block" id="PiecewiseLinearCoalescentGrid">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid">[docs]</a>
-<span class="k">class</span> <span class="nc">PiecewiseLinearCoalescentGrid</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PiecewiseLinearCoalescentGrid</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
     <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;theta&#39;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span>
     <span class="n">has_rsample</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">theta</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">grid</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
@@ -1475,7 +1496,7 @@
 
 <div class="viewcode-block" id="PiecewiseLinearCoalescentGrid.log_prob">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGrid.log_prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">dim</span><span class="p">():</span>
             <span class="n">batch_shape</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1611,8 +1632,8 @@
 <div class="viewcode-block" id="PiecewiseLinearCoalescentGridModel">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel">[docs]</a>
 <span class="nd">@register_class</span>
-<span class="k">class</span> <span class="nc">PiecewiseLinearCoalescentGridModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PiecewiseLinearCoalescentGridModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
         <span class="n">theta</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span>
@@ -1624,14 +1645,14 @@
 
 <div class="viewcode-block" id="PiecewiseLinearCoalescentGridModel.distribution">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel.distribution">[docs]</a>
-    <span class="k">def</span> <span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">PiecewiseLinearCoalescentGrid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PiecewiseLinearCoalescentGridModel.from_json">
 <a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.PiecewiseLinearCoalescentGridModel.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
         <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
 
         <span class="n">theta</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
@@ -1652,6 +1673,128 @@
             <span class="n">node_heights</span> <span class="o">=</span> <span class="n">process_data_coalesent</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">theta</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
             <span class="n">tree_model</span> <span class="o">=</span> <span class="n">FakeTreeModel</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">tree_model</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GeneralizedSkylineCoalescent">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.GeneralizedSkylineCoalescent">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GeneralizedSkylineCoalescent</span><span class="p">(</span><span class="n">AbstractCoalescentDistribution</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">thetas</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">group_sizes</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">thetas</span><span class="p">,</span> <span class="n">validate_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_sizes</span> <span class="o">=</span> <span class="n">group_sizes</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sorted_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">):</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># if node_heights is fixed there is no batch dimension</span>
+        <span class="k">if</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">dim</span><span class="p">():</span>
+            <span class="n">heights</span> <span class="o">=</span> <span class="n">node_heights</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">batch_shape</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">heights</span> <span class="o">=</span> <span class="n">node_heights</span>
+
+        <span class="n">taxa_shape</span> <span class="o">=</span> <span class="n">heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),)</span>
+        <span class="n">node_mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="c1"># sampling event</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">taxa_shape</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int</span><span class="p">),</span>
+                <span class="c1"># coalescent event</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
+                    <span class="n">taxa_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">taxa_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,),</span>
+                    <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">heights_sorted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+        <span class="n">node_mask_sorted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">node_mask</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+        <span class="n">lineage_count</span> <span class="o">=</span> <span class="n">node_mask_sorted</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">lchoose2</span> <span class="o">=</span> <span class="n">lineage_count</span> <span class="o">*</span> <span class="p">(</span><span class="n">lineage_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">intervals</span> <span class="o">=</span> <span class="n">heights_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">heights_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">intervals</span>
+
+<div class="viewcode-block" id="GeneralizedSkylineCoalescent.log_prob">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.GeneralizedSkylineCoalescent.log_prob">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_heights</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">node_mask_sorted</span><span class="p">,</span> <span class="n">lchoose2</span><span class="p">,</span> <span class="n">durations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_terms</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
+
+        <span class="n">group_bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_sizes</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">coalescent_count</span> <span class="o">=</span> <span class="n">thetas_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">node_mask_sorted</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">),</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">thetas_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span>
+            <span class="n">group_bounds</span><span class="p">,</span> <span class="n">coalescent_count</span><span class="o">.</span><span class="n">contiguous</span><span class="p">(),</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="n">thetas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">thetas_indices</span><span class="p">)</span>
+
+        <span class="c1"># log population size at the end of each coalescent interval</span>
+        <span class="n">thetas_internal</span> <span class="o">=</span> <span class="n">thetas</span><span class="p">[</span><span class="n">node_mask_sorted</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">node_heights</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lchoose2</span> <span class="o">*</span> <span class="n">durations</span> <span class="o">/</span> <span class="n">thetas</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="n">thetas_internal</span><span class="o">.</span><span class="n">log</span><span class="p">(),</span>
+            <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GeneralizedSkylineCoalescentModel">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.GeneralizedSkylineCoalescentModel">[docs]</a>
+<span class="nd">@register_class</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GeneralizedSkylineCoalescentModel</span><span class="p">(</span><span class="n">AbstractCoalescentModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">id_</span><span class="p">:</span> <span class="n">ID</span><span class="p">,</span>
+        <span class="n">theta</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span>
+        <span class="n">group_sizes</span><span class="p">:</span> <span class="n">AbstractParameter</span><span class="p">,</span>
+        <span class="n">tree_model</span><span class="p">:</span> <span class="n">TimeTreeModel</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">tree_model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_sizes</span> <span class="o">=</span> <span class="n">group_sizes</span>
+
+<div class="viewcode-block" id="GeneralizedSkylineCoalescentModel.distribution">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.GeneralizedSkylineCoalescentModel.distribution">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">distribution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractCoalescentDistribution</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">GeneralizedSkylineCoalescent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_sizes</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GeneralizedSkylineCoalescentModel.from_json">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent/index.html#torchtree.evolution.coalescent.GeneralizedSkylineCoalescentModel.from_json">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dic</span><span class="p">):</span>
+        <span class="n">id_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;theta&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;group_sizes&#39;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">group_sizes</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+                <span class="kc">None</span><span class="p">,</span>
+                <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;group_sizes&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">theta</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">device</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">group_sizes</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;group_sizes&#39;</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">TreeModel</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">tree_model</span><span class="p">:</span> <span class="n">TimeTreeModel</span> <span class="o">=</span> <span class="n">process_object</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">TreeModel</span><span class="o">.</span><span class="n">tag</span><span class="p">],</span> <span class="n">dic</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">node_heights</span> <span class="o">=</span> <span class="n">process_data_coalesent</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">theta</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">tree_model</span> <span class="o">=</span> <span class="n">FakeTreeModel</span><span class="p">(</span><span class="n">node_heights</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">id_</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">group_sizes</span><span class="p">,</span> <span class="n">tree_model</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -1692,7 +1835,7 @@ By Mathieu Fourment
 
   <p class="copyright">
     
-      © Copyright 2024, Mathieu Fourment.
+      © Copyright 2025, Mathieu Fourment.
       <br/>
     
   </p>
@@ -1716,8 +1859,8 @@ By Mathieu Fourment
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
   </footer>

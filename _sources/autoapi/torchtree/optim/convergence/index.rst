@@ -54,9 +54,13 @@ Module Contents
 
 
    .. py:attribute:: start
+      :value: 0
+
 
 
    .. py:attribute:: file_name
+      :value: None
+
 
 
    .. py:method:: check(iteration: int, *args, **kwargs) -> bool
@@ -96,6 +100,8 @@ Module Contents
 
 
    .. py:attribute:: tol_rel_obj
+      :value: 0.01
+
 
 
    .. py:attribute:: elbo

@@ -11,6 +11,7 @@ Functions
 
    torchtree.cli.argparse_utils.zero_or_path
    torchtree.cli.argparse_utils.str_or_float
+   torchtree.cli.argparse_utils.str_or_int
    torchtree.cli.argparse_utils.list_of_float
    torchtree.cli.argparse_utils.list_or_int
 
@@ -24,6 +25,11 @@ Module Contents
 
    Used by argparse when the argument can be either a number or a string
    from a prespecified list of options.
+
+
+.. py:function:: str_or_int(arg)
+
+   Used by argparse when the argument can be either an integer or a string.
 
 
 .. py:function:: list_of_float(arg, length)

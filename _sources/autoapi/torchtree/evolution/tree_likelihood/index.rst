@@ -154,6 +154,8 @@ Module Contents
 
 
    .. py:attribute:: clock_model
+      :value: None
+
 
 
    .. py:attribute:: rescale
@@ -162,9 +164,13 @@ Module Contents
 
 
    .. py:attribute:: use_tip_states
+      :value: False
+
 
 
    .. py:attribute:: threshold
+      :value: 1e-20
+
 
 
    .. py:method:: calculate_with_tip_partials(mats, frequencies, probs)

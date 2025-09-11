@@ -1,0 +1,623 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>torchtree.evolution.coalescent_simulator &#8212; torchtree 1.0.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=09fa7fd9" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5549cc85"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchtree/evolution/coalescent_simulator';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">torchtree 1.0.2 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/json_reference.html">Input files</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/concepts.html">Building blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/tree_likelihood.html">Tree likelihood model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced/benchmark.html">Benchmark</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/torchtree/index.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/cli/index.html">torchtree.cli</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/advi/index.html">torchtree.cli.advi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/argparse_utils/index.html">torchtree.cli.argparse_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/cli/index.html">torchtree.cli.cli</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/evolution/index.html">torchtree.cli.evolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/hmc/index.html">torchtree.cli.hmc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/jacobians/index.html">torchtree.cli.jacobians</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/loggers/index.html">torchtree.cli.loggers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/map/index.html">torchtree.cli.map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/mcmc/index.html">torchtree.cli.mcmc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/operators/index.html">torchtree.cli.operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/plugin/index.html">torchtree.cli.plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/plugin_manager/index.html">torchtree.cli.plugin_manager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/priors/index.html">torchtree.cli.priors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/cli/utils/index.html">torchtree.cli.utils</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/core/index.html">torchtree.core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/abstractparameter/index.html">torchtree.core.abstractparameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/classproperty_decorator/index.html">torchtree.core.classproperty_decorator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/container/index.html">torchtree.core.container</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/identifiable/index.html">torchtree.core.identifiable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/logger/index.html">torchtree.core.logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/model/index.html">torchtree.core.model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parameter/index.html">torchtree.core.parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parameter_encoder/index.html">torchtree.core.parameter_encoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parameter_utils/index.html">torchtree.core.parameter_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/parametric/index.html">torchtree.core.parametric</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/runnable/index.html">torchtree.core.runnable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/serializable/index.html">torchtree.core.serializable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/core/utils/index.html">torchtree.core.utils</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/distributions/index.html">torchtree.distributions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/bayesian_bridge/index.html">torchtree.distributions.bayesian_bridge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/ctmc_scale/index.html">torchtree.distributions.ctmc_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/deterministic_normal/index.html">torchtree.distributions.deterministic_normal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/distributions/index.html">torchtree.distributions.distributions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/gmrf/index.html">torchtree.distributions.gmrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/gmrf_integrated/index.html">torchtree.distributions.gmrf_integrated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/inverse_gamma/index.html">torchtree.distributions.inverse_gamma</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/joint_distribution/index.html">torchtree.distributions.joint_distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/log_normal/index.html">torchtree.distributions.log_normal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/multivariate_normal/index.html">torchtree.distributions.multivariate_normal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/normal/index.html">torchtree.distributions.normal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/one_on_x/index.html">torchtree.distributions.one_on_x</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/scale_mixture/index.html">torchtree.distributions.scale_mixture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/transforms/index.html">torchtree.distributions.transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/distributions/tree_prior/index.html">torchtree.distributions.tree_prior</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/evolution/index.html">torchtree.evolution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/alignment/index.html">torchtree.evolution.alignment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/attribute_pattern/index.html">torchtree.evolution.attribute_pattern</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/bdsk/index.html">torchtree.evolution.bdsk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/birth_death/index.html">torchtree.evolution.birth_death</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/branch_model/index.html">torchtree.evolution.branch_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent/index.html">torchtree.evolution.coalescent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/coalescent_simulator/index.html">torchtree.evolution.coalescent_simulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/datatype/index.html">torchtree.evolution.datatype</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/io/index.html">torchtree.evolution.io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/poisson_tree_likelihood/index.html">torchtree.evolution.poisson_tree_likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/rate_transform/index.html">torchtree.evolution.rate_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/root_transform/index.html">torchtree.evolution.root_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/site_model/index.html">torchtree.evolution.site_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/site_pattern/index.html">torchtree.evolution.site_pattern</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/index.html">torchtree.evolution.substitution_model</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/abstract/index.html">torchtree.evolution.substitution_model.abstract</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/amino_acid/index.html">torchtree.evolution.substitution_model.amino_acid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/codon/index.html">torchtree.evolution.substitution_model.codon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/general/index.html">torchtree.evolution.substitution_model.general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/evolution/substitution_model/nucleotide/index.html">torchtree.evolution.substitution_model.nucleotide</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/taxa/index.html">torchtree.evolution.taxa</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_height_transform/index.html">torchtree.evolution.tree_height_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_likelihood/index.html">torchtree.evolution.tree_likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_model/index.html">torchtree.evolution.tree_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_model_flexible/index.html">torchtree.evolution.tree_model_flexible</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/evolution/tree_regression/index.html">torchtree.evolution.tree_regression</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/inference/index.html">torchtree.inference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/index.html">torchtree.inference.hmc</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/adaptation/index.html">torchtree.inference.hmc.adaptation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/hamiltonian/index.html">torchtree.inference.hmc.hamiltonian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/hmc/index.html">torchtree.inference.hmc.hmc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/integrator/index.html">torchtree.inference.hmc.integrator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/operator/index.html">torchtree.inference.hmc.operator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/hmc/stan_adaptation/index.html">torchtree.inference.hmc.stan_adaptation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/index.html">torchtree.inference.mcmc</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html">torchtree.inference.mcmc.gmrf_block_updating</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/mcmc/index.html">torchtree.inference.mcmc.mcmc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/torchtree/inference/mcmc/operator/index.html">torchtree.inference.mcmc.operator</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/inference/sampler/index.html">torchtree.inference.sampler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/inference/utils/index.html">torchtree.inference.utils</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/nf/index.html">torchtree.nf</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/energy_functions/index.html">torchtree.nf.energy_functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/flow/index.html">torchtree.nf.flow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/planar/index.html">torchtree.nf.planar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nf/realnvp/index.html">torchtree.nf.realnvp</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/nn/index.html">torchtree.nn</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/nn/module/index.html">torchtree.nn.module</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/ops/index.html">torchtree.ops</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/ops/dual_averaging/index.html">torchtree.ops.dual_averaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/ops/smooth/index.html">torchtree.ops.smooth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/ops/welford/index.html">torchtree.ops.welford</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/optim/index.html">torchtree.optim</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/optim/convergence/index.html">torchtree.optim.convergence</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/optim/lr_scheduler/index.html">torchtree.optim.lr_scheduler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/optim/optimizer/index.html">torchtree.optim.optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autoapi/torchtree/torchtree/index.html">torchtree.torchtree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../autoapi/torchtree/typing/index.html">torchtree.typing</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/torchtree/variational/index.html">torchtree.variational</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/variational/chi/index.html">torchtree.variational.chi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/variational/kl/index.html">torchtree.variational.kl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../autoapi/torchtree/variational/renyi/index.html">torchtree.variational.renyi</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bibliography/bib.html">Bibliography</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/4ment/torchtree" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for torchtree.evolution.coalescent_simulator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dendropy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Exponential</span>
+
+
+<div class="viewcode-block" id="sample_coalescent_times">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent_simulator/index.html#torchtree.evolution.coalescent_simulator.sample_coalescent_times">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_coalescent_times</span><span class="p">(</span>
+    <span class="n">sampling_times</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">sampling_counts</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">,</span> <span class="n">lower_bound</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Simulate from inhomogeneous, heterochronous coalescent using thinning algorithm.</span>
+
+<span class="sd">    # Code adapted from https://github.com/mdkarcher/phylodyn/R/coalsieve.R</span>
+
+<span class="sd">    :param Tensor sampling_times: one-dimentional tensor containing sampling times.</span>
+<span class="sd">    :param Tensor sampling_counts: samples taken per sampling time.</span>
+<span class="sd">    :param trajectory: function that returns effective population size at time t.</span>
+<span class="sd">    :param float lower_bound: lower limit of trajectory function on its support.</span>
+<span class="sd">    :return: coalescent times.</span>
+<span class="sd">    :rtype: Tensor</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">    &gt;&gt;&gt; _ = torch.manual_seed(0)</span>
+<span class="sd">    &gt;&gt;&gt; unif_traj = lambda t: 1.0</span>
+<span class="sd">    &gt;&gt;&gt; sample_coalescent_times(torch.arange(3.0), torch.tensor([3,2,1]), unif_traj, lower_bound=0.1)</span>
+<span class="sd">    tensor([0.1169, 0.6442, 1.6912, 1.7371, 2.0807])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">coalescent_times</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sampling_counts</span> <span class="o">=</span> <span class="n">sampling_counts</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="n">sampling_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">active_lineages</span> <span class="o">=</span> <span class="n">sampling_counts</span><span class="p">[</span><span class="n">sampling_index</span><span class="p">]</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">sampling_times</span><span class="p">[</span><span class="n">sampling_index</span><span class="p">]</span>
+    <span class="n">max_sampling_times</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sampling_times</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">time</span> <span class="o">&lt;=</span> <span class="n">max_sampling_times</span> <span class="ow">or</span> <span class="n">active_lineages</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">active_lineages</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">sampling_index</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">active_lineages</span> <span class="o">+=</span> <span class="n">sampling_counts</span><span class="p">[</span><span class="n">sampling_index</span><span class="p">]</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">sampling_times</span><span class="p">[</span><span class="n">sampling_index</span><span class="p">]</span>
+
+        <span class="n">rate</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">active_lineages</span> <span class="o">*</span> <span class="p">(</span><span class="n">active_lineages</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">lower_bound</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">time</span> <span class="o">+</span> <span class="n">Exponential</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">sampling_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">sampling_times</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="n">time</span> <span class="o">&gt;=</span> <span class="n">sampling_times</span><span class="p">[</span><span class="n">sampling_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="n">sampling_index</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">active_lineages</span> <span class="o">+=</span> <span class="n">sampling_counts</span><span class="p">[</span><span class="n">sampling_index</span><span class="p">]</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">sampling_times</span><span class="p">[</span><span class="n">sampling_index</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">lower_bound</span> <span class="o">/</span> <span class="n">trajectory</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
+            <span class="n">coalescent_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+            <span class="n">active_lineages</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">coalescent_times</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="sample_tree">
+<a class="viewcode-back" href="../../../autoapi/torchtree/evolution/coalescent_simulator/index.html#torchtree.evolution.coalescent_simulator.sample_tree">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sample_tree</span><span class="p">(</span>
+    <span class="n">sampling_times</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">sampling_counts</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">coalescent_times</span><span class="p">:</span> <span class="n">Tensor</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate a tree from coalescent times, sampling times, and sampling counts.</span>
+
+<span class="sd">    :param Tensor sampling_times: sampling times.</span>
+<span class="sd">    :param Tensor sampling_counts: samples taken per sampling time.</span>
+<span class="sd">    :param Tensor coalescent_times: coalescent times.</span>
+<span class="sd">    :return: A dendropy tree object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">taxon_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sampling_counts</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">taxon_namespace</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">TaxonNamespace</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;t</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">taxon_count</span><span class="p">)])</span>
+    <span class="n">active_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">active_taxon_count</span> <span class="o">=</span> <span class="n">sampling_counts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>  <span class="c1"># used for naming taxa t0, t1, ...</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">active_taxon_count</span><span class="p">):</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">edge_length</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">get_taxon</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;t</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">sampling_times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">active_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="n">node_heights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">sampling_times</span><span class="p">,</span> <span class="n">coalescent_times</span><span class="p">))</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">sampling_times</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">coalescent_times</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">node_heights</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">node_heights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">node_heights</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+
+    <span class="n">sampling_index</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">events</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># coalescent</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">active_nodes</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+            <span class="n">idx0</span><span class="p">,</span> <span class="n">idx1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">active_nodes</span><span class="p">)),</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">edge_length</span><span class="o">=</span><span class="n">node_heights</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">active_nodes</span><span class="p">[</span><span class="n">idx0</span><span class="p">]</span><span class="o">.</span><span class="n">edge_length</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">node_heights</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">active_nodes</span><span class="p">[</span><span class="n">idx0</span><span class="p">]</span><span class="o">.</span><span class="n">edge_length</span>
+            <span class="p">)</span>
+            <span class="n">active_nodes</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span><span class="o">.</span><span class="n">edge_length</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">node_heights</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">active_nodes</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span><span class="o">.</span><span class="n">edge_length</span>
+            <span class="p">)</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">active_nodes</span><span class="p">[</span><span class="n">idx0</span><span class="p">])</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">active_nodes</span><span class="p">[</span><span class="n">idx1</span><span class="p">])</span>
+            <span class="n">active_nodes</span><span class="p">[</span><span class="n">idx0</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+            <span class="n">active_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">idx1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># sampling</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sampling_counts</span><span class="p">[</span><span class="n">sampling_index</span><span class="p">]):</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="n">edge_length</span><span class="o">=</span><span class="n">node_heights</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">taxon</span> <span class="o">=</span> <span class="n">taxon_namespace</span><span class="o">.</span><span class="n">get_taxon</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;t</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="n">active_taxon_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">sampling_times</span><span class="p">[</span><span class="n">sampling_index</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="n">active_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">active_taxon_count</span> <span class="o">+=</span> <span class="n">sampling_counts</span><span class="p">[</span><span class="n">sampling_index</span><span class="p">]</span>
+            <span class="n">sampling_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">active_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">active_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">edge_length</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">dendropy</span><span class="o">.</span><span class="n">Tree</span><span class="p">(</span><span class="n">seed_node</span><span class="o">=</span><span class="n">active_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">taxon_namespace</span><span class="o">=</span><span class="n">taxon_namespace</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tree</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Mathieu Fourment
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, Mathieu Fourment.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

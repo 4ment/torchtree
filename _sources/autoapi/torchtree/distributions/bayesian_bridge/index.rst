@@ -56,12 +56,18 @@ Module Contents
 
 
    .. py:attribute:: alpha
+      :value: None
+
 
 
    .. py:attribute:: local_scale
+      :value: None
+
 
 
    .. py:attribute:: slab
+      :value: None
+
 
 
    .. py:method:: handle_model_changed(model, obj, index) -> None
