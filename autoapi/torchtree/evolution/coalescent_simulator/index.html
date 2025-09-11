@@ -211,6 +211,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../distributions/ctmc_scale/index.html">torchtree.distributions.ctmc_scale</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../distributions/deterministic_normal/index.html">torchtree.distributions.deterministic_normal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../distributions/distributions/index.html">torchtree.distributions.distributions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributions/gar/index.html">torchtree.distributions.gar</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../distributions/gmrf/index.html">torchtree.distributions.gmrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../distributions/gmrf_integrated/index.html">torchtree.distributions.gmrf_integrated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../distributions/inverse_gamma/index.html">torchtree.distributions.inverse_gamma</a></li>
@@ -482,10 +483,14 @@ document.write(`
 <dt class="field-even">Example<span class="colon">:</span></dt>
 <dd class="field-even"><p></p></dd>
 </dl>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">unif_traj</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="mf">1.0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sample_coalescent_times</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">3.0</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span> <span class="n">unif_traj</span><span class="p">,</span> <span class="n">lower_bound</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-<span class="go">tensor([0.1169, 0.6442, 1.6912, 1.7371, 2.0807])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">unif_traj</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">times</span> <span class="o">=</span> <span class="n">sample_coalescent_times</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">3.0</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span> <span class="n">unif_traj</span><span class="p">,</span> <span class="n">lower_bound</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">times</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">torch.Size([5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">times</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">tensor(True)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">times</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">times</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>  <span class="c1"># non-decreasing</span>
+<span class="go">tensor(True)</span>
 </pre></div>
 </div>
 </dd></dl>

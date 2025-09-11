@@ -210,6 +210,7 @@
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/distributions/ctmc_scale/index.html">torchtree.distributions.ctmc_scale</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/distributions/deterministic_normal/index.html">torchtree.distributions.deterministic_normal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/distributions/distributions/index.html">torchtree.distributions.distributions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/distributions/gar/index.html">torchtree.distributions.gar</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/distributions/gmrf/index.html">torchtree.distributions.gmrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/distributions/gmrf_integrated/index.html">torchtree.distributions.gmrf_integrated</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/torchtree/distributions/inverse_gamma/index.html">torchtree.distributions.inverse_gamma</a></li>
@@ -1464,6 +1465,8 @@ document.write(`
 </li>
         <li><a href="autoapi/torchtree/distributions/distributions/index.html#torchtree.distributions.distributions.Distribution.from_json">(torchtree.distributions.distributions.Distribution class method)</a>
 </li>
+        <li><a href="autoapi/torchtree/distributions/gar/index.html#torchtree.distributions.gar.GammaAutoregressiveModel.from_json">(torchtree.distributions.gar.GammaAutoregressiveModel class method)</a>
+</li>
         <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRF.from_json">(torchtree.distributions.gmrf.GMRF class method)</a>
 </li>
         <li><a href="autoapi/torchtree/distributions/gmrf/index.html#torchtree.distributions.gmrf.GMRFCovariate.from_json">(torchtree.distributions.gmrf.GMRFCovariate class method)</a>
@@ -1629,6 +1632,8 @@ document.write(`
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/distributions/gar/index.html#torchtree.distributions.gar.GammaAutoregressiveModel">GammaAutoregressiveModel (class in torchtree.distributions.gar)</a>
+</li>
       <li><a href="autoapi/torchtree/cli/advi/index.html#torchtree.cli.advi.gather_parameters">gather_parameters() (in module torchtree.cli.advi)</a>
 </li>
       <li><a href="autoapi/torchtree/evolution/datatype/index.html#torchtree.evolution.datatype.GeneralDataType">GeneralDataType (class in torchtree.evolution.datatype)</a>
@@ -1663,10 +1668,10 @@ document.write(`
 </li>
       <li><a href="autoapi/torchtree/distributions/gmrf_integrated/index.html#torchtree.distributions.gmrf_integrated.GMRFGammaIntegrated">GMRFGammaIntegrated (class in torchtree.distributions.gmrf_integrated)</a>
 </li>
-      <li><a href="autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html#torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator">GMRFPiecewiseCoalescentBlockUpdatingOperator (class in torchtree.inference.mcmc.gmrf_block_updating)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/torchtree/inference/mcmc/gmrf_block_updating/index.html#torchtree.inference.mcmc.gmrf_block_updating.GMRFPiecewiseCoalescentBlockUpdatingOperator">GMRFPiecewiseCoalescentBlockUpdatingOperator (class in torchtree.inference.mcmc.gmrf_block_updating)</a>
+</li>
       <li><a href="autoapi/torchtree/distributions/scale_mixture/index.html#torchtree.distributions.scale_mixture.ScaleMixtureNormal.gobal_scale">gobal_scale (torchtree.distributions.scale_mixture.ScaleMixtureNormal attribute)</a>
 </li>
       <li><a href="autoapi/torchtree/core/parameter/index.html#torchtree.core.parameter.Parameter.grad">grad (torchtree.core.parameter.Parameter property)</a>
@@ -2416,6 +2421,8 @@ document.write(`
         <li><a href="autoapi/torchtree/distributions/deterministic_normal/index.html#module-torchtree.distributions.deterministic_normal">torchtree.distributions.deterministic_normal</a>
 </li>
         <li><a href="autoapi/torchtree/distributions/distributions/index.html#module-torchtree.distributions.distributions">torchtree.distributions.distributions</a>
+</li>
+        <li><a href="autoapi/torchtree/distributions/gar/index.html#module-torchtree.distributions.gar">torchtree.distributions.gar</a>
 </li>
         <li><a href="autoapi/torchtree/distributions/gmrf/index.html#module-torchtree.distributions.gmrf">torchtree.distributions.gmrf</a>
 </li>
@@ -3273,6 +3280,8 @@ document.write(`
 </li>
         <li><a href="autoapi/torchtree/distributions/ctmc_scale/index.html#torchtree.distributions.ctmc_scale.CTMCScale.shape">(torchtree.distributions.ctmc_scale.CTMCScale attribute)</a>
 </li>
+        <li><a href="autoapi/torchtree/distributions/gar/index.html#torchtree.distributions.gar.GammaAutoregressiveModel.shape">(torchtree.distributions.gar.GammaAutoregressiveModel attribute)</a>
+</li>
         <li><a href="autoapi/torchtree/distributions/tree_prior/index.html#torchtree.distributions.tree_prior.CompoundGammaDirichletPrior.shape">(torchtree.distributions.tree_prior.CompoundGammaDirichletPrior attribute)</a>
 </li>
         <li><a href="autoapi/torchtree/evolution/site_model/index.html#torchtree.evolution.site_model.WeibullSiteModel.shape">(torchtree.evolution.site_model.WeibullSiteModel property)</a>
@@ -3843,6 +3852,13 @@ document.write(`
 
       <ul>
         <li><a href="autoapi/torchtree/distributions/distributions/index.html#module-torchtree.distributions.distributions">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchtree.distributions.gar
+
+      <ul>
+        <li><a href="autoapi/torchtree/distributions/gar/index.html#module-torchtree.distributions.gar">module</a>
 </li>
       </ul></li>
       <li>
@@ -4552,6 +4568,8 @@ document.write(`
 
       <ul>
         <li><a href="autoapi/torchtree/distributions/ctmc_scale/index.html#torchtree.distributions.ctmc_scale.CTMCScale.x">(torchtree.distributions.ctmc_scale.CTMCScale attribute)</a>
+</li>
+        <li><a href="autoapi/torchtree/distributions/gar/index.html#torchtree.distributions.gar.GammaAutoregressiveModel.x">(torchtree.distributions.gar.GammaAutoregressiveModel attribute)</a>
 </li>
         <li><a href="autoapi/torchtree/distributions/scale_mixture/index.html#torchtree.distributions.scale_mixture.ScaleMixtureNormal.x">(torchtree.distributions.scale_mixture.ScaleMixtureNormal attribute)</a>
 </li>

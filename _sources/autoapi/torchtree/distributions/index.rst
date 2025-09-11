@@ -20,6 +20,7 @@ Submodules
    /autoapi/torchtree/distributions/ctmc_scale/index
    /autoapi/torchtree/distributions/deterministic_normal/index
    /autoapi/torchtree/distributions/distributions/index
+   /autoapi/torchtree/distributions/gar/index
    /autoapi/torchtree/distributions/gmrf/index
    /autoapi/torchtree/distributions/gmrf_integrated/index
    /autoapi/torchtree/distributions/inverse_gamma/index
