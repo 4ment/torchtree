@@ -22,8 +22,8 @@ For a comprehensive assessment of torchtree's performance and use cases, please 
 ## Getting Started
 
 ### Dependencies
- - [DendroPy]
  - [PyTorch]
+ - [Treezy]
 
  ### Installation
 Use an Anaconda environment (Optional)
@@ -69,7 +69,7 @@ The following subcommands are available:
 Each subcommand/algorithm requires a different set of arguments which can be obtained by running `torchtree-cli <subcommand> --help`.
 
 `torchtree-cli` requires an alignment file in FASTA format and a tree file in either [Newick](https://en.wikipedia.org/wiki/Newick_format) or [NEXUS](https://en.wikipedia.org/wiki/Nexus_file) format.
-While *torchtree* uses the [DendroPy](https://jeetsukumaran.github.io/DendroPy) library to parse and manipulate phylogenetic trees, it is recommended to use a Newick file due to the numerous variations of the NEXUS format.
+While *torchtree* uses the [Treezy] library to parse and manipulate phylogenetic trees, it is recommended to use a Newick file due to the numerous variations of the NEXUS format.
 
 Let's explore a few examples of how to use these programs using an influenza A virus dataset containing 69 DNA sequences.
 The alignment and tree files are located in the [data](data) directory.
@@ -131,11 +131,10 @@ Distributed under the GPLv3 License. See [LICENSE](LICENSE) for more information
 torchtree makes use of the following libraries and tools, which are under their own respective licenses:
 
  - [PyTorch]
- - [DendroPy]
 
-[DendroPy]: https://github.com/jeetsukumaran/DendroPy
 [PyTorch]: https://pytorch.org
 [torchtree-bito]: https://github.com/4ment/torchtree-bito
 [torchtree-physher]: https://github.com/4ment/torchtree-physher
 [torchtree-scipy]: https://github.com/4ment/torchtree-scipy
 [torchtree-tensorflow]: https://github.com/4ment/torchtree-tensorflow
+[treezy]: https://github.com/4ment/treezy

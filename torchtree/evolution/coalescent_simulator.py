@@ -1,7 +1,7 @@
-import dendropy
 import torch
 from torch import Tensor
 from torch.distributions import Exponential
+from treezy import Node, Tree
 
 
 def sample_coalescent_times(
@@ -67,16 +67,16 @@ def sample_tree(
     :param Tensor sampling_times: sampling times.
     :param Tensor sampling_counts: samples taken per sampling time.
     :param Tensor coalescent_times: coalescent times.
-    :return: A dendropy tree object.
+    :return: A treezy tree object.
     """
     taxon_count = sum(sampling_counts).item()
-    taxon_namespace = dendropy.TaxonNamespace([f"t{i}" for i in range(taxon_count)])
+    taxon_names = [f"t{i}" for i in range(taxon_count)]
     active_nodes = []
     active_taxon_count = sampling_counts[0].item()  # used for naming taxa t0, t1, ...
 
     for i in range(active_taxon_count):
-        node = dendropy.Node(edge_length=0.0)
-        node.taxon = taxon_namespace.get_taxon(f"t{i}")
+        node = Node(taxon_names[i])
+        node.distance = 0.0
         node.date = sampling_times[0].item()
         active_nodes.append(node)
 
@@ -97,13 +97,10 @@ def sample_tree(
             # coalescent
             assert len(active_nodes) >= 2
             idx0, idx1 = torch.multinomial(torch.ones(len(active_nodes)), 2).sort()[0]
-            node = dendropy.Node(edge_length=node_heights[j])
-            active_nodes[idx0].edge_length = (
-                node_heights[j] - active_nodes[idx0].edge_length
-            )
-            active_nodes[idx1].edge_length = (
-                node_heights[j] - active_nodes[idx1].edge_length
-            )
+            node = Node()
+            node.distance = node_heights[j]
+            active_nodes[idx0].distance = node_heights[j] - active_nodes[idx0].distance
+            active_nodes[idx1].distance = node_heights[j] - active_nodes[idx1].distance
             node.add_child(active_nodes[idx0])
             node.add_child(active_nodes[idx1])
             active_nodes[idx0] = node
@@ -111,14 +108,13 @@ def sample_tree(
         else:
             # sampling
             for i in range(sampling_counts[sampling_index]):
-                node = dendropy.Node(edge_length=node_heights[j])
-                node.taxon = taxon_namespace.get_taxon(f"t{i+active_taxon_count}")
+                node = Node(f"t{i+active_taxon_count}")
+                node.distance = node_heights[j]
                 node.date = sampling_times[sampling_index].item()
                 active_nodes.append(node)
             active_taxon_count += sampling_counts[sampling_index]
             sampling_index += 1
 
     assert len(active_nodes) == 1
-    active_nodes[0].edge_length = None
-    tree = dendropy.Tree(seed_node=active_nodes[0], taxon_namespace=taxon_namespace)
-    return tree
+    active_nodes[0].distance = None
+    return Tree(active_nodes[0], taxon_names)

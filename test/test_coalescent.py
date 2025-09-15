@@ -342,4 +342,3 @@ def test_piecewise_linear(ratios_list):
     constant = PiecewiseLinearCoalescentGrid(thetas, grid)
     log_p = constant.log_prob(torch.cat((sampling_times, heights), -1))
     assert -11.08185677776700117647 == pytest.approx(log_p.item(), 0.0001)
-

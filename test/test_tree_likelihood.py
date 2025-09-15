@@ -17,21 +17,20 @@ def _prepare_tiny(tiny_newick_file, tiny_fasta_file):
     tree, dna = read_tree_and_alignment(tiny_newick_file, tiny_fasta_file, False, False)
     branch_lengths = torch.tensor(
         [
-            float(node.edge_length)
-            for node in sorted(
-                list(tree.postorder_node_iter())[:-1], key=lambda x: x.index
-            )
+            float(node.distance)
+            for node in sorted(list(tree.postorder())[:-1], key=lambda x: x.index)
         ],
     )
     indices = []
-    for node in tree.postorder_internal_node_iter():
-        indices.append([node.index] + [child.index for child in node.child_nodes()])
+    for node in tree.postorder():
+        if not node.is_leaf:
+            indices.append([node.index] + [child.index for child in node.children])
 
     sequences = []
     taxa = []
     for taxon, seq in dna.items():
-        sequences.append(Sequence(taxon.label, str(seq)))
-        taxa.append(Taxon(taxon.label, None))
+        sequences.append(Sequence(taxon, str(seq)))
+        taxa.append(Taxon(taxon, None))
 
     partials, weights_tensor = compress_alignment(
         Alignment(None, sequences, Taxa(None, taxa), NucleotideDataType(None))

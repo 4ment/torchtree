@@ -6,7 +6,7 @@ channels:
 dependencies:
   - python>=3.10
   - numpy>=1.7
-  - dendropy
+  - treezy
   - pytorch>=1.9
   - pip
 # Dev dependencies

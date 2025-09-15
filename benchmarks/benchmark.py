@@ -243,22 +243,23 @@ def unrooted_treelikelihood(args, subst_model):
     tree, dna = read_tree_and_alignment(args.tree, args.input, True, True)
     branch_lengths = torch.tensor(
         [
-            float(node.edge_length) * args.scaler
+            node.distance * args.scaler
             for node in sorted(
-                list(tree.postorder_node_iter())[:-1], key=lambda x: x.index
+                list(tree.postorder())[:-1], key=lambda x: x.index
             )
         ],
     )
     branch_lengths = torch.clamp(branch_lengths, min=1.0e-6)
     indices = []
-    for node in tree.postorder_internal_node_iter():
-        indices.append([node.index] + [child.index for child in node.child_nodes()])
+    for node in tree.postorder():
+        if not node.is_leaf:
+            indices.append([node.index] + [child.index for child in node.children])
 
     sequences = []
     taxa = []
     for taxon, seq in dna.items():
-        sequences.append(Sequence(taxon.label, str(seq)))
-        taxa.append(Taxon(taxon.label, None))
+        sequences.append(Sequence(taxon, str(seq)))
+        taxa.append(Taxon(taxon, None))
 
     partials, weights_tensor = compress_alignment(
         Alignment(None, sequences, Taxa(None, taxa), NucleotideDataType('nuc'))
@@ -441,8 +442,9 @@ def unrooted_treelikelihood(args, subst_model):
 def ratio_transform_jacobian(args):
     tree = read_tree(args.tree, True, True)
     taxa = []
-    for node in tree.leaf_node_iter():
-        taxa.append(Taxon(node.label, {'date': node.date}))
+    for node in tree:
+        if node.is_leaf:
+            taxa.append(Taxon(node.name, {'date': node.date}))
     taxa_count = len(taxa)
     ratios_root_height = Parameter(
         "internal_heights", torch.tensor([0.5] * (taxa_count - 1) + [20])
@@ -504,10 +506,11 @@ def ratio_transform_jacobian(args):
 def ratio_transform(args):
     replicates = args.replicates
     tree = read_tree(args.tree, True, True)
-    taxa_count = len(tree.taxon_namespace)
+    taxa_count = len(tree.taxon_names)
     taxa = []
-    for node in tree.leaf_node_iter():
-        taxa.append(Taxon(node.label, {'date': node.date}))
+    for node in tree:
+        if node.is_leaf:
+            taxa.append(Taxon(node.name, {'date': node.date}))
     ratios_root_height = Parameter(
         "internal_heights", torch.tensor([0.5] * (taxa_count - 2) + [10])
     )
@@ -666,10 +669,11 @@ def ratio_transform(args):
 
 def constant_coalescent(args):
     tree = read_tree(args.tree, True, True)
-    taxa_count = len(tree.taxon_namespace)
+    taxa_count = len(tree.taxon_names)
     taxa = []
-    for node in tree.leaf_node_iter():
-        taxa.append(Taxon(node.label, {'date': node.date}))
+    for node in tree:
+        if node.is_leaf:
+            taxa.append(Taxon(node.name, {'date': node.date}))
     ratios_root_height = Parameter(
         "internal_heights", torch.tensor([0.5] * (taxa_count - 2) + [20.0])
     )
@@ -791,10 +795,11 @@ def constant_coalescent(args):
 
 def skyglide_coalescent(args):
     tree = read_tree(args.tree, True, True)
-    taxa_count = len(tree.taxon_namespace)
+    taxa_count = len(tree.taxon_names)
     taxa = []
-    for node in tree.leaf_node_iter():
-        taxa.append(Taxon(node.label, {"date": node.date}))
+    for node in tree:
+        if node.is_leaf:
+            taxa.append(Taxon(node.name, {"date": node.date}))
     internal_heights = Parameter(
         "internal_heights", torch.tensor([0.5] * (taxa_count - 2) + [20.0])
     )

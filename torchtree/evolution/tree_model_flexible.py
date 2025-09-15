@@ -1,12 +1,9 @@
 from typing import Union
 
 from ..core.utils import JSONParseError, process_object, register_class
-from .tree_model import (
-    TimeTreeModel,
-    heights_from_branch_lengths,
-    initialize_dates_from_taxa,
-    parse_tree,
-)
+from .io import parse_tree
+from .tree import initialize_dates_from_taxa
+from .tree_model import TimeTreeModel, heights_from_branch_lengths
 
 
 @register_class
@@ -83,7 +80,9 @@ class FlexibleTimeTreeModel(TimeTreeModel):
     def from_json(cls, data, dic):
         id_ = data['id']
         taxa = process_object(data['taxa'], dic)
-        tree = parse_tree(taxa, data)
+        taxon_names = [taxon.id for taxon in taxa]
+        options = {k: data[k] for k in ("newick", "file") if k in data}
+        tree = parse_tree(taxon_names, **options)
         initialize_dates_from_taxa(tree, taxa)
 
         # TODO: tree_model and internal_heights may have circular references to each

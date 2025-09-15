@@ -8,7 +8,7 @@ import re
 import sys
 
 import torch
-from dendropy import TaxonNamespace, Tree
+from treezy import NewickReader, NexusReader
 
 from torchtree import Parameter, ViewParameter
 from torchtree.cli import PLUGIN_MANAGER
@@ -36,13 +36,11 @@ from torchtree.evolution.coalescent import (
     PiecewiseConstantCoalescent,
 )
 from torchtree.evolution.datatype import CodonDataType, NucleotideDataType
-from torchtree.evolution.io import extract_taxa
 from torchtree.evolution.taxa import Taxa, Taxon
+from torchtree.evolution.tree import initialize_dates_from_taxa, setup_indexes
 from torchtree.evolution.tree_model import (
     ReparameterizedTimeTreeModel,
     UnRootedTreeModel,
-    initialize_dates_from_taxa,
-    setup_indexes,
 )
 from torchtree.evolution.tree_regression import linear_regression
 
@@ -347,29 +345,25 @@ def distribution_type(arg, choices):
         )
 
 
-def run_tree_regression(arg, taxa):
-    taxon_namespace = TaxonNamespace([taxon["id"] for taxon in taxa["taxa"]])
-    tree_format = "newick"
-    with open(arg.tree) as fp:
-        if next(fp).upper().startswith("#NEXUS"):
-            tree_format = "nexus"
-    if tree_format == "nexus":
-        tree = Tree.get(
-            path=arg.tree,
-            schema="nexus",
-            tree_offset=0,
-            preserve_underscores=True,
-            taxon_namespace=taxon_namespace,
-        )
+def read_tree(tree_file, taxon_names=None):
+    tree_format = 'newick'
+    with open(tree_file) as fp:
+        if next(fp).upper().startswith('#NEXUS'):
+            tree_format = 'nexus'
+    if tree_format == 'nexus':
+        with NexusReader(tree_file, taxon_names) as reader:
+            tree = reader.next()
     else:
-        tree = Tree.get(
-            path=arg.tree,
-            schema="newick",
-            tree_offset=0,
-            preserve_underscores=True,
-            taxon_namespace=taxon_namespace,
-        )
-    tree.resolve_polytomies(update_bipartitions=True)
+        with NewickReader(tree_file, taxon_names) as reader:
+            tree = reader.next()
+    return tree
+
+
+def run_tree_regression(arg, taxa):
+    taxon_names = [taxon["id"] for taxon in taxa["taxa"]]
+    tree = read_tree(arg.tree, taxon_names)
+    tree.make_binary()
+
     setup_indexes(tree, False)
     taxa2 = [{"date": taxon["attributes"]["date"]} for taxon in taxa["taxa"]]
     initialize_dates_from_taxa(tree, taxa2)
@@ -378,22 +372,8 @@ def run_tree_regression(arg, taxa):
 
 
 def create_tree_model(id_: str, taxa: dict, arg):
-    tree_format = "newick"
-    with open(arg.tree, "r") as fp:
-        if next(fp).upper().startswith("#NEXUS"):
-            tree_format = "nexus"
-    if tree_format == "nexus":
-        tree = Tree.get(
-            path=arg.tree,
-            schema=tree_format,
-            tree_offset=0,
-            preserve_underscores=True,
-        )
-        newick = str(tree) + ";"
-    else:
-        with open(arg.tree, "r") as fp:
-            newick = fp.read()
-            newick = newick.strip()
+    tree = read_tree(arg.tree)
+    newick = tree.newick()
 
     kwargs = {}
     if arg.keep or arg.heights_init == "tree":
@@ -1053,8 +1033,17 @@ def create_taxa(id_, arg):
         for sequence in alignment:
             taxa_list.append({"id": sequence.taxon, "type": "Taxon"})
     else:
-        taxa = extract_taxa(arg.tree)
-        taxa_list = [{"id": taxon, "type": "Taxon"} for taxon in taxa]
+        tree_format = 'newick'
+        with open(arg.tree) as fp:
+            if next(fp).upper().startswith('#NEXUS'):
+                tree_format = 'nexus'
+        if tree_format == 'nexus':
+            with NexusReader(arg.tree) as reader:
+                tree = reader.next()
+        else:
+            with NewickReader(arg.tree) as reader:
+                tree = reader.next()
+        taxa_list = [{"id": taxon, "type": "Taxon"} for taxon in tree.taxon_names]
 
     taxa = {"id": id_, "type": "Taxa", "taxa": taxa_list}
     if arg.clock is not None:

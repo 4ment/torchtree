@@ -6,14 +6,17 @@ from io import StringIO
 from typing import Optional, Union
 
 import torch
-from dendropy import TaxonNamespace, Tree
+from treezy import Node as TreezyNode
+from treezy import Tree as TreezyTree
 
 from .. import CatParameter
 from ..core.abstractparameter import AbstractParameter
 from ..core.model import CallableModel, Model
 from ..core.utils import process_object, register_class
 from ..typing import ID
+from .io import parse_tree
 from .taxa import Taxa
+from .tree import initialize_dates_from_taxa
 from .tree_height_transform import (
     DifferenceNodeHeightTransform,
     GeneralNodeHeightTransform,
@@ -34,123 +37,16 @@ def heights_to_branch_lengths(node_heights, bounds, indexing):
     )
 
 
-def setup_indexes(tree, indices_postorder=False):
-    for node in tree.postorder_node_iter():
-        node.index = -1
-        node.annotations.add_bound_attribute("index")
-
-    indexer = iter(range(len(tree.taxon_namespace), len(tree.taxon_namespace) * 2 - 1))
-    taxa_dict = {taxon.label: idx for idx, taxon in enumerate(tree.taxon_namespace)}
-    indexer_taxa = iter(range(len(tree.taxon_namespace)))
-
-    for node in tree.postorder_node_iter():
-        if not node.is_leaf():
-            node.index = next(indexer)
-        else:
-            if indices_postorder:
-                node.index = next(indexer_taxa)
-            else:
-                node.index = taxa_dict[node.taxon.label]
-
-
-def setup_dates(tree, heterochronous=False):
-    # parse dates
-    if heterochronous:
-        dates = {}
-        for node in tree.leaf_node_iter():
-            node_taxon = str(node.taxon).strip("'").strip('"')
-            dates[str(node.taxon)] = float(node_taxon.rsplit('_', 1)[-1])
-
-        max_date = max(dates.values())
-        min_date = min(dates.values())
-
-        # time starts at 0
-        if min_date == 0:
-            for node in tree.leaf_node_iter():
-                node.date = dates[str(node.taxon)]
-                node.original_date = dates[str(node.taxon)]
-            oldest = max_date
-        # time is a year
-        else:
-            for node in tree.leaf_node_iter():
-                node.date = max_date - dates[str(node.taxon)]
-                node.original_date = dates[str(node.taxon)]
-            oldest = max_date - min_date
-    else:
-        for node in tree.postorder_node_iter():
-            node.date = 0.0
-            node.original_date = 0.0
-        oldest = None
-
-    return oldest
-
-
-def initialize_dates_from_taxa(tree, taxa, tag='date'):
-    dates = [taxon[tag] for taxon in taxa]
-    max_date = max(dates)
-
-    # parse dates
-    if max_date != 0.0:
-        # time starts at 0
-        if min(dates) == 0.0:
-            for node in tree.leaf_node_iter():
-                node.date = taxa[node.index][tag]
-                node.original_date = node.date
-        # time is a year
-        else:
-            for node in tree.leaf_node_iter():
-                node.date = max_date - taxa[node.index][tag]
-                node.original_date = taxa[node.index][tag]
-    else:
-        for node in tree.leaf_node_iter():
-            node.date = 0.0
-            node.original_date = 0.0
-
-
-def heights_from_branch_lengths(tree, eps=1.0e-6):
-    heights = torch.empty(2 * len(tree.taxon_namespace) - 1)
-    for node in tree.postorder_node_iter():
-        if node.is_leaf():
+def heights_from_branch_lengths(tree: TreezyTree, eps=1.0e-6):
+    heights = torch.empty(2 * len(tree.taxon_names) - 1)
+    for node in tree.postorder():
+        if node.is_leaf:
             heights[node.index] = node.date
         else:
             heights[node.index] = max(
-                [
-                    heights[c.index] + max(eps, c.edge_length)
-                    for c in node.child_node_iter()
-                ]
+                [heights[c.index] + max(eps, c.distance) for c in node.children]
             )
-    return heights[len(tree.taxon_namespace) :]
-
-
-def parse_tree(taxa, data):
-    taxon_namespace = TaxonNamespace([taxon.id for taxon in taxa])
-    taxon_namespace_size = len(taxon_namespace)
-    if 'newick' in data:
-        tree = Tree.get(
-            data=data['newick'],
-            schema='newick',
-            preserve_underscores=True,
-            rooting='force-rooted',
-            taxon_namespace=taxon_namespace,
-        )
-    elif 'file' in data:
-        tree = Tree.get(
-            path=data['file'],
-            schema='newick',
-            preserve_underscores=True,
-            rooting='force-rooted',
-            taxon_namespace=taxon_namespace,
-        )
-    else:
-        raise ValueError('Tree model requires a file or newick element to be specified')
-    if taxon_namespace_size != len(taxon_namespace):
-        raise ValueError(
-            'Some taxon names in the tree do not match those in the Taxa object'
-        )
-    tree.resolve_polytomies(update_bipartitions=True)
-    use_postorder_indices = data.get('use_postorder_indices', False)
-    setup_indexes(tree, use_postorder_indices)
-    return tree
+    return heights[len(tree.taxon_names) :]
 
 
 class TreeModel(Model):
@@ -176,22 +72,21 @@ class TreeModel(Model):
 
 
 class AbstractTreeModel(TreeModel, ABC):
-    def __init__(self, id_: ID, tree, taxa: Taxa) -> None:
+    def __init__(self, id_: ID, tree: TreezyTree, taxa: Taxa) -> None:
         TreeModel.__init__(self, id_)
         self.tree = tree
         self._taxa = taxa
-        self.taxa_count = len(tree.taxon_namespace)
+        self.taxa_count = len(tree.taxon_names)
         self._postorder = []
         self.update_traversals()
 
     def update_traversals(self) -> None:
         # postorder for peeling
         self._postorder = []
-        for node in self.tree.postorder_node_iter():
-            if not node.is_leaf():
-                children = node.child_nodes()
+        for node in self.tree.postorder():
+            if not node.is_leaf:
                 self._postorder.append(
-                    (node.index, children[0].index, children[1].index)
+                    (node.index, node.children[0].index, node.children[1].index)
                 )
 
     def handle_model_changed(self, model, obj, index):
@@ -212,12 +107,12 @@ class AbstractTreeModel(TreeModel, ABC):
         return out.getvalue()
 
     def write_newick(self, stream, **kwargs) -> None:
-        self._write_newick(self.tree.seed_node, stream, **kwargs)
+        self._write_newick(self.tree.root, stream, **kwargs)
 
-    def _write_newick(self, node, stream, **kwargs) -> None:
-        if not node.is_leaf():
+    def _write_newick(self, node: TreezyNode, stream, **kwargs) -> None:
+        if not node.is_leaf:
             stream.write('(')
-            for i, child in enumerate(node.child_node_iter()):
+            for i, child in enumerate(node.children):
                 self._write_newick(child, stream, **kwargs)
                 if i == 0:
                     stream.write(',')
@@ -225,10 +120,10 @@ class AbstractTreeModel(TreeModel, ABC):
         else:
             taxon_index = kwargs.get('taxon_index', None)
             if not taxon_index:
-                stream.write(str(node.taxon).strip("'"))
+                stream.write(node.name.strip("'"))
             else:
                 stream.write(str(node.index + 1))
-        if node.parent_node is not None:
+        if node.parent is not None:
             branch_lengths = kwargs.get('branch_lengths', self.branch_lengths())
             # unrooted trees have 2N-3 branches but it is writing a binary tree
             if node.index == len(branch_lengths):
@@ -242,7 +137,7 @@ class AbstractTreeModel(TreeModel, ABC):
 @register_class
 class UnRootedTreeModel(AbstractTreeModel):
     def __init__(
-        self, id_: ID, tree, taxa: Taxa, branch_lengths: AbstractParameter
+        self, id_: ID, tree: TreezyTree, taxa: Taxa, branch_lengths: AbstractParameter
     ) -> None:
         super().__init__(id_, tree, taxa)
         self._branch_lengths = branch_lengths
@@ -323,23 +218,18 @@ class UnRootedTreeModel(AbstractTreeModel):
     def from_json(cls, data, dic):
         id_ = data['id']
         taxa = process_object(data['taxa'], dic)
-        tree = parse_tree(taxa, data)
+        taxon_names = [taxon.id for taxon in taxa]
+        options = {k: data[k] for k in ("newick", "file") if k in data}
+        tree = parse_tree(taxon_names, **options)
         branch_lengths = process_object(data['branch_lengths'], dic)
         if 'keep_branch_lengths' in data:
-            blens = [
-                float(node.edge_length)
-                for node in sorted(
-                    list(
-                        tree.postorder_node_iter(
-                            lambda node: node.parent_node is not None
-                        )
-                    ),
-                    key=lambda x: x.index,
-                )
-            ]
-            child_1, child_2 = tree.seed_node.child_node_iter()
-            blens[child_1.index] += child_2.edge_length
-            blens[child_2.index] += child_1.edge_length
+            blens = [None] * (tree.node_count - 1)
+            for node in tree.postorder():
+                if node.parent is not None:
+                    blens[node.index] = node.distance
+            child_1, child_2 = tree.root.children
+            blens[child_1.index] += child_2.distance
+            blens[child_2.index] += child_1.distance
 
             branch_lengths.tensor = torch.tensor(blens[:-1], dtype=branch_lengths.dtype)
         return cls(id_, tree, taxa, branch_lengths)
@@ -348,11 +238,11 @@ class UnRootedTreeModel(AbstractTreeModel):
 @register_class
 class TimeTreeModel(AbstractTreeModel):
     def __init__(
-        self, id_: ID, tree, taxa: Taxa, internal_heights: AbstractParameter
+        self, id_: ID, tree: TreezyTree, taxa: Taxa, internal_heights: AbstractParameter
     ) -> None:
         super().__init__(id_, tree, taxa)
         self._internal_heights = internal_heights
-        self.taxa_count = len(tree.taxon_namespace)
+        self.taxa_count = len(tree.taxon_names)
         self.sampling_times = None
         self.update_leaf_heights()
         self._branch_lengths = None  # tensor
@@ -382,9 +272,9 @@ class TimeTreeModel(AbstractTreeModel):
         # preoder indexing to go from ratios to heights
         self.preorder = torch.tensor(
             [
-                (node.parent_node.index, node.index)
-                for node in self.tree.preorder_node_iter()
-                if node != self.tree.seed_node
+                (node.parent.index, node.index)
+                for node in self.tree.preorder()
+                if node != self.tree.root
             ]
         )
         self.indices_sorted = self.preorder[torch.argsort(self.preorder[:, 1])].t()
@@ -511,7 +401,9 @@ class TimeTreeModel(AbstractTreeModel):
     def from_json(cls, data, dic):
         id_ = data['id']
         taxa = process_object(data['taxa'], dic)
-        tree = parse_tree(taxa, data)
+        taxon_names = [taxon.id for taxon in taxa]
+        options = {k: data[k] for k in ("newick", "file") if k in data}
+        tree = parse_tree(taxon_names, **options)
         initialize_dates_from_taxa(tree, taxa)
         internal_heights = process_object(data['internal_heights'], dic)
 
@@ -685,7 +577,9 @@ class ReparameterizedTimeTreeModel(TimeTreeModel, CallableModel):
     def from_json(cls, data, dic):
         id_ = data['id']
         taxa = process_object(data['taxa'], dic)
-        tree = parse_tree(taxa, data)
+        taxon_names = [taxon.id for taxon in taxa]
+        options = {k: data[k] for k in ("newick", "file") if k in data}
+        tree = parse_tree(taxon_names, **options)
         initialize_dates_from_taxa(tree, taxa)
 
         if 'shifts' in data:
