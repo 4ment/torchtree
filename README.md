@@ -9,7 +9,7 @@
 
 torchtree is a program designed for developing and inferring phylogenetic models. Implemented in Python, it leverages [PyTorch] for automatic differentiation. The suite of inference algorithms encompasses variational inference, Hamiltonian Monte Carlo, maximum *a posteriori*, and Markov chain Monte Carlo.
 
-For a comprehensive assessment of torchtree's performance and use cases, please see our evaluation repository, [torchtree-experiments](https://github.com/4ment/torchtree-experiments), where torchtree was rigorously tested on various datasets and benchmarked for accuracy and speed.
+For a comprehensive assessment of torchtree's performance and use cases, please see our evaluation repository, [torchtree-experiments](https://github.com/4ment/torchtree-experiments), where torchtree was rigorously tested on various datasets and benchmarked for accuracy and speed. We also compared torchtree’s PyTorch implementation of several phylogenetic functions to other automatic differentiation frameworks, including JAX, TensorFlow, and Stan, as well as to analytical gradient implementations (see [gradient-benchmark](https://github.com/4ment/gradient-benchmark)).
 
 
 - [Getting Started](#getting-started)
@@ -111,14 +111,15 @@ If you use torchtree, please consider citing:
 
 ```
 
-@misc{fourment2024torchtree,
-      title={torchtree: flexible phylogenetic model development and inference using {PyTorch}}, 
-      author={Mathieu Fourment and Matthew Macaulay and Christiaan J Swanepoel and Xiang Ji and Marc A Suchard and Frederick A Matsen IV},
-      year={2024},
-      eprint={2406.18044},
-      archivePrefix={arXiv},
-      primaryClass={q-bio.PE},
-      url={https://arxiv.org/abs/2406.18044}
+@article{fourment2026torchtree,
+  title={torchtree: flexible phylogenetic model development and inference using {PyTorch}}, 
+  author={Fourment, Mathieu and Macaulay, Matthew and Swanepoel, Christiaan J and Ji, Xiang and Suchard, Marc A and Matsen IV, Frederick A},
+  journal={Systematic Biology},
+  volume={75},
+  number={1},
+  pages={39--51},
+  year={2026},
+  publisher={Oxford University Press}
 }
 ```
 
